@@ -3,6 +3,15 @@ import {
   abi as MultiSendAbi,
   defaultAddress as MultiSendAddress,
 } from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json";
+import {
+  abi as DaoModuleAbi,
+  bytecode as DaoModuleBytecode,
+} from "@gnosis/dao-module/build/artifacts/contracts/DaoModule.sol/DaoModule.json";
+import {
+  abi as AmbModuleAbi,
+  bytecode as AmbModuleBytecode,
+} from "@gnosis/AMBModule/build/artifacts/contracts/AMBModule.sol/AMBModule.json";
+
 import { abi as SafeAbi } from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json";
 import { arrayify, solidityPack } from "ethers/lib/utils";
 import { AddressZero } from "@ethersproject/constants";
@@ -48,7 +57,7 @@ export const buildAction = (
   nonce: number,
   value?: number
 ) => {
-  const data = contract.interface.encodeFunctionData(method, params);
+  let data = contract.interface.encodeFunctionData(method, params);
   return buildSafeTransaction(
     Object.assign({
       to: contract.address,
@@ -57,6 +66,20 @@ export const buildAction = (
       value,
     })
   );
+};
+
+export const buildAction2 = (
+  contract: Contract,
+  method: string,
+  params: any
+) => {
+  let d = contract.interface.encodeFunctionData(method, params);
+  console.log(d);
+  return {
+    to: contract.address,
+    data: d,
+    value: "0x",
+  };
 };
 
 export const buildMultiSendSafeTx = (
@@ -78,13 +101,14 @@ export const buildSafeTransaction = (template: {
   value?: BigNumber | number | string;
   data?: string;
   nonce: number;
+  operation?: 2 | 1 | 0;
 }): SafeTransaction => {
   return {
     to: template.to,
     value: template.value || 0,
     data: template.data || "0x",
     nonce: template.nonce,
-    operation: 0,
+    operation: template.operation || 0,
     safeTxGas: 0,
     baseGas: 0,
     gasPrice: 0,
@@ -92,3 +116,5 @@ export const buildSafeTransaction = (template: {
     refundReceiver: AddressZero,
   };
 };
+
+export { DaoModuleAbi, DaoModuleBytecode, AmbModuleAbi, AmbModuleBytecode };

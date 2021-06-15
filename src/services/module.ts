@@ -1,12 +1,10 @@
 import { Contract, ContractFactory, Signer } from "ethers";
 import {
-  abi as DaoModuleAbi,
-  bytecode as DaoModuleBytecode,
-} from "@gnosis/dao-module/build/artifacts/contracts/DaoModule.sol/DaoModule.json";
-import {
-  abi as AmbModuleAbi,
-  bytecode as AmbModuleBytecode,
-} from "@gnosis/AMBModule/build/artifacts/contracts/AMBModule.sol/AMBModule.json";
+  DaoModuleAbi,
+  DaoModuleBytecode,
+  AmbModuleAbi,
+  AmbModuleBytecode,
+} from "./helpers";
 
 const MODULE_METHODS = {
   dao: {
@@ -47,7 +45,7 @@ interface AmbModuleParams {
 type ModuleDeploymentParams = DaoModuleParams | AmbModuleParams;
 
 // Takes care of the interaction with Custom Modules (DAOModule - AMBModule) and Gnosis Safe contracts
-export class Module {
+export class ModuleManager {
   public static async deploy(
     module: KnownModules,
     args: ModuleDeploymentParams,

@@ -2,6 +2,9 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { buildAction2, buildMultiSendSafeTx } from "./services/helpers";
+import { Contract } from "ethers";
+import { ModuleManager } from "services/Module";
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -16,22 +19,40 @@ const Container = styled.form`
 
 const App: React.FC = () => {
   const { sdk, safe } = useSafeAppsSDK();
-  console.log({ sdk });
-  console.log({ safe });
-
-
-  
   const [submitting, setSubmitting] = useState(false);
 
+  const simpleStorage = new Contract(
+    "0x91632e5058e71ef3805DAFC3f4904abE2A4BF524",
+    ["function set(uint256 x) public"]
+  );
+
+  const modules = new ModuleManager();
+
+  // User wants to deploy + add module to Safe
+  // User wants to enable/disable modules
+  // User wants to edit attributes from
+
+  /* 
+  modules.deployAndEnable("dao", paramsOfConstructor)
+  modules.enable(address)
+  modules.disable(address)
+  modules.edit("dao", paramsToEdit)
+  */
+
+  const data = simpleStorage.interface.encodeFunctionData("set", [10]);
+  const a = buildAction2(simpleStorage, "set", [10]);
   const submitTx = useCallback(async () => {
     setSubmitting(true);
+    // sdk.txs.send({
+    //   txs: [a],
+    // });
     try {
       const { safeTxHash } = await sdk.txs.send({
         txs: [
           {
-            to: safe.safeAddress,
+            to: simpleStorage.address,
             value: "0",
-            data: "0x",
+            data,
           },
         ],
       });

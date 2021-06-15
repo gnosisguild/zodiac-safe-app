@@ -3,21 +3,21 @@ import { AddressZero } from "@ethersproject/constants";
 import { buildSafeTransaction, buildSignatureBytes } from "./helpers";
 import { SafeSignature, SafeTransaction } from "./types";
 
-export const deployContract = (data: string, nonce: number) => {
+export const deployContract = (data: string, nonce: number, provider: any) => {
+  const contract = new Contract(AddressZero, [], provider);
   return buildSafeTransaction({
-    to: AddressZero,
+    to: contract.address,
     data,
     nonce,
   });
 };
 
-export const executeMultiSend = async (
+export const executeTx = async (
   safe: Contract,
   safeTx: SafeTransaction,
   signatures: SafeSignature[]
 ) => {
   const signatureBytes = buildSignatureBytes(signatures);
-
   return await safe.execTransaction(
     safeTx.to,
     safeTx.value,
@@ -28,8 +28,7 @@ export const executeMultiSend = async (
     safeTx.gasPrice,
     safeTx.gasToken,
     safeTx.refundReceiver,
-    signatureBytes,
-    {}
+    signatureBytes
   );
 };
 
