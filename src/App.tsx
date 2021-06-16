@@ -2,8 +2,13 @@ import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Contract } from "ethers";
-import { ModuleManager } from "services/Module";
+import {
+  disableModule,
+  enableModule,
+  fetchModules,
+  addModule,
+  editModule,
+} from "services";
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -20,42 +25,22 @@ const App: React.FC = () => {
   const { sdk, safe } = useSafeAppsSDK();
   const [submitting, setSubmitting] = useState(false);
 
-  const modules = new ModuleManager();
+  // const safeModules = await modules.fetchModules(safe.safeAddress);
+  // console.log(safeModules);
+  // const transactions = modules.edit(
+  //   "dao",
+  //   "0xA04EAC970D550C6717822Ff07d075C07A0d01586",
+  //   {
+  //     setMinimumBond: "10000000",
+  //     setQuestionCooldown: "100000",
+  //   }
+  // );
 
-  // User wants to deploy + add module to Safe
-  // User wants to enable/disable modules
-  // User wants to edit attributes from
-
-  /* 
-  modules.deployAndEnable("dao", paramsOfConstructor)
-  modules.enable(address)
-  modules.disable(address)
-  modules.edit("dao", paramsToEdit)
-  */
-
-  // const data = simpleStorage.interface.encodeFunctionData("set", [10]);
-  // const a = buildTransaction(simpleStorage, "set", [10]);
-
-  // const t = new Contract(AddressZero, []);
-
-  const disableModule = useCallback(async () => {
-    const transactions = await modules.disable(
+  const disable = useCallback(async () => {
+    const transactions = await disableModule(
       safe.safeAddress,
       "0x327F67C24D1F24fcE614ae8a6D7309bf8736C8B3"
     );
-
-    console.log(transactions);
-
-    // const safeModules = await modules.fetchModules(safe.safeAddress);
-    // console.log(safeModules);
-    // const transactions = modules.edit(
-    //   "dao",
-    //   "0xA04EAC970D550C6717822Ff07d075C07A0d01586",
-    //   {
-    //     setMinimumBond: "10000000",
-    //     setQuestionCooldown: "100000",
-    //   }
-    // );
 
     setSubmitting(true);
     try {
@@ -71,14 +56,14 @@ const App: React.FC = () => {
     setSubmitting(false);
   }, [safe, sdk]);
 
-  const fetchModules = useCallback(async () => {
-    const safeModules = await modules.fetchModules(safe.safeAddress);
+  const fetch = useCallback(async () => {
+    const safeModules = await fetchModules(safe.safeAddress);
     console.log(safeModules);
   }, [safe, sdk]);
 
-  const enableModule = useCallback(async () => {
+  const enable = useCallback(async () => {
     try {
-      const transactions = await modules.enable(
+      const transactions = await enableModule(
         safe.safeAddress,
         "0xA04EAC970D550C6717822Ff07d075C07A0d01586"
       );
@@ -112,13 +97,13 @@ const App: React.FC = () => {
         </>
       ) : (
         <>
-          <Button size="lg" color="primary" onClick={disableModule}>
+          <Button size="lg" color="primary" onClick={disable}>
             Disable module
           </Button>
-          <Button size="lg" color="primary" onClick={fetchModules}>
+          <Button size="lg" color="primary" onClick={fetch}>
             Fetch modules
           </Button>
-          <Button size="lg" color="primary" onClick={enableModule}>
+          <Button size="lg" color="primary" onClick={enable}>
             Enable modules
           </Button>
         </>
