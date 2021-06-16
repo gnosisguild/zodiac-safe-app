@@ -11,12 +11,15 @@ import {
   abi as AmbModuleAbi,
   bytecode as AmbModuleBytecode,
 } from "@gnosis/AMBModule/build/artifacts/contracts/AMBModule.sol/AMBModule.json";
-
 import { abi as SafeAbi } from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json";
 import { arrayify, solidityPack } from "ethers/lib/utils";
 import { AddressZero } from "@ethersproject/constants";
 
 import { MetaTransaction, SafeSignature, SafeTransaction } from "./types";
+
+export const AddressOne = "0x0000000000000000000000000000000000000001";
+export const INFURA_URL =
+  "https://rinkeby.infura.io/v3/" + process.env.REACT_APP_INFURA_ID;
 
 export const buildSignatureBytes = (signatures: SafeSignature[]): string => {
   signatures.sort((left, right) =>
@@ -68,17 +71,17 @@ export const buildAction = (
   );
 };
 
-export const buildAction2 = (
+export const buildTransaction = (
   contract: Contract,
   method: string,
-  params: any
+  params: any[],
+  value?: string
 ) => {
-  let d = contract.interface.encodeFunctionData(method, params);
-  console.log(d);
+  let data = contract.interface.encodeFunctionData(method, params);
   return {
     to: contract.address,
-    data: d,
-    value: "0x",
+    data,
+    value: value || "0",
   };
 };
 
@@ -117,4 +120,10 @@ export const buildSafeTransaction = (template: {
   };
 };
 
-export { DaoModuleAbi, DaoModuleBytecode, AmbModuleAbi, AmbModuleBytecode };
+export {
+  DaoModuleAbi,
+  DaoModuleBytecode,
+  AmbModuleAbi,
+  AmbModuleBytecode,
+  SafeAbi,
+};

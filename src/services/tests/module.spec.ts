@@ -33,14 +33,6 @@ describe("Module interactions ", () => {
       const nonce = await safe.nonce();
 
       console.log({ provider });
-      const pContract = new Contract(
-        "0x8255e1faf4d977708f622dba724c62ee2c0ab0fc",
-        [
-          "function balanceOf(uint address) public returns (uint256)",
-          "function transfer(address _to, uint256 _amount) public returns (bool success)",
-        ],
-        signer
-      );
 
       // const balanceOne = await pContract.balanceOf(walletOne.address);
       // const balanceTwo = await pContract.balanceOf(walletTwo.address);
@@ -49,7 +41,7 @@ describe("Module interactions ", () => {
       // console.log({ balanceTwo });
 
       const daoModuleTx = deployContract(BYTECODE_TEST, nonce, provider);
-      const simpleStorage = new Contract(
+      const simpleStorageOne = new Contract(
         "0xcd3b8cCd8AA6286B7b08913f082D11cFCAadA5fc",
         [
           "function set(uint256 x) public",
@@ -57,33 +49,45 @@ describe("Module interactions ", () => {
         ],
         signer
       );
+      const simpleStorageTwo = new Contract(
+        "0x91632e5058e71ef3805dafc3f4904abe2a4bf524",
+        [
+          "function set(uint256 x) public",
+          "function get() public view returns (uint256)",
+        ],
+        signer
+      );
       const setStorageTransaction = buildAction(
-        simpleStorage,
+        simpleStorageOne,
         "set",
-        [10],
+        [16],
         nonce
       );
 
-      const transferTransaction = buildAction(
-        pContract,
-        "transfer",
-        [walletOne.address, 100000],
+      const setStorageTransactionAgain = buildAction(
+        simpleStorageTwo,
+        "set",
+        [421],
         nonce
       );
 
       // Transactions to be executed by multisender
       const transactions: SafeTransaction[] = [
-        // setStorageTransaction,
+        setStorageTransaction,
+        setStorageTransactionAgain,
         // transferTransaction,
-        daoModuleTx,
+        // daoModuleTx,
       ];
 
-      // const multiSendTx = buildMultiSendSafeTx(transactions, signer, nonce);
+      const multiSendTx = buildMultiSendSafeTx(transactions, signer, nonce);
 
       const signatures = await safeApproveHash(signer);
-      const transaction = await executeTx(safe, daoModuleTx, [signatures]);
+      const transaction = await executeTx(safe, multiSendTx, [signatures]);
       const hh = await transaction.wait();
       console.log("Transaction: ", hh);
+      console.log(hh.logs);
+      console.log(hh.events);
+      // console.log(hh.events[0].decode());
 
       // const balanceOneNew = await pContract.balanceOf(walletOne.address);
       // const balanceTwoNew = await pContract.balanceOf(walletTwo.address);
@@ -91,10 +95,14 @@ describe("Module interactions ", () => {
       // console.log({ balanceOneNew });
       // console.log({ balanceTwoNew });
 
-      const newStorage = await simpleStorage.get();
-      console.log("This is the new storage: ", newStorage);
-      const h = newStorage.value
-      console.log(h);
+      const newStorage = await simpleStorageOne.get();
+      console.log("This is the new storage: ", newStorage.toNumber());
+
+      const newStorageTwo = await simpleStorageTwo.get();
+      console.log(
+        "This is the new storage (from two): ",
+        newStorageTwo.toNumber()
+      );
 
       // console.log(await safe.getModulesPaginated());
       // Instantiate Module Class
