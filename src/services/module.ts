@@ -90,6 +90,7 @@ export class ModuleManager {
     address: string,
     methods: Partial<Record<KnownMethods<Module>, string>>
   ) {
+    // Add validation to check if module is indeed added
     const methodsName = Object.keys(methods);
     if (!methodsName.length) {
       throw new Error("At least one method must be provided");
