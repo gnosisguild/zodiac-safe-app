@@ -67,7 +67,7 @@ export async function fetchModules(safeAddress: string) {
 
 export async function enableModule(safeAddress: string, module: string) {
   const safe = new Contract(safeAddress, SafeAbi, provider);
-  return [buildTransaction(safe, "enableModule", [module])];
+  return buildTransaction(safe, "enableModule", [module]);
 }
 
 export async function disableModule(safeAddress: string, module: string) {
@@ -81,7 +81,7 @@ export async function disableModule(safeAddress: string, module: string) {
     );
     if (moduleIndex > 0) prevModule = modules[moduleIndex - 1];
   }
-  return [buildTransaction(safe, "disableModule", [prevModule, module])];
+  return buildTransaction(safe, "disableModule", [prevModule, module]);
 }
 
 export async function editModule<Module extends KnownModules>(

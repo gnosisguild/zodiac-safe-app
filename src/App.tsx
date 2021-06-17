@@ -45,7 +45,7 @@ const App: React.FC = () => {
     setSubmitting(true);
     try {
       const { safeTxHash } = await sdk.txs.send({
-        txs: transactions,
+        txs: [transactions],
       });
       console.log({ safeTxHash });
       const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
@@ -68,7 +68,7 @@ const App: React.FC = () => {
         "0xA04EAC970D550C6717822Ff07d075C07A0d01586"
       );
       const { safeTxHash } = await sdk.txs.send({
-        txs: transactions,
+        txs: [transactions],
       });
       console.log({ safeTxHash });
       const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
