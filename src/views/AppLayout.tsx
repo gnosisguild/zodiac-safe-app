@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   leftPanel: {
-    width: '30%',
+    width: "30%",
     maxWidth: 380,
     minWidth: 270,
     overflowY: "auto",

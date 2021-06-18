@@ -31,7 +31,10 @@ const initialModulesState: ModulesState = {
     { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1473", name: "Module 3" },
     { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1474", name: "Module 4" },
   ],
-  current: { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1471", name: "Module 1" }
+  current: {
+    address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1471",
+    name: "Module 1",
+  },
 };
 
 const moduleReducer: Reducer<ModulesState, ModulesAction> = (
