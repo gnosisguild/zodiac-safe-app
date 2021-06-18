@@ -9,7 +9,8 @@ import {
   ExplorerButton,
 } from "@gnosis.pm/safe-react-components";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getExplorerInfo } from "../../utils/address";
+import {getExplorerInfo} from "../../utils/explorers";
+
 interface ModuleDetailsProps {
   module: Module;
 }
