@@ -9,7 +9,7 @@ import {
   ExplorerButton,
 } from "@gnosis.pm/safe-react-components";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import {getExplorerInfo} from "../../utils/explorers";
+import { getExplorerInfo } from "../../utils/explorers";
 
 interface ModuleDetailsProps {
   module: Module;
@@ -17,15 +17,16 @@ interface ModuleDetailsProps {
 
 const useStyles = makeStyles((theme) => ({
   header: {
+    minHeight: 88,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    padding: theme.spacing(4),
+    padding: theme.spacing(3),
     backgroundColor: theme.palette.background.paper,
   },
   text: {
     marginLeft: "16px !important",
-    color: theme.palette.text.primary + ' !important',
+    color: theme.palette.text.primary + " !important",
   },
   icon: {
     marginLeft: "16px",
