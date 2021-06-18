@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import {
@@ -22,14 +22,17 @@ import createPalette from "@material-ui/core/styles/createPalette";
 export const DarkModeContext = React.createContext({ toggleDarkMode() {} });
 
 const Main = () => {
-  const [isDarkMode, setDarkMode] = useState(
-    useMediaQuery("(prefers-color-scheme: dark)")
-  );
+  const isDarkModePreferred = useMediaQuery("(prefers-color-scheme: dark)");
+  const [isDarkMode, setDarkMode] = useState(false);
 
   const toggleDarkMode = useCallback(
     () => setDarkMode(!isDarkMode),
     [isDarkMode]
   );
+
+  useEffect(() => {
+    setDarkMode(isDarkModePreferred);
+  }, [isDarkModePreferred]);
 
   const muiTheme = React.useMemo(() => {
     const palette = createPalette({
