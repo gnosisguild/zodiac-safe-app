@@ -1,9 +1,6 @@
 import { BigNumber, Contract, Signer, Wallet } from "ethers";
-import { bytecode as DaoModuleBytecode } from "@gnosis/dao-module/build/artifacts/contracts/DaoModule.sol/DaoModule.json";
-import { AddressZero } from "@ethersproject/constants";
-
 import { AddressOne, DaoModuleAbi, getSafeInstance } from "services/helpers";
-import { prepareSafeTransaction, startChain } from "./helpers";
+import { prepareSafeTransaction, startChain } from "services/tests/utils";
 import {
   disableModule,
   editModule,
@@ -17,7 +14,9 @@ jest.setTimeout(80000);
 // We will need to use a Gnosis Safe that has as owner the
 // private keys fetched from the startChain function
 describe("Module interactions ", () => {
-  const TEST_GNOSIS_SAFE_ADDRESS = "0x38063380d21F2d7A2f093cF4FCedBf6A552A1f76";
+  const SAFE_ADDRESS = "0x38063380d21F2d7A2f093cF4FCedBf6A552A1f76";
+  const OLD_DAO_MODULE = "0xA04EAC970D550C6717822Ff07d075C07A0d01586";
+  const NEW_DAO_MODULE = "0x327F67C24D1F24fcE614ae8a6D7309bf8736C8B3";
 
   let walletOne: Wallet;
   let walletTwo: Wallet;
@@ -32,27 +31,25 @@ describe("Module interactions ", () => {
     provider = p;
 
     signer = p.getSigner();
-    safe = getSafeInstance(TEST_GNOSIS_SAFE_ADDRESS, signer);
+    safe = getSafeInstance(SAFE_ADDRESS, signer);
   });
 
   describe("DAO Module ", () => {
+    test("Should fetch modules from Safe", async () => {
+      const safeModules = await fetchModules(safe.address);
+      expect(Array.isArray(safeModules)).toBeTruthy;
+      expect(safeModules).toContainEqual(OLD_DAO_MODULE);
+    });
+
     test("Should edit module config ", async () => {
       const MINIMUM_BOND = "123456789";
 
       const nonce = await safe.nonce();
-      const daoModule = new Contract(
-        "0xA04EAC970D550C6717822Ff07d075C07A0d01586",
-        DaoModuleAbi,
-        signer
-      );
+      const daoModule = new Contract(OLD_DAO_MODULE, DaoModuleAbi, signer);
 
-      const editModuleTransaction = await editModule(
-        "dao",
-        "0xA04EAC970D550C6717822Ff07d075C07A0d01586",
-        {
-          setMinimumBond: MINIMUM_BOND,
-        }
-      );
+      const editModuleTransaction = await editModule("dao", OLD_DAO_MODULE, {
+        setMinimumBond: MINIMUM_BOND,
+      });
 
       // @TODO: We need to be able to pass the array of
       // editModuleTransaction applying multisend contract
@@ -69,15 +66,14 @@ describe("Module interactions ", () => {
     });
 
     test("Should disable module of Safe ", async () => {
-      const OLD_MODULE = "0xA04EAC970D550C6717822Ff07d075C07A0d01586";
       const actualSafeModules = await fetchModules(safe.address);
-      expect(actualSafeModules).toContainEqual(OLD_MODULE);
+      expect(actualSafeModules).toContainEqual(OLD_DAO_MODULE);
 
       const nonce = await safe.nonce();
 
       const disableModuleTransaction = await disableModule(
-        TEST_GNOSIS_SAFE_ADDRESS,
-        OLD_MODULE
+        SAFE_ADDRESS,
+        OLD_DAO_MODULE
       );
 
       const safeTx = {
@@ -88,17 +84,15 @@ describe("Module interactions ", () => {
       await executeTx;
 
       const [modules] = await safe.getModulesPaginated(AddressOne, 10);
-      expect(modules).not.toContainEqual(OLD_MODULE);
+      expect(modules).not.toContainEqual(OLD_DAO_MODULE);
     });
 
     test("Should enable module of Safe ", async () => {
-      const NEW_MODULE = "0x327F67C24D1F24fcE614ae8a6D7309bf8736C8B3";
-
       const nonce = await safe.nonce();
 
       const enableModuleTransaction = await enableModule(
-        TEST_GNOSIS_SAFE_ADDRESS,
-        NEW_MODULE
+        SAFE_ADDRESS,
+        NEW_DAO_MODULE
       );
 
       const safeTx = {
@@ -109,7 +103,7 @@ describe("Module interactions ", () => {
       await executeTx;
 
       const [modules] = await safe.getModulesPaginated(AddressOne, 10);
-      expect(modules).toContainEqual(NEW_MODULE);
+      expect(modules).toContainEqual(NEW_DAO_MODULE);
     });
   });
 });

@@ -1,11 +1,8 @@
-import { AddressZero } from "@ethersproject/constants";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Contract, Signer } from "ethers";
 import {
   DaoModuleAbi,
-  DaoModuleBytecode,
   AmbModuleAbi,
-  AmbModuleBytecode,
   AddressOne,
   buildTransaction,
   INFURA_URL,
