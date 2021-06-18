@@ -1,6 +1,10 @@
 import { BigNumber, Contract, Signer, Wallet } from "ethers";
 import { AddressOne, DaoModuleAbi, getSafeInstance } from "services/helpers";
-import { prepareSafeTransaction, startChain } from "services/tests/utils";
+import {
+  buildMultiSendSafeTx,
+  prepareSafeTransaction,
+  startChain,
+} from "services/tests/utils";
 import {
   disableModule,
   editModule,
@@ -42,27 +46,39 @@ describe("Module interactions ", () => {
     });
 
     test("Should edit module config ", async () => {
-      const MINIMUM_BOND = "123456789";
+      const NEW_MINIMUM_BOND = "123456789";
+      const NEW_QUESTION_TIMEOUT = "987654321";
+      const NEW_QUESTION_COOLDOWN = "5";
 
       const nonce = await safe.nonce();
       const daoModule = new Contract(OLD_DAO_MODULE, DaoModuleAbi, signer);
 
       const editModuleTransaction = await editModule("dao", OLD_DAO_MODULE, {
-        setMinimumBond: MINIMUM_BOND,
+        setMinimumBond: NEW_MINIMUM_BOND,
+        setQuestionTimeout: NEW_QUESTION_TIMEOUT,
+        setQuestionCooldown: NEW_QUESTION_COOLDOWN,
       });
 
-      // @TODO: We need to be able to pass the array of
-      // editModuleTransaction applying multisend contract
+      const multiSendTx = await buildMultiSendSafeTx(
+        editModuleTransaction,
+        signer
+      );
+
       const txData = {
-        ...editModuleTransaction[0],
+        ...multiSendTx,
         nonce,
       };
 
-      const executeTx = prepareSafeTransaction(txData, safe, signer);
+      const executeTx = prepareSafeTransaction(txData, safe, signer, 1);
       await executeTx;
 
       const newMinimumBond = await daoModule.minimumBond();
-      expect(newMinimumBond).toEqual(BigNumber.from(MINIMUM_BOND));
+      const newQuestionTimeout = await daoModule.questionTimeout();
+      const newQuestionCooldown = await daoModule.questionCooldown();
+
+      expect(newMinimumBond).toEqual(BigNumber.from(NEW_MINIMUM_BOND));
+      expect(newQuestionTimeout).toEqual(Number(NEW_QUESTION_TIMEOUT));
+      expect(newQuestionCooldown).toEqual(Number(NEW_QUESTION_COOLDOWN));
     });
 
     test("Should disable module of Safe ", async () => {

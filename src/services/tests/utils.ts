@@ -1,12 +1,19 @@
 import { Contract, ethers, Signer } from "ethers";
 import { Web3Provider } from "@ethersproject/providers";
 import Ganache from "ganache-core";
-import { hexlify, parseEther } from "ethers/lib/utils";
+import { arrayify, hexlify, parseEther, solidityPack } from "ethers/lib/utils";
 import { AddressZero } from "@ethersproject/constants";
-import { INFURA_URL } from "services/helpers";
+import {
+  buildTransaction,
+  INFURA_URL,
+  MultiSendAbi,
+  MultiSendAddress,
+} from "services/helpers";
 
-const PRIV_KEY_ONE = "0x990b68b61853f6418233b1f502a220a8770bb38849d9bd8fc552ed55f5899365";
-const PRIV_KEY_TWO = "0x0f072260a8d8afe0adb52b6d86d9610f87c2bb17cf3b9e79fe46301e5d83961c";
+const PRIV_KEY_ONE =
+  "0x990b68b61853f6418233b1f502a220a8770bb38849d9bd8fc552ed55f5899365";
+const PRIV_KEY_TWO =
+  "0x0f072260a8d8afe0adb52b6d86d9610f87c2bb17cf3b9e79fe46301e5d83961c";
 
 interface Transaction {
   data: string;
@@ -43,7 +50,8 @@ export const startChain = async () => {
 export const prepareSafeTransaction = async (
   transaction: Transaction,
   safe: Contract,
-  signer: Signer
+  signer: Signer,
+  operation: 0 | 1 | 2 = 0
 ) => {
   const approveHash = await safeApproveHash(signer);
   const signatures = buildSignatureBytes([approveHash]);
@@ -54,7 +62,7 @@ export const prepareSafeTransaction = async (
     safeTx.to,
     safeTx.value,
     safeTx.data,
-    safeTx.operation,
+    operation,
     safeTx.safeTxGas,
     safeTx.baseGas,
     safeTx.gasPrice,
@@ -64,7 +72,7 @@ export const prepareSafeTransaction = async (
   );
 };
 
-export const safeApproveHash = async (signer: Signer) => {
+const safeApproveHash = async (signer: Signer) => {
   const signerAddress = await signer.getAddress();
   return {
     signer: signerAddress,
@@ -76,7 +84,7 @@ export const safeApproveHash = async (signer: Signer) => {
   };
 };
 
-export const buildSignatureBytes = (signatures: any): string => {
+const buildSignatureBytes = (signatures: any): string => {
   signatures.sort((left: any, right: any) =>
     left.signer.toLowerCase().localeCompare(right.signer.toLowerCase())
   );
@@ -100,4 +108,30 @@ export const buildSafeTransaction = (transaction: Partial<Transaction>) => {
     refundReceiver: AddressZero,
     nonce: transaction.nonce,
   };
+};
+
+export const buildMultiSendSafeTx = async (
+  transactions: Pick<Transaction, "data" | "value" | "to">[],
+  signer: Signer
+) => {
+  const multiSend = new Contract(MultiSendAddress, MultiSendAbi, signer);
+  const encodedTxs = transactions.map((t) => encodeMetaTransaction(t)).join("");
+  const encodedMultiSend = "0x" + encodedTxs;
+
+  const transaction = buildTransaction(multiSend, "multiSend", [
+    encodedMultiSend,
+  ]);
+
+  return transaction;
+};
+
+const encodeMetaTransaction = (
+  tx: Pick<Transaction, "data" | "value" | "to">
+): string => {
+  const data = arrayify(tx.data);
+  const encoded = solidityPack(
+    ["uint8", "address", "uint256", "uint256", "bytes"],
+    [0, tx.to, tx.value, data.length, data]
+  );
+  return encoded.slice(2);
 };

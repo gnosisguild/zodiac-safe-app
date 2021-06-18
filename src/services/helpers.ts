@@ -8,6 +8,10 @@ import {
   bytecode as AmbModuleBytecode,
 } from "@gnosis/AMBModule/build/artifacts/contracts/AMBModule.sol/AMBModule.json";
 import { abi as SafeAbi } from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json";
+import {
+  abi as MultiSendAbi,
+  defaultAddress as MultiSendAddress,
+} from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json";
 
 import { JsonRpcProvider } from "@ethersproject/providers";
 
@@ -40,4 +44,6 @@ export {
   AmbModuleAbi,
   AmbModuleBytecode,
   SafeAbi,
+  MultiSendAddress,
+  MultiSendAbi,
 };
