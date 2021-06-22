@@ -109,3 +109,13 @@ export async function editModule<Module extends KnownModules>(
 
   return formattedTransactions;
 }
+
+export const callContract = (
+  address: string,
+  abi: string | string[],
+  method: string,
+  data: (string | string[])[] = []
+) => {
+  const contract = new Contract(address, abi, provider);
+  return contract.functions[method](...data);
+};

@@ -17,6 +17,7 @@ import GlobalStyle from "./GlobalStyle";
 import App from "./App";
 import { grey } from "@material-ui/core/colors";
 import { ModulesProvider } from "./contexts/modules";
+import MUIShadows from "@material-ui/core/styles/shadows";
 import createPalette from "@material-ui/core/styles/createPalette";
 
 export const DarkModeContext = React.createContext({ toggleDarkMode() {} });
@@ -39,15 +40,23 @@ const Main = () => {
       type: isDarkMode ? "dark" : "light",
       primary: grey,
       background: {
-        default: isDarkMode ? "#2E3438" : "#FFFFFF",
-        paper: isDarkMode ? "#383E42" : "#F8FAFB",
+        default: isDarkMode ? "#383E42" : "#F8FAFB",
+        paper: isDarkMode ? "#2E3438" : "#FFFFFF",
       },
     });
     palette.secondary = palette.augmentColor({
       "500": gnosisTheme.colors.primary,
     });
+    const shadows = MUIShadows;
+    shadows[1] = "0px 2px 4px rgba(105, 112, 117, 0.2)";
+
     return createMuiTheme({
       palette,
+      typography: { fontFamily: gnosisTheme.fonts.fontFamily },
+      shape: {
+        borderRadius: 6,
+      },
+      shadows,
     });
   }, [isDarkMode]);
 

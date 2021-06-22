@@ -26,13 +26,13 @@ interface ModulesContextState {
 
 const initialModulesState: ModulesState = {
   list: [
-    { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1471", name: "Module 1" },
+    { address: "0x5CC00E150CbFB64039Bdd076911ff0a81180F1b3", name: "Module 1" },
     { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1472", name: "Module 2" },
     { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1473", name: "Module 3" },
     { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1474", name: "Module 4" },
   ],
   current: {
-    address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1471",
+    address: "0x5CC00E150CbFB64039Bdd076911ff0a81180F1b3",
     name: "Module 1",
   },
 };

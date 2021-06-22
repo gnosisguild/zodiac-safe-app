@@ -25,16 +25,16 @@ const useStyles = makeStyles((theme) => {
         easing: "ease",
       }),
 
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: theme.palette.background.paper,
 
       "&:hover": {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.background.default,
       },
       "&:first-child": {
         borderTopWidth: 1,
       },
       "&.active": {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: theme.palette.background.default,
         borderLeftStyle: "solid",
         borderLeftWidth: 3,
         borderLeftColor: theme.palette.secondary.main,

@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
     borderRightStyle: "solid",
     borderRightWidth: 1,
     borderRightColor: theme.palette.divider,
+    backgroundColor: theme.palette.background.paper,
   },
   content: {
     flexGrow: 1,
