@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { FunctionFragment, Interface } from "@ethersproject/abi";
-import { ContractFunctionBlock } from "./ContractFunctionBlock";
+import { ContractFunctionQueryBlock } from "./ContractFunctionBlock";
 import { isReadFunction } from "../../../utils/contracts";
 
 interface ModuleListFunctionsProps {
@@ -22,7 +22,7 @@ export const ContractReadFunctionList = ({
   return (
     <>
       {readFunctions.map((func) => (
-        <ContractFunctionBlock
+        <ContractFunctionQueryBlock
           key={func.name}
           address={address}
           abi={abi}

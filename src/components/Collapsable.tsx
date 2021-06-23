@@ -13,7 +13,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.default,
     "& + &": { marginTop: theme.spacing(2) },
   },
-  content: {},
+  content: {
+    marginTop: theme.spacing(2)
+  },
 }));
 
 export const Collapsable: React.FC<CollapsableProps> = ({

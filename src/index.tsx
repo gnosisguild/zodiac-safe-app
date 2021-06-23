@@ -52,11 +52,17 @@ const Main = () => {
 
     return createMuiTheme({
       palette,
-      typography: { fontFamily: gnosisTheme.fonts.fontFamily },
+      shadows,
+      typography: {
+        fontFamily: gnosisTheme.fonts.fontFamily,
+        h6: {
+          fontSize: 14,
+          fontWeight: "bold",
+        },
+      },
       shape: {
         borderRadius: 6,
       },
-      shadows,
     });
   }, [isDarkMode]);
 
