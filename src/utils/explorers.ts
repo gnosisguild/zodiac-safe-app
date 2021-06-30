@@ -1,3 +1,5 @@
+const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY;
+
 export enum ETHEREUM_NETWORK {
   MAINNET = 1,
   ROPSTEN = 3,
@@ -12,6 +14,7 @@ interface ExplorerData {
   networkExplorerName: string;
   networkExplorerUrl: string;
   networkExplorerApiUrl: string;
+  explorerApiKey?: string;
 }
 
 export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
@@ -19,21 +22,25 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://etherscan.io",
     networkExplorerApiUrl: "https://api.etherscan.io/api",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [ETHEREUM_NETWORK.RINKEBY]: {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://rinkeby.etherscan.io",
     networkExplorerApiUrl: "https://api-rinkeby.etherscan.io/api",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [ETHEREUM_NETWORK.ROPSTEN]: {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://ropsten.etherscan.io/",
     networkExplorerApiUrl: "https://api-ropsten.etherscan.io/api",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [ETHEREUM_NETWORK.LOCAL]: {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://rinkeby.etherscan.io",
     networkExplorerApiUrl: "https://api-rinkeby.etherscan.io/api",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [ETHEREUM_NETWORK.ENERGY_WEB_CHAIN]: {
     networkExplorerName: "Energy web explorer",
@@ -59,6 +66,7 @@ export const getNetworkExplorerInfo = (chainId: number) => {
     name: networkBaseConfig.networkExplorerName,
     url: networkBaseConfig.networkExplorerUrl,
     apiUrl: networkBaseConfig.networkExplorerApiUrl,
+    apiKey: networkBaseConfig.explorerApiKey,
   };
 };
 

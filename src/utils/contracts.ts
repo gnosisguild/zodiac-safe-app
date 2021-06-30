@@ -21,13 +21,19 @@ export const fetchContractABI = memoize(
 
     if (!network) throw new Error("Network data not found");
 
-    const { apiUrl } = network;
+    const { apiUrl, apiKey } = network;
 
-    const params = new URLSearchParams({
+    const urlParams: Record<string, string> = {
       module: "contract",
       action: "getAbi",
       address: contractAddress,
-    });
+    };
+
+    if (apiKey) {
+      urlParams.apiKey = apiKey;
+    }
+
+    const params = new URLSearchParams(urlParams);
 
     const response = await fetch(`${apiUrl}?${params}`);
 
