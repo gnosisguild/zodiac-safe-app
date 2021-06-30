@@ -14,7 +14,7 @@ import {
   validateFunctionResultsAddress,
 } from "../../../utils/contracts";
 import { Row } from "../../layout/Row";
-import { useModulesState } from "../../../contexts/modules";
+import { useModulesSelector } from "../../../contexts/modules";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -36,7 +36,8 @@ export const ContractFunctionQueryBlock = ({
   func,
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
-  const { reloadCount } = useModulesState();
+  const reloadCount = useModulesSelector((state) => state.reloadCount);
+
   const [open, setOpen] = useState(false);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();
 

@@ -1,14 +1,14 @@
 import React from "react";
 import { AppLayout } from "./views/AppLayout";
-import { useModulesState } from "./contexts/modules";
+import { useModulesSelector } from "./contexts/modules";
 import { ModuleDetails } from "./views/ModuleDetails/ModuleDetails";
 
 const App: React.FC = () => {
-  const modulesState = useModulesState();
+  const currentModule = useModulesSelector(state => state.current);
 
   return (
     <AppLayout>
-      <ModuleDetails module={modulesState.current} />
+      <ModuleDetails module={currentModule} />
     </AppLayout>
   );
 };

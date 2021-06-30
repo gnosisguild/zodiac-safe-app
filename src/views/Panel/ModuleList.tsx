@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
 
     backgroundColor: theme.palette.background.paper,
 
+    "& + &": {
+      borderTopWidth: 0,
+    },
     "&:hover": {
       backgroundColor: theme.palette.background.default,
     },
@@ -79,10 +82,9 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const content = modules.map((module) => {
     const active = module.address === state.current?.address;
     return (
-      <>
+      <React.Fragment key={module.address}>
         <Paper
           elevation={0}
-          key={module.address}
           onClick={() => handleClick(module)}
           className={classNames(classes.moduleItem, { active, sub })}
         >
@@ -96,13 +98,14 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
         {module.subModules.length ? (
           <ModuleList sub modules={module.subModules} />
         ) : null}
-      </>
+      </React.Fragment>
     );
   });
 
   if (sub) {
     const lines = modules.map((_, index) => (
       <div
+        key={index}
         className={classes.line}
         style={{ height: (index + 1) * ITEM_HEIGHT - ITEM_HEIGHT / 2 + 2 }}
       />

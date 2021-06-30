@@ -15,11 +15,13 @@ export const ModuleInteractions = ({ module }: ModuleInteractionsProps) => {
   const [abi, setABI] = useState("");
 
   useEffect(() => {
+    setLoading(true);
+    setABI("");
     fetchContractABI(safe.chainId, module.address)
       .then(setABI)
       .catch((error) => console.warn("fetchContractABI", error))
       .finally(() => setLoading(false));
-  }, [module.address, safe.chainId]);
+  }, [module, safe]);
 
   if (loading || !abi) return <Loader size="md" />;
 

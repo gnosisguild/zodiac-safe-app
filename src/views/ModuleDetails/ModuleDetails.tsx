@@ -25,7 +25,7 @@ export const ModuleDetails = ({ module }: ModuleDetailsProps) => {
     <div>
       <ModuleDetailHeader module={module} />
       <div className={classes.content}>
-        <ModuleInteractions module={module} />
+        <ModuleInteractions key={module.address} module={module} />
       </div>
     </div>
   );

@@ -37,7 +37,8 @@ export const fetchContractABI = memoize(
     if (status === "0") throw new Error("Could not fetch ABI");
 
     return result as string;
-  }
+  },
+  (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
 );
 
 export function isBasicFunction(func: FunctionFragment) {
