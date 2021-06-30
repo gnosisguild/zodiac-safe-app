@@ -92,12 +92,12 @@ export function formatParamValue(param: ParamType, value: string): any {
     try {
       _value = JSON.parse(_value);
     } catch (e) {
-      throw new Error("Invalid " + param.baseType);
+      throw new Error("Input must be of type " + param.baseType);
     }
   }
 
   if (!validateFunctionParamValue(param, _value)) {
-    throw new Error("Invalid " + param.type);
+    throw new Error("Input must be of type " + param.type);
   }
 
   return _value;

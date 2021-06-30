@@ -15,6 +15,7 @@ import {
 } from "../../../utils/contracts";
 import { Row } from "../../layout/Row";
 import { useModulesSelector } from "../../../contexts/modules";
+import { ContractFunctionError } from "./ContractFunctionError";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -41,7 +42,7 @@ export const ContractFunctionQueryBlock = ({
   const [open, setOpen] = useState(false);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();
 
-  const { loading, result, fetch } = useContractQuery();
+  const { loading, result, fetch, error } = useContractQuery();
 
   const isBasic = isBasicFunction(func);
   const resultsAddress = validateFunctionResultsAddress(func);
@@ -74,6 +75,7 @@ export const ContractFunctionQueryBlock = ({
 
   const content = (
     <>
+      <ContractFunctionError error={error} />
       <ContractFunctionResult func={func} result={result} />
       <ContractFunctionQuery func={func} onQuery={execQuery} />
     </>

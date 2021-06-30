@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { Button, makeStyles } from "@material-ui/core";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { ContractFunctionParamInput } from "./ContractFunctionParamInput";
 import { validateFunctionParams } from "../../../utils/contracts";
+import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg";
 
 interface ContractFunctionInputProps {
   func: FunctionFragment;
@@ -17,6 +17,13 @@ const useStyles = makeStyles((theme) => ({
   },
   queryButton: {
     marginTop: theme.spacing(2),
+    textTransform: "none",
+    fontSize: 16,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
+    color: theme.palette.secondary.main + " !important",
+    borderColor: theme.palette.secondary.main + " !important",
   },
 }));
 
@@ -74,18 +81,12 @@ export const ContractFunctionQuery = ({
         variant="outlined"
         color="secondary"
         disabled={!areParamsValid}
+        classes={{ disabled: classes.buttonDisabled }}
         className={classes.queryButton}
         onClick={handleQuery}
-        startIcon={
-          <Icon
-            color={!areParamsValid ? undefined : "primary"}
-            size="md"
-            type="sent"
-            className={classes.icon}
-          />
-        }
+        startIcon={<PlayIcon className={classes.icon} />}
       >
-        RUN QUERY
+        Run Query
       </Button>
     </>
   );
