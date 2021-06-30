@@ -1,6 +1,8 @@
 import { FunctionFragment } from "@ethersproject/abi";
 import memoize from "lodash.memoize";
 import { getNetworkExplorerInfo } from "./explorers";
+import { FunctionOutputs } from "../hooks/useContractQuery";
+import { isHexString } from "@ethersproject/bytes";
 
 export const isWriteFunction = (method: FunctionFragment) => {
   if (!method.stateMutability) return true;
@@ -35,3 +37,13 @@ export const fetchContractABI = memoize(
     return result as string;
   }
 );
+
+export const isBasicFunction = (func: FunctionFragment) => {
+  return !func.inputs.length;
+};
+
+export const isHashResult = (
+  result?: FunctionOutputs
+): result is FunctionOutputs => {
+  return result?.length === 1 && isHexString(result[0]);
+};
