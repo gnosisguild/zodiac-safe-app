@@ -1,9 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Box, makeStyles } from "@material-ui/core";
 import { Button, Title } from "@gnosis.pm/safe-react-components";
 import { ModuleList } from "./ModuleList";
 import { useModulesState } from "../../contexts/modules";
-import { DarkModeContext } from "../../index";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -27,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const Panel = () => {
   const classes = useStyles();
-  const { toggleDarkMode } = useContext(DarkModeContext);
   const { list: modulesList } = useModulesState();
 
   return (
@@ -56,13 +54,6 @@ export const Panel = () => {
       </Box>
 
       <ModuleList modules={modulesList} />
-
-      <Box flexGrow={1} />
-      <Box margin={1}>
-        <Button size="md" fullWidth onClick={toggleDarkMode}>
-          Toggle Dark Mode
-        </Button>
-      </Box>
     </Box>
   );
 };
