@@ -8,6 +8,7 @@ enum MODULE_ACTION {
 export interface Module {
   name: string;
   address: string;
+  subModules: Module[];
 }
 
 interface ModulesState {
@@ -26,18 +27,32 @@ interface ModulesContextState {
   dispatch(action: ModulesAction): void;
 }
 
+const module2 = {
+  address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1472",
+  name: "Module 2",
+  subModules: [],
+};
+const module3 = {
+  address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1473",
+  name: "Module 3",
+  subModules: [],
+};
+const module4 = {
+  address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1474",
+  name: "Module 4",
+  subModules: [module3],
+};
+
+const module1 = {
+  address: "0x5CC00E150CbFB64039Bdd076911ff0a81180F1b3",
+  name: "Module 1",
+  subModules: [module2, module4],
+};
+
 const initialModulesState: ModulesState = {
   reloadCount: 0,
-  list: [
-    { address: "0x5CC00E150CbFB64039Bdd076911ff0a81180F1b3", name: "Module 1" },
-    { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1472", name: "Module 2" },
-    { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1473", name: "Module 3" },
-    { address: "0x256B70644f5D77bc8e2bb82C731Ddf747ecb1474", name: "Module 4" },
-  ],
-  current: {
-    address: "0x5CC00E150CbFB64039Bdd076911ff0a81180F1b3",
-    name: "Module 1",
-  },
+  list: [module1, module1],
+  current: module1,
 };
 
 const moduleReducer: Reducer<ModulesState, ModulesAction> = (
