@@ -34,7 +34,7 @@ type KnownModules = keyof typeof MODULE_METHODS;
 
 interface DaoModuleParams {
   executor: string;
-  oracle: string;
+  oracle?: string;
   timeout: number;
   bond: number;
   templateId: number;

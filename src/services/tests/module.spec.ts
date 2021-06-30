@@ -15,8 +15,6 @@ import {
 
 jest.setTimeout(80000);
 
-const DaoModuleAbi = [""];
-
 // In order to interact with the Gnosis Safe + Modules
 // We will need to use a Gnosis Safe that has as owner the
 // private keys fetched from the startChain function
