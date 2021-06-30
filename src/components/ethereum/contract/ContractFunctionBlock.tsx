@@ -73,11 +73,7 @@ export const ContractFunctionQueryBlock = ({
 
   const content = (
     <>
-      {loading ? (
-        "loading..."
-      ) : (
-        <ContractFunctionResult func={func} result={result} />
-      )}
+      <ContractFunctionResult func={func} result={result} />
       <ContractFunctionQuery func={func} onQuery={execQuery} />
     </>
   );
