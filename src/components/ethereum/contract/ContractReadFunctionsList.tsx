@@ -8,7 +8,7 @@ interface ModuleListFunctionsProps {
   abi: string | string[];
 }
 
-export const ContractReadFunctionList = ({
+export const ContractReadFunctionsList = ({
   abi,
   address,
 }: ModuleListFunctionsProps) => {
@@ -25,7 +25,6 @@ export const ContractReadFunctionList = ({
         <ContractFunctionQueryBlock
           key={func.name}
           address={address}
-          abi={abi}
           func={func}
         />
       ))}

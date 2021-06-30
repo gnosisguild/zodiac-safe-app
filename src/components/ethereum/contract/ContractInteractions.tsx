@@ -1,8 +1,17 @@
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import React, { useState } from "react";
-import { makeStyles, Paper, withStyles } from "@material-ui/core";
+import {
+  Box,
+  IconButton,
+  makeStyles,
+  Paper,
+  withStyles,
+} from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import { ContractReadFunctionList } from "./ContractReadFunctionList";
+import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
+import { Row } from "../../layout/Row";
+import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
+import { increaseReloadCount, useModules } from "../../../contexts/modules";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
@@ -42,27 +51,38 @@ export const ContractInteractions = ({
   abi,
 }: ContractInteractionsProps) => {
   const classes = useStyles();
+  const { dispatch } = useModules();
   const [operation, setOperation] = useState<Operation>("read");
 
   const handleOperationChange = (operation?: Operation) => {
     if (operation) setOperation(operation);
   };
 
+  const handleReload = () => dispatch(increaseReloadCount());
+
   return (
     <>
-      <ToggleButtonGroup
-        exclusive
-        size="small"
-        value={operation}
-        onChange={(evt, value) => handleOperationChange(value)}
-      >
-        <StyledToggleButton value="read">Read Contract</StyledToggleButton>
-        <StyledToggleButton value="write">Write Contract</StyledToggleButton>
-      </ToggleButtonGroup>
+      <Row alignItems="end">
+        <ToggleButtonGroup
+          exclusive
+          size="small"
+          value={operation}
+          onChange={(evt, value) => handleOperationChange(value)}
+        >
+          <StyledToggleButton value="read">Read Contract</StyledToggleButton>
+          <StyledToggleButton value="write">Write Contract</StyledToggleButton>
+        </ToggleButtonGroup>
+
+        <Box flexGrow={1} />
+
+        <IconButton onClick={handleReload}>
+          <ReloadIcon />
+        </IconButton>
+      </Row>
 
       <Paper className={classes.content}>
         {operation === "read" ? (
-          <ContractReadFunctionList address={address} abi={abi} />
+          <ContractReadFunctionsList address={address} abi={abi} />
         ) : null}
       </Paper>
     </>

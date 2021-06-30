@@ -39,9 +39,6 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
 
       <Box flexGrow={1} />
 
-      <Button size="md" iconType="edit" variant="outlined">
-        Edit
-      </Button>
       <Button size="md" iconType="delete" variant="outlined">
         Remove
       </Button>
