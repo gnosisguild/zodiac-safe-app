@@ -1,6 +1,11 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import React, { useCallback, useState } from "react";
-import { disableModule, enableModule, fetchModules } from "./services";
+import {
+  createAndAddModule,
+  disableModule,
+  enableModule,
+  fetchModules,
+} from "./services";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import styled from "styled-components";
 
@@ -29,6 +34,35 @@ export const Testing = () => {
   //     setQuestionCooldown: "100000",
   //   }
   // );
+
+  const deployAndAdd = useCallback(async () => {
+    try {
+      setSubmitting(true);
+      const transactions = await createAndAddModule(
+        "dao",
+        {
+          bond: 100000000,
+          timeout: 100,
+          cooldown: 180,
+          expiration: 2000,
+          templateId: 1,
+        },
+        safe.safeAddress
+      );
+      console.log("These are the transactions: ", transactions);
+      const { safeTxHash } = await sdk.txs.send({
+        txs: transactions as any,
+      });
+      console.log({ safeTxHash });
+      const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+      console.log({ safeTx });
+    } catch (e) {
+      console.log("Error on deploy and add ");
+      console.log(e);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [sdk, safe]);
 
   const disable = useCallback(async () => {
     const transactions = await disableModule(
@@ -99,6 +133,9 @@ export const Testing = () => {
           </Button>
           <Button size="lg" color="primary" onClick={enable}>
             Enable modules
+          </Button>
+          <Button size="lg" color="primary" onClick={deployAndAdd}>
+            Deploy and add DAO Module
           </Button>
         </>
       )}
