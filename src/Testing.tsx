@@ -38,17 +38,33 @@ export const Testing = () => {
   const deployAndAdd = useCallback(async () => {
     try {
       setSubmitting(true);
+      // const transactions = await createAndAddModule(
+      //   "amb",
+      //   {
+      //     owner: "0x61FfE691821291D02E9Ba5D33098ADcee71a3a17",
+      //     amb: "0x61FfE691821291D02E9Ba5D33098ADcee71a3a17"
+      //   },
+      //   safe.safeAddress
+      // );
       const transactions = await createAndAddModule(
-        "dao",
+        "delay",
         {
-          bond: 100000000,
-          timeout: 100,
-          cooldown: 180,
-          expiration: 2000,
-          templateId: 1,
+          txCooldown: 100,
+          txExpiration: 1000
         },
         safe.safeAddress
       );
+      // const transactions = await createAndAddModule(
+      //   "dao",
+      //   {
+      //     bond: 100000000,
+      //     timeout: 100,
+      //     cooldown: 180,
+      //     expiration: 2000,
+      //     templateId: 1,
+      //   },
+      //   safe.safeAddress
+      // );
       console.log("These are the transactions: ", transactions);
       const { safeTxHash } = await sdk.txs.send({
         txs: transactions as any,
