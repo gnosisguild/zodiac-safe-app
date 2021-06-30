@@ -8,7 +8,7 @@ interface ModuleListFunctionsProps {
   abi: string | string[];
 }
 
-export const ContractReadFunctionList = ({
+export const ContractReadFunctionsList = ({
   abi,
   address,
 }: ModuleListFunctionsProps) => {

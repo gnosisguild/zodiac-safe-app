@@ -8,7 +8,7 @@ import {
   withStyles,
 } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import { ContractReadFunctionList } from "./ContractReadFunctionList";
+import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
 import { increaseReloadCount, useModules } from "../../../contexts/modules";
@@ -82,7 +82,7 @@ export const ContractInteractions = ({
 
       <Paper className={classes.content}>
         {operation === "read" ? (
-          <ContractReadFunctionList address={address} abi={abi} />
+          <ContractReadFunctionsList address={address} abi={abi} />
         ) : null}
       </Paper>
     </>
