@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, makeStyles } from "@material-ui/core";
 import { Button, Title } from "@gnosis.pm/safe-react-components";
 import { ModuleList } from "./ModuleList";
-import { useModulesState } from "../../contexts/modules";
+import { loadModules, useModules } from "../../contexts/modules";
 import { Row } from "../../components/layout/Row";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { createAndAddModule, fetchModules } from "services";
+import { deployAndSetUpModule } from "@gnosis/module-factory";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -27,7 +30,51 @@ const useStyles = makeStyles((theme) => ({
 
 export const Panel = () => {
   const classes = useStyles();
-  const { list: modulesList } = useModulesState();
+  const { sdk, safe } = useSafeAppsSDK();
+  const { state, dispatch } = useModules();
+
+  useEffect(() => {
+    (async () => {
+      const modules = await fetchModules(safe.safeAddress);
+      //@TODO: Create a sanitize function which retrieve the subModules & name
+      //Since it's not interacting with any service we this helper should be in utils folder
+      // or something like that
+      const m = modules.map((e: any) => ({
+        address: e,
+        subModules: [],
+        name: "Cool Module",
+      }));
+      dispatch(loadModules(m));
+    })();
+  }, [safe, dispatch]);
+
+  // @TODO: Make the deployment dynamic - Attach to UI state
+  const deployModule = async () => {
+    try {
+      const txs = await createAndAddModule(
+        "dao",
+        {
+          executor: safe.safeAddress,
+          timeout: 100,
+          cooldown: 180,
+          expiration: 2000,
+          bond: 10000,
+          templateId: 10,
+        },
+        safe.safeAddress
+      );
+
+      const { safeTxHash } = await sdk.txs.send({
+        txs,
+      });
+      console.log({ safeTxHash });
+      const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+      console.log({ safeTx });
+    } catch (error) {
+      console.log("Error deploying module: ")
+      console.log(error);
+    }
+  };
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
@@ -44,12 +91,13 @@ export const Panel = () => {
           size="md"
           color="primary"
           iconType="add"
+          onClick={deployModule}
         >
           Add
         </Button>
       </Row>
 
-      <ModuleList modules={modulesList} />
+      <ModuleList modules={state.list} />
     </Box>
   );
 };

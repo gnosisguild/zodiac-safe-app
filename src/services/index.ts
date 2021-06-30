@@ -1,12 +1,12 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { Contract, Signer } from "ethers";
+import { Contract } from "ethers";
+import { deployAndSetUpModule, getModule } from "@gnosis/module-factory";
+import { formatBytes32String } from "ethers/lib/utils";
 import {
-  DaoModuleAbi,
-  AmbModuleAbi,
   AddressOne,
   buildTransaction,
-  INFURA_URL,
   SafeAbi,
+  defaultProvider,
+  DEFAULT_ORACLE_ADDRESSES,
 } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 
@@ -24,47 +24,122 @@ const MODULE_METHODS = {
     setChainId: "setChainId",
     setOwner: "setOwner",
   },
+  delay: {
+    setTxCooldown: "setTxCooldown",
+    setTxExpiration: "setTxExpiration",
+  },
 };
 
 type KnownModules = keyof typeof MODULE_METHODS;
 
 interface DaoModuleParams {
   executor: string;
-  oracle: string;
+  oracle?: string;
   timeout: number;
-  cooldown: number;
-  expiration: number;
   bond: number;
   templateId: number;
+  cooldown: number;
+  expiration: number;
 }
 
 interface AmbModuleParams {
-  executor: string;
   amb: string;
   owner: string;
-  chainId: string;
 }
 
-type ModuleDeploymentParams = DaoModuleParams | AmbModuleParams;
+interface DelayModuleParams {
+  txCooldown: number;
+  txExpiration: number;
+}
+
+type ModuleParams = DelayModuleParams | AmbModuleParams | DaoModuleParams;
 
 type KnownMethods<T extends KnownModules> = keyof typeof MODULE_METHODS[T];
 
-const provider = new JsonRpcProvider(INFURA_URL);
-
-export function addModule(
+export async function createAndAddModule(
   module: KnownModules,
-  args: ModuleDeploymentParams,
-  signer: Signer
-) {}
+  args: ModuleParams,
+  safeAddress: string
+) {
+  const { chainId } = await defaultProvider.getNetwork();
+  switch (module) {
+    case "dao":
+      const { timeout, cooldown, expiration, bond, templateId, oracle } =
+        args as DaoModuleParams;
+      const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
+      let {
+        transaction: daoModuleDeploymentTx,
+        expectedModuleAddress: daoModuleExpectedAddress,
+      } = await deployAndSetUpModule(
+        module,
+        [
+          safeAddress,
+          ORACLE_ADDRESS,
+          timeout,
+          cooldown,
+          expiration,
+          bond,
+          templateId,
+        ],
+        defaultProvider,
+        chainId
+      );
+
+      const enableDaoModuleTransaction = await enableModule(
+        safeAddress,
+        daoModuleExpectedAddress
+      );
+
+      return [daoModuleDeploymentTx, enableDaoModuleTransaction];
+
+    case "amb":
+      const { amb, owner } = args as AmbModuleParams;
+
+      const id = formatBytes32String(chainId.toString());
+      const {
+        transaction: ambModuleDeploymentTx,
+        expectedModuleAddress: ambModuleExpectedAddress,
+      } = await deployAndSetUpModule(
+        module,
+        [owner, amb, safeAddress, id],
+        defaultProvider,
+        chainId
+      );
+
+      const enableAmbModuleTransaction = await enableModule(
+        safeAddress,
+        ambModuleExpectedAddress
+      );
+
+      return [ambModuleDeploymentTx, enableAmbModuleTransaction];
+
+    case "delay":
+      const { txCooldown, txExpiration } = args as DelayModuleParams;
+      const {
+        transaction: delayModuleDeploymentTx,
+        expectedModuleAddress: delayModuleExpectedAddress,
+      } = await deployAndSetUpModule(
+        module,
+        [safeAddress, txCooldown, txExpiration],
+        defaultProvider,
+        chainId
+      );
+      const enableDelayModuleTransaction = await enableModule(
+        safeAddress,
+        delayModuleExpectedAddress
+      );
+      return [delayModuleDeploymentTx, enableDelayModuleTransaction];
+  }
+}
 
 export async function fetchModules(safeAddress: string) {
-  const safe = new Contract(safeAddress, SafeAbi, provider);
+  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
   const [modules] = await safe.getModulesPaginated(AddressOne, 10);
   return modules;
 }
 
 export async function enableModule(safeAddress: string, module: string) {
-  const safe = new Contract(safeAddress, SafeAbi, provider);
+  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
   return buildTransaction(safe, "enableModule", [module]);
 }
 
@@ -72,7 +147,7 @@ export async function disableModule(safeAddress: string, module: string) {
   const modules: string[] = await fetchModules(safeAddress);
   if (!modules.length) throw new Error("Safe does not have enabled modules");
   let prevModule = AddressOne;
-  const safe = new Contract(safeAddress, SafeAbi, provider);
+  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
   if (modules.length > 1) {
     const moduleIndex = modules.findIndex(
       (m) => m.toLowerCase() === module.toLowerCase()
@@ -83,7 +158,7 @@ export async function disableModule(safeAddress: string, module: string) {
 }
 
 export async function editModule<Module extends KnownModules>(
-  module: Module,
+  moduleName: Module,
   address: string,
   methods: Partial<Record<KnownMethods<Module>, string>>
 ) {
@@ -93,19 +168,11 @@ export async function editModule<Module extends KnownModules>(
     throw new Error("At least one method must be provided");
   }
 
-  let contract: Contract;
-  switch (module) {
-    case "dao":
-      contract = new Contract(address, DaoModuleAbi, provider);
-      break;
-    case "amb":
-      contract = new Contract(address, AmbModuleAbi, provider);
-      break;
-  }
+  const module = getModule(moduleName, address, defaultProvider);
 
   const formattedTransactions = methodsName.map((m: string) =>
     //@ts-ignore
-    buildTransaction(contract, m, [methods[m]])
+    buildTransaction(module, m, [methods[m]])
   );
 
   return formattedTransactions;
@@ -117,6 +184,6 @@ export const callContract = (
   method: string,
   data: any[] = []
 ) => {
-  const contract = new Contract(address, abi, provider);
+  const contract = new Contract(address, abi, defaultProvider);
   return contract.functions[method](...data);
 };

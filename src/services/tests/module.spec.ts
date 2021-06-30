@@ -1,5 +1,6 @@
 import { BigNumber, Contract, Signer, Wallet } from "ethers";
-import { AddressOne, DaoModuleAbi, getSafeInstance } from "services/helpers";
+import { AddressOne, getSafeInstance } from "services/helpers";
+import { getModule } from "@gnosis/module-factory";
 import {
   buildMultiSendSafeTx,
   prepareSafeTransaction,
@@ -51,7 +52,7 @@ describe("Module interactions ", () => {
       const NEW_QUESTION_COOLDOWN = "5";
 
       const nonce = await safe.nonce();
-      const daoModule = new Contract(OLD_DAO_MODULE, DaoModuleAbi, signer);
+      const daoModule = getModule("dao", OLD_DAO_MODULE, signer);
 
       const editModuleTransaction = await editModule("dao", OLD_DAO_MODULE, {
         setMinimumBond: NEW_MINIMUM_BOND,

@@ -3,6 +3,7 @@ import React, { Reducer, useContext, useReducer } from "react";
 enum MODULE_ACTION {
   SET_CURRENT_MODULE,
   INCREASE_RELOAD_COUNT,
+  FETCH_MODULES,
 }
 
 export interface Module {
@@ -51,8 +52,8 @@ const module1 = {
 
 const initialModulesState: ModulesState = {
   reloadCount: 0,
-  list: [module1, module1],
-  current: module1,
+  list: [],
+  current: undefined,
 };
 
 const moduleReducer: Reducer<ModulesState, ModulesAction> = (
@@ -60,6 +61,8 @@ const moduleReducer: Reducer<ModulesState, ModulesAction> = (
   action
 ): ModulesState => {
   switch (action.type) {
+    case MODULE_ACTION.FETCH_MODULES:
+      return { ...state, list: action.payload };
     case MODULE_ACTION.SET_CURRENT_MODULE:
       return { ...state, current: action.payload };
     case MODULE_ACTION.INCREASE_RELOAD_COUNT:
@@ -93,4 +96,8 @@ export const setCurrentModule = (module: Module): ModulesAction => {
 
 export const increaseReloadCount = (): ModulesAction => {
   return { type: MODULE_ACTION.INCREASE_RELOAD_COUNT };
+};
+
+export const loadModules = (modules: any): ModulesAction => {
+  return { type: MODULE_ACTION.FETCH_MODULES, payload: modules };
 };

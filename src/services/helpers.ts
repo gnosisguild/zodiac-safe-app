@@ -1,12 +1,4 @@
 import { Contract, Signer } from "ethers";
-import {
-  abi as DaoModuleAbi,
-  bytecode as DaoModuleBytecode,
-} from "@gnosis/dao-module/build/artifacts/contracts/DaoModule.sol/DaoModule.json";
-import {
-  abi as AmbModuleAbi,
-  bytecode as AmbModuleBytecode,
-} from "@gnosis/AMBModule/build/artifacts/contracts/AMBModule.sol/AMBModule.json";
 import { abi as SafeAbi } from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json";
 import {
   abi as MultiSendAbi,
@@ -17,11 +9,11 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 
 const INFURA_ID = process.env.REACT_APP_INFURA_ID;
 export const INFURA_URL = "https://rinkeby.infura.io/v3/" + INFURA_ID;
-export const JSON_PROVIDER = new JsonRpcProvider(INFURA_URL);
+export const defaultProvider = new JsonRpcProvider(INFURA_URL);
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
 export const getSafeInstance = (address: string, signer?: Signer) => {
-  return new Contract(address, SafeAbi, signer || JSON_PROVIDER);
+  return new Contract(address, SafeAbi, signer || defaultProvider);
 };
 
 export const buildTransaction = (
@@ -38,12 +30,9 @@ export const buildTransaction = (
   };
 };
 
-export {
-  DaoModuleAbi,
-  DaoModuleBytecode,
-  AmbModuleAbi,
-  AmbModuleBytecode,
-  SafeAbi,
-  MultiSendAddress,
-  MultiSendAbi,
-};
+export const DEFAULT_ORACLE_ADDRESSES: Record<number, string> = {
+  1: "",
+  4: "0x3D00D77ee771405628a4bA4913175EcC095538da"
+}
+
+export { SafeAbi, MultiSendAddress, MultiSendAbi };
