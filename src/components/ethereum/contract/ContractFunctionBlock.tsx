@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
   expandIcon: {
     marginLeft: theme.spacing(2),
+    color: theme.palette.primary.main,
   },
   queryButton: {
     marginTop: theme.spacing(2),
@@ -47,7 +48,7 @@ export const ContractFunctionQueryBlock = ({
   func,
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [data, setData] = useState<string[]>([]);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();
 

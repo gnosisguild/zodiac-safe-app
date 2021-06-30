@@ -5,7 +5,7 @@ import { ModuleDetailHeader } from "./ModuleDetailHeader";
 import { ModuleInteractions } from "./ModuleInteractions";
 
 interface ModuleDetailsProps {
-  module: Module;
+  module?: Module;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -17,10 +17,13 @@ const useStyles = makeStyles((theme) => ({
 export const ModuleDetails = ({ module }: ModuleDetailsProps) => {
   const classes = useStyles();
 
+  if (!module) {
+      return null;
+  }
+
   return (
     <div>
       <ModuleDetailHeader module={module} />
-
       <div className={classes.content}>
         <ModuleInteractions module={module} />
       </div>

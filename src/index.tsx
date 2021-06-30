@@ -44,6 +44,10 @@ const muiTheme = createMuiTheme({
       fontSize: 14,
       fontWeight: "bold",
     },
+    subtitle1: {
+      fontSize: 16,
+      color: palette.primary.main,
+    },
   },
   shape: {
     borderRadius: 6,

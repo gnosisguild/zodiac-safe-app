@@ -20,11 +20,11 @@ export const ContractFunctionHeader = ({
 
   if (date) {
     return (
-      <Typography>
+      <Typography variant="subtitle1">
         Queried <TimeAgo datetime={date} />
       </Typography>
     );
   }
 
-  return <Typography>Query</Typography>;
+  return <Typography variant="subtitle1">Query</Typography>;
 };
