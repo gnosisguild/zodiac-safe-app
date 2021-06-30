@@ -8,6 +8,7 @@ import {
   INFURA_URL,
   SafeAbi,
 } from "./helpers";
+import { ContractInterface } from "@ethersproject/contracts";
 
 const MODULE_METHODS = {
   dao: {
@@ -112,9 +113,9 @@ export async function editModule<Module extends KnownModules>(
 
 export const callContract = (
   address: string,
-  abi: string | string[],
+  abi: ContractInterface,
   method: string,
-  data: (string | string[])[] = []
+  data: any[] = []
 ) => {
   const contract = new Contract(address, abi, provider);
   return contract.functions[method](...data);

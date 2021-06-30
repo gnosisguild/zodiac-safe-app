@@ -25,7 +25,6 @@ export const ContractReadFunctionList = ({
         <ContractFunctionQueryBlock
           key={func.name}
           address={address}
-          abi={abi}
           func={func}
         />
       ))}

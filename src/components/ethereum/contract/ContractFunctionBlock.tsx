@@ -1,64 +1,57 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, Button, makeStyles, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../Collapsable";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import classNames from "classnames";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { useContractQuery } from "../../../hooks/useContractQuery";
-import { ContractFunctionInput } from "./ContractFunctionInput";
+import { ContractFunctionQuery } from "./ContractFunctionQuery";
 import { ContractFunctionResult } from "./ContractFunctionResult";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
-import { isBasicFunction, isHashResult } from "../../../utils/contracts";
+import {
+  isBasicFunction,
+  validateFunctionResultsAddress,
+} from "../../../utils/contracts";
+import { Row } from "../../layout/Row";
+import { useModulesState } from "../../../contexts/modules";
 
 interface ContractFunctionBlockProps {
   address: string;
-  abi: string | string[];
   func: FunctionFragment;
 }
 
 const useStyles = makeStyles((theme) => ({
-  row: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-  },
   clickable: {
     cursor: "pointer",
-  },
-  grow: {
-    flexGrow: 1,
-  },
-  icon: {
-    color: theme.palette.secondary.main,
   },
   expandIcon: {
     marginLeft: theme.spacing(2),
     color: theme.palette.primary.main,
   },
-  queryButton: {
-    marginTop: theme.spacing(2),
-  },
 }));
 
 export const ContractFunctionQueryBlock = ({
   address,
-  abi,
   func,
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
+  const { reloadCount } = useModulesState();
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<string[]>([]);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();
 
   const { loading, result, fetch } = useContractQuery();
 
-  const isHash = isHashResult(result);
+  const isBasic = isBasicFunction(func);
+  const resultsAddress = validateFunctionResultsAddress(func);
 
-  const execQuery = useCallback(() => {
-    fetch(address, abi, func.name, data);
-  }, [abi, address, data, fetch, func.name]);
+  const execQuery = useCallback(
+    (params?: any[]) => {
+      setLastQueryDate(undefined);
+      fetch(address, [func], func.name, params);
+    },
+    [address, fetch, func]
+  );
 
   useEffect(() => {
     if (!loading && result) {
@@ -67,10 +60,10 @@ export const ContractFunctionQueryBlock = ({
   }, [loading, result]);
 
   useEffect(() => {
-    if (isBasicFunction(func)) {
+    if (isBasic) {
       execQuery();
     }
-  }, [execQuery, func]);
+  }, [execQuery, isBasic, reloadCount]);
 
   const arrow = open ? (
     <ExpandLessIcon className={classes.expandIcon} />
@@ -80,39 +73,32 @@ export const ContractFunctionQueryBlock = ({
 
   const content = (
     <>
-      <ContractFunctionResult func={func} result={result} />
-      <ContractFunctionInput func={func} onChange={setData} />
-      <Button
-        fullWidth
-        variant="outlined"
-        color="secondary"
-        className={classes.queryButton}
-        onClick={execQuery}
-        startIcon={
-          <Icon
-            color="primary"
-            size="md"
-            type="sent"
-            className={classes.icon}
-          />
-        }
-      >
-        RUN QUERY
-      </Button>
+      {loading ? (
+        "loading..."
+      ) : (
+        <ContractFunctionResult func={func} result={result} />
+      )}
+      <ContractFunctionQuery func={func} onQuery={execQuery} />
     </>
   );
 
+  const shrink = isBasic && resultsAddress;
+
   return (
-    <Collapsable open={open && !isHash} content={content}>
-      <Box
-        className={classNames(classes.row, { [classes.clickable]: !isHash })}
+    <Collapsable open={open && !shrink} content={content}>
+      <Row
+        alignItems="center"
+        className={classNames({ [classes.clickable]: !shrink })}
         onClick={() => setOpen(!open)}
       >
         <Typography variant="h6">{func.name}</Typography>
-        <div className={classes.grow} />
-        <ContractFunctionHeader date={lastQueryDate} result={result} />
-        {!isHash ? arrow : null}
-      </Box>
+        <Box flexGrow={1} />
+        <ContractFunctionHeader
+          date={lastQueryDate}
+          address={shrink && result ? result[0].toString() : undefined}
+        />
+        {!shrink ? arrow : null}
+      </Row>
     </Collapsable>
   );
 };

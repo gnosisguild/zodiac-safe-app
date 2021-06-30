@@ -18,7 +18,7 @@ export const ModuleDetails = ({ module }: ModuleDetailsProps) => {
   const classes = useStyles();
 
   if (!module) {
-      return null;
+    return null;
   }
 
   return (

@@ -1,21 +1,19 @@
 import React from "react";
-import { FunctionOutputs } from "../../../hooks/useContractQuery";
 import { Address } from "../Address";
 import { Typography } from "@material-ui/core";
 import TimeAgo from "timeago-react";
-import { isHashResult } from "../../../utils/contracts";
 
 interface ContractFunctionHeaderProps {
   date?: Date;
-  result?: FunctionOutputs;
+  address?: string;
 }
 
 export const ContractFunctionHeader = ({
-  result,
+  address,
   date,
 }: ContractFunctionHeaderProps) => {
-  if (isHashResult(result)) {
-    return <Address address={result[0].toString()} />;
+  if (address) {
+    return <Address address={address} />;
   }
 
   if (date) {

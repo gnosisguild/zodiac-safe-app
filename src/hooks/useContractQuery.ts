@@ -11,6 +11,7 @@ export const useContractQuery = () => {
 
   const fetch = useCallback((...params: Parameters<typeof callContract>) => {
     setLoading(true);
+    setResult(undefined);
     callContract(...params)
       .then((response) => {
         setResult(response);

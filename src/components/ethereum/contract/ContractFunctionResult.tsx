@@ -9,15 +9,23 @@ interface ContractFunctionResultProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  resultContent: {
+  root: {
     backgroundColor: theme.palette.primary.light,
     color: theme.palette.common.black,
     fontFamily: "Monaco",
     fontSize: 12,
     padding: theme.spacing(2),
   },
-  resultHeader: {
+  item: {
+    "& + &": {
+      marginTop: theme.spacing(1),
+    },
+  },
+  label: {
     color: "rgba(0, 20, 40, 0.5)",
+  },
+  value: {
+    overflowWrap: "break-word",
   },
 }));
 
@@ -28,11 +36,11 @@ export const ContractFunctionResult = ({
   const classes = useStyles();
   if (!result) return null;
   return (
-    <Paper className={classes.resultContent} elevation={0}>
+    <Paper className={classes.root} elevation={0}>
       {func.outputs?.map((param, index) => (
-        <div>
-          <span className={classes.resultHeader}>{param.type}: </span>
-          <span>{result[index].toString()}</span>
+        <div key={index} className={classes.item}>
+          <span className={classes.label}>{param.type}: </span>
+          <span className={classes.value}>{result[index].toString()}</span>
         </div>
       ))}
     </Paper>

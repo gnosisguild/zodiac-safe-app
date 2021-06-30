@@ -3,6 +3,7 @@ import { Box, makeStyles } from "@material-ui/core";
 import { Button, Title } from "@gnosis.pm/safe-react-components";
 import { ModuleList } from "./ModuleList";
 import { useModulesState } from "../../contexts/modules";
+import { Row } from "../../components/layout/Row";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -30,12 +31,7 @@ export const Panel = () => {
 
   return (
     <Box display="flex" flexDirection="column" height="100%">
-      <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        className={classes.content}
-      >
+      <Row alignItems="center" className={classes.content}>
         <Title size="sm" strong withoutMargin>
           <span style={{ letterSpacing: -1, fontSize: 28 }}>
             Module Manager
@@ -51,7 +47,7 @@ export const Panel = () => {
         >
           Add
         </Button>
-      </Box>
+      </Row>
 
       <ModuleList modules={modulesList} />
     </Box>
