@@ -76,7 +76,7 @@ export const ContractFunctionQueryBlock = ({
   const content = (
     <>
       <ContractFunctionError error={error} />
-      <ContractFunctionResult func={func} result={result} />
+      <ContractFunctionResult loading={loading} func={func} result={result} />
       <ContractFunctionQuery func={func} onQuery={execQuery} />
     </>
   );
@@ -93,6 +93,7 @@ export const ContractFunctionQueryBlock = ({
         <Typography variant="h6">{func.name}</Typography>
         <Box flexGrow={1} />
         <ContractFunctionHeader
+          loading={loading}
           date={lastQueryDate}
           address={shrink && result ? result[0].toString() : undefined}
         />

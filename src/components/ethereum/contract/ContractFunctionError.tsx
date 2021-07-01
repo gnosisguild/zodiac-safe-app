@@ -1,7 +1,5 @@
 import React from "react";
-import { FunctionFragment } from "@ethersproject/abi";
-import { makeStyles, Paper } from "@material-ui/core";
-import { FunctionOutputs } from "../../../hooks/useContractQuery";
+import { makeStyles } from "@material-ui/core";
 
 interface ContractFunctionErrorProps {
   error?: string;

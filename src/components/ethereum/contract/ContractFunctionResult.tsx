@@ -2,9 +2,11 @@ import React from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, Paper } from "@material-ui/core";
 import { FunctionOutputs } from "../../../hooks/useContractQuery";
+import { Skeleton } from "@material-ui/lab";
 
 interface ContractFunctionResultProps {
   func: FunctionFragment;
+  loading?: boolean;
   result?: FunctionOutputs;
 }
 
@@ -31,9 +33,12 @@ const useStyles = makeStyles((theme) => ({
 
 export const ContractFunctionResult = ({
   func,
+  loading = false,
   result,
 }: ContractFunctionResultProps) => {
   const classes = useStyles();
+  if (loading)
+    return <Skeleton variant="rect" height={50} />;
   if (!result) return null;
   return (
     <Paper className={classes.root} elevation={0}>
