@@ -37,8 +37,7 @@ export const ContractFunctionResult = ({
   result,
 }: ContractFunctionResultProps) => {
   const classes = useStyles();
-  if (loading)
-    return <Skeleton variant="rect" height={50} />;
+  if (loading) return <Skeleton variant="rect" height={50} />;
   if (!result) return null;
   return (
     <Paper className={classes.root} elevation={0}>

@@ -6,7 +6,6 @@ import { loadModules, useModules } from "../../contexts/modules";
 import { Row } from "../../components/layout/Row";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { createAndAddModule, fetchModules } from "services";
-import { deployAndSetUpModule } from "@gnosis/module-factory";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -71,7 +70,7 @@ export const Panel = () => {
       const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
       console.log({ safeTx });
     } catch (error) {
-      console.log("Error deploying module: ")
+      console.log("Error deploying module: ");
       console.log(error);
     }
   };

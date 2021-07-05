@@ -40,6 +40,10 @@ const muiTheme = createMuiTheme({
   shadows,
   typography: {
     fontFamily: gnosisTheme.fonts.fontFamily,
+    h4: {
+      fontSize: 24,
+      fontWeight: "bold",
+    },
     h6: {
       fontSize: 14,
       fontWeight: "bold",

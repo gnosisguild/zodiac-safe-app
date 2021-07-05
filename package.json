@@ -8,10 +8,10 @@
     "@ethersproject/bytes": "^5.3.0",
     "@ethersproject/constants": "^5.3.0",
     "@ethersproject/providers": "^5.3.1",
-    "@gnosis/module-factory": "github:gnosis/module-factory#master",
     "@gnosis.pm/safe-apps-react-sdk": "3.0.0",
     "@gnosis.pm/safe-deployments": "^1.0.0",
     "@gnosis.pm/safe-react-components": "^0.6.0",
+    "@gnosis/module-factory": "github:gnosis/module-factory#master",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
@@ -20,6 +20,7 @@
     "lodash.memoize": "^4.1.2",
     "material-ui": "^0.20.2",
     "react": "^17.0.1",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "^17.0.1",
     "styled-components": "^5.1.1",
     "timeago-react": "^3.0.2"
@@ -32,6 +33,7 @@
     "@types/lodash.memoize": "^4.1.6",
     "@types/node": "^14.6.2",
     "@types/react": "^17.0.0",
+    "@types/react-beautiful-dnd": "^13.1.0",
     "@types/react-dom": "^17.0.0",
     "@types/styled-components": "^5.1.2",
     "ganache-core": "2.12.1",
@@ -46,7 +48,7 @@
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
     "postinstall": "cd ./node_modules/@gnosis/module-factory && yarn && yarn build"
-},
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -12,6 +12,7 @@ import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
 import { increaseReloadCount, useModules } from "../../../contexts/modules";
+import { TransactionBuilder } from "../transaction/TransactionBuilder";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
@@ -52,7 +53,7 @@ export const ContractInteractions = ({
 }: ContractInteractionsProps) => {
   const classes = useStyles();
   const { dispatch } = useModules();
-  const [operation, setOperation] = useState<Operation>("read");
+  const [operation, setOperation] = useState<Operation>("write");
 
   const handleOperationChange = (operation?: Operation) => {
     if (operation) setOperation(operation);
@@ -75,15 +76,19 @@ export const ContractInteractions = ({
 
         <Box flexGrow={1} />
 
-        <IconButton onClick={handleReload}>
-          <ReloadIcon />
-        </IconButton>
+        {operation === "read" ? (
+          <IconButton onClick={handleReload}>
+            <ReloadIcon />
+          </IconButton>
+        ) : null}
       </Row>
 
       <Paper className={classes.content}>
         {operation === "read" ? (
           <ContractReadFunctionsList address={address} abi={abi} />
-        ) : null}
+        ) : (
+          <TransactionBuilder address={address} abi={abi} />
+        )}
       </Paper>
     </>
   );

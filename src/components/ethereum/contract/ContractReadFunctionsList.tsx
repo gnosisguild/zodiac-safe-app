@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
-import { FunctionFragment, Interface } from "@ethersproject/abi";
+import { FunctionFragment } from "@ethersproject/abi";
 import { ContractFunctionQueryBlock } from "./ContractFunctionBlock";
-import { isReadFunction } from "../../../utils/contracts";
+import { getReadFunction } from "../../../utils/contracts";
 
 interface ModuleListFunctionsProps {
   address: string;
@@ -12,12 +12,10 @@ export const ContractReadFunctionsList = ({
   abi,
   address,
 }: ModuleListFunctionsProps) => {
-  const readFunctions: FunctionFragment[] = useMemo(() => {
-    return new Interface(abi).fragments
-      .filter(FunctionFragment.isFunctionFragment)
-      .map(FunctionFragment.from)
-      .filter(isReadFunction);
-  }, [abi]);
+  const readFunctions: FunctionFragment[] = useMemo(
+    () => getReadFunction(abi),
+    [abi]
+  );
 
   return (
     <>

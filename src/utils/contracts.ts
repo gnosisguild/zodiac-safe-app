@@ -1,6 +1,7 @@
 import {
   defaultAbiCoder,
   FunctionFragment,
+  Interface,
   ParamType,
 } from "@ethersproject/abi";
 import memoize from "lodash.memoize";
@@ -13,6 +14,20 @@ export function isWriteFunction(method: FunctionFragment) {
 
 export function isReadFunction(method: FunctionFragment) {
   return !isWriteFunction(method);
+}
+
+export function getReadFunction(abi: string | string[]) {
+  return new Interface(abi).fragments
+    .filter(FunctionFragment.isFunctionFragment)
+    .map(FunctionFragment.from)
+    .filter(isReadFunction);
+}
+
+export function getWriteFunction(abi: string | string[]) {
+  return new Interface(abi).fragments
+    .filter(FunctionFragment.isFunctionFragment)
+    .map(FunctionFragment.from)
+    .filter(isWriteFunction);
 }
 
 export const fetchContractABI = memoize(

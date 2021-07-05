@@ -21,6 +21,9 @@ const StyledTextField = withStyles((theme) => ({
       borderTopLeftRadius: theme.shape.borderRadius,
       borderTopRightRadius: theme.shape.borderRadius,
     },
+    "& .MuiSelect-select:focus": {
+      backgroundColor: "transparent",
+    },
   },
 }))(MUITextField);
 
