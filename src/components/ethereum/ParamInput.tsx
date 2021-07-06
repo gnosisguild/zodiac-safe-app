@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { ParamType } from "@ethersproject/abi";
-import { TextField } from "../../input/TextField";
-import { formatParamValue } from "../../../utils/contracts";
+import { TextField } from "../input/TextField";
+import { formatParamValue } from "../../utils/contracts";
 
-export interface ContractFunctionParamInputProps {
+export interface ParamInputProps {
   param: ParamType;
   value?: string | boolean;
 
@@ -19,7 +19,7 @@ function getLabel(param: ParamType) {
 
 function getDefaultValue(
   param: ParamType,
-  defaultValue: ContractFunctionParamInputProps["value"]
+  defaultValue: ParamInputProps["value"]
 ): string {
   if (defaultValue !== undefined) {
     if (typeof defaultValue === "object") return JSON.stringify(defaultValue);
@@ -28,11 +28,11 @@ function getDefaultValue(
   return param.baseType === "boolean" ? "false" : "";
 }
 
-export const ContractFunctionParamInput = ({
+export const ParamInput = ({
   param,
   value: defaultValue,
   onChange,
-}: ContractFunctionParamInputProps) => {
+}: ParamInputProps) => {
   const [value, setValue] = useState<string>(
     getDefaultValue(param, defaultValue)
   );

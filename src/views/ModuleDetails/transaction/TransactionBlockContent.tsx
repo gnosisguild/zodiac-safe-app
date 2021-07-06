@@ -6,9 +6,9 @@ import {
   DraggableStateSnapshot,
   Omit,
 } from "react-beautiful-dnd";
-import { Row } from "../../layout/Row";
+import { Row } from "../../../components/layout/Row";
 import { ReactComponent as GripIcon } from "../../../assets/icons/grip-icon.svg";
-import { Collapsable } from "../../Collapsable";
+import { Collapsable } from "../../../components/Collapsable";
 import {
   TransactionBlockHeaderButtons,
   TransactionBlockHeaderButtonsProps,

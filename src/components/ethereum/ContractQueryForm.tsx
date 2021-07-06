@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { validateFunctionParams } from "../../../utils/contracts";
-import { ContractFunctionParamInputProps } from "./ContractFunctionParamInput";
+import { validateFunctionParams } from "../../utils/contracts";
+import { ParamInputProps } from "./ParamInput";
 
 type ParamValue = { value: any; valid: boolean };
 
@@ -10,7 +10,7 @@ interface ContractQueryFormProps {
   defaultParams?: any[];
 
   children(props: {
-    paramInputProps: ContractFunctionParamInputProps[];
+    paramInputProps: ParamInputProps[];
     getParams: () => any[];
     areParamsValid: boolean;
   }): React.ReactElement;
@@ -46,7 +46,7 @@ export const ContractQueryForm = ({
     setParamsValid(_areParamsValid && validate());
   };
 
-  const paramInputProps: ContractFunctionParamInputProps[] = func.inputs.map(
+  const paramInputProps: ParamInputProps[] = func.inputs.map(
     (param, index) => {
       return {
         param: param,

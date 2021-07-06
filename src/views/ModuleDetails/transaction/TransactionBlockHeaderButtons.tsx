@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, makeStyles } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
-import { ActionButton } from "../../ActionButton";
+import { ActionButton } from "../../../components/ActionButton";
 
 export interface TransactionBlockHeaderButtonsProps {
   edit?: boolean;

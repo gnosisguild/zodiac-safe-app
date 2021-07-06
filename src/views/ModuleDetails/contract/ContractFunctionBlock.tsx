@@ -1,24 +1,24 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { Box, makeStyles, Typography } from "@material-ui/core";
-import { Collapsable } from "../../Collapsable";
+import { Collapsable } from "../../../components/Collapsable";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import classNames from "classnames";
 import { useContractQuery } from "../../../hooks/useContractQuery";
-import { ContractQueryForm } from "./ContractQueryForm";
+import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { ContractFunctionResult } from "./ContractFunctionResult";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
 import {
   isBasicFunction,
   validateFunctionResultsAddress,
 } from "../../../utils/contracts";
-import { Row } from "../../layout/Row";
+import { Row } from "../../../components/layout/Row";
 import { useModulesSelector } from "../../../contexts/modules";
 import { ContractFunctionError } from "./ContractFunctionError";
 import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg";
-import { ActionButton } from "../../ActionButton";
-import { ContractFunctionParamInput } from "./ContractFunctionParamInput";
+import { ActionButton } from "../../../components/ActionButton";
+import { ParamInput } from "../../../components/ethereum/ParamInput";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -91,7 +91,7 @@ export const ContractFunctionQueryBlock = ({
           <>
             {paramInputProps.map((props, index) => (
               <Box marginTop={2}>
-                {<ContractFunctionParamInput key={index} {...props} />}
+                {<ParamInput key={index} {...props} />}
               </Box>
             ))}
             {paramInputProps.length ? (

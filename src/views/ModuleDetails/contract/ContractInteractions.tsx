@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
-import { Row } from "../../layout/Row";
+import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
 import { increaseReloadCount, useModules } from "../../../contexts/modules";
 import { TransactionBuilder } from "../transaction/TransactionBuilder";

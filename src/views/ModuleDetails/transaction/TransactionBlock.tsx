@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import classNames from "classnames";
 import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, Paper, withStyles } from "@material-ui/core";
-import { ContractQueryForm } from "../contract/ContractQueryForm";
+import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { Draggable } from "react-beautiful-dnd";
 import { TransactionBlockContent } from "./TransactionBlockContent";
 

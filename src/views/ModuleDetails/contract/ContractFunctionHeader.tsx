@@ -1,5 +1,5 @@
 import React from "react";
-import { Address } from "../Address";
+import { Address } from "../../../components/ethereum/Address";
 import { Typography } from "@material-ui/core";
 import TimeAgo from "timeago-react";
 import { Skeleton } from "@material-ui/lab";

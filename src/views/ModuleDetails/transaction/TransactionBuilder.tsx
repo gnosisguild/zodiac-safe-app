@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Row } from "../../layout/Row";
+import { Row } from "../../../components/layout/Row";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { AddTransactionBlock } from "./AddTransactionBlock";
@@ -12,7 +12,7 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
-import { ActionButton } from "../../ActionButton";
+import { ActionButton } from "../../../components/ActionButton";
 
 interface TransactionBuilderProps {
   address: string;

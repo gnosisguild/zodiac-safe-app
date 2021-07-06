@@ -2,10 +2,10 @@ import React from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { Grid } from "@material-ui/core";
 import {
-  ContractFunctionParamInput,
-  ContractFunctionParamInputProps,
-} from "../contract/ContractFunctionParamInput";
-import { DisplayField } from "../../input/DisplayField";
+  ParamInput,
+  ParamInputProps,
+} from "../../../components/ethereum/ParamInput";
+import { DisplayField } from "../../../components/input/DisplayField";
 
 export type TransactionBlockFieldsProps<Edit = boolean> = Edit extends false
   ? {
@@ -15,7 +15,7 @@ export type TransactionBlockFieldsProps<Edit = boolean> = Edit extends false
     }
   : {
       edit: Edit;
-      paramInputProps: ContractFunctionParamInputProps[];
+      paramInputProps: ParamInputProps[];
     };
 
 export const TransactionBlockFields = (props: TransactionBlockFieldsProps) => {
@@ -23,7 +23,7 @@ export const TransactionBlockFields = (props: TransactionBlockFieldsProps) => {
     ? props.paramInputProps.map((props, index) => {
         return (
           <Grid item key={index} xs={12} md={6}>
-            <ContractFunctionParamInput key={index} {...props} />
+            <ParamInput key={index} {...props} />
           </Grid>
         );
       })

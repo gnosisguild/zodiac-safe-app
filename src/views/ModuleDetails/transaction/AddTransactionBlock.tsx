@@ -1,15 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { Box, makeStyles, Typography } from "@material-ui/core";
-import { Collapsable } from "../../Collapsable";
-import { ContractQueryForm } from "../contract/ContractQueryForm";
-import { TextField } from "../../input/TextField";
+import { Collapsable } from "../../../components/Collapsable";
+import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
+import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { Transaction } from "./TransactionBuilder";
-import { ActionButton } from "../../ActionButton";
-import { ContractFunctionParamInput } from "../contract/ContractFunctionParamInput";
+import { ActionButton } from "../../../components/ActionButton";
+import { ParamInput } from "../../../components/ethereum/ParamInput";
 
 interface AddTransactionBlockProps {
   abi: string | string[];
@@ -50,7 +50,7 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
         <>
           {paramInputProps.map((props, index) => (
             <Box marginTop={2}>
-              <ContractFunctionParamInput key={index} {...props} />
+              <ParamInput key={index} {...props} />
             </Box>
           ))}
           <ActionButton
