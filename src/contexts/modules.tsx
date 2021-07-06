@@ -40,7 +40,7 @@ const moduleReducer: Reducer<ModulesState, ModulesAction> = (
 ): ModulesState => {
   switch (action.type) {
     case MODULE_ACTION.FETCH_MODULES:
-      return { ...state, list: action.payload };
+      return { ...state, list: action.payload, current: action.payload[0] };
     case MODULE_ACTION.SET_CURRENT_MODULE:
       return { ...state, current: action.payload };
     case MODULE_ACTION.INCREASE_RELOAD_COUNT:

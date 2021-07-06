@@ -15,7 +15,6 @@ const GlobalStyle = createGlobalStyle`
 
     #root {
         height: 100%;
-        padding-right: 0.5rem;
     }
 
     .MuiFormControl-root,

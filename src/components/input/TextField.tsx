@@ -12,7 +12,7 @@ const StyledTextField = withStyles((theme) => ({
       transform: "none",
       fontSize: theme.typography.fontSize,
       color: theme.palette.text.primary,
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(0.5),
     },
     "& .MuiInputBase-root": {
       backgroundColor: theme.palette.background.paper,
@@ -39,7 +39,7 @@ export const TextField = ({
 }: TextFieldProps) => {
   return (
     <StyledTextField
-      focused
+      focused={!props.disabled}
       label={label}
       placeholder={label}
       InputLabelProps={{ shrink: true, ...InputLabelProps }}

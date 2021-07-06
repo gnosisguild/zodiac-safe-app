@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, Button, makeStyles, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../Collapsable";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -17,6 +17,8 @@ import { Row } from "../../layout/Row";
 import { useModulesSelector } from "../../../contexts/modules";
 import { ContractFunctionError } from "./ContractFunctionError";
 import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg";
+import { ActionButton } from "../../ActionButton";
+import { ContractFunctionParamInput } from "./ContractFunctionParamInput";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -36,13 +38,6 @@ const useStyles = makeStyles((theme) => ({
   },
   queryButton: {
     marginTop: theme.spacing(2),
-    textTransform: "none",
-    fontSize: 16,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-    color: theme.palette.secondary.main + " !important",
-    borderColor: theme.palette.secondary.main + " !important",
   },
 }));
 
@@ -92,24 +87,23 @@ export const ContractFunctionQueryBlock = ({
       <ContractFunctionError error={error} />
       <ContractFunctionResult loading={loading} func={func} result={result} />
       <ContractQueryForm func={func}>
-        {({ fields, areParamsValid, getParams }) => (
+        {({ paramInputProps, areParamsValid, getParams }) => (
           <>
-            {fields.map((field) => (
-              <Box marginTop={2}>{field}</Box>
+            {paramInputProps.map((props, index) => (
+              <Box marginTop={2}>
+                {<ContractFunctionParamInput key={index} {...props} />}
+              </Box>
             ))}
-            {fields.length ? (
-              <Button
+            {paramInputProps.length ? (
+              <ActionButton
                 fullWidth
-                variant="outlined"
-                color="secondary"
                 disabled={!areParamsValid}
-                classes={{ disabled: classes.buttonDisabled }}
                 className={classes.queryButton}
                 onClick={() => execQuery(getParams())}
                 startIcon={<PlayIcon className={classes.icon} />}
               >
                 Run Query
-              </Button>
+              </ActionButton>
             ) : null}
           </>
         )}

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, Button, makeStyles, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../Collapsable";
 import { ContractQueryForm } from "../contract/ContractQueryForm";
 import { TextField } from "../../input/TextField";
@@ -8,6 +8,8 @@ import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { Transaction } from "./TransactionBuilder";
+import { ActionButton } from "../../ActionButton";
+import { ContractFunctionParamInput } from "../contract/ContractFunctionParamInput";
 
 interface AddTransactionBlockProps {
   abi: string | string[];
@@ -15,9 +17,6 @@ interface AddTransactionBlockProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: theme.spacing(3),
-  },
   greyText: {
     "& select": {
       color: theme.palette.primary.main,
@@ -26,15 +25,8 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     color: theme.palette.secondary.main,
   },
-  queryButton: {
+  addButton: {
     marginTop: theme.spacing(2),
-    textTransform: "none",
-    fontSize: 16,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-    color: theme.palette.secondary.main + " !important",
-    borderColor: theme.palette.secondary.main + " !important",
   },
 }));
 
@@ -54,19 +46,18 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
   };
   return (
     <ContractQueryForm func={func}>
-      {({ fields, areParamsValid, getParams }) => (
+      {({ paramInputProps, areParamsValid, getParams }) => (
         <>
-          {fields.map((field) => (
-            <Box marginTop={2}>{field}</Box>
+          {paramInputProps.map((props, index) => (
+            <Box marginTop={2}>
+              <ContractFunctionParamInput key={index} {...props} />
+            </Box>
           ))}
-          <Button
+          <ActionButton
             fullWidth
-            variant="outlined"
-            color="secondary"
             onClick={() => handleAdd(getParams())}
             disabled={!areParamsValid}
-            classes={{ disabled: classes.buttonDisabled }}
-            className={classes.queryButton}
+            className={classes.addButton}
             startIcon={
               <Icon
                 className={classes.icon}
@@ -77,7 +68,7 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
             }
           >
             Add this transaction
-          </Button>
+          </ActionButton>
         </>
       )}
     </ContractQueryForm>
@@ -120,7 +111,7 @@ export const AddTransactionBlock = ({
   );
 
   return (
-    <Collapsable open content={content} className={classes.root}>
+    <Collapsable open content={content}>
       <Typography variant="h6">Add new transaction</Typography>
     </Collapsable>
   );

@@ -5,6 +5,7 @@ import classNames from "classnames";
 interface CollapsableProps extends PaperProps {
   open?: boolean;
   content?: React.ReactElement;
+  containerClassName?: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +24,7 @@ export const Collapsable: React.FC<CollapsableProps> = ({
   content,
   children,
   className,
+  containerClassName,
   ...props
 }) => {
   const classes = useStyles();
@@ -31,7 +33,9 @@ export const Collapsable: React.FC<CollapsableProps> = ({
     <Paper {...props} className={classNames(classes.root, className)}>
       {children}
       {content && open ? (
-        <div className={classes.content}>{content}</div>
+        <div className={classNames(classes.content, containerClassName)}>
+          {content}
+        </div>
       ) : null}
     </Paper>
   );

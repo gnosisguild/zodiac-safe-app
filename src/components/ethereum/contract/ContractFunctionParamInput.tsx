@@ -3,7 +3,7 @@ import { ParamType } from "@ethersproject/abi";
 import { TextField } from "../../input/TextField";
 import { formatParamValue } from "../../../utils/contracts";
 
-interface ContractFunctionParamInputProps {
+export interface ContractFunctionParamInputProps {
   param: ParamType;
   value?: string | boolean;
 

@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Row } from "../../layout/Row";
-import { Box, Button, makeStyles, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { AddTransactionBlock } from "./AddTransactionBlock";
 import { FunctionFragment, Interface } from "@ethersproject/abi";
 import { TransactionBlock } from "./TransactionBlock";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  DragStart,
+  DragUpdate,
+  Droppable,
+  DropResult,
+} from "react-beautiful-dnd";
+import { ActionButton } from "../../ActionButton";
 
 interface TransactionBuilderProps {
   address: string;
@@ -16,21 +23,14 @@ const useStyles = makeStyles((theme) => ({
   queryButton: {
     padding: theme.spacing(1, 3),
     borderRadius: 10,
-    textTransform: "none",
-    fontSize: 16,
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-    color: theme.palette.secondary.main + " !important",
-    borderColor: theme.palette.secondary.main + " !important",
+    boxShadow: "none",
   },
   infoText: {
     marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
     maxWidth: 350,
     fontSize: 12,
   },
-  draggableClone: {},
 }));
 
 export interface Transaction {
@@ -45,6 +45,7 @@ export const TransactionBuilder = ({
 }: TransactionBuilderProps) => {
   const classes = useStyles();
   const [overIndex, setOverIndex] = useState<number>();
+  const [sourceIndex, setSourceIndex] = useState<number>();
   const [transactions, setTransactions] = useState<Transaction[]>([
     {
       id: "1",
@@ -107,6 +108,45 @@ export const TransactionBuilder = ({
     setTransactions([...transactions, transaction]);
   };
 
+  const handleDragStart = (result: DragStart) => {
+    setSourceIndex(result.source.index);
+  };
+
+  const handleDragUpdate = (update: DragUpdate) => {
+    if (
+      update.destination &&
+      update.destination.index !== update.source.index
+    ) {
+      setOverIndex(update.destination.index);
+    } else {
+      setOverIndex(undefined);
+    }
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    setOverIndex(undefined);
+    setSourceIndex(undefined);
+    if (result.destination) {
+      const sorted = Array.from(transactions);
+      const [removed] = sorted.splice(result.source.index, 1);
+      sorted.splice(result.destination.index, 0, removed);
+      setTransactions(sorted);
+    }
+  };
+
+  const handleTransactionUpdate = useCallback(
+    (id, params) => {
+      const txs = transactions.map((transaction) => {
+        if (transaction.id !== id) {
+          return transaction;
+        }
+        return { ...transaction, params };
+      });
+      setTransactions(txs);
+    },
+    [transactions]
+  );
+
   return (
     <>
       <Row alignItems="center">
@@ -114,15 +154,14 @@ export const TransactionBuilder = ({
 
         <Box flexGrow={1} />
 
-        <Button
+        <ActionButton
           variant="contained"
-          color="secondary"
-          classes={{ disabled: classes.buttonDisabled }}
           className={classes.queryButton}
           startIcon={<Icon type="sent" size="md" color="white" />}
+          onClick={() => console.log("txs", transactions)}
         >
           Submit Transactions
-        </Button>
+        </ActionButton>
       </Row>
       <Typography variant="body1" className={classes.infoText}>
         Add transactions here, and we will bundle them together into a single
@@ -130,26 +169,9 @@ export const TransactionBuilder = ({
       </Typography>
 
       <DragDropContext
-        onDragEnd={(result) => {
-          setOverIndex(undefined);
-
-          if (result.destination) {
-            const sorted = Array.from(transactions);
-            const [removed] = sorted.splice(result.source.index, 1);
-            sorted.splice(result.destination.index, 0, removed);
-            setTransactions(sorted);
-          }
-        }}
-        onDragUpdate={(update, provided) => {
-          if (
-            update.destination &&
-            update.destination.index !== update.source.index
-          ) {
-            setOverIndex(update.destination.index);
-          } else {
-            setOverIndex(undefined);
-          }
-        }}
+        onDragStart={handleDragStart}
+        onDragUpdate={handleDragUpdate}
+        onDragEnd={handleDragEnd}
       >
         <Droppable droppableId={address}>
           {(provider) => (
@@ -158,10 +180,12 @@ export const TransactionBuilder = ({
                 <TransactionBlock
                   index={index}
                   isOver={index === overIndex}
+                  isOverBefore={sourceIndex ? index < sourceIndex : false}
                   key={transaction.id}
                   id={transaction.id}
                   func={transaction.func}
                   params={transaction.params}
+                  onUpdate={handleTransactionUpdate}
                 />
               ))}
             </div>

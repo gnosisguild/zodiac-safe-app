@@ -50,7 +50,7 @@ export const Testing = () => {
         "delay",
         {
           txCooldown: 100,
-          txExpiration: 1000
+          txExpiration: 1000,
         },
         safe.safeAddress
       );

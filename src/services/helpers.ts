@@ -32,7 +32,7 @@ export const buildTransaction = (
 
 export const DEFAULT_ORACLE_ADDRESSES: Record<number, string> = {
   1: "",
-  4: "0x3D00D77ee771405628a4bA4913175EcC095538da"
-}
+  4: "0x3D00D77ee771405628a4bA4913175EcC095538da",
+};
 
 export { SafeAbi, MultiSendAddress, MultiSendAbi };

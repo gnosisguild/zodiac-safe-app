@@ -1,140 +1,131 @@
 import React, { useState } from "react";
+import classNames from "classnames";
 import { FunctionFragment } from "@ethersproject/abi";
-import {
-  Grid,
-  makeStyles,
-  Paper,
-  Typography,
-  withStyles,
-} from "@material-ui/core";
+import { makeStyles, Paper, withStyles } from "@material-ui/core";
 import { ContractQueryForm } from "../contract/ContractQueryForm";
 import { Draggable } from "react-beautiful-dnd";
-import { Row } from "../../layout/Row";
-import { ReactComponent as GripIcon } from "../../../assets/icons/grip-icon.svg";
-import { Collapsable } from "../../Collapsable";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import classNames from "classnames";
+import { TransactionBlockContent } from "./TransactionBlockContent";
 
 interface ContractFunctionBlockProps {
   id: string;
   isOver: boolean;
+  isOverBefore: boolean;
   index: number;
   func: FunctionFragment;
   params: any[];
+
+  onUpdate(id: string, params: any[]): void;
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: "0 !important",
-    marginBottom: theme.spacing(3.5),
-  },
-  title: {
-    flexGrow: 1,
-    cursor: "pointer",
-  },
-  grip: {
-    cursor: "grab",
-    padding: theme.spacing(2),
-    margin: theme.spacing(-2, 0, -2, -2),
-  },
-  expandIcon: {
-    marginLeft: theme.spacing(2),
-    color: theme.palette.primary.main,
-  },
-  dragging: {
-    borderColor: "#31AAB7",
-    borderStyle: "solid",
-    borderWidth: 2,
-  },
-  noDragging: {
-    transform: "none !important",
-  },
-  dropAnimation: {
-    transitionDuration: "0.001s !important",
-  },
-  over: {
-    marginBottom: theme.spacing(1.5),
+    position: "relative",
+    paddingBottom: theme.spacing(3.5),
   },
   placeholder: {
+    position: "absolute",
+    width: "100%",
     borderColor: "#31AAB7",
     borderStyle: "solid",
     borderWidth: 0,
     borderBottomWidth: theme.spacing(0.5),
-    marginBottom: theme.spacing(1.5),
+    "&.place-after": {
+      bottom: theme.spacing(1.5),
+    },
+    "&.place-before": {
+      top: theme.spacing(-2),
+    },
   },
 }));
 
 const TransactionBlockPlaceholder = withStyles((theme) => ({
   root: {
     height: 56,
-    backgroundColor: theme.palette.primary.main,
-    marginBottom: theme.spacing(3.5),
+    backgroundColor: theme.palette.primary.light,
   },
 }))(Paper);
 
 export const TransactionBlock = ({
   id,
   isOver,
+  isOverBefore,
   index,
   func,
   params,
+  onUpdate,
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [edit, setEdit] = useState(false);
 
-  const content = (
-    <ContractQueryForm func={func} defaultParams={params}>
-      {({ fields }) => (
-        <Grid container spacing={2}>
-          {fields.map((field, index) => (
-            <Grid item key={index} xs={12} md={6}>
-              {field}
-            </Grid>
-          ))}
-        </Grid>
-      )}
-    </ContractQueryForm>
-  );
+  const handleStartEditing = () => {
+    setOpen(true);
+    setEdit(true);
+  };
 
-  const arrow = open ? (
-    <ExpandLessIcon className={classes.expandIcon} />
-  ) : (
-    <ExpandMoreIcon className={classes.expandIcon} />
-  );
+  const handleToggleContent = () => {
+    if (!edit) setOpen(!open);
+  };
+
+  const handleCancelEditing = () => {
+    setEdit(false);
+  };
+  const handleDeleteTransaction = () => {};
+  const handleSaveParams = (newParams: any[]) => {
+    onUpdate(id, newParams);
+    setEdit(false);
+  };
 
   return (
     <Draggable draggableId={id} index={index}>
       {(provider, snapshot) => (
-        <>
-          <Collapsable
-            open={open}
-            innerRef={provider.innerRef}
-            content={content}
-            className={classNames(classes.root, {
-              [classes.over]: isOver,
-              [classes.dragging]: snapshot.isDragging,
-              [classes.noDragging]: !snapshot.isDragging,
-              [classes.dropAnimation]: snapshot.isDropAnimating,
-            })}
-            {...provider.draggableProps}
-          >
-            <Row alignItems="center" onClick={() => setOpen(!open)}>
-              <div className={classes.grip} {...provider.dragHandleProps}>
-                <GripIcon />
-              </div>
-              <div className={classes.title}>
-                <Typography variant="h6">{func.name}</Typography>
-              </div>
-              {arrow}
-            </Row>
-          </Collapsable>
-          {isOver ? <div className={classes.placeholder} /> : null}
-          {snapshot.isDragging ? (
-            <TransactionBlockPlaceholder elevation={0} />
-          ) : null}
-        </>
+        <div className={classNames(classes.root, { over: isOver })}>
+          {edit ? (
+            <ContractQueryForm func={func} defaultParams={params}>
+              {({ paramInputProps, areParamsValid, getParams }) => (
+                <TransactionBlockContent
+                  edit
+                  open={open}
+                  drag={{ provider, snapshot }}
+                  blockFieldsProps={{ edit: true, paramInputProps }}
+                  headerTitleProps={{
+                    title: func.name,
+                    onToggle: handleToggleContent,
+                  }}
+                  headerButtonProps={{
+                    disabled: !areParamsValid,
+                    onCancel: handleCancelEditing,
+                    onSave: () => handleSaveParams(getParams()),
+                  }}
+                />
+              )}
+            </ContractQueryForm>
+          ) : (
+            <TransactionBlockContent
+              open={open}
+              drag={{ provider, snapshot }}
+              blockFieldsProps={{ edit: false, params, func }}
+              headerTitleProps={{
+                title: func.name,
+                onToggle: handleToggleContent,
+              }}
+              headerButtonProps={{
+                onEdit: handleStartEditing,
+                onDelete: handleDeleteTransaction,
+              }}
+            />
+          )}
+          {isOver && (
+            <div
+              className={classNames(classes.placeholder, {
+                "place-after": !isOverBefore,
+                "place-before": isOverBefore,
+              })}
+            />
+          )}
+          {snapshot.isDragging && <TransactionBlockPlaceholder elevation={0} />}
+        </div>
       )}
     </Draggable>
   );
