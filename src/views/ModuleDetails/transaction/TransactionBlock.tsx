@@ -15,6 +15,7 @@ interface ContractFunctionBlockProps {
   params: any[];
 
   onUpdate(id: string, params: any[]): void;
+  onDelete(id: string): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -53,10 +54,11 @@ export const TransactionBlock = ({
   func,
   params,
   onUpdate,
+  onDelete,
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
 
   const handleStartEditing = () => {
@@ -71,7 +73,9 @@ export const TransactionBlock = ({
   const handleCancelEditing = () => {
     setEdit(false);
   };
-  const handleDeleteTransaction = () => {};
+  const handleDeleteTransaction = () => {
+    onDelete(id);
+  };
   const handleSaveParams = (newParams: any[]) => {
     onUpdate(id, newParams);
     setEdit(false);

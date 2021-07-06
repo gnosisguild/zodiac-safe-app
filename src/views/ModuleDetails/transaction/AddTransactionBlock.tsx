@@ -30,13 +30,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type TransactionFieldsProps = { func: FunctionFragment } & Pick<
+type TransactionFieldsProps = { func?: FunctionFragment } & Pick<
   AddTransactionBlockProps,
   "onAdd"
 >;
 
 const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
   const classes = useStyles();
+
+  if (!func) {
+    return (
+      <ActionButton
+        fullWidth
+        disabled
+        className={classes.addButton}
+        startIcon={
+          <Icon className={classes.icon} type="add" size="md" color="primary" />
+        }
+      >
+        Add this transaction
+      </ActionButton>
+    );
+  }
+
   const handleAdd = (params: any[]) => {
     onAdd({
       id: `${func.name}_${new Date().getTime()}`,
@@ -44,6 +60,7 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
       params,
     });
   };
+
   return (
     <ContractQueryForm func={func}>
       {({ paramInputProps, areParamsValid, getParams }) => (
@@ -83,6 +100,11 @@ export const AddTransactionBlock = ({
   const writeFunctions = useMemo(() => getWriteFunction(abi), [abi]);
   const [funcIndex, setFuncIndex] = useState<string>("none");
 
+  const handleAdd = (transaction: Transaction) => {
+    setFuncIndex("none");
+    onAdd(transaction);
+  };
+
   const content = (
     <>
       <TextField
@@ -101,12 +123,15 @@ export const AddTransactionBlock = ({
           </option>
         ))}
       </TextField>
-      {funcIndex && funcIndex !== "none" ? (
-        <TransactionFields
-          func={writeFunctions[parseInt(funcIndex)]}
-          onAdd={onAdd}
-        />
-      ) : null}
+      <TransactionFields
+        key={funcIndex}
+        func={
+          funcIndex && funcIndex !== "none"
+            ? writeFunctions[parseInt(funcIndex)]
+            : undefined
+        }
+        onAdd={handleAdd}
+      />
     </>
   );
 

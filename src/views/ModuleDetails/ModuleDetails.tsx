@@ -10,7 +10,7 @@ interface ModuleDetailsProps {
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(0, 2, 2, 2),
   },
 }));
 

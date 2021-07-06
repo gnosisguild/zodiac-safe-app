@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
   queryButton: {
     marginTop: theme.spacing(2),
   },
+  title: {
+    marginRight: theme.spacing(1),
+  },
 }));
 
 export const ContractFunctionQueryBlock = ({
@@ -90,9 +93,7 @@ export const ContractFunctionQueryBlock = ({
         {({ paramInputProps, areParamsValid, getParams }) => (
           <>
             {paramInputProps.map((props, index) => (
-              <Box marginTop={2}>
-                {<ParamInput key={index} {...props} />}
-              </Box>
+              <Box marginTop={2}>{<ParamInput key={index} {...props} />}</Box>
             ))}
             {paramInputProps.length ? (
               <ActionButton
@@ -120,7 +121,9 @@ export const ContractFunctionQueryBlock = ({
         className={classNames({ [classes.clickable]: !shrink })}
         onClick={() => setOpen(!open)}
       >
-        <Typography variant="h6">{func.name}</Typography>
+        <Typography variant="h6" className={classes.title}>
+          {func.name}
+        </Typography>
         <Box flexGrow={1} />
         <ContractFunctionHeader
           loading={loading}

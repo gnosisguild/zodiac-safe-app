@@ -117,3 +117,19 @@ export function formatParamValue(param: ParamType, value: string): any {
 
   return _value;
 }
+
+/**
+ * Formats and Validate a param value.
+ * @param param - Contract Function Param.
+ * @param value - Value.
+ */
+export function formatDisplayParamValue(param: ParamType, value: any): string {
+  if (param.baseType === "array" || param.baseType === "tuple") {
+    try {
+      return JSON.stringify(value);
+    } catch (e) {
+      console.warn("formatDisplayParamValue: value is not an object", value, e);
+    }
+  }
+  return value.toString();
+}

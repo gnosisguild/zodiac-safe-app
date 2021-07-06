@@ -53,7 +53,7 @@ export const ContractInteractions = ({
 }: ContractInteractionsProps) => {
   const classes = useStyles();
   const { dispatch } = useModules();
-  const [operation, setOperation] = useState<Operation>("write");
+  const [operation, setOperation] = useState<Operation>("read");
 
   const handleOperationChange = (operation?: Operation) => {
     if (operation) setOperation(operation);

@@ -3,7 +3,7 @@ import { Row } from "../../../components/layout/Row";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { AddTransactionBlock } from "./AddTransactionBlock";
-import { FunctionFragment, Interface } from "@ethersproject/abi";
+import { FunctionFragment } from "@ethersproject/abi";
 import { TransactionBlock } from "./TransactionBlock";
 import {
   DragDropContext,
@@ -46,63 +46,7 @@ export const TransactionBuilder = ({
   const classes = useStyles();
   const [overIndex, setOverIndex] = useState<number>();
   const [sourceIndex, setSourceIndex] = useState<number>();
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      func: FunctionFragment.from(
-        new Interface(["function A(string proposalId, bytes32[] txHashes)"])
-          .fragments[0]
-      ),
-      params: [
-        "Test String",
-        ["0x0000000000000000000000000000000000000000000000000000000000000000"],
-      ],
-    },
-    {
-      id: "2",
-      func: FunctionFragment.from(
-        new Interface(["function B(string proposalId, bytes32[] txHashes)"])
-          .fragments[0]
-      ),
-      params: [
-        "Test String",
-        ["0x0000000000000000000000000000000000000000000000000000000000000000"],
-      ],
-    },
-    {
-      id: "3",
-      func: FunctionFragment.from(
-        new Interface(["function C(string proposalId, bytes32[] txHashes)"])
-          .fragments[0]
-      ),
-      params: [
-        "Test String",
-        ["0x0000000000000000000000000000000000000000000000000000000000000000"],
-      ],
-    },
-    {
-      id: "4",
-      func: FunctionFragment.from(
-        new Interface(["function D(string proposalId, bytes32[] txHashes)"])
-          .fragments[0]
-      ),
-      params: [
-        "Test String",
-        ["0x0000000000000000000000000000000000000000000000000000000000000000"],
-      ],
-    },
-    {
-      id: "5",
-      func: FunctionFragment.from(
-        new Interface(["function E(string proposalId, bytes32[] txHashes)"])
-          .fragments[0]
-      ),
-      params: [
-        "Test String",
-        ["0x0000000000000000000000000000000000000000000000000000000000000000"],
-      ],
-    },
-  ]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const handleAddTransaction = (transaction: Transaction) => {
     setTransactions([...transactions, transaction]);
@@ -134,6 +78,11 @@ export const TransactionBuilder = ({
     }
   };
 
+  const handleSubmitTransaction = () => {
+    // TODO: Implement function
+    console.log("txs", transactions);
+  };
+
   const handleTransactionUpdate = useCallback(
     (id, params) => {
       const txs = transactions.map((transaction) => {
@@ -147,6 +96,18 @@ export const TransactionBuilder = ({
     [transactions]
   );
 
+  const handleTransactionDelete = useCallback(
+    (id) => {
+      const txs = Array.from(transactions);
+      const index = txs.findIndex((tx) => tx.id === id);
+      if (index >= 0) {
+        txs.splice(index, 1);
+        setTransactions(txs);
+      }
+    },
+    [transactions]
+  );
+
   return (
     <>
       <Row alignItems="center">
@@ -156,9 +117,11 @@ export const TransactionBuilder = ({
 
         <ActionButton
           variant="contained"
+          color="secondary"
+          disabled={!transactions.length}
           className={classes.queryButton}
           startIcon={<Icon type="sent" size="md" color="white" />}
-          onClick={() => console.log("txs", transactions)}
+          onClick={handleSubmitTransaction}
         >
           Submit Transactions
         </ActionButton>
@@ -179,13 +142,14 @@ export const TransactionBuilder = ({
               {transactions.map((transaction, index) => (
                 <TransactionBlock
                   index={index}
-                  isOver={index === overIndex}
-                  isOverBefore={sourceIndex ? index < sourceIndex : false}
-                  key={transaction.id}
                   id={transaction.id}
+                  key={transaction.id}
                   func={transaction.func}
                   params={transaction.params}
+                  isOver={index === overIndex}
+                  isOverBefore={sourceIndex ? index < sourceIndex : false}
                   onUpdate={handleTransactionUpdate}
+                  onDelete={handleTransactionDelete}
                 />
               ))}
             </div>
