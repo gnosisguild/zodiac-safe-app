@@ -35,6 +35,7 @@ palette.secondary = palette.augmentColor({
 
 const shadows = MUIShadows;
 shadows[1] = "0px 2px 4px rgba(105, 112, 117, 0.2)";
+shadows[2] = "0px 4px 4px rgba(0, 0, 0, 0.25)";
 
 const muiTheme = createMuiTheme({
   palette,
@@ -48,6 +49,9 @@ const muiTheme = createMuiTheme({
     h6: {
       fontSize: 14,
       fontWeight: "bold",
+    },
+    body2: {
+      fontSize: 12,
     },
     subtitle1: {
       fontSize: 16,

@@ -1,4 +1,4 @@
-import { Box, makeStyles, Paper } from "@material-ui/core";
+import { Box, makeStyles, Paper, Typography } from "@material-ui/core";
 import React from "react";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import classNames from "classnames";
@@ -6,6 +6,7 @@ import { Module } from "../../store/modules/models";
 import { setCurrentModule } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getCurrentModule } from "../../store/modules/selectors";
+import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg";
 
 interface ModuleListProps {
   modules: Module[];
@@ -16,7 +17,10 @@ const ITEM_HEIGHT = 90;
 
 const useStyles = makeStyles((theme) => ({
   moduleItem: {
-    padding: "24px 16px 24px 16px",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: theme.spacing(3, 2),
     cursor: "pointer",
 
     height: ITEM_HEIGHT,
@@ -72,12 +76,57 @@ const useStyles = makeStyles((theme) => ({
     left: -40,
     width: 40,
   },
+  emptyModulesText: {
+    maxWidth: 200,
+    marginLeft: theme.spacing(2),
+    fontSize: 16,
+    color: "rgba(0,20,40,0.5)",
+  },
+  rotateAnimation: {
+    animationName: "$spin",
+    animationDuration: "4000ms",
+    animationTimingFunction: "linear",
+    animationIterationCount: "infinite",
+  },
+  "@keyframes spin": {
+    "0%": {
+      transform: "rotate(0)",
+    },
+    "100%": {
+      transform: "rotate(360deg)",
+    },
+  },
 }));
 
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
   const currentModule = useRootSelector(getCurrentModule);
+  const modulesLoading = useRootSelector(
+    (state) => state.modules.loadingModules
+  );
+
+  if (modulesLoading) {
+    return (
+      <Paper elevation={0} className={classNames(classes.moduleItem)}>
+        <AvatarEmptyIcon className={classes.rotateAnimation} />
+        <Typography className={classes.emptyModulesText}>
+          Loading modules...
+        </Typography>
+      </Paper>
+    );
+  }
+
+  if (!modules.length) {
+    return (
+      <Paper elevation={0} className={classNames(classes.moduleItem)}>
+        <AvatarEmptyIcon />
+        <Typography className={classes.emptyModulesText}>
+          Modules will appear here once added
+        </Typography>
+      </Paper>
+    );
+  }
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));

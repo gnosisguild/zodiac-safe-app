@@ -37,6 +37,9 @@ export const modulesSlice = createSlice({
     setCurrentModule(state, action: PayloadAction<Module>) {
       state.current = action.payload;
     },
+    unsetCurrentModule(state) {
+      state.current = undefined;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchModulesList.pending, (state) => {
@@ -52,5 +55,9 @@ export const modulesSlice = createSlice({
   },
 });
 
-export const { increaseReloadCount, setCurrentModule, setModules } =
-  modulesSlice.actions;
+export const {
+  increaseReloadCount,
+  setCurrentModule,
+  setModules,
+  unsetCurrentModule,
+} = modulesSlice.actions;

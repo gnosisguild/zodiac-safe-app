@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import { Box, makeStyles, Typography } from "@material-ui/core";
-import { ReactComponent as ChevronDownIcon } from "../../../assets/icons/chevron-down.svg";
+import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -14,14 +14,6 @@ const useStyles = makeStyles((theme) => ({
   },
   clickable: {
     cursor: "pointer",
-  },
-  arrowIcon: {
-    color: theme.palette.primary.main,
-    width: 18,
-    height: 10,
-    "&.rotate": {
-      transform: "rotate(180deg)",
-    },
   },
 }));
 
@@ -49,13 +41,7 @@ export const TransactionBlockHeaderTitle = ({
     >
       <Typography variant="h6">{title}</Typography>
       <Box flexGrow={1} />
-      {!edit ? (
-        <ChevronDownIcon
-          className={classNames(classes.arrowIcon, {
-            rotate: open,
-          })}
-        />
-      ) : null}
+      {!edit ? <ArrowIcon up={open} /> : null}
     </Box>
   );
 };

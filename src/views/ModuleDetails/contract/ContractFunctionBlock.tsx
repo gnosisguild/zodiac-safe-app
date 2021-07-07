@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import classNames from "classnames";
 import { useContractQuery } from "../../../hooks/useContractQuery";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
@@ -20,6 +18,7 @@ import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { useRootSelector } from "../../../store";
 import { getReloadCount } from "../../../store/modules/selectors";
+import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -32,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
   expandIcon: {
     marginLeft: theme.spacing(2),
-    color: theme.palette.primary.main,
   },
   icon: {
     color: theme.palette.secondary.main,
@@ -80,12 +78,6 @@ export const ContractFunctionQueryBlock = ({
     }
   }, [execQuery, isBasic, reloadCount]);
 
-  const arrow = open ? (
-    <ExpandLessIcon className={classes.expandIcon} />
-  ) : (
-    <ExpandMoreIcon className={classes.expandIcon} />
-  );
-
   const content = (
     <>
       <ContractFunctionError error={error} />
@@ -94,7 +86,9 @@ export const ContractFunctionQueryBlock = ({
         {({ paramInputProps, areParamsValid, getParams }) => (
           <>
             {paramInputProps.map((props, index) => (
-              <Box marginTop={2}>{<ParamInput key={index} {...props} />}</Box>
+              <Box marginTop={2} key={index}>
+                <ParamInput {...props} />
+              </Box>
             ))}
             {paramInputProps.length ? (
               <ActionButton
@@ -131,7 +125,9 @@ export const ContractFunctionQueryBlock = ({
           date={lastQueryDate}
           address={shrink && result ? result[0].toString() : undefined}
         />
-        {!shrink ? arrow : null}
+        {!shrink ? (
+          <ArrowIcon up={open} className={classes.expandIcon} />
+        ) : null}
       </Row>
     </Collapsable>
   );

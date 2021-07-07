@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { ParamType } from "@ethersproject/abi";
-import { TextField } from "../input/TextField";
+import { TextField, TextFieldProps } from "../input/TextField";
 import { formatParamValue } from "../../utils/contracts";
 
-export interface ParamInputProps {
+export interface ParamInputProps
+  extends Omit<TextFieldProps, "onChange" | "value" | "label"> {
   param: ParamType;
   value?: string | boolean;
+  label?: string;
 
   onChange(value: any, valid: boolean): void;
 }
@@ -32,6 +34,7 @@ export const ParamInput = ({
   param,
   value: defaultValue,
   onChange,
+  ...props
 }: ParamInputProps) => {
   const [value, setValue] = useState<string>(
     getDefaultValue(param, defaultValue)
@@ -72,6 +75,7 @@ export const ParamInput = ({
         value={value}
         onChange={handleChange}
         SelectProps={{ native: true }}
+        {...props}
       >
         <option value="true">True</option>
         <option value="false">True</option>
@@ -87,6 +91,7 @@ export const ParamInput = ({
       onChange={handleChange}
       error={!!error}
       helperText={error}
+      {...props}
     />
   );
 };

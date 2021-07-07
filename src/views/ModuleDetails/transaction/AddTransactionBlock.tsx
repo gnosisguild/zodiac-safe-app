@@ -66,8 +66,8 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
       {({ paramInputProps, areParamsValid, getParams }) => (
         <>
           {paramInputProps.map((props, index) => (
-            <Box marginTop={2}>
-              <ParamInput key={index} {...props} />
+            <Box marginTop={2} key={index}>
+              <ParamInput {...props} />
             </Box>
           ))}
           <ActionButton

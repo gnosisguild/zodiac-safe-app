@@ -27,7 +27,7 @@ const StyledTextField = withStyles((theme) => ({
   },
 }))(MUITextField);
 
-interface TextFieldProps
+export interface TextFieldProps
   extends Omit<StandardTextFieldProps, "variant" | "label"> {
   label: string;
 }

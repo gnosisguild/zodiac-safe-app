@@ -5,7 +5,7 @@ import { ModuleInteractions } from "./ModuleInteractions";
 import { Module } from "../../store/modules/models";
 
 interface ModuleDetailsProps {
-  module?: Module;
+  module: Module;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -16,10 +16,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleDetails = ({ module }: ModuleDetailsProps) => {
   const classes = useStyles();
-
-  if (!module) {
-    return null;
-  }
 
   return (
     <div>

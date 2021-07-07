@@ -29,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
     marginBottom: theme.spacing(3),
     maxWidth: 350,
-    fontSize: 12,
   },
 }));
 
@@ -126,7 +125,7 @@ export const TransactionBuilder = ({
           Submit Transactions
         </ActionButton>
       </Row>
-      <Typography variant="body1" className={classes.infoText}>
+      <Typography variant="body2" className={classes.infoText}>
         Add transactions here, and we will bundle them together into a single
         transaction, to save you gas.
       </Typography>
