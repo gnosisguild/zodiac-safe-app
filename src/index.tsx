@@ -17,7 +17,8 @@ import App from "./App";
 import { grey } from "@material-ui/core/colors";
 import MUIShadows from "@material-ui/core/styles/shadows";
 import createPalette from "@material-ui/core/styles/createPalette";
-import { ModulesProvider } from "./contexts/modules";
+import { Provider } from "react-redux";
+import { REDUX_STORE } from "./store";
 
 const palette = createPalette({
   type: "light",
@@ -72,9 +73,9 @@ const Main = () => {
             </>
           }
         >
-          <ModulesProvider>
+          <Provider store={REDUX_STORE}>
             <App />
-          </ModulesProvider>
+          </Provider>
         </SafeProvider>
       </ThemeProvider>
     </MUIThemeProvider>

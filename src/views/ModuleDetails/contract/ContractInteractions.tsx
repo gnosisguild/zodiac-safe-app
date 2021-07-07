@@ -12,8 +12,8 @@ import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
 import { TransactionBuilder } from "../transaction/TransactionBuilder";
-import { increaseReloadCount } from "../../../contexts/modules/actions";
-import { useModules } from "../../../contexts/modules";
+import { increaseReloadCount } from "../../../store/modules";
+import { useRootDispatch } from "../../../store";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
@@ -53,7 +53,7 @@ export const ContractInteractions = ({
   abi,
 }: ContractInteractionsProps) => {
   const classes = useStyles();
-  const { dispatch } = useModules();
+  const dispatch = useRootDispatch();
   const [operation, setOperation] = useState<Operation>("read");
 
   const handleOperationChange = (operation?: Operation) => {

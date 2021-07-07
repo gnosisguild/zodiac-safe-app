@@ -3,7 +3,7 @@ import { ContractInteractions } from "./contract/ContractInteractions";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Loader } from "@gnosis.pm/safe-react-components";
 import { fetchContractABI } from "../../utils/contracts";
-import { Module } from "../../contexts/modules/models";
+import { Module } from "../../store/modules/models";
 
 interface ModuleInteractionsProps {
   module: Module;

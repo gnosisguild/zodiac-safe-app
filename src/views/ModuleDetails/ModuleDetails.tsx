@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { ModuleDetailHeader } from "./ModuleDetailHeader";
 import { ModuleInteractions } from "./ModuleInteractions";
-import { Module } from "../../contexts/modules/models";
+import { Module } from "../../store/modules/models";
 
 interface ModuleDetailsProps {
   module?: Module;

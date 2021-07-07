@@ -5,7 +5,8 @@ import { ModuleList } from "./ModuleList";
 import { Row } from "../../components/layout/Row";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { createAndAddModule } from "services";
-import { useModules } from "../../contexts/modules";
+import { useRootSelector } from "../../store";
+import { getModulesList } from "../../store/modules/selectors";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 export const Panel = () => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
-  const { state } = useModules();
+  const modulesList = useRootSelector(getModulesList);
 
   // @TODO: Make the deployment dynamic - Attach to UI state
   const deployModule = async () => {
@@ -81,7 +82,7 @@ export const Panel = () => {
         </Button>
       </Row>
 
-      <ModuleList modules={state.list} />
+      <ModuleList modules={modulesList} />
     </Box>
   );
 };

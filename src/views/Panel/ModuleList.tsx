@@ -2,9 +2,10 @@ import { Box, makeStyles, Paper } from "@material-ui/core";
 import React from "react";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import classNames from "classnames";
-import { Module } from "../../contexts/modules/models";
-import { setCurrentModule } from "../../contexts/modules/actions";
-import { useModules } from "../../contexts/modules";
+import { Module } from "../../store/modules/models";
+import { setCurrentModule } from "../../store/modules";
+import { useRootDispatch, useRootSelector } from "../../store";
+import { getCurrentModule } from "../../store/modules/selectors";
 
 interface ModuleListProps {
   modules: Module[];
@@ -75,14 +76,15 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles();
-  const { state, dispatch } = useModules();
+  const dispatch = useRootDispatch();
+  const currentModule = useRootSelector(getCurrentModule);
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
   };
 
   const content = modules.map((module) => {
-    const active = module.address === state.current?.address;
+    const active = module.address === currentModule?.address;
     return (
       <React.Fragment key={module.address}>
         <Paper

@@ -18,7 +18,8 @@ import { ContractFunctionError } from "./ContractFunctionError";
 import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg";
 import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
-import { useModulesSelector } from "../../../contexts/modules";
+import { useRootSelector } from "../../../store";
+import { getReloadCount } from "../../../store/modules/selectors";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -49,7 +50,7 @@ export const ContractFunctionQueryBlock = ({
   func,
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
-  const reloadCount = useModulesSelector((state) => state.reloadCount);
+  const reloadCount = useRootSelector(getReloadCount);
 
   const [open, setOpen] = useState(false);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();

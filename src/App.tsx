@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
 import { AppLayout } from "./views/AppLayout";
 import { ModuleDetails } from "./views/ModuleDetails/ModuleDetails";
-import { useModules, useModulesSelector } from "./contexts/modules";
+import { setModules } from "./store/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { fetchSafeModulesAddress } from "./services";
-import { loadModules } from "./contexts/modules/actions";
+import { useRootDispatch, useRootSelector } from "./store";
+import { getCurrentModule } from "./store/modules/selectors";
 
 const App: React.FC = () => {
-  const currentModule = useModulesSelector((state) => state.current);
-
   const { safe } = useSafeAppsSDK();
-  const { dispatch } = useModules();
+  const dispatch = useRootDispatch();
+  const currentModule = useRootSelector(getCurrentModule);
 
   useEffect(() => {
     (async () => {
@@ -23,7 +23,7 @@ const App: React.FC = () => {
         subModules: [],
         name: "Cool Module",
       }));
-      dispatch(loadModules(modules));
+      dispatch(setModules(modules));
     })();
   }, [safe, dispatch]);
 
