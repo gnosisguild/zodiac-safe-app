@@ -6,6 +6,7 @@ export interface Module {
 
 export interface ModulesState {
   current?: Module;
+  loadingModules: boolean;
   list: Module[];
   reloadCount: number;
 }

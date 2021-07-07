@@ -1,6 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
-import { Panel } from "./Panel/Panel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,13 +24,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AppLayout: React.FC = ({ children }) => {
+interface AppLayoutProps {
+  left: React.ReactElement;
+}
+
+export const AppLayout: React.FC<AppLayoutProps> = ({ children, left }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <div className={classes.leftPanel}>
-        <Panel />
-      </div>
+      <div className={classes.leftPanel}>{left}</div>
       <div className={classes.content}>{children}</div>
     </div>
   );
