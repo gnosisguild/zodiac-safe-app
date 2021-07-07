@@ -2,7 +2,9 @@ import { Box, makeStyles, Paper } from "@material-ui/core";
 import React from "react";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import classNames from "classnames";
-import { Module, setCurrentModule, useModules } from "../../contexts/modules";
+import { Module } from "../../contexts/modules/models";
+import { setCurrentModule } from "../../contexts/modules/actions";
+import { useModules } from "../../contexts/modules";
 
 interface ModuleListProps {
   modules: Module[];

@@ -1,9 +1,9 @@
 import React from "react";
-import { Module } from "../../contexts/modules";
 import { Box, makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
+import { Module } from "../../contexts/modules/models";
 
 interface ModuleDetailHeaderProps {
   module: Module;

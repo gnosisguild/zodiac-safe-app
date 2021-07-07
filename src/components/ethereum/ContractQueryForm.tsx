@@ -46,17 +46,15 @@ export const ContractQueryForm = ({
     setParamsValid(_areParamsValid && validate());
   };
 
-  const paramInputProps: ParamInputProps[] = func.inputs.map(
-    (param, index) => {
-      return {
-        param: param,
-        value: params.current[index].value,
-        onChange: (value: any, valid: boolean) => {
-          handleParamChange(index, value, valid);
-        },
-      };
-    }
-  );
+  const paramInputProps: ParamInputProps[] = func.inputs.map((param, index) => {
+    return {
+      param: param,
+      value: params.current[index].value,
+      onChange: (value: any, valid: boolean) => {
+        handleParamChange(index, value, valid);
+      },
+    };
+  });
 
   const getParams = () => params.current.map((param) => param.value);
 

@@ -1,8 +1,8 @@
 import React from "react";
-import { Module } from "../../contexts/modules";
 import { makeStyles } from "@material-ui/core";
 import { ModuleDetailHeader } from "./ModuleDetailHeader";
 import { ModuleInteractions } from "./ModuleInteractions";
+import { Module } from "../../contexts/modules/models";
 
 interface ModuleDetailsProps {
   module?: Module;

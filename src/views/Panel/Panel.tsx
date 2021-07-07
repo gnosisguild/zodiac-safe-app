@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 import { Box, makeStyles } from "@material-ui/core";
 import { Button, Title } from "@gnosis.pm/safe-react-components";
 import { ModuleList } from "./ModuleList";
-import { loadModules, useModules } from "../../contexts/modules";
 import { Row } from "../../components/layout/Row";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { createAndAddModule, fetchModules } from "services";
+import { loadModules } from "../../contexts/modules/actions";
+import { useModules } from "../../contexts/modules";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {

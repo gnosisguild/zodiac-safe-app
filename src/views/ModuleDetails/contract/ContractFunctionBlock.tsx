@@ -14,11 +14,11 @@ import {
   validateFunctionResultsAddress,
 } from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
-import { useModulesSelector } from "../../../contexts/modules";
 import { ContractFunctionError } from "./ContractFunctionError";
 import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg";
 import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
+import { useModulesSelector } from "../../../contexts/modules";
 
 interface ContractFunctionBlockProps {
   address: string;

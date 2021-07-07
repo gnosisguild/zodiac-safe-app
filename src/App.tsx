@@ -1,7 +1,7 @@
 import React from "react";
 import { AppLayout } from "./views/AppLayout";
-import { useModulesSelector } from "./contexts/modules";
 import { ModuleDetails } from "./views/ModuleDetails/ModuleDetails";
+import { useModulesSelector } from "./contexts/modules";
 
 const App: React.FC = () => {
   const currentModule = useModulesSelector((state) => state.current);

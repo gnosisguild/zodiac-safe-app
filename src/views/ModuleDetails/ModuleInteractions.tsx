@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ContractInteractions } from "./contract/ContractInteractions";
-import { Module } from "../../contexts/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Loader } from "@gnosis.pm/safe-react-components";
 import { fetchContractABI } from "../../utils/contracts";
+import { Module } from "../../contexts/modules/models";
 
 interface ModuleInteractionsProps {
   module: Module;

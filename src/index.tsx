@@ -15,9 +15,9 @@ import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import GlobalStyle from "./GlobalStyle";
 import App from "./App";
 import { grey } from "@material-ui/core/colors";
-import { ModulesProvider } from "./contexts/modules";
 import MUIShadows from "@material-ui/core/styles/shadows";
 import createPalette from "@material-ui/core/styles/createPalette";
+import { ModulesProvider } from "./contexts/modules";
 
 const palette = createPalette({
   type: "light",
