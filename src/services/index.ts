@@ -132,10 +132,10 @@ export async function createAndAddModule(
   }
 }
 
-export async function fetchModules(safeAddress: string) {
+export async function fetchSafeModulesAddress(safeAddress: string) {
   const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
   const [modules] = await safe.getModulesPaginated(AddressOne, 10);
-  return modules;
+  return modules as string[];
 }
 
 export async function enableModule(safeAddress: string, module: string) {
@@ -144,7 +144,7 @@ export async function enableModule(safeAddress: string, module: string) {
 }
 
 export async function disableModule(safeAddress: string, module: string) {
-  const modules: string[] = await fetchModules(safeAddress);
+  const modules = await fetchSafeModulesAddress(safeAddress);
   if (!modules.length) throw new Error("Safe does not have enabled modules");
   let prevModule = AddressOne;
   const safe = new Contract(safeAddress, SafeAbi, defaultProvider);

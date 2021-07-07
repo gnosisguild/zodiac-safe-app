@@ -1,11 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, makeStyles } from "@material-ui/core";
 import { Button, Title } from "@gnosis.pm/safe-react-components";
 import { ModuleList } from "./ModuleList";
 import { Row } from "../../components/layout/Row";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { createAndAddModule, fetchModules } from "services";
-import { loadModules } from "../../contexts/modules/actions";
+import { createAndAddModule } from "services";
 import { useModules } from "../../contexts/modules";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,22 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export const Panel = () => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
-  const { state, dispatch } = useModules();
-
-  useEffect(() => {
-    (async () => {
-      const modules = await fetchModules(safe.safeAddress);
-      //@TODO: Create a sanitize function which retrieve the subModules & name
-      //Since it's not interacting with any service we this helper should be in utils folder
-      // or something like that
-      const m = modules.map((e: any) => ({
-        address: e,
-        subModules: [],
-        name: "Cool Module",
-      }));
-      dispatch(loadModules(m));
-    })();
-  }, [safe, dispatch]);
+  const { state } = useModules();
 
   // @TODO: Make the deployment dynamic - Attach to UI state
   const deployModule = async () => {

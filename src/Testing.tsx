@@ -4,7 +4,7 @@ import {
   createAndAddModule,
   disableModule,
   enableModule,
-  fetchModules,
+  fetchSafeModulesAddress,
 } from "./services";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import styled from "styled-components";
@@ -101,7 +101,7 @@ export const Testing = () => {
   }, [safe, sdk]);
 
   const fetch = useCallback(async () => {
-    const safeModules = await fetchModules(safe.safeAddress);
+    const safeModules = await fetchSafeModulesAddress(safe.safeAddress);
     console.log(safeModules);
   }, [safe]);
 

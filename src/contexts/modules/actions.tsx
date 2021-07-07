@@ -6,9 +6,11 @@ export const setCurrentModule = (module: Module): ModulesAction => {
     payload: module,
   };
 };
+
 export const increaseReloadCount = (): ModulesAction => {
   return { type: MODULE_ACTION.INCREASE_RELOAD_COUNT };
 };
-export const loadModules = (modules: any): ModulesAction => {
+
+export const loadModules = (modules: Module[]): ModulesAction => {
   return { type: MODULE_ACTION.FETCH_MODULES, payload: modules };
 };
