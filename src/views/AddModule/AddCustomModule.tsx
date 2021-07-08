@@ -21,9 +21,6 @@ const useStyles = makeStyles((theme) => ({
   spacing: {
     marginBottom: theme.spacing(2),
   },
-  button: {
-    borderRadius: 10,
-  },
 }));
 
 export const AddCustomModule = () => {
@@ -31,7 +28,7 @@ export const AddCustomModule = () => {
 
   // TODO: Implement - Add Module
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [address, setAddress] = useState("");
   const [isAddressValid, setAddressValid] = useState(false);
 
@@ -63,7 +60,6 @@ export const AddCustomModule = () => {
       <ActionButton
         fullWidth
         disabled={!isAddressValid}
-        className={classes.button}
         startIcon={<Icon type="sent" size="md" color="primary" />}
       >
         Add Module

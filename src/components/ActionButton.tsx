@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
   },
   queryButton: {
+    borderRadius: 10,
     textTransform: "none",
     fontSize: 16,
     "&.MuiButton-contained.Mui-disabled": {

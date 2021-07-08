@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   content: {
+    position: "relative",
     flexGrow: 1,
     overflowY: "auto",
   },

@@ -36,6 +36,7 @@ palette.secondary = palette.augmentColor({
 const shadows = MUIShadows;
 shadows[1] = "0px 2px 4px rgba(105, 112, 117, 0.2)";
 shadows[2] = "0px 4px 4px rgba(0, 0, 0, 0.25)";
+shadows[3] = "0px 4px 10px rgba(105, 112, 117, 0.2)";
 
 const muiTheme = createMuiTheme({
   palette,
@@ -44,6 +45,10 @@ const muiTheme = createMuiTheme({
     fontFamily: gnosisTheme.fonts.fontFamily,
     h4: {
       fontSize: 24,
+      fontWeight: "bold",
+    },
+    h5: {
+      fontSize: 20,
       fontWeight: "bold",
     },
     h6: {
@@ -60,6 +65,11 @@ const muiTheme = createMuiTheme({
   },
   shape: {
     borderRadius: 6,
+  },
+  overrides: {
+    MuiTypography: {
+      gutterBottom: { marginBottom: 8 },
+    },
   },
 });
 

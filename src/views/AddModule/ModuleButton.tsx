@@ -5,10 +5,13 @@ interface ModuleButtonProps {
   title: string;
   description: string;
   image: React.ReactElement;
+  onClick(): void;
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    cursor: "pointer",
+    userSelect: "none",
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.default,
   },
@@ -21,10 +24,11 @@ export const ModuleButton = ({
   title,
   description,
   image,
+  onClick,
 }: ModuleButtonProps) => {
   const classes = useStyles();
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} onClick={onClick}>
       <Grid container direction="row">
         <Grid item xs={3}>
           {image}
