@@ -7,13 +7,13 @@ import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Icon } from "@gnosis.pm/safe-react-components";
-import { Transaction } from "./TransactionBuilder";
+import { ModuleTransaction } from "./TransactionBuilder";
 import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 
 interface AddTransactionBlockProps {
   abi: string | string[];
-  onAdd(transaction: Transaction): void;
+  onAdd(transaction: ModuleTransaction): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -100,7 +100,7 @@ export const AddTransactionBlock = ({
   const writeFunctions = useMemo(() => getWriteFunction(abi), [abi]);
   const [funcIndex, setFuncIndex] = useState<string>("none");
 
-  const handleAdd = (transaction: Transaction) => {
+  const handleAdd = (transaction: ModuleTransaction) => {
     setFuncIndex("none");
     onAdd(transaction);
   };

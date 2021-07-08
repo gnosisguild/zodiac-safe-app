@@ -3,7 +3,7 @@ import { Row } from "../../../components/layout/Row";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { AddTransactionBlock } from "./AddTransactionBlock";
-import { FunctionFragment } from "@ethersproject/abi";
+import { FunctionFragment, Interface } from "@ethersproject/abi";
 import { TransactionBlock } from "./TransactionBlock";
 import {
   DragDropContext,
@@ -13,6 +13,10 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { ActionButton } from "../../../components/ActionButton";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Transaction } from "@gnosis.pm/safe-apps-sdk";
+import { useRootSelector } from "../../../store";
+import { getCurrentModule } from "../../../store/modules/selectors";
 
 interface TransactionBuilderProps {
   address: string;
@@ -32,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export interface Transaction {
+export interface ModuleTransaction {
   id: string;
   func: FunctionFragment;
   params: any[];
@@ -43,11 +47,14 @@ export const TransactionBuilder = ({
   address,
 }: TransactionBuilderProps) => {
   const classes = useStyles();
+  const { sdk } = useSafeAppsSDK();
+  const module = useRootSelector(getCurrentModule);
+
   const [overIndex, setOverIndex] = useState<number>();
   const [sourceIndex, setSourceIndex] = useState<number>();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<ModuleTransaction[]>([]);
 
-  const handleAddTransaction = (transaction: Transaction) => {
+  const handleAddTransaction = (transaction: ModuleTransaction) => {
     setTransactions([...transactions, transaction]);
   };
 
@@ -77,9 +84,22 @@ export const TransactionBuilder = ({
     }
   };
 
-  const handleSubmitTransaction = () => {
-    // TODO: Implement function
-    console.log("txs", transactions);
+  const handleSubmitTransaction = async () => {
+    if (!module) return;
+    try {
+      const contractInterface = new Interface(abi);
+      const txs = transactions.map((tx): Transaction => {
+        return {
+          value: "0",
+          to: module.address,
+          data: contractInterface.encodeFunctionData(tx.func, tx.params),
+        };
+      });
+      await sdk.txs.send({ txs });
+      setTransactions([]);
+    } catch (error) {
+      console.log("handleSubmitTransaction:error", error);
+    }
   };
 
   const handleTransactionUpdate = useCallback(
