@@ -11,7 +11,9 @@ const App: React.FC = () => {
   const { safe } = useSafeAppsSDK();
 
   useEffect(() => {
-    dispatch(fetchModulesList(safe.safeAddress));
+    dispatch(
+      fetchModulesList({ chainId: safe.chainId, safeAddress: safe.safeAddress })
+    );
   }, [dispatch, safe]);
 
   return (

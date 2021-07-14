@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Module, ModulesState } from "./models";
 import { fetchSafeModulesAddress } from "../../services";
+import { fetchContractSourceCode } from "../../utils/contracts";
 
 const initialModulesState: ModulesState = {
   reloadCount: 0,
@@ -11,16 +12,31 @@ const initialModulesState: ModulesState = {
 
 export const fetchModulesList = createAsyncThunk(
   "modules/fetchModulesList",
-  async (safeAddress: string) => {
-    // @TODO: Create a sanitize function which retrieve the subModules & name
+  async ({
+    safeAddress,
+    chainId,
+  }: {
+    chainId: number;
+    safeAddress: string;
+  }): Promise<Module[]> => {
+    // @TODO: Create a sanitize function which retrieve the subModules
     const moduleAddress = await fetchSafeModulesAddress(safeAddress);
-    return moduleAddress.map(
-      (module): Module => ({
+    const requests = moduleAddress.map(async (module): Promise<Module> => {
+      let name = "Unknown";
+      try {
+        const sourceCode = await fetchContractSourceCode(chainId, module);
+        name = sourceCode.ContractName;
+      } catch (error) {
+        console.log("unable to fetch source code");
+      }
+      return {
+        name,
         address: module,
         subModules: [],
-        name: "Cool Module",
-      })
-    );
+      };
+    });
+
+    return await Promise.all(requests);
   }
 );
 

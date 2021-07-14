@@ -7,6 +7,7 @@ import { setCurrentModule } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getCurrentModule } from "../../store/modules/selectors";
 import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg";
+import { Skeleton } from "@material-ui/lab";
 
 interface ModuleListProps {
   modules: Module[];
@@ -82,19 +83,8 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 16,
     color: "rgba(0,20,40,0.5)",
   },
-  rotateAnimation: {
-    animationName: "$spin",
-    animationDuration: "4000ms",
-    animationTimingFunction: "linear",
-    animationIterationCount: "infinite",
-  },
-  "@keyframes spin": {
-    "0%": {
-      transform: "rotate(0)",
-    },
-    "100%": {
-      transform: "rotate(360deg)",
-    },
+  textContainer: {
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -109,10 +99,11 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   if (modulesLoading) {
     return (
       <Paper elevation={0} className={classNames(classes.moduleItem)}>
-        <AvatarEmptyIcon className={classes.rotateAnimation} />
-        <Typography className={classes.emptyModulesText}>
-          Loading modules...
-        </Typography>
+        <Skeleton variant="circle" width={40} height={40} />
+        <div className={classes.textContainer}>
+          <Skeleton width={160} height={20} />
+          <Skeleton width={100} height={20} />
+        </div>
       </Paper>
     );
   }

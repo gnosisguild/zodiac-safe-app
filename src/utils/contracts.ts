@@ -6,6 +6,8 @@ import {
 } from "@ethersproject/abi";
 import memoize from "lodash.memoize";
 import { getNetworkExplorerInfo } from "./explorers";
+import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
+import { getProxyMaster, isGenericProxy } from "./proxy";
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true;
@@ -58,6 +60,46 @@ export const fetchContractABI = memoize(
     if (status === "0") throw new Error("Could not fetch ABI");
 
     return result as string;
+  },
+  (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
+);
+
+export const fetchContractSourceCode = memoize(
+  async (chainId: number, contractAddress: string) => {
+    const network = getNetworkExplorerInfo(chainId);
+
+    if (!network) throw new Error("Network data not found");
+
+    const { apiUrl, apiKey } = network;
+
+    const urlParams: Record<string, string> = {
+      module: "contract",
+      action: "getsourcecode",
+      address: contractAddress,
+    };
+
+    if (apiKey) {
+      urlParams.apiKey = apiKey;
+    }
+
+    const params = new URLSearchParams(urlParams);
+
+    const response = await fetch(`${apiUrl}?${params}`);
+
+    if (!response.ok) throw new Error("Could not fetch contract source code");
+
+    const { status, result } = await response.json();
+    if (status === "0") throw new Error("Could not fetch contract source code");
+
+    const sourceCode = result[0] as { ABI: string; ContractName: string };
+
+    // Cache ABI
+    fetchContractABI.cache.set(
+      `${chainId}_${contractAddress}`,
+      Promise.resolve(sourceCode.ABI)
+    );
+
+    return sourceCode;
   },
   (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
 );
@@ -132,4 +174,19 @@ export function formatDisplayParamValue(param: ParamType, value: any): string {
     }
   }
   return value.toString();
+}
+
+export async function getModuleABI(
+  safeSDK: SafeAppsSDK,
+  chainId: number,
+  address: string
+): Promise<string> {
+  const bytecode = await safeSDK.eth.getCode([address]);
+
+  if (isGenericProxy(bytecode)) {
+    const masterAddress = await getProxyMaster(address);
+    return await getModuleABI(safeSDK, chainId, masterAddress);
+  }
+
+  return fetchContractABI(chainId, address);
 }
