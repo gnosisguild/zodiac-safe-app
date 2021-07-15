@@ -11,3 +11,7 @@ export function getModulesList(state: RootState) {
 export function getReloadCount(state: RootState) {
   return state.modules.reloadCount;
 }
+
+export function getIsLoadingModules(state: RootState) {
+  return state.modules.loadingModules;
+}

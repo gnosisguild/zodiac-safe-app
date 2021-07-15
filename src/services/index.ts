@@ -4,11 +4,12 @@ import { formatBytes32String } from "ethers/lib/utils";
 import {
   AddressOne,
   buildTransaction,
-  SafeAbi,
-  defaultProvider,
   DEFAULT_ORACLE_ADDRESSES,
+  defaultProvider,
+  SafeAbi,
 } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
+import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 
 const MODULE_METHODS = {
   dao: {
@@ -52,20 +53,23 @@ interface DelayModuleParams {
   txExpiration: number;
 }
 
-type ModuleParams = DelayModuleParams | AmbModuleParams | DaoModuleParams;
+type ModuleParams = {
+  delay: DelayModuleParams;
+  amb: AmbModuleParams;
+  dao: DaoModuleParams;
+};
 
 type KnownMethods<T extends KnownModules> = keyof typeof MODULE_METHODS[T];
 
-export async function createAndAddModule(
-  module: KnownModules,
-  args: ModuleParams,
-  safeAddress: string
-) {
+export async function createAndAddModule<
+  Module extends KnownModules,
+  Arg = ModuleParams[Module]
+>(module: Module, args: Arg, safeAddress: string): Promise<Transaction[]> {
   const { chainId } = await defaultProvider.getNetwork();
   switch (module) {
     case "dao":
       const { timeout, cooldown, expiration, bond, templateId, oracle } =
-        args as DaoModuleParams;
+        args as unknown as DaoModuleParams;
       const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
       let {
         transaction: daoModuleDeploymentTx,
@@ -93,7 +97,7 @@ export async function createAndAddModule(
       return [daoModuleDeploymentTx, enableDaoModuleTransaction];
 
     case "amb":
-      const { amb, owner } = args as AmbModuleParams;
+      const { amb, owner } = args as unknown as AmbModuleParams;
 
       const id = formatBytes32String(chainId.toString());
       const {
@@ -114,7 +118,7 @@ export async function createAndAddModule(
       return [ambModuleDeploymentTx, enableAmbModuleTransaction];
 
     case "delay":
-      const { txCooldown, txExpiration } = args as DelayModuleParams;
+      const { txCooldown, txExpiration } = args as unknown as DelayModuleParams;
       const {
         transaction: delayModuleDeploymentTx,
         expectedModuleAddress: delayModuleExpectedAddress,
@@ -130,6 +134,8 @@ export async function createAndAddModule(
       );
       return [delayModuleDeploymentTx, enableDelayModuleTransaction];
   }
+
+  throw new Error('Invalid module');
 }
 
 export async function fetchSafeModulesAddress(safeAddress: string) {
@@ -163,19 +169,16 @@ export async function editModule<Module extends KnownModules>(
   methods: Partial<Record<KnownMethods<Module>, string>>
 ) {
   // Add validation to check if module is indeed added
-  const methodsName = Object.keys(methods);
+  const methodsName = Object.keys(methods) as Array<keyof typeof methods>;
   if (!methodsName.length) {
     throw new Error("At least one method must be provided");
   }
 
   const module = getModule(moduleName, address, defaultProvider);
 
-  const formattedTransactions = methodsName.map((m: string) =>
-    //@ts-ignore
-    buildTransaction(module, m, [methods[m]])
+  return methodsName.map((method) =>
+    buildTransaction(module, method as string, [methods[method]])
   );
-
-  return formattedTransactions;
 }
 
 export const callContract = (

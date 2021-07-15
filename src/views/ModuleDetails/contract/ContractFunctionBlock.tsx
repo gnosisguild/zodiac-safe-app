@@ -9,7 +9,7 @@ import { ContractFunctionResult } from "./ContractFunctionResult";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
 import {
   isBasicFunction,
-  validateFunctionResultsAddress,
+  validateFunctionReturnsHex,
 } from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
 import { ContractFunctionError } from "./ContractFunctionError";
@@ -56,7 +56,7 @@ export const ContractFunctionQueryBlock = ({
   const { loading, result, fetch, error } = useContractQuery();
 
   const isBasic = isBasicFunction(func);
-  const resultsAddress = validateFunctionResultsAddress(func);
+  const isHexReturned = validateFunctionReturnsHex(func);
 
   const execQuery = useCallback(
     (params?: any[]) => {
@@ -107,7 +107,7 @@ export const ContractFunctionQueryBlock = ({
     </>
   );
 
-  const shrink = isBasic && resultsAddress;
+  const shrink = isBasic && isHexReturned;
 
   return (
     <Collapsable open={open && !shrink} content={content}>

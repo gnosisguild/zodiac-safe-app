@@ -14,6 +14,7 @@ import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.
 import { TransactionBuilder } from "../transaction/TransactionBuilder";
 import { increaseReloadCount } from "../../../store/modules";
 import { useRootDispatch } from "../../../store";
+import classNames from "classnames";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
@@ -45,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
   content: {
     padding: theme.spacing(2.5),
     marginTop: theme.spacing(3),
+  },
+  hide: {
+    display: "none",
   },
 }));
 
@@ -85,11 +89,12 @@ export const ContractInteractions = ({
       </Row>
 
       <Paper className={classes.content}>
-        {operation === "read" ? (
+        <div className={classNames({ [classes.hide]: operation !== "read" })}>
           <ContractReadFunctionsList address={address} abi={abi} />
-        ) : (
+        </div>
+        <div className={classNames({ [classes.hide]: operation !== "write" })}>
           <TransactionBuilder address={address} abi={abi} />
-        )}
+        </div>
       </Paper>
     </>
   );

@@ -7,7 +7,12 @@ import {
 import memoize from "lodash.memoize";
 import { getNetworkExplorerInfo } from "./explorers";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import { getProxyMaster, isGenericProxy } from "./proxy";
+import {
+  getGenericProxyMaster,
+  getProxyMaster,
+  isGenericProxy,
+  isGnosisGenericProxy,
+} from "./modulesValidation";
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true;
@@ -31,38 +36,6 @@ export function getWriteFunction(abi: string | string[]) {
     .map(FunctionFragment.from)
     .filter(isWriteFunction);
 }
-
-export const fetchContractABI = memoize(
-  async (chainId: number, contractAddress: string) => {
-    const network = getNetworkExplorerInfo(chainId);
-
-    if (!network) throw new Error("Network data not found");
-
-    const { apiUrl, apiKey } = network;
-
-    const urlParams: Record<string, string> = {
-      module: "contract",
-      action: "getAbi",
-      address: contractAddress,
-    };
-
-    if (apiKey) {
-      urlParams.apiKey = apiKey;
-    }
-
-    const params = new URLSearchParams(urlParams);
-
-    const response = await fetch(`${apiUrl}?${params}`);
-
-    if (!response.ok) throw new Error("Could not fetch ABI");
-
-    const { status, result } = await response.json();
-    if (status === "0") throw new Error("Could not fetch ABI");
-
-    return result as string;
-  },
-  (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
-);
 
 export const fetchContractSourceCode = memoize(
   async (chainId: number, contractAddress: string) => {
@@ -93,12 +66,6 @@ export const fetchContractSourceCode = memoize(
 
     const sourceCode = result[0] as { ABI: string; ContractName: string };
 
-    // Cache ABI
-    fetchContractABI.cache.set(
-      `${chainId}_${contractAddress}`,
-      Promise.resolve(sourceCode.ABI)
-    );
-
     return sourceCode;
   },
   (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
@@ -108,10 +75,10 @@ export function isBasicFunction(func: FunctionFragment) {
   return !func.inputs.length;
 }
 
-export function validateFunctionResultsAddress(
-  func: FunctionFragment
-): boolean {
-  return func.outputs?.length === 1 && func.outputs[0].type === "address";
+export function validateFunctionReturnsHex(func: FunctionFragment): boolean {
+  if (func.outputs?.length !== 1) return false;
+  const { baseType } = func.outputs[0];
+  return baseType === "address" || baseType.startsWith("bytes");
 }
 
 export function validateFunctionParamValue(
@@ -176,17 +143,42 @@ export function formatDisplayParamValue(param: ParamType, value: any): string {
   return value.toString();
 }
 
-export async function getModuleABI(
-  safeSDK: SafeAppsSDK,
-  chainId: number,
-  address: string
-): Promise<string> {
-  const bytecode = await safeSDK.eth.getCode([address]);
+export const getModule = memoize(
+  async (
+    safeSDK: SafeAppsSDK,
+    chainId: number,
+    address: string
+  ): Promise<{
+    address: string;
+    implAddress: string;
+    name: string;
+    abi: string;
+  }> => {
+    const bytecode = await safeSDK.eth.getCode([address]);
 
-  if (isGenericProxy(bytecode)) {
-    const masterAddress = await getProxyMaster(address);
-    return await getModuleABI(safeSDK, chainId, masterAddress);
-  }
+    if (isGenericProxy(bytecode)) {
+      const masterAddress = getGenericProxyMaster(bytecode);
+      const module = await getModule(safeSDK, chainId, masterAddress);
+      return { ...module, address };
+    }
 
-  return fetchContractABI(chainId, address);
-}
+    if (isGnosisGenericProxy(bytecode)) {
+      const masterAddress = await getProxyMaster(address);
+      const module = await getModule(safeSDK, chainId, masterAddress);
+      return { ...module, address };
+    }
+
+    const { ABI, ContractName } = await fetchContractSourceCode(
+      chainId,
+      address
+    );
+
+    return {
+      address,
+      implAddress: address,
+      name: ContractName,
+      abi: ABI,
+    };
+  },
+  (sdk, chainId, address) => `${chainId}_${address}`
+);

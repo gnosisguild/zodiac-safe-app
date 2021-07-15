@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { AppLayout } from "./views/AppLayout";
+import { AppLayout } from "./components/layout/AppLayout";
 import { fetchModulesList } from "./store/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useRootDispatch } from "./store";
@@ -8,13 +8,19 @@ import { Views } from "./Views";
 
 const App: React.FC = () => {
   const dispatch = useRootDispatch();
-  const { safe } = useSafeAppsSDK();
+  const { safe, sdk } = useSafeAppsSDK();
+
+  // sdk.txs.getBySafeTxHash();
 
   useEffect(() => {
     dispatch(
-      fetchModulesList({ chainId: safe.chainId, safeAddress: safe.safeAddress })
+      fetchModulesList({
+        safeSDK: sdk,
+        chainId: safe.chainId,
+        safeAddress: safe.safeAddress,
+      })
     );
-  }, [dispatch, safe]);
+  }, [sdk, dispatch, safe]);
 
   return (
     <AppLayout left={<Panel />}>

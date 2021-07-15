@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Module, ModulesState } from "./models";
+import { Module, ModulesState, ModuleType } from "./models";
 import { fetchSafeModulesAddress } from "../../services";
-import { fetchContractSourceCode } from "../../utils/contracts";
+import { getModule } from "../../utils/contracts";
+import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
+import { isDelayModule } from "../../utils/modulesValidation";
 
 const initialModulesState: ModulesState = {
   reloadCount: 0,
@@ -13,28 +15,44 @@ const initialModulesState: ModulesState = {
 export const fetchModulesList = createAsyncThunk(
   "modules/fetchModulesList",
   async ({
+    safeSDK,
     safeAddress,
     chainId,
   }: {
+    safeSDK: SafeAppsSDK;
     chainId: number;
     safeAddress: string;
   }): Promise<Module[]> => {
     // @TODO: Create a sanitize function which retrieve the subModules
     const moduleAddress = await fetchSafeModulesAddress(safeAddress);
-    const requests = moduleAddress.map(async (module): Promise<Module> => {
-      let name = "Unknown";
-      try {
-        const sourceCode = await fetchContractSourceCode(chainId, module);
-        name = sourceCode.ContractName;
-      } catch (error) {
-        console.log("unable to fetch source code");
+    const requests = moduleAddress.map(
+      async (moduleAddress): Promise<Module> => {
+        let name = "Unknown";
+        let type = ModuleType.UNKNOWN;
+        try {
+          const module = await getModule(safeSDK, chainId, moduleAddress);
+          name = module.name;
+          if (name === "DelayModule") {
+            const code = await safeSDK.eth.getCode([module.implAddress]);
+            if (isDelayModule(code)) {
+              name = "Delay Module";
+              type = ModuleType.DELAY;
+            }
+          }
+        } catch (error) {
+          console.log("unable to fetch source code");
+        }
+
+        return {
+          name,
+          address: moduleAddress,
+          subModules: [],
+          type,
+        };
       }
-      return {
-        name,
-        address: module,
-        subModules: [],
-      };
-    });
+    );
+
+    requests.reverse();
 
     return await Promise.all(requests);
   }
