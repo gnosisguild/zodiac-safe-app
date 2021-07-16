@@ -2,11 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import {
-  createMuiTheme,
+  createTheme,
   CssBaseline,
   ThemeProvider as MUIThemeProvider,
 } from "@material-ui/core";
-import { theme as gnosisTheme } from "@gnosis.pm/safe-react-components";
+import { Loader, theme as gnosisTheme } from "@gnosis.pm/safe-react-components";
 import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import GlobalStyle from "./GlobalStyle";
 import App from "./App";
@@ -15,6 +15,7 @@ import MUIShadows from "@material-ui/core/styles/shadows";
 import createPalette from "@material-ui/core/styles/createPalette";
 import { Provider } from "react-redux";
 import { REDUX_STORE } from "./store";
+import { Row } from "./components/layout/Row";
 
 const palette = createPalette({
   type: "light",
@@ -34,7 +35,7 @@ shadows[1] = "0px 2px 4px rgba(105, 112, 117, 0.2)";
 shadows[2] = "0px 4px 4px rgba(0, 0, 0, 0.25)";
 shadows[3] = "0px 4px 10px rgba(105, 112, 117, 0.2)";
 
-const muiTheme = createMuiTheme({
+const muiTheme = createTheme({
   palette,
   shadows,
   typography: {
@@ -75,7 +76,13 @@ const Main = () => {
       <ThemeProvider theme={gnosisTheme}>
         <CssBaseline />
         <GlobalStyle />
-        <SafeProvider>
+        <SafeProvider
+          loader={
+            <Row alignItems="center" justifyContent="center" height="100%">
+              <Loader size="md" />
+            </Row>
+          }
+        >
           <Provider store={REDUX_STORE}>
             <App />
           </Provider>
