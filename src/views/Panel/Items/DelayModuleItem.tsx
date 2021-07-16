@@ -1,24 +1,20 @@
 import { HashInfo } from "../../../components/ethereum/HashInfo";
-import { makeStyles, Typography, Link } from "@material-ui/core";
-import { shortAddress } from "../../../utils/string";
+import { Link, makeStyles, Typography } from "@material-ui/core";
 import { PanelItem, PanelItemProps } from "./PanelItem";
 import React from "react";
-import { Module } from "../../../store/modules/models";
+import { DelayModule } from "../../../store/modules/models";
+import { Badge } from "../../../components/text/Badge";
+import { Address } from "../../../components/ethereum/Address";
+import { ModuleList } from "../ModuleList";
+import { formatDuration } from "../../../utils/string";
 
 interface DelayModuleItemProps extends PanelItemProps {
-  module: Module;
+  module: DelayModule;
 }
 
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
-  },
-  tag: {
-    display: "inline-block",
-    padding: theme.spacing(0.5),
-    lineHeight: 1,
-    borderRadius: 4,
-    backgroundColor: theme.palette.primary.light,
   },
   link: {
     marginLeft: theme.spacing(1),
@@ -33,32 +29,45 @@ export const DelayModuleItem = ({
   const classes = useStyles();
 
   return (
-    <PanelItem
-      image={
-        <HashInfo
-          showAvatar
-          avatarSize="lg"
-          showHash={false}
-          hash={module.address}
+    <>
+      <PanelItem
+        image={
+          <HashInfo
+            showAvatar
+            avatarSize="lg"
+            showHash={false}
+            hash={module.address}
+          />
+        }
+        active={active}
+        {...panelItemProps}
+      >
+        <Typography variant="h6" className={classes.text} gutterBottom>
+          {module.name}
+        </Typography>
+        <Address
+          short
+          hideCopyBtn
+          hideExplorerBtn
+          address={module.address}
+          variant="body2"
+          className={classes.text}
+          gutterBottom
         />
-      }
-      active={active}
-      {...panelItemProps}
-    >
-      <Typography variant="h6" className={classes.text} gutterBottom>
-        {module.name}
-      </Typography>
-      <Typography variant="body2" className={classes.text} gutterBottom>
-        {shortAddress(module.address)}
-      </Typography>
-      <div>
-        <div className={classes.tag}>24 hours delay</div>
-        {active ? (
-          <Link color="secondary" noWrap className={classes.link}>
-            Change Delay
-          </Link>
-        ) : null}
-      </div>
-    </PanelItem>
+        <div>
+          {/*TODO: Validate delay = timeout*/}
+          <Badge>{formatDuration(module.timeout)} delay</Badge>
+          {active ? (
+            <Link color="secondary" noWrap className={classes.link}>
+              Change Delay
+            </Link>
+          ) : null}
+        </div>
+      </PanelItem>
+
+      {module.subModules.length ? (
+        <ModuleList sub modules={module.subModules} />
+      ) : null}
+    </>
   );
 };

@@ -135,7 +135,7 @@ export async function createAndAddModule<
       return [delayModuleDeploymentTx, enableDelayModuleTransaction];
   }
 
-  throw new Error('Invalid module');
+  throw new Error("Invalid module");
 }
 
 export async function fetchSafeModulesAddress(safeAddress: string) {

@@ -15,7 +15,7 @@ export function isGnosisGenericProxy(bytecode: string) {
   return bytecode.toLowerCase() === GNOSIS_GENERIC_PROXY_CONTRACT_BYTECODE;
 }
 
-export function isDelayModule(bytecode: string) {
+export function isDelayModuleBytecode(bytecode: string) {
   return bytecode.toLowerCase() === DELAY_MODULE_CONTRACT_BYTECODE;
 }
 

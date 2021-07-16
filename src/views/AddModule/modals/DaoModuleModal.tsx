@@ -1,10 +1,17 @@
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
-import React from "react";
+import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { createAndAddModule } from "../../../services";
-import { useRootDispatch } from "../../../store";
+import { useRootDispatch, useRootSelector } from "../../../store";
 import { fetchModulesList } from "../../../store/modules";
+import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
+import { AttachDelayModuleForm } from "../AttachDelayModuleForm";
+import { getDelayModules } from "../../../store/modules/selectors";
+import { TextField } from "../../../components/input/TextField";
+import { Row } from "../../../components/layout/Row";
+import { TimeSelect } from "../../../components/input/TimeSelect";
+import { ethers } from "ethers";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -12,9 +19,45 @@ interface DaoModuleModalProps {
   onClose?(): void;
 }
 
+interface DaoModuleParams {
+  oracle: string;
+  templateId: string;
+  timeout: number;
+  cooldown: number;
+  expiration: number;
+  bond: string;
+}
+
+const useStyles = makeStyles((theme) => ({
+  fields: {
+    marginBottom: theme.spacing(1),
+  },
+}));
+
 export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
+  const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useRootDispatch();
+  const [delayModule, setDelayModule] = useState<string>();
+  const delayModules = useRootSelector(getDelayModules);
+  const [params, setParams] = useState<DaoModuleParams>({
+    oracle: "",
+    templateId: "",
+    timeout: 0,
+    cooldown: 0,
+    expiration: 0,
+    bond: "0",
+  });
+
+  const onParamChange = <Field extends keyof DaoModuleParams>(
+    field: Field,
+    value: DaoModuleParams[Field]
+  ) => {
+    setParams({
+      ...params,
+      [field]: value,
+    });
+  };
 
   const handleAddDaoModule = async () => {
     try {
@@ -22,11 +65,12 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         "dao",
         {
           executor: safe.safeAddress,
-          timeout: 100,
-          cooldown: 180,
-          expiration: 2000,
-          bond: 10000,
-          templateId: 10,
+          oracle: params.oracle,
+          templateId: params.templateId,
+          timeout: params.timeout,
+          cooldown: params.cooldown,
+          expiration: params.expiration,
+          bond: params.bond,
         },
         safe.safeAddress
       );
@@ -51,6 +95,44 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     }
   };
 
+  const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Logic to ignore the "ETH" text at the end of the input
+    const input = event.target.value;
+    let bondText = input.replace(/[^(0-9|.)]/g, "");
+    if (!input.includes(" ETH") && bondText.length === params.bond.length) {
+      bondText = bondText.substr(0, bondText.length - 1);
+    }
+
+    if (
+      bondText.endsWith(".") &&
+      bondText.indexOf(".") === bondText.length - 1
+    ) {
+      onParamChange("bond", bondText);
+      return;
+    }
+
+    try {
+      bondText = bondText || "0";
+      const eths = ethers.utils.parseEther(bondText);
+      let formattedBond = ethers.utils.formatEther(eths);
+      formattedBond = formattedBond.endsWith(".0")
+        ? formattedBond.substr(0, formattedBond.length - 2)
+        : formattedBond;
+      onParamChange("bond", formattedBond);
+    } catch (error) {
+      console.warn("invalid bond", bondText, error);
+    }
+  };
+
+  const description = (
+    <Typography variant="body2">
+      This will add a timedelay to any transactions created by this module.{" "}
+      <b>Note that this delay is cumulative with the cooldown set above</b>{" "}
+      (e.g. if both are set to 24 hours, the cumulative delay before the
+      transaction can be executed will be 48 hours).
+    </Typography>
+  );
+
   return (
     <AddModuleModal
       open={open}
@@ -61,6 +143,76 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
       onAdd={handleAddDaoModule}
       readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
-    />
+    >
+      <Typography variant="h6" gutterBottom>
+        Parameters
+      </Typography>
+
+      <Grid container spacing={2} className={classes.fields}>
+        <Grid item xs={12}>
+          <TextField
+            color="secondary"
+            value={params.oracle}
+            label="Oracle (oracle)"
+            onChange={(event) => onParamChange("oracle", event.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Row alignItems="center">
+            <Typography>TemplateId</Typography>
+            <Box flexGrow={1} />
+            {/*  TODO: Add Link */}
+            <Link color="secondary">Get a template here</Link>
+          </Row>
+          <TextField
+            color="secondary"
+            placeholder="10929783"
+            value={params.templateId}
+            onChange={(event) =>
+              onParamChange("templateId", event.target.value)
+            }
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TimeSelect
+            color="secondary"
+            label="Timeout"
+            onChange={(value) => onParamChange("timeout", value)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TimeSelect
+            color="secondary"
+            label="Cooldown"
+            onChange={(value) => onParamChange("cooldown", value)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TimeSelect
+            color="secondary"
+            label="Expiration"
+            onChange={(value) => onParamChange("expiration", value)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            color="secondary"
+            value={params.bond + " ETH"}
+            label="Bond"
+            onChange={handleBondChange}
+          />
+        </Grid>
+      </Grid>
+
+      <Typography variant="h6" gutterBottom>
+        Deploy Options
+      </Typography>
+      <AttachDelayModuleForm
+        description={description}
+        modules={delayModules}
+        value={delayModule}
+        onChange={(value) => setDelayModule(value)}
+      />
+    </AddModuleModal>
   );
 };

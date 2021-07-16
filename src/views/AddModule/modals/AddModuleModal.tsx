@@ -23,14 +23,17 @@ interface AddModuleModalProps {
 const useStyles = makeStyles((theme) => ({
   modal: {
     position: "absolute !important" as "absolute",
+    paddingBottom: theme.spacing(2),
+    overflow: "auto",
     alignItems: "flex-start",
   },
   backdrop: {
+    position: "absolute !important" as "absolute",
     backdropFilter: "blur(4px)",
   },
   root: {
     width: "100%",
-    maxWidth: 340,
+    maxWidth: 380,
     margin: theme.spacing(14, 1, 1, 1),
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.default,
@@ -60,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AddModuleModal = ({
+export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   open,
   title,
   description,
@@ -70,7 +73,8 @@ export const AddModuleModal = ({
   tags,
   readMoreLink,
   onClose,
-}: AddModuleModalProps) => {
+  children,
+}) => {
   const classes = useStyles();
   return (
     <Modal
@@ -81,7 +85,7 @@ export const AddModuleModal = ({
       disableEnforceFocus
       className={classNames(classes.modal, classes.row, classes.center)}
       BackdropProps={{
-        className: classNames(classes.modal, classes.backdrop),
+        className: classes.backdrop,
         invisible: true,
       }}
     >
@@ -110,7 +114,9 @@ export const AddModuleModal = ({
           </div>
         </div>
 
-        {content ? <div className={classes.gutterBottom}>{content}</div> : null}
+        {children ? (
+          <div className={classes.gutterBottom}>{children}</div>
+        ) : null}
 
         <ActionButton
           fullWidth

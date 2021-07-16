@@ -3,7 +3,8 @@ import { Module, ModulesState, ModuleType } from "./models";
 import { fetchSafeModulesAddress } from "../../services";
 import { getModule } from "../../utils/contracts";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import { isDelayModule } from "../../utils/modulesValidation";
+import { isDelayModuleBytecode } from "../../utils/modulesValidation";
+import { fetchDelayModule } from "./helpers";
 
 const initialModulesState: ModulesState = {
   reloadCount: 0,
@@ -34,9 +35,8 @@ export const fetchModulesList = createAsyncThunk(
           name = module.name;
           if (name === "DelayModule") {
             const code = await safeSDK.eth.getCode([module.implAddress]);
-            if (isDelayModule(code)) {
-              name = "Delay Module";
-              type = ModuleType.DELAY;
+            if (isDelayModuleBytecode(code)) {
+              return fetchDelayModule(module.address);
             }
           }
         } catch (error) {
@@ -45,9 +45,8 @@ export const fetchModulesList = createAsyncThunk(
 
         return {
           name,
-          address: moduleAddress,
-          subModules: [],
           type,
+          address: moduleAddress,
         };
       }
     );

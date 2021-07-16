@@ -13,6 +13,7 @@ import {
   isGenericProxy,
   isGnosisGenericProxy,
 } from "./modulesValidation";
+import { ModuleMetadata } from "../store/modules/models";
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true;
@@ -148,12 +149,7 @@ export const getModule = memoize(
     safeSDK: SafeAppsSDK,
     chainId: number,
     address: string
-  ): Promise<{
-    address: string;
-    implAddress: string;
-    name: string;
-    abi: string;
-  }> => {
+  ): Promise<ModuleMetadata> => {
     const bytecode = await safeSDK.eth.getCode([address]);
 
     if (isGenericProxy(bytecode)) {

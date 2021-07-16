@@ -29,7 +29,7 @@ const StyledTextField = withStyles((theme) => ({
 
 export interface TextFieldProps
   extends Omit<StandardTextFieldProps, "variant" | "label"> {
-  label: string;
+  label?: string;
 }
 
 export const TextField = ({

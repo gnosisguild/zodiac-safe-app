@@ -31,7 +31,6 @@ export const AddModulesView = () => {
   const hasModules = useRootSelector(
     (state) => getModulesList(state).length > 0
   );
-
   const [module, setModule] = useState<MODULE_MODAL>();
 
   const title = hasModules ? "Add another module" : "Start by adding a module";

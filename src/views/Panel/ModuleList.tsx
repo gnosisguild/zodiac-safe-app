@@ -74,17 +74,13 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const content = modules.map((module) => {
     const active = module.address === currentModule?.address;
     return (
-      <React.Fragment key={module.address}>
-        <ModuleItem
-          module={module}
-          active={active}
-          sub={sub}
-          onClick={() => handleClick(module)}
-        />
-        {module.subModules.length ? (
-          <ModuleList sub modules={module.subModules} />
-        ) : null}
-      </React.Fragment>
+      <ModuleItem
+        key={module.address}
+        module={module}
+        active={active}
+        sub={sub}
+        onClick={() => handleClick(module)}
+      />
     );
   });
 
