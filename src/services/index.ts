@@ -86,7 +86,8 @@ export async function createAndAddModule<
           templateId,
         ],
         defaultProvider,
-        chainId
+        chainId,
+        Date.now().toString()
       );
 
       const enableDaoModuleTransaction = await enableModule(
@@ -107,7 +108,8 @@ export async function createAndAddModule<
         module,
         [owner, amb, safeAddress, id],
         defaultProvider,
-        chainId
+        chainId,
+        Date.now().toString()
       );
 
       const enableAmbModuleTransaction = await enableModule(
@@ -126,7 +128,8 @@ export async function createAndAddModule<
         module,
         [safeAddress, txCooldown, txExpiration],
         defaultProvider,
-        chainId
+        chainId,
+        Date.now().toString()
       );
       const enableDelayModuleTransaction = await enableModule(
         safeAddress,
@@ -135,7 +138,7 @@ export async function createAndAddModule<
       return [delayModuleDeploymentTx, enableDelayModuleTransaction];
   }
 
-  throw new Error('Invalid module');
+  throw new Error("Invalid module");
 }
 
 export async function fetchSafeModulesAddress(safeAddress: string) {
