@@ -6,11 +6,7 @@ import {
   CssBaseline,
   ThemeProvider as MUIThemeProvider,
 } from "@material-ui/core";
-import {
-  Loader,
-  theme as gnosisTheme,
-  Title,
-} from "@gnosis.pm/safe-react-components";
+import { theme as gnosisTheme } from "@gnosis.pm/safe-react-components";
 import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import GlobalStyle from "./GlobalStyle";
 import App from "./App";
@@ -79,14 +75,7 @@ const Main = () => {
       <ThemeProvider theme={gnosisTheme}>
         <CssBaseline />
         <GlobalStyle />
-        <SafeProvider
-          loader={
-            <>
-              <Title size="md">Waiting for Safe...</Title>
-              <Loader size="md" />
-            </>
-          }
-        >
+        <SafeProvider>
           <Provider store={REDUX_STORE}>
             <App />
           </Provider>
