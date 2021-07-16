@@ -1612,9 +1612,9 @@
     classnames "^2.2.6"
     react-media "^1.10.0"
 
-"@gnosis/module-factory@github:gnosis/module-factory#master":
+"@gnosis/module-factory@github:gnosis/module-factory#tests-merge":
   version "1.0.0"
-  resolved "https://codeload.github.com/gnosis/module-factory/tar.gz/3d91f0718dced4277807990a1c29cac25f624876"
+  resolved "https://codeload.github.com/gnosis/module-factory/tar.gz/d386965ba7218fc3f0be53995ac58130ec562e0c"
 
 "@hapi/address@2.x.x":
   version "2.1.4"
