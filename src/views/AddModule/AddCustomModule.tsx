@@ -10,6 +10,8 @@ import { ParamType } from "@ethersproject/abi";
 import { AttachDelayModuleForm } from "./AttachDelayModuleForm";
 import { useRootSelector } from "../../store";
 import { getDelayModules } from "../../store/modules/selectors";
+import { enableModule } from "services";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 const useStyles = makeStyles((theme) => ({
   clickable: {
@@ -29,6 +31,7 @@ const useStyles = makeStyles((theme) => ({
 // TODO: Implement - Add Custom Module
 export const AddCustomModule = () => {
   const classes = useStyles();
+  const { sdk, safe } = useSafeAppsSDK();
   const [open, setOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [address, setAddress] = useState("");
@@ -39,6 +42,17 @@ export const AddCustomModule = () => {
   const handleAddressChange = (address: string, isValid: boolean) => {
     setAddress(address);
     setAddressValid(!!address.length && isValid);
+  };
+
+  const addModule = async () => {
+    const tx = await enableModule(safe.safeAddress, address);
+
+    const { safeTxHash } = await sdk.txs.send({
+      txs: [tx],
+    });
+    console.log({ safeTxHash });
+    const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+    console.log({ safeTx });
   };
 
   const content = (
@@ -77,6 +91,7 @@ export const AddCustomModule = () => {
         fullWidth
         disabled={!isAddressValid}
         startIcon={<Icon type="sent" size="md" color="primary" />}
+        onClick={addModule}
       >
         Add Module
       </ActionButton>

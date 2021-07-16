@@ -1,14 +1,17 @@
-import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
 import React, { useState } from "react";
 import { Box, Grid, makeStyles, Typography } from "@material-ui/core";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { AddModuleModal } from "./AddModuleModal";
+import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
 import { Row } from "../../../components/layout/Row";
 import { Checkbox } from "../../../components/input/Checkbox";
 import { TimeSelect } from "../../../components/input/TimeSelect";
+import { createAndAddModule } from "services";
+import { useRootDispatch } from "store";
+import { fetchModulesList } from "store/modules";
 
 interface DaoModuleModalProps {
   open: boolean;
-
   onClose?(): void;
 }
 
@@ -26,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
 export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const classes = useStyles();
   const [checked, setChecked] = useState(false);
+  const { sdk, safe } = useSafeAppsSDK();
+  const dispatch = useRootDispatch();
 
   const [params, setParams] = useState<DelayModuleParams>({
     timeout: 86400,
@@ -42,6 +47,37 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     });
   };
 
+  const handleAddDelayModule = async () => {
+    try {
+      const txs = await createAndAddModule(
+        "delay",
+        {
+          executor: safe.safeAddress,
+          txCooldown: params.cooldown,
+          txExpiration: params.timeout,
+        },
+        safe.safeAddress
+      );
+      console.log({ txs });
+      const { safeTxHash } = await sdk.txs.send({
+        txs,
+      });
+      console.log({ safeTxHash });
+      const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+      console.log({ safeTx });
+
+      dispatch(
+        fetchModulesList({
+          safeSDK: sdk,
+          chainId: safe.chainId,
+          safeAddress: safe.safeAddress,
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <AddModuleModal
       open={open}
@@ -50,7 +86,7 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       description="Adds a settable delay time to any transaction originating from this module."
       image={<DelayModuleImage />}
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
-      onAdd={() => {}}
+      onAdd={handleAddDelayModule}
       readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
     >
       <Typography variant="h6" gutterBottom>

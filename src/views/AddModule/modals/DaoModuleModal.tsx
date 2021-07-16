@@ -12,6 +12,7 @@ import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { ethers } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -71,16 +72,13 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
 
   const handleAddDaoModule = async () => {
     try {
+      const minimumBond = parseUnits(params.bond);
       const txs = await createAndAddModule(
         "dao",
         {
           executor: safe.safeAddress,
-          oracle: params.oracle,
-          templateId: params.templateId,
-          timeout: params.timeout,
-          cooldown: params.cooldown,
-          expiration: params.expiration,
-          bond: params.bond,
+          ...params,
+          bond: minimumBond.toString(),
         },
         safe.safeAddress
       );

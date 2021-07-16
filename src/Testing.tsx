@@ -1,5 +1,5 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   createAndAddModule,
   disableModule,

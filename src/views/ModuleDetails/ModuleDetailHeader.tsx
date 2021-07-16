@@ -4,6 +4,8 @@ import { HashInfo } from "../../components/ethereum/HashInfo";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
+import { disableModule } from "services";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -28,6 +30,14 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
+  const { sdk, safe } = useSafeAppsSDK();
+
+  const removeModule = async () => {
+    const transactions = await disableModule(safe.safeAddress, module.address);
+    await sdk.txs.send({
+      txs: [transactions],
+    });
+  };
 
   return (
     <div className={classes.header}>
@@ -44,7 +54,12 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
 
       <Box flexGrow={1} />
 
-      <Button size="md" iconType="delete" variant="outlined">
+      <Button
+        size="md"
+        iconType="delete"
+        variant="outlined"
+        onClick={removeModule}
+      >
         Remove
       </Button>
     </div>
