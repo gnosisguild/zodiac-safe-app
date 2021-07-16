@@ -3,14 +3,15 @@ import { makeStyles, Typography } from "@material-ui/core";
 import { shortAddress } from "../../../utils/string";
 import { PanelItem, PanelItemProps } from "./PanelItem";
 import React from "react";
-import { Module, ModuleType } from "../../../store/modules/models";
+import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
+import { isDelayModule } from "../../../store/modules/helpers";
 
 interface ModuleItemProps extends PanelItemProps {
   module: Module;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   text: {
     lineHeight: 1,
   },
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export const ModuleItem = ({ module, ...panelItemProps }: ModuleItemProps) => {
   const classes = useStyles();
 
-  if (module.type === ModuleType.DELAY)
+  if (isDelayModule(module))
     return <DelayModuleItem module={module} {...panelItemProps} />;
 
   return (

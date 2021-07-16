@@ -1,4 +1,5 @@
 import { RootState } from "../index";
+import { isDelayModule } from "./helpers";
 
 export function getCurrentModule(state: RootState) {
   return state.modules.current;
@@ -14,4 +15,8 @@ export function getReloadCount(state: RootState) {
 
 export function getIsLoadingModules(state: RootState) {
   return state.modules.loadingModules;
+}
+
+export function getDelayModules(state: RootState) {
+  return getModulesList(state).filter(isDelayModule);
 }

@@ -118,11 +118,9 @@ export const buildMultiSendSafeTx = async (
   const encodedTxs = transactions.map((t) => encodeMetaTransaction(t)).join("");
   const encodedMultiSend = "0x" + encodedTxs;
 
-  const transaction = buildTransaction(multiSend, "multiSend", [
-    encodedMultiSend,
+  return buildTransaction(multiSend, "multiSend", [
+      encodedMultiSend,
   ]);
-
-  return transaction;
 };
 
 const encodeMetaTransaction = (

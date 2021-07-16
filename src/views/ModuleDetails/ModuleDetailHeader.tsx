@@ -31,7 +31,12 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
 
   return (
     <div className={classes.header}>
-      <HashInfo showAvatar showHash={false} avatarSize="lg" hash={module.address} />
+      <HashInfo
+        showAvatar
+        showHash={false}
+        avatarSize="lg"
+        hash={module.address}
+      />
       <Text size="xl" strong className={classes.text}>
         Address:
       </Text>

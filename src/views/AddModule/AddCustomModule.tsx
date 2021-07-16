@@ -7,6 +7,9 @@ import { Icon } from "@gnosis.pm/safe-react-components";
 import { ActionButton } from "../../components/ActionButton";
 import { ParamInput } from "../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
+import { AttachDelayModuleForm } from "./AttachDelayModuleForm";
+import { useRootSelector } from "../../store";
+import { getDelayModules } from "../../store/modules/selectors";
 
 const useStyles = makeStyles((theme) => ({
   clickable: {
@@ -23,14 +26,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+// TODO: Implement - Add Custom Module
 export const AddCustomModule = () => {
   const classes = useStyles();
-
-  // TODO: Implement - Add Module
-
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [address, setAddress] = useState("");
   const [isAddressValid, setAddressValid] = useState(false);
+  const [delayModule, setDelayModule] = useState<string>();
+  const delayModules = useRootSelector(getDelayModules);
 
   const handleAddressChange = (address: string, isValid: boolean) => {
     setAddress(address);
@@ -57,6 +61,18 @@ export const AddCustomModule = () => {
         param={ParamType.fromString("address")}
         onChange={handleAddressChange}
       />
+
+      <Typography variant="h6" gutterBottom>
+        Deploy Options
+      </Typography>
+      <div className={classes.spacing}>
+        <AttachDelayModuleForm
+          modules={delayModules}
+          value={delayModule}
+          onChange={(value) => setDelayModule(value)}
+        />
+      </div>
+
       <ActionButton
         fullWidth
         disabled={!isAddressValid}

@@ -7,8 +7,24 @@ export enum ModuleType {
 export interface Module {
   name: string;
   address: string;
-  subModules: Module[];
   type: ModuleType;
+}
+
+export interface ModuleMetadata {
+  address: string;
+  implAddress: string;
+  name: string;
+  abi: string;
+}
+
+export interface StackableModule extends Module {
+  subModules: Module[];
+}
+
+export interface DelayModule extends StackableModule {
+  type: ModuleType.DELAY;
+  timeout: number;
+  cooldown: number;
 }
 
 export interface ModulesState {

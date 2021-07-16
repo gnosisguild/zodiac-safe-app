@@ -7,8 +7,9 @@ import {
 import { ReactComponent as CheckMarkCheckedIcon } from "../../assets/icons/checkbox-checked.svg";
 import { ReactComponent as CheckMarkUncheckedIcon } from "../../assets/icons/checkbox-unchecked.svg";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
+    padding: 0,
     "&:hover": {
       backgroundColor: "transparent !important",
     },
