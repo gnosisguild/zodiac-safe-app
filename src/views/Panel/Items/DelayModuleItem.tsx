@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const DelayModuleItem = ({
   module,
-  active,
   ...panelItemProps
 }: DelayModuleItemProps) => {
   const classes = useStyles();
@@ -39,7 +38,6 @@ export const DelayModuleItem = ({
             hash={module.address}
           />
         }
-        active={active}
         {...panelItemProps}
       >
         <Typography variant="h6" className={classes.text} gutterBottom>
@@ -57,11 +55,10 @@ export const DelayModuleItem = ({
         <div>
           {/*TODO: Validate delay = timeout*/}
           <Badge>{formatDuration(module.timeout)} delay</Badge>
-          {active ? (
-            <Link color="secondary" noWrap className={classes.link}>
-              Change Delay
-            </Link>
-          ) : null}
+          {/*TODO: On click, take to the transaction builder with pre-populated fields to change delay*/}
+          <Link color="secondary" noWrap className={classes.link}>
+            Change Delay
+          </Link>
         </div>
       </PanelItem>
 

@@ -1,8 +1,22 @@
 import React, { useState } from "react";
 import { TextField, TextFieldProps } from "./TextField";
 import { InputAdornment, InputBase, withStyles } from "@material-ui/core";
+import { BigNumber } from "ethers";
 
-interface TimeSelectProps extends Omit<TextFieldProps, "onChange"> {
+const unitConversion = {
+  seconds: 1,
+  minutes: 60,
+  hours: 3600,
+  days: 86400,
+  months: 2592000, // 30 Days
+};
+type Unit = keyof typeof unitConversion;
+
+interface TimeSelectProps
+  extends Omit<TextFieldProps, "onChange" | "defaultValue" | "value"> {
+  defaultValue?: number;
+  defaultUnit?: Unit;
+
   onChange(time: number): void;
 }
 
@@ -18,19 +32,20 @@ const AmountInput = withStyles((theme) => ({
   },
 }))(InputBase);
 
-const unitConversion = {
-  hours: 3600,
-  minutes: 60,
-};
-type Unit = keyof typeof unitConversion;
-
 function calculateTime(amount: number, unit: Unit) {
   return amount * unitConversion[unit];
 }
 
-export const TimeSelect = ({ onChange, ...props }: TimeSelectProps) => {
-  const [unit, setUnit] = useState<Unit>("hours");
-  const [amount, setAmount] = useState("");
+export const TimeSelect = ({
+  onChange,
+  defaultUnit = "hours",
+  defaultValue = 0,
+  ...props
+}: TimeSelectProps) => {
+  const [unit, setUnit] = useState<Unit>(defaultUnit);
+  const [amount, setAmount] = useState(
+    BigNumber.from(defaultValue).div(unitConversion[unit]).toString()
+  );
 
   const handleAmountChange = (_amount: string) => {
     const newAmount = parseInt(_amount || "0");
@@ -49,6 +64,7 @@ export const TimeSelect = ({ onChange, ...props }: TimeSelectProps) => {
     <TextField
       {...props}
       select
+      value={unit}
       SelectProps={{ native: true }}
       onChange={(evt) => handleUnitChange(evt.target.value as Unit)}
       InputProps={{

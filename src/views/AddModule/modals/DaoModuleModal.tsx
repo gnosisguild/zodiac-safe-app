@@ -34,6 +34,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function getDefaultOracle(chainId: number): string {
+  switch (chainId) {
+    case 1:
+      return "0x325a2e0f3cca2ddbaebb4dfc38df8d19ca165b47";
+    case 4:
+      return "0x3D00D77ee771405628a4bA4913175EcC095538da";
+  }
+  return "";
+}
+
 export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
@@ -41,12 +51,12 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const [delayModule, setDelayModule] = useState<string>();
   const delayModules = useRootSelector(getDelayModules);
   const [params, setParams] = useState<DaoModuleParams>({
-    oracle: "",
+    oracle: getDefaultOracle(safe.chainId),
     templateId: "",
-    timeout: 0,
-    cooldown: 0,
-    expiration: 0,
-    bond: "0",
+    timeout: 86400,
+    cooldown: 86400,
+    expiration: 604800,
+    bond: "0.1",
   });
 
   const onParamChange = <Field extends keyof DaoModuleParams>(
@@ -177,6 +187,8 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           <TimeSelect
             color="secondary"
             label="Timeout"
+            defaultValue={params.timeout}
+            defaultUnit="hours"
             onChange={(value) => onParamChange("timeout", value)}
           />
         </Grid>
@@ -184,6 +196,8 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           <TimeSelect
             color="secondary"
             label="Cooldown"
+            defaultValue={params.cooldown}
+            defaultUnit="hours"
             onChange={(value) => onParamChange("cooldown", value)}
           />
         </Grid>
@@ -191,6 +205,8 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           <TimeSelect
             color="secondary"
             label="Expiration"
+            defaultValue={params.expiration}
+            defaultUnit="days"
             onChange={(value) => onParamChange("expiration", value)}
           />
         </Grid>

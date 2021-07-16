@@ -28,8 +28,8 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const [checked, setChecked] = useState(false);
 
   const [params, setParams] = useState<DelayModuleParams>({
-    timeout: 0,
-    cooldown: 0,
+    timeout: 86400,
+    cooldown: 86400,
   });
 
   const onParamChange = <Field extends keyof DelayModuleParams>(
@@ -62,6 +62,8 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           <TimeSelect
             color="secondary"
             label="Timeout"
+            defaultValue={params.timeout}
+            defaultUnit="hours"
             onChange={(value) => onParamChange("timeout", value)}
           />
         </Grid>
@@ -69,6 +71,8 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           <TimeSelect
             color="secondary"
             label="Cooldown"
+            defaultValue={params.cooldown}
+            defaultUnit="hours"
             onChange={(value) => onParamChange("cooldown", value)}
           />
         </Grid>
