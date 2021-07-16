@@ -40,35 +40,6 @@ export const Panel = () => {
   const modulesList = useRootSelector(getModulesList);
   const currentModule = useRootSelector(getCurrentModule);
 
-  // @TODO: Make the deployment dynamic - Attach to UI state
-  // const { sdk, safe } = useSafeAppsSDK();
-  // const deployModule = async () => {
-  //   try {
-  //     const txs = await createAndAddModule(
-  //       "dao",
-  //       {
-  //         executor: safe.safeAddress,
-  //         timeout: 100,
-  //         cooldown: 180,
-  //         expiration: 2000,
-  //         bond: 10000,
-  //         templateId: 10,
-  //       },
-  //       safe.safeAddress
-  //     );
-  //
-  //     const { safeTxHash } = await sdk.txs.send({
-  //       txs,
-  //     });
-  //     console.log({ safeTxHash });
-  //     const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-  //     console.log({ safeTx });
-  //   } catch (error) {
-  //     console.log("Error deploying module: ");
-  //     console.log(error);
-  //   }
-  // };
-
   const handleAddModule = () => {
     dispatch(unsetCurrentModule());
   };

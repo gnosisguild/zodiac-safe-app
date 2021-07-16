@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export const AddCustomModule = () => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [address, setAddress] = useState("");
   const [isAddressValid, setAddressValid] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();

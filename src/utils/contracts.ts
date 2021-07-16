@@ -65,9 +65,7 @@ export const fetchContractSourceCode = memoize(
     const { status, result } = await response.json();
     if (status === "0") throw new Error("Could not fetch contract source code");
 
-    const sourceCode = result[0] as { ABI: string; ContractName: string };
-
-    return sourceCode;
+    return result[0] as { ABI: string; ContractName: string };
   },
   (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
 );

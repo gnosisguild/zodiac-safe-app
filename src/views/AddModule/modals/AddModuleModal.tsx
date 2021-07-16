@@ -11,7 +11,6 @@ interface AddModuleModalProps {
   title: string;
   description: string;
   image: React.ReactElement;
-  content?: React.ReactElement;
   tags: string[];
   readMoreLink?: string;
 
@@ -69,7 +68,6 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   description,
   image,
   onAdd,
-  content,
   tags,
   readMoreLink,
   onClose,

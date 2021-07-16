@@ -78,7 +78,7 @@ export const modulesSlice = createSlice({
     builder.addCase(fetchModulesList.pending, (state) => {
       state.loadingModules = true;
     });
-    builder.addCase(fetchModulesList.rejected, (state, action) => {
+    builder.addCase(fetchModulesList.rejected, (state) => {
       state.loadingModules = false;
     });
     builder.addCase(fetchModulesList.fulfilled, (state, action) => {
