@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Module, ModulesState, ModuleType } from "./models";
+import { Module, ModulesState, ModuleType, Operation } from "./models";
 import { fetchSafeModulesAddress } from "../../services";
 import { getModule } from "../../utils/contracts";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
@@ -7,6 +7,7 @@ import { isDelayModuleBytecode } from "../../utils/modulesValidation";
 import { fetchDelayModule } from "./helpers";
 
 const initialModulesState: ModulesState = {
+  operation: "read",
   reloadCount: 0,
   loadingModules: false,
   list: [],
@@ -69,9 +70,13 @@ export const modulesSlice = createSlice({
     },
     setCurrentModule(state, action: PayloadAction<Module>) {
       state.current = action.payload;
+      state.operation = "read";
     },
     unsetCurrentModule(state) {
       state.current = undefined;
+    },
+    setOperation(state, action: PayloadAction<Operation>) {
+      state.operation = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -93,4 +98,5 @@ export const {
   setCurrentModule,
   setModules,
   unsetCurrentModule,
+  setOperation,
 } = modulesSlice.actions;

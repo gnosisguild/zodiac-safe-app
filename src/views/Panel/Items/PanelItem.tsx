@@ -76,7 +76,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   return (
     <Paper
       elevation={0}
-      onClick={onClick}
+      onClick={active ? undefined : onClick}
       {...PaperProps}
       className={classNames(
         classes.moduleItem,

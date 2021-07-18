@@ -22,6 +22,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     padding: theme.spacing(3),
+    boxSizing: "content-box",
+    minHeight: 40,
   },
   smallButton: {
     minWidth: "auto !important",

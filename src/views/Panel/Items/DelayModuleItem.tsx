@@ -7,6 +7,9 @@ import { Badge } from "../../../components/text/Badge";
 import { Address } from "../../../components/ethereum/Address";
 import { ModuleList } from "../ModuleList";
 import { formatDuration } from "../../../utils/string";
+import { useRootDispatch } from "../../../store";
+import { setAddTransaction } from "../../../store/transactionBuilder";
+import { setCurrentModule, setOperation } from "../../../store/modules";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
@@ -26,6 +29,20 @@ export const DelayModuleItem = ({
   ...panelItemProps
 }: DelayModuleItemProps) => {
   const classes = useStyles();
+  const dispatch = useRootDispatch();
+
+  const handleClick = (evt: React.MouseEvent) => {
+    evt.stopPropagation(); // Avoid triggering ModuleItem click event.
+
+    dispatch(setCurrentModule(module));
+    dispatch(setOperation("write"));
+    dispatch(
+      setAddTransaction({
+        func: "setTxCooldown(uint256)",
+        params: [module.cooldown],
+      })
+    );
+  };
 
   return (
     <>
@@ -56,7 +73,12 @@ export const DelayModuleItem = ({
           {/*TODO: Validate delay = timeout*/}
           <Badge>{formatDuration(module.timeout)} delay</Badge>
           {/*TODO: On click, take to the transaction builder with pre-populated fields to change delay*/}
-          <Link color="secondary" noWrap className={classes.link}>
+          <Link
+            color="secondary"
+            noWrap
+            className={classes.link}
+            onClick={handleClick}
+          >
             Change Delay
           </Link>
         </div>

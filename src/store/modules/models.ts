@@ -28,8 +28,11 @@ export interface DelayModule extends StackableModule {
 }
 
 export interface ModulesState {
+  operation: Operation;
   current?: Module;
   loadingModules: boolean;
   list: Module[];
   reloadCount: number;
 }
+
+export type Operation = "read" | "write";
