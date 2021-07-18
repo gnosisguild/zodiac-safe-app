@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
@@ -10,6 +10,9 @@ import { Icon } from "@gnosis.pm/safe-react-components";
 import { ModuleTransaction } from "./TransactionBuilder";
 import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
+import { useRootDispatch, useRootSelector } from "../../../store";
+import { getAddTransaction } from "../../../store/transactionBuilder/selectors";
+import { resetAddTransaction } from "../../../store/transactionBuilder";
 
 interface AddTransactionBlockProps {
   abi: string | string[];
@@ -30,12 +33,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type TransactionFieldsProps = { func?: FunctionFragment } & Pick<
-  AddTransactionBlockProps,
-  "onAdd"
->;
+type TransactionFieldsProps = {
+  func?: FunctionFragment;
+  defaultParams?: any[];
+} & Pick<AddTransactionBlockProps, "onAdd">;
 
-const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
+const TransactionFields = ({
+  func,
+  onAdd,
+  defaultParams,
+}: TransactionFieldsProps) => {
   const classes = useStyles();
 
   if (!func) {
@@ -62,7 +69,7 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
   };
 
   return (
-    <ContractQueryForm func={func}>
+    <ContractQueryForm func={func} defaultParams={defaultParams}>
       {({ paramInputProps, areParamsValid, getParams }) => (
         <>
           {paramInputProps.map((props, index) => (
@@ -92,17 +99,46 @@ const TransactionFields = ({ func, onAdd }: TransactionFieldsProps) => {
   );
 };
 
+const getSelectedFunction = (
+  writeFunctions: FunctionFragment[],
+  selectedFunc?: string
+): number | undefined => {
+  if (selectedFunc) {
+    const index = writeFunctions.findIndex(
+      (func) => func.format() === selectedFunc
+    );
+    if (index >= 0) return index;
+  }
+  return;
+};
+
 export const AddTransactionBlock = ({
   abi,
   onAdd,
 }: AddTransactionBlockProps) => {
   const classes = useStyles();
+  const dispatch = useRootDispatch();
   const writeFunctions = useMemo(() => getWriteFunction(abi), [abi]);
-  const [funcIndex, setFuncIndex] = useState<string>("none");
+  const { func: selectedFunc, params: defaultParams } =
+    useRootSelector(getAddTransaction);
+
+  const [funcIndex, setFuncIndex] = useState(() =>
+    getSelectedFunction(writeFunctions, selectedFunc)
+  );
+
+  useEffect(() => {
+    if (selectedFunc)
+      setFuncIndex(getSelectedFunction(writeFunctions, selectedFunc));
+  }, [selectedFunc, writeFunctions]);
 
   const handleAdd = (transaction: ModuleTransaction) => {
-    setFuncIndex("none");
+    setFuncIndex(undefined);
     onAdd(transaction);
+  };
+
+  const handleFuncChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFuncIndex(parseInt(event.target.value));
+    dispatch(resetAddTransaction());
   };
 
   const content = (
@@ -110,13 +146,13 @@ export const AddTransactionBlock = ({
       <TextField
         select
         value={funcIndex}
-        onChange={(event) => setFuncIndex(event.target.value)}
+        onChange={handleFuncChange}
         SelectProps={{ native: true }}
-        className={classNames({ [classes.greyText]: funcIndex === "none" })}
+        className={classNames({ [classes.greyText]: funcIndex === undefined })}
         color="secondary"
         label="Function"
       >
-        <option value="none">Select function</option>
+        <option>Select function</option>
         {writeFunctions.map((func, index) => (
           <option key={func.format("full")} value={index}>
             {func.name}
@@ -124,12 +160,9 @@ export const AddTransactionBlock = ({
         ))}
       </TextField>
       <TransactionFields
-        key={funcIndex}
-        func={
-          funcIndex && funcIndex !== "none"
-            ? writeFunctions[parseInt(funcIndex)]
-            : undefined
-        }
+        key={`${funcIndex}_${selectedFunc}`}
+        defaultParams={defaultParams}
+        func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
         onAdd={handleAdd}
       />
     </>

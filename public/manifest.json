@@ -1,7 +1,7 @@
 {
   "short_name": "Safe App",
-  "name": "Gnosis Safe App Starter",
-  "description": "Describe your Safe App here",
+  "name": "Module Manager",
+  "description": "Deploy and manage modules for your Gnosis Safe",
   "iconPath": "logo.svg",
   "icons": [
     {

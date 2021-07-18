@@ -20,3 +20,7 @@ export function getIsLoadingModules(state: RootState) {
 export function getDelayModules(state: RootState) {
   return getModulesList(state).filter(isDelayModule);
 }
+
+export function getOperation(state: RootState) {
+  return state.modules.operation;
+}

@@ -86,9 +86,6 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       const { safeTxHash } = await sdk.txs.send({
         txs,
       });
-
-      console.log({ safeTxHash });
-      console.log({ delayModule });
       const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
       console.log({ safeTx });
       dispatch(

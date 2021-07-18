@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Module, ModulesState, ModuleType } from "./models";
-import { fetchSafeModulesAddress } from "../../services";
-import { getModule } from "../../utils/contracts";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import { isDelayModuleBytecode } from "../../utils/modulesValidation";
-import { fetchDelayModule } from "./helpers";
+import { Module, ModulesState, Operation } from "./models";
+import { fetchSafeModulesAddress } from "../../services";
+import { sanitizeModules } from "./helpers";
 
 const initialModulesState: ModulesState = {
+  operation: "read",
   reloadCount: 0,
   loadingModules: false,
   list: [],
@@ -24,36 +23,14 @@ export const fetchModulesList = createAsyncThunk(
     chainId: number;
     safeAddress: string;
   }): Promise<Module[]> => {
-    // @TODO: Create a sanitize function which retrieve the subModules
-    const moduleAddress = await fetchSafeModulesAddress(safeAddress);
-    const requests = moduleAddress.map(
-      async (moduleAddress): Promise<Module> => {
-        let name = "Unknown";
-        let type = ModuleType.UNKNOWN;
-        try {
-          const module = await getModule(safeSDK, chainId, moduleAddress);
-          name = module.name;
-          if (name === "DelayModule") {
-            const code = await safeSDK.eth.getCode([module.implAddress]);
-            if (isDelayModuleBytecode(code)) {
-              return await fetchDelayModule(module.address, chainId);
-            }
-          }
-        } catch (error) {
-          console.log("unable to fetch source code");
-        }
-
-        return {
-          name,
-          type,
-          address: moduleAddress,
-        };
-      }
+    const moduleAddresses = await fetchSafeModulesAddress(safeAddress);
+    const requests = moduleAddresses.map(
+      async (m) => await sanitizeModules(m, safeSDK, chainId)
     );
-
     requests.reverse();
-
-    return await Promise.all(requests);
+    const modules = await Promise.all(requests);
+    console.log({ modules });
+    return modules;
   }
 );
 
@@ -69,9 +46,13 @@ export const modulesSlice = createSlice({
     },
     setCurrentModule(state, action: PayloadAction<Module>) {
       state.current = action.payload;
+      state.operation = "read";
     },
     unsetCurrentModule(state) {
       state.current = undefined;
+    },
+    setOperation(state, action: PayloadAction<Operation>) {
+      state.operation = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -93,4 +74,5 @@ export const {
   setCurrentModule,
   setModules,
   unsetCurrentModule,
+  setOperation,
 } = modulesSlice.actions;

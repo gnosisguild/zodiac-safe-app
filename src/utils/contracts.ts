@@ -142,7 +142,7 @@ export function formatDisplayParamValue(param: ParamType, value: any): string {
   return value.toString();
 }
 
-export const getModule = memoize(
+export const getModuleDataFromEtherscan = memoize(
   async (
     safeSDK: SafeAppsSDK,
     chainId: number,
@@ -152,13 +152,13 @@ export const getModule = memoize(
 
     if (isGenericProxy(bytecode)) {
       const masterAddress = getGenericProxyMaster(bytecode);
-      const module = await getModule(safeSDK, chainId, masterAddress);
+      const module = await getModuleDataFromEtherscan(safeSDK, chainId, masterAddress);
       return { ...module, address };
     }
 
     if (isGnosisGenericProxy(bytecode)) {
       const masterAddress = await getProxyMaster(address);
-      const module = await getModule(safeSDK, chainId, masterAddress);
+      const module = await getModuleDataFromEtherscan(safeSDK, chainId, masterAddress);
       return { ...module, address };
     }
 

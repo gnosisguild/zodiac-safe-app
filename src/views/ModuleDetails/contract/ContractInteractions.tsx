@@ -1,5 +1,5 @@
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   IconButton,
@@ -12,9 +12,11 @@ import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
 import { TransactionBuilder } from "../transaction/TransactionBuilder";
-import { increaseReloadCount } from "../../../store/modules";
-import { useRootDispatch } from "../../../store";
+import { increaseReloadCount, setOperation } from "../../../store/modules";
+import { useRootDispatch, useRootSelector } from "../../../store";
 import classNames from "classnames";
+import { Operation } from "../../../store/modules/models";
+import { getOperation } from "../../../store/modules/selectors";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
@@ -34,8 +36,6 @@ const StyledToggleButton = withStyles((theme) => ({
     },
   },
 }))(ToggleButton);
-
-type Operation = "read" | "write";
 
 interface ContractInteractionsProps {
   address: string;
@@ -58,10 +58,10 @@ export const ContractInteractions = ({
 }: ContractInteractionsProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const [operation, setOperation] = useState<Operation>("read");
+  const operation = useRootSelector(getOperation);
 
   const handleOperationChange = (operation?: Operation) => {
-    if (operation) setOperation(operation);
+    if (operation) dispatch(setOperation(operation));
   };
 
   const handleReload = () => dispatch(increaseReloadCount());

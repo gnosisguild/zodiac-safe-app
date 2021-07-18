@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ContractInteractions } from "./contract/ContractInteractions";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getModule } from "../../utils/contracts";
+import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import { Module } from "../../store/modules/models";
 import { ModuleNoAvailable } from "./ModuleNoAvailable";
 import { Skeleton } from "@material-ui/lab";
@@ -18,7 +18,7 @@ export const ModuleInteractions = ({ module }: ModuleInteractionsProps) => {
   useEffect(() => {
     setLoading(true);
     setABI(undefined);
-    getModule(sdk, safe.chainId, module.address)
+    getModuleDataFromEtherscan(sdk, safe.chainId, module.address)
       .then(({ abi }) => setABI(abi))
       .catch((error) => console.warn("getModuleABI", error))
       .finally(() => setLoading(false));
