@@ -8,7 +8,7 @@ import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-mod
 import { createAndAddModule } from "../../../services";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import { fetchModulesList } from "../../../store/modules";
-import { AttachDelayModuleForm } from "../AttachDelayModuleForm";
+import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
@@ -219,11 +219,12 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       <Typography variant="h6" gutterBottom>
         Deploy Options
       </Typography>
-      <AttachDelayModuleForm
+      <AttachModuleForm
         description={description}
         modules={delayModules}
         value={delayModule}
-        onChange={(value) => setDelayModule(value)}
+        onChange={(value: string) => setDelayModule(value)}
+        type="delay"
       />
     </AddModuleModal>
   );

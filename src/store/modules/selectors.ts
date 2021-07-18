@@ -1,5 +1,5 @@
 import { RootState } from "../index";
-import { isDelayModule } from "./helpers";
+import { isDaoModule, isDelayModule } from "./helpers";
 
 export function getCurrentModule(state: RootState) {
   return state.modules.current;
@@ -19,6 +19,11 @@ export function getIsLoadingModules(state: RootState) {
 
 export function getDelayModules(state: RootState) {
   return getModulesList(state).filter(isDelayModule);
+}
+
+export function getDaoModules(state: RootState) {
+  console.log({ state });
+  return getModulesList(state).filter(isDaoModule);
 }
 
 export function getOperation(state: RootState) {

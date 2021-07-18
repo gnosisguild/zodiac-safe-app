@@ -10,6 +10,7 @@ import {
   DEFAULT_ORACLE_ADDRESSES,
   defaultProvider,
   SafeAbi,
+  getSafeInstance,
 } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
@@ -98,7 +99,7 @@ export async function createAndAddModule<
         Date.now().toString()
       );
 
-      const transactions = [daoModuleDeploymentTx];
+      const daoModuleTransactions = [daoModuleDeploymentTx];
 
       if (subModule) {
         const delayModule = getModuleInstance(
@@ -112,16 +113,16 @@ export async function createAndAddModule<
           [daoModuleExpectedAddress]
         );
 
-        transactions.push(addModuleTransaction);
+        daoModuleTransactions.push(addModuleTransaction);
       } else {
         const enableDaoModuleTransaction = await enableModule(
           safeAddress,
           daoModuleExpectedAddress
         );
-        transactions.push(enableDaoModuleTransaction);
+        daoModuleTransactions.push(enableDaoModuleTransaction);
       }
 
-      return transactions;
+      return daoModuleTransactions;
 
     case "amb":
       const { amb, owner } = args as unknown as AmbModuleParams;
@@ -161,7 +162,31 @@ export async function createAndAddModule<
         safeAddress,
         delayModuleExpectedAddress
       );
-      return [delayModuleDeploymentTx, enableDelayModuleTransaction];
+
+      const delayTransactions = [
+        delayModuleDeploymentTx,
+        enableDelayModuleTransaction,
+      ];
+
+      if (subModule) {
+        const delayModule = getModuleInstance(
+          "delay",
+          delayModuleExpectedAddress,
+          defaultProvider
+        );
+        const enableDaoModuleTx = await buildTransaction(
+          delayModule,
+          "enableModule",
+          [subModule]
+        );
+        const disableModuleOnSafeTx = await disableModule(
+          safeAddress,
+          subModule
+        );
+        delayTransactions.push(enableDaoModuleTx);
+        delayTransactions.push(disableModuleOnSafeTx);
+      }
+      return delayTransactions;
   }
 
   throw new Error("Invalid module");

@@ -17,14 +17,26 @@ export interface ModuleMetadata {
   abi: string;
 }
 
-export interface StackableModule extends Module {
+export interface StackableModule extends ModuleWithCooldown {
   subModules: Module[];
+}
+
+export interface ModuleWithCooldown extends Module {
+  timeout: number;
+  cooldown: number;
 }
 
 export interface DelayModule extends StackableModule {
   type: ModuleType.DELAY;
-  timeout: number;
-  cooldown: number;
+}
+
+export interface DaoModule extends ModuleWithCooldown {
+  type: ModuleType.DAO;
+  executor: string;
+  oracle: string;
+  expiration: number;
+  bond: string;
+  templateId: string;
 }
 
 export interface ModulesState {

@@ -5,12 +5,16 @@ import { getModuleInstance } from "@gnosis/module-factory";
 import { Fragment } from "@ethersproject/abi";
 import { isDelayModuleBytecode } from "utils/modulesValidation";
 import { getModuleDataFromEtherscan } from "utils/contracts";
-import { DelayModule, Module, ModuleType } from "./models";
+import { DaoModule, DelayModule, Module, ModuleType } from "./models";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
 export function isDelayModule(module: Module): module is DelayModule {
   return module.type === ModuleType.DELAY;
+}
+
+export function isDaoModule(module: Module): module is DaoModule {
+  return module.type === ModuleType.DAO;
 }
 
 export const sanitizeModule = async (
@@ -28,6 +32,11 @@ export const sanitizeModule = async (
       return await fetchDelayModule(moduleAddress, safe, chainId);
     }
   }
+
+  if (name === "DaoModule") {
+    type = ModuleType.DAO;
+  }
+
   return {
     name,
     type,

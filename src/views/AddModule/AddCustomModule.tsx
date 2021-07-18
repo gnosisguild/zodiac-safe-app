@@ -7,7 +7,7 @@ import { Icon } from "@gnosis.pm/safe-react-components";
 import { ActionButton } from "../../components/ActionButton";
 import { ParamInput } from "../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
-import { AttachDelayModuleForm } from "./AttachDelayModuleForm";
+import { AttachModuleForm } from "./AttachModuleForm";
 import { useRootSelector } from "../../store";
 import { getDelayModules } from "../../store/modules/selectors";
 import { enableModule } from "services";
@@ -80,10 +80,11 @@ export const AddCustomModule = () => {
         Deploy Options
       </Typography>
       <div className={classes.spacing}>
-        <AttachDelayModuleForm
+        <AttachModuleForm
           modules={delayModules}
           value={delayModule}
           onChange={(value) => setDelayModule(value)}
+          type="delay"
         />
       </div>
 

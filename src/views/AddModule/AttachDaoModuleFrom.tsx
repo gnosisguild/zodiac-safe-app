@@ -8,7 +8,7 @@ import classNames from "classnames";
 import { DelayModule } from "../../store/modules/models";
 import { formatDuration } from "../../utils/string";
 
-interface AttachDelayModuleFormProps {
+interface AttachDaoModuleFormProps {
   modules: DelayModule[];
   value?: string;
   description?: React.ReactNode;
@@ -37,12 +37,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AttachDelayModuleForm = ({
+export const AttachDaoModuleForm = ({
   modules,
   value,
   description = defaultDescription,
   onChange,
-}: AttachDelayModuleFormProps) => {
+}: AttachDaoModuleFormProps) => {
   const classes = useStyles();
   const [checked, setChecked] = useState(false);
 

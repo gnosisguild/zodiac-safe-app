@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Box, Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
-import { Row } from "../../../components/layout/Row";
-import { Checkbox } from "../../../components/input/Checkbox";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { createAndAddModule } from "services";
-import { useRootDispatch } from "store";
+import { useRootDispatch, useRootSelector } from "store";
 import { fetchModulesList } from "store/modules";
+import { getDaoModules } from "store/modules/selectors";
+import { AttachModuleForm } from "../AttachModuleForm";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -28,7 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const classes = useStyles();
-  const [checked, setChecked] = useState(false);
+  const [daoModule, setDaoModule] = useState<string>();
+  const daoModules = useRootSelector(getDaoModules);
+
   const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useRootDispatch();
 
@@ -56,9 +58,9 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           txCooldown: params.cooldown,
           txExpiration: params.timeout,
         },
-        safe.safeAddress
+        safe.safeAddress,
+        daoModule
       );
-      console.log({ txs });
       const { safeTxHash } = await sdk.txs.send({
         txs,
       });
@@ -117,17 +119,12 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       <Typography variant="h6" gutterBottom>
         Deploy Options
       </Typography>
-      <Typography gutterBottom>Attach existing modules</Typography>
-      <Typography variant="body2" gutterBottom>
-        This will add a delay to the selected modules.
-      </Typography>
-
-      <Row alignItems="center">
-        <Checkbox checked={checked} onChange={() => setChecked(!checked)} />
-        <Box marginLeft={1.5}>
-          <Typography>DAO Module</Typography>
-        </Box>
-      </Row>
+      <AttachModuleForm
+        modules={daoModules}
+        value={daoModule}
+        onChange={(value: string) => setDaoModule(value)}
+        type="dao"
+      />
     </AddModuleModal>
   );
 };
