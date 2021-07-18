@@ -1,5 +1,8 @@
 import { Contract } from "ethers";
-import { deployAndSetUpModule, getModule } from "@gnosis/module-factory";
+import {
+  deployAndSetUpModule,
+  getModuleInstance,
+} from "@gnosis/module-factory";
 import { formatBytes32String } from "ethers/lib/utils";
 import {
   AddressOne,
@@ -82,7 +85,7 @@ export async function createAndAddModule<
       } = await deployAndSetUpModule(
         module,
         [
-          safeAddress,
+          subModule || safeAddress,
           ORACLE_ADDRESS,
           timeout,
           cooldown,
@@ -98,7 +101,11 @@ export async function createAndAddModule<
       const transactions = [daoModuleDeploymentTx];
 
       if (subModule) {
-        const delayModule = getModule("delay", subModule, defaultProvider);
+        const delayModule = getModuleInstance(
+          "delay",
+          subModule,
+          defaultProvider
+        );
         const addModuleTransaction = buildTransaction(
           delayModule,
           "enableModule",
@@ -196,7 +203,7 @@ export async function editModule<Module extends KnownModules>(
     throw new Error("At least one method must be provided");
   }
 
-  const module = getModule(moduleName, address, defaultProvider);
+  const module = getModuleInstance(moduleName, address, defaultProvider);
 
   return methodsName.map((method) =>
     buildTransaction(module, method as string, [methods[method]])

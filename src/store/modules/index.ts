@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { Module, ModulesState, Operation } from "./models";
 import { fetchSafeModulesAddress } from "../../services";
-import { sanitizeModules } from "./helpers";
+import { sanitizeModule } from "./helpers";
 
 const initialModulesState: ModulesState = {
   operation: "read",
@@ -25,11 +25,10 @@ export const fetchModulesList = createAsyncThunk(
   }): Promise<Module[]> => {
     const moduleAddresses = await fetchSafeModulesAddress(safeAddress);
     const requests = moduleAddresses.map(
-      async (m) => await sanitizeModules(m, safeSDK, chainId)
+      async (m) => await sanitizeModule(m, safeSDK, chainId)
     );
     requests.reverse();
     const modules = await Promise.all(requests);
-    console.log({ modules });
     return modules;
   }
 );

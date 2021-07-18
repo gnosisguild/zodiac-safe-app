@@ -1,7 +1,7 @@
 import { Provider, Contract } from "ethers-multicall";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { getModule } from "@gnosis/module-factory";
+import { getModuleInstance } from "@gnosis/module-factory";
 import { Fragment } from "@ethersproject/abi";
 import { isDelayModuleBytecode } from "utils/modulesValidation";
 import { getModuleDataFromEtherscan } from "utils/contracts";
@@ -13,7 +13,7 @@ export function isDelayModule(module: Module): module is DelayModule {
   return module.type === ModuleType.DELAY;
 }
 
-export const sanitizeModules = async (
+export const sanitizeModule = async (
   moduleAddress: string,
   safe: SafeAppsSDK,
   chainId: number
@@ -44,7 +44,7 @@ export async function fetchDelayModule(
   const provider = new JsonRpcProvider(
     `https://rinkeby.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
   );
-  const delayModule = await getModule("delay", address, provider);
+  const delayModule = await getModuleInstance("delay", address, provider);
   const module = new Contract(
     delayModule.address,
     delayModule.interface.fragments as Fragment[]
@@ -62,7 +62,7 @@ export async function fetchDelayModule(
 
     if (subModules) {
       const requests = subModules.map((m: string) =>
-        sanitizeModules(m, safe, chainId)
+        sanitizeModule(m, safe, chainId)
       );
 
       requests.reverse();
