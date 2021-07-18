@@ -1,4 +1,5 @@
 import React from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "styled-components";
 import {
@@ -70,24 +71,28 @@ const muiTheme = createTheme({
   },
 });
 
+const queryClient = new QueryClient();
+
 const Main = () => {
   return (
     <MUIThemeProvider theme={muiTheme}>
-      <ThemeProvider theme={gnosisTheme}>
-        <CssBaseline />
-        <GlobalStyle />
-        <SafeProvider
-          loader={
-            <Row alignItems="center" justifyContent="center" height="100%">
-              <Loader size="md" />
-            </Row>
-          }
-        >
-          <Provider store={REDUX_STORE}>
-            <App />
-          </Provider>
-        </SafeProvider>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={gnosisTheme}>
+          <CssBaseline />
+          <GlobalStyle />
+          <SafeProvider
+            loader={
+              <Row alignItems="center" justifyContent="center" height="100%">
+                <Loader size="md" />
+              </Row>
+            }
+          >
+            <Provider store={REDUX_STORE}>
+              <App />
+            </Provider>
+          </SafeProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </MUIThemeProvider>
   );
 };

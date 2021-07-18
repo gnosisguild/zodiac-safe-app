@@ -1,5 +1,11 @@
 import React from "react";
-import { makeStyles, Modal, Paper, Typography } from "@material-ui/core";
+import {
+  makeStyles,
+  Modal,
+  Paper,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import classNames from "classnames";
@@ -13,6 +19,7 @@ interface AddModuleModalProps {
   image: React.ReactElement;
   tags: string[];
   readMoreLink?: string;
+  loading?: boolean;
 
   onAdd(): void;
 
@@ -60,6 +67,10 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     marginTop: theme.spacing(1.5),
   },
+  loader: {
+    display: "block",
+    margin: "0 auto",
+  },
 }));
 
 export const AddModuleModal: React.FC<AddModuleModalProps> = ({
@@ -72,6 +83,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   readMoreLink,
   onClose,
   children,
+  loading,
 }) => {
   const classes = useStyles();
   return (
@@ -116,13 +128,17 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
           <div className={classes.gutterBottom}>{children}</div>
         ) : null}
 
-        <ActionButton
-          fullWidth
-          startIcon={<Icon type="sent" size="md" color="primary" />}
-          onClick={onAdd}
-        >
-          Add Module
-        </ActionButton>
+        {loading ? (
+          <CircularProgress className={classes.loader} />
+        ) : (
+          <ActionButton
+            fullWidth
+            startIcon={<Icon type="sent" size="md" color="primary" />}
+            onClick={onAdd}
+          >
+            Add Module
+          </ActionButton>
+        )}
       </Paper>
     </Modal>
   );

@@ -22,7 +22,6 @@ export function getDelayModules(state: RootState) {
 }
 
 export function getDaoModules(state: RootState) {
-  console.log({ state });
   return getModulesList(state).filter(isDaoModule);
 }
 

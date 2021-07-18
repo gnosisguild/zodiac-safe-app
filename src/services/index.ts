@@ -139,12 +139,30 @@ export async function createAndAddModule<
         Date.now().toString()
       );
 
-      const enableAmbModuleTransaction = await enableModule(
-        safeAddress,
-        ambModuleExpectedAddress
-      );
+      const ambModuleTransactions = [ambModuleDeploymentTx];
 
-      return [ambModuleDeploymentTx, enableAmbModuleTransaction];
+      if (subModule) {
+        const delayModule = getModuleInstance(
+          "delay",
+          subModule,
+          defaultProvider
+        );
+        const addModuleTransaction = buildTransaction(
+          delayModule,
+          "enableModule",
+          [ambModuleExpectedAddress]
+        );
+
+        ambModuleTransactions.push(addModuleTransaction);
+      } else {
+        const enableDaoModuleTransaction = await enableModule(
+          safeAddress,
+          ambModuleExpectedAddress
+        );
+        ambModuleTransactions.push(enableDaoModuleTransaction);
+      }
+
+      return ambModuleTransactions;
 
     case "delay":
       const { txCooldown, txExpiration } = args as unknown as DelayModuleParams;
