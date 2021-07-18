@@ -5,10 +5,10 @@ import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { createAndAddModule } from "services";
-import { useRootDispatch, useRootSelector } from "store";
-import { fetchModulesList } from "store/modules";
+import { useRootSelector } from "store";
 import { getDaoModules } from "store/modules/selectors";
 import { AttachModuleForm } from "../AttachModuleForm";
+import { useFetchTransaction } from "hooks/useFetchTransaction";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
   fields: {
     marginBottom: theme.spacing(1),
   },
+  loadMessage: {
+    textAlign: "center",
+  },
 }));
 
 export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
@@ -32,7 +35,6 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const daoModules = useRootSelector(getDaoModules);
 
   const { sdk, safe } = useSafeAppsSDK();
-  const dispatch = useRootDispatch();
 
   const [params, setParams] = useState<DelayModuleParams>({
     timeout: 86400,
@@ -49,6 +51,9 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     });
   };
 
+  const { setLoading, setSafeTxSuccessful, setSafeHash, loading, loadMessage } =
+    useFetchTransaction(onClose);
+
   const handleAddDelayModule = async () => {
     try {
       const txs = await createAndAddModule(
@@ -61,20 +66,13 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         safe.safeAddress,
         daoModule
       );
+      setLoading(true);
       const { safeTxHash } = await sdk.txs.send({
         txs,
       });
-      console.log({ safeTxHash });
-      const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-      console.log({ safeTx });
 
-      dispatch(
-        fetchModulesList({
-          safeSDK: sdk,
-          chainId: safe.chainId,
-          safeAddress: safe.safeAddress,
-        })
-      );
+      setSafeTxSuccessful(false);
+      setSafeHash(safeTxHash);
     } catch (error) {
       console.log(error);
     }
@@ -90,6 +88,7 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
       onAdd={handleAddDelayModule}
       readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
+      loading={loading}
     >
       <Typography variant="h6" gutterBottom>
         Parameters
@@ -116,15 +115,23 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         </Grid>
       </Grid>
 
-      <Typography variant="h6" gutterBottom>
-        Deploy Options
-      </Typography>
-      <AttachModuleForm
-        modules={daoModules}
-        value={daoModule}
-        onChange={(value: string) => setDaoModule(value)}
-        type="dao"
-      />
+      {loading ? (
+        <Typography variant="h5" className={classes.loadMessage}>
+          {loadMessage}
+        </Typography>
+      ) : (
+        <>
+          <Typography variant="h6" gutterBottom>
+            Deploy Options
+          </Typography>
+          <AttachModuleForm
+            modules={daoModules}
+            value={daoModule}
+            onChange={(value: string) => setDaoModule(value)}
+            type="dao"
+          />
+        </>
+      )}
     </AddModuleModal>
   );
 };

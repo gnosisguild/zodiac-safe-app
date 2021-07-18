@@ -1,11 +1,12 @@
 import React from "react";
-import { Box, makeStyles } from "@material-ui/core";
+import { Box, CircularProgress, makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useFetchTransaction } from "hooks/useFetchTransaction";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -32,11 +33,16 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
 
+  const { setLoading, setSafeTxSuccessful, setSafeHash, loading } = useFetchTransaction();
+
   const removeModule = async () => {
+    setLoading(true);
     const transactions = await disableModule(safe.safeAddress, module.address);
-    await sdk.txs.send({
+    const { safeTxHash } = await sdk.txs.send({
       txs: [transactions],
     });
+    setSafeTxSuccessful(false);
+    setSafeHash(safeTxHash);
   };
 
   return (
@@ -54,14 +60,18 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
 
       <Box flexGrow={1} />
 
-      <Button
-        size="md"
-        iconType="delete"
-        variant="outlined"
-        onClick={removeModule}
-      >
-        Remove
-      </Button>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <Button
+          size="md"
+          iconType="delete"
+          variant="outlined"
+          onClick={removeModule}
+        >
+          Remove
+        </Button>
+      )}
     </div>
   );
 };

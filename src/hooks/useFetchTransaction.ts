@@ -50,7 +50,7 @@ export const useFetchTransaction = (onClose?: () => void) => {
     }
   }, [safeHash, sdk]);
 
-  useQuery("fetchSafeTx", getSafeTransaction, {
+  const result = useQuery("fetchSafeTx", getSafeTransaction, {
     enabled: !!safeHash && !safeTxSuccessful,
     refetchInterval: 1000,
   });
@@ -64,5 +64,6 @@ export const useFetchTransaction = (onClose?: () => void) => {
     setLoadMessage,
     setLoading,
     setSafeHash,
+    ...result,
   };
 };

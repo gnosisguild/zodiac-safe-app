@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
@@ -6,8 +6,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
 import { createAndAddModule } from "../../../services";
-import { useRootDispatch, useRootSelector } from "../../../store";
-import { fetchModulesList } from "../../../store/modules";
+import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
@@ -51,6 +50,7 @@ function getDefaultOracle(chainId: number): string {
 export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
+  const [hasError, setHasError] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();
   const delayModules = useRootSelector(getDelayModules);
   const [params, setParams] = useState<DaoModuleParams>({
@@ -72,7 +72,14 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     });
   };
 
-  const { setLoading, setSafeTxSuccessful, setSafeHash, loading, loadMessage } = useFetchTransaction(onClose);
+  const {
+    setLoading,
+    setSafeTxSuccessful,
+    setSafeHash,
+    loading,
+    loadMessage,
+    error,
+  } = useFetchTransaction(onClose);
 
   const handleAddDaoModule = async () => {
     try {
@@ -98,6 +105,7 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     } catch (error) {
       console.log("Error deploying module: ");
       console.log(error);
+      setHasError(true);
     }
   };
 
@@ -175,6 +183,7 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
             color="secondary"
             placeholder="10929783"
             value={params.templateId}
+            error={hasError}
             onChange={(event) =>
               onParamChange("templateId", event.target.value)
             }

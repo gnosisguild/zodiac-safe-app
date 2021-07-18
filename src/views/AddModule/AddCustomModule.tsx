@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import {
+  Box,
+  CircularProgress,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
 import { ArrowIcon } from "../../components/icons/ArrowIcon";
 import { Collapsable } from "../../components/Collapsable";
 import { Row } from "../../components/layout/Row";
@@ -12,6 +17,7 @@ import { useRootSelector } from "../../store";
 import { getDelayModules } from "../../store/modules/selectors";
 import { enableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useFetchTransaction } from "hooks/useFetchTransaction";
 
 const useStyles = makeStyles((theme) => ({
   clickable: {
@@ -44,15 +50,24 @@ export const AddCustomModule = () => {
     setAddressValid(!!address.length && isValid);
   };
 
+  const {
+    setLoading,
+    setSafeTxSuccessful,
+    setSafeHash,
+    loading,
+    loadMessage,
+    error,
+  } = useFetchTransaction();
+
   const addModule = async () => {
+    setLoading(true);
     const tx = await enableModule(safe.safeAddress, address);
 
     const { safeTxHash } = await sdk.txs.send({
       txs: [tx],
     });
-    console.log({ safeTxHash });
-    const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-    console.log({ safeTx });
+    setSafeTxSuccessful(false);
+    setSafeHash(safeTxHash);
   };
 
   const content = (
@@ -91,10 +106,16 @@ export const AddCustomModule = () => {
       <ActionButton
         fullWidth
         disabled={!isAddressValid}
-        startIcon={<Icon type="sent" size="md" color="primary" />}
+        startIcon={
+          loading ? (
+            <CircularProgress />
+          ) : (
+            <Icon type="sent" size="md" color="primary" />
+          )
+        }
         onClick={addModule}
       >
-        Add Module
+        {loading ? "Adding Module..." : "Add Module"}
       </ActionButton>
     </>
   );
