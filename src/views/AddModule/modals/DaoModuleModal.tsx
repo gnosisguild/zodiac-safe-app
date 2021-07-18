@@ -1,22 +1,21 @@
-import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
 import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
+import { ethers } from "ethers";
+import { parseUnits } from "ethers/lib/utils";
+import { AddModuleModal } from "./AddModuleModal";
+import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
 import { createAndAddModule } from "../../../services";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import { fetchModulesList } from "../../../store/modules";
-import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { AttachDelayModuleForm } from "../AttachDelayModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { ethers } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
 
 interface DaoModuleModalProps {
   open: boolean;
-
   onClose?(): void;
 }
 
@@ -80,16 +79,18 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           ...params,
           bond: minimumBond.toString(),
         },
-        safe.safeAddress
+        safe.safeAddress,
+        delayModule
       );
 
       const { safeTxHash } = await sdk.txs.send({
         txs,
       });
+
       console.log({ safeTxHash });
+      console.log({ delayModule });
       const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
       console.log({ safeTx });
-
       dispatch(
         fetchModulesList({
           safeSDK: sdk,

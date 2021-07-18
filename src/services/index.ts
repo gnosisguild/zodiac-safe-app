@@ -64,7 +64,12 @@ type KnownMethods<T extends KnownModules> = keyof typeof MODULE_METHODS[T];
 export async function createAndAddModule<
   Module extends KnownModules,
   Arg = ModuleParams[Module]
->(module: Module, args: Arg, safeAddress: string): Promise<Transaction[]> {
+>(
+  module: Module,
+  args: Arg,
+  safeAddress: string,
+  subModule?: string
+): Promise<Transaction[]> {
   const { chainId } = await defaultProvider.getNetwork();
   switch (module) {
     case "dao":
@@ -90,12 +95,26 @@ export async function createAndAddModule<
         Date.now().toString()
       );
 
-      const enableDaoModuleTransaction = await enableModule(
-        safeAddress,
-        daoModuleExpectedAddress
-      );
+      const transactions = [daoModuleDeploymentTx];
 
-      return [daoModuleDeploymentTx, enableDaoModuleTransaction];
+      if (subModule) {
+        const delayModule = getModule("delay", subModule, defaultProvider);
+        const addModuleTransaction = buildTransaction(
+          delayModule,
+          "enableModule",
+          [daoModuleExpectedAddress]
+        );
+
+        transactions.push(addModuleTransaction);
+      } else {
+        const enableDaoModuleTransaction = await enableModule(
+          safeAddress,
+          daoModuleExpectedAddress
+        );
+        transactions.push(enableDaoModuleTransaction);
+      }
+
+      return transactions;
 
     case "amb":
       const { amb, owner } = args as unknown as AmbModuleParams;

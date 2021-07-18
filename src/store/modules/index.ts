@@ -36,7 +36,7 @@ export const fetchModulesList = createAsyncThunk(
           if (name === "DelayModule") {
             const code = await safeSDK.eth.getCode([module.implAddress]);
             if (isDelayModuleBytecode(code)) {
-              return fetchDelayModule(module.address);
+              return await fetchDelayModule(module.address, chainId);
             }
           }
         } catch (error) {
