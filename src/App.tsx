@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { AppLayout } from "./components/layout/AppLayout";
-import { fetchModulesList } from "./store/modules";
+import { fetchModulesList, fetchPendingModules } from "./store/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useRootDispatch } from "./store";
 import { Panel } from "./views/Panel/Panel";
@@ -10,9 +10,8 @@ const App: React.FC = () => {
   const dispatch = useRootDispatch();
   const { safe, sdk } = useSafeAppsSDK();
 
-  // sdk.txs.getBySafeTxHash();
-
   useEffect(() => {
+    dispatch(fetchPendingModules(safe));
     dispatch(
       fetchModulesList({
         safeSDK: sdk,

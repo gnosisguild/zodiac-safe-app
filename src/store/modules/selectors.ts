@@ -28,3 +28,7 @@ export function getDaoModules(state: RootState) {
 export function getOperation(state: RootState) {
   return state.modules.operation;
 }
+
+export function getPendingModules(state: RootState) {
+  return state.modules.pendingModules;
+}

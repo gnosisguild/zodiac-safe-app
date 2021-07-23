@@ -10,10 +10,11 @@ import {
   DEFAULT_ORACLE_ADDRESSES,
   defaultProvider,
   SafeAbi,
-  getSafeInstance,
 } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
+import { getNetworkExplorerInfo } from "../utils/explorers";
+import { SafeTransaction } from "../store/modules/models";
 
 const MODULE_METHODS = {
   dao: {
@@ -262,3 +263,22 @@ export const callContract = (
   const contract = new Contract(address, abi, defaultProvider);
   return contract.functions[method](...data);
 };
+
+export async function fetchSafeTransactions(
+  chainId: number,
+  safeAddress: string
+) {
+  const network = getNetworkExplorerInfo(chainId);
+  if (!network) return [];
+
+  const url = new URL(
+    `api/v1/safes/${safeAddress}/transactions`,
+    network.safeTransactionApi
+  );
+  url.searchParams.set("executed", "false");
+
+  const request = await fetch(url.toString());
+  const response = await request.json();
+
+  return response.results as SafeTransaction[];
+}

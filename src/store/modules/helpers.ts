@@ -1,11 +1,18 @@
-import { Provider, Contract } from "ethers-multicall";
+import { Contract, Provider } from "ethers-multicall";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { getModuleInstance } from "@gnosis/module-factory";
 import { Fragment } from "@ethersproject/abi";
 import { isDelayModuleBytecode } from "utils/modulesValidation";
 import { getModuleDataFromEtherscan } from "utils/contracts";
-import { DaoModule, DelayModule, Module, ModuleType } from "./models";
+import {
+  DaoModule,
+  DataDecoded,
+  DelayModule,
+  Module,
+  ModuleType,
+  MultiSendDataDecoded,
+} from "./models";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
@@ -98,4 +105,10 @@ export async function fetchDelayModule(
       cooldown: 86400,
     };
   }
+}
+
+export function isMultiSendDataEncoded(
+  dataEncoded: DataDecoded
+): dataEncoded is MultiSendDataDecoded {
+  return dataEncoded.method === "multiSend";
 }

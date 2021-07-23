@@ -95,9 +95,5 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
     return <div className={classes.subModules}>{[content, lines]}</div>;
   }
 
-  return (
-    <Box display="flex" flexDirection="column">
-      {content}
-    </Box>
-  );
+  return <>{content}</>;
 };

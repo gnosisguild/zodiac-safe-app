@@ -6,9 +6,11 @@ import { Row } from "../../components/layout/Row";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
   getCurrentModule,
+  getIsLoadingModules,
   getModulesList,
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
+import { DaoModulePendingItem } from "./Items/DaoModulePendingItem";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -41,6 +43,7 @@ export const Panel = () => {
   const dispatch = useRootDispatch();
   const modulesList = useRootSelector(getModulesList);
   const currentModule = useRootSelector(getCurrentModule);
+  const modulesLoading = useRootSelector(getIsLoadingModules);
 
   const handleAddModule = () => {
     dispatch(unsetCurrentModule());
@@ -67,7 +70,10 @@ export const Panel = () => {
         ) : null}
       </Row>
 
-      <ModuleList modules={modulesList} />
+      <Box display="flex" flexDirection="column">
+        {modulesLoading ? null : <DaoModulePendingItem />}
+        <ModuleList modules={modulesList} />
+      </Box>
     </Box>
   );
 };

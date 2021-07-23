@@ -1,8 +1,13 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import { Module, ModulesState, Operation } from "./models";
-import { fetchSafeModulesAddress } from "../../services";
-import { sanitizeModule } from "./helpers";
+import { Module, ModulesState, ModuleType, Operation } from "./models";
+import { fetchSafeModulesAddress, fetchSafeTransactions } from "../../services";
+import { isMultiSendDataEncoded, sanitizeModule } from "./helpers";
+
+const {
+  REACT_APP_MODULE_FACTORY_PROXY: MODULE_FACTORY_PROXY,
+  REACT_APP_DAO_MODULE_MASTER_COPY: DAO_MODULE_MASTER_COPY,
+} = process.env;
 
 const initialModulesState: ModulesState = {
   operation: "read",
@@ -10,6 +15,7 @@ const initialModulesState: ModulesState = {
   loadingModules: false,
   list: [],
   current: undefined,
+  pendingModules: [],
 };
 
 export const fetchModulesList = createAsyncThunk(
@@ -28,8 +34,46 @@ export const fetchModulesList = createAsyncThunk(
       async (m) => await sanitizeModule(m, safeSDK, chainId)
     );
     requests.reverse();
-    const modules = await Promise.all(requests);
-    return modules;
+    return await Promise.all(requests);
+  }
+);
+
+export const fetchPendingModules = createAsyncThunk(
+  "modules/fetchPendingModules",
+  async ({
+    safeAddress,
+    chainId,
+  }: {
+    chainId: number;
+    safeAddress: string;
+  }) => {
+    const transactions = await fetchSafeTransactions(chainId, safeAddress);
+    try {
+      const isDaoModuleTxPending = transactions.some(
+        (safeTransaction) =>
+          isMultiSendDataEncoded(safeTransaction.dataDecoded) &&
+          safeTransaction.dataDecoded.parameters[0].valueDecoded.some(
+            (transaction) =>
+              transaction.to.toLowerCase() === MODULE_FACTORY_PROXY &&
+              transaction.dataDecoded &&
+              transaction.dataDecoded.method === "deployModule" &&
+              transaction.dataDecoded.parameters.some(
+                (param) =>
+                  param.name === "masterCopy" &&
+                  param.value.toLowerCase() === DAO_MODULE_MASTER_COPY
+              )
+          )
+      );
+
+      console.log({ isDaoModuleTxPending });
+
+      if (isDaoModuleTxPending) {
+        return [ModuleType.DAO];
+      }
+    } catch (errpr) {
+      console.log("err", errpr);
+    }
+    return [];
   }
 );
 
@@ -64,6 +108,9 @@ export const modulesSlice = createSlice({
     builder.addCase(fetchModulesList.fulfilled, (state, action) => {
       state.loadingModules = false;
       state.list = action.payload;
+    });
+    builder.addCase(fetchPendingModules.fulfilled, (state, action) => {
+      state.pendingModules = action.payload;
     });
   },
 });

@@ -51,8 +51,10 @@ const useStyles = makeStyles((theme) => ({
       borderLeftColor: theme.palette.divider,
       zIndex: 2,
     },
-    "&.active": {
+    "&.cursor": {
       cursor: "auto",
+    },
+    "&.active": {
       backgroundColor: theme.palette.background.default,
       borderLeftStyle: "solid",
       borderLeftWidth: 3,
@@ -80,7 +82,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
       {...PaperProps}
       className={classNames(
         classes.moduleItem,
-        { active, sub },
+        { active, sub, cursor: active || !onClick },
         PaperProps?.className
       )}
     >

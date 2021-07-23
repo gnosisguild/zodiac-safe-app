@@ -45,6 +45,46 @@ export interface ModulesState {
   loadingModules: boolean;
   list: Module[];
   reloadCount: number;
+  pendingModules: ModuleType[];
 }
 
 export type Operation = "read" | "write";
+
+export interface DataDecoded {
+  method: string;
+  parameters: any[];
+}
+
+export interface MultiSendDataDecoded extends DataDecoded {
+  method: "multiSend";
+  parameters: {
+    name: "transactions";
+    type: "bytes";
+    value: string;
+    valueDecoded: {
+      operation: number;
+      to: string;
+      value: string;
+      data: string;
+      dataDecoded: {
+        method: string;
+        parameters: {
+          name: string;
+          type: string;
+          value: string;
+        }[];
+      };
+    }[];
+  }[];
+}
+
+export interface SafeTransaction {
+  safe: string;
+  to: string;
+  value: string;
+  data: string;
+  operation: 0 | 1;
+  gasToken: string;
+  nonce: number;
+  dataDecoded: DataDecoded;
+}
