@@ -5,9 +5,6 @@ import { makeStyles, Typography } from "@material-ui/core";
 import { Link } from "../../../components/text/Link";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { getNetworkExplorerInfo } from "../../../utils/explorers";
-import { useRootSelector } from "../../../store";
-import { getPendingModules } from "../../../store/modules/selectors";
-import { ModuleType } from "../../../store/modules/models";
 
 const useStyles = makeStyles((theme) => ({
   greyText: {
@@ -21,11 +18,6 @@ const useStyles = makeStyles((theme) => ({
 export const DaoModulePendingItem = () => {
   const classes = useStyles();
   const { safe } = useSafeAppsSDK();
-  const isDaoModulePending = useRootSelector(
-    (state) => ModuleType.DAO in getPendingModules(state)
-  );
-
-  if (!isDaoModulePending) return null;
 
   const network = getNetworkExplorerInfo(safe.chainId);
   const link = network

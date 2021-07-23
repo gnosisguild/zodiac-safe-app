@@ -1,17 +1,19 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
-import { Module } from "../../store/modules/models";
+import { Module, ModuleType } from "../../store/modules/models";
 import { setCurrentModule } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
   getCurrentModule,
   getIsLoadingModules,
+  getPendingModules,
 } from "../../store/modules/selectors";
 import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg";
 import { Skeleton } from "@material-ui/lab";
 import { PANEL_ITEM_HEIGHT, PanelItem } from "./Items/PanelItem";
 import { ModuleItem } from "./Items/ModuleItem";
 import { resetAddTransaction } from "../../store/transactionBuilder";
+import { DaoModulePendingItem } from "./Items/DaoModulePendingItem";
 
 interface ModuleListProps {
   modules: Module[];
@@ -48,6 +50,9 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const dispatch = useRootDispatch();
   const currentModule = useRootSelector(getCurrentModule);
   const modulesLoading = useRootSelector(getIsLoadingModules);
+  const isDaoModulePending = useRootSelector(
+    (state) => ModuleType.DAO in getPendingModules(state)
+  );
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
@@ -63,7 +68,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
     );
   }
 
-  if (!modules.length) {
+  if (!modules.length && !isDaoModulePending) {
     return (
       <PanelItem image={<AvatarEmptyIcon />}>
         <Typography className={classes.emptyModulesText}>
@@ -95,5 +100,10 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
     return <div className={classes.subModules}>{[content, lines]}</div>;
   }
 
-  return <>{content}</>;
+  return (
+    <Box display="flex" flexDirection="column">
+      {isDaoModulePending ? <DaoModulePendingItem /> : null}
+      {content}
+    </Box>
+  );
 };

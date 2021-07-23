@@ -14,7 +14,7 @@ import {
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
-import { SafeTransaction } from "../store/modules/models";
+import { SafeInfo, SafeTransaction } from "../store/modules/models";
 
 const MODULE_METHODS = {
   dao: {
@@ -266,7 +266,8 @@ export const callContract = (
 
 export async function fetchSafeTransactions(
   chainId: number,
-  safeAddress: string
+  safeAddress: string,
+  params: Record<string, string>
 ) {
   const network = getNetworkExplorerInfo(chainId);
   if (!network) return [];
@@ -275,10 +276,27 @@ export async function fetchSafeTransactions(
     `api/v1/safes/${safeAddress}/transactions`,
     network.safeTransactionApi
   );
-  url.searchParams.set("executed", "false");
+
+  Object.entries(params).forEach(([key, value]) =>
+    url.searchParams.set(key, value)
+  );
 
   const request = await fetch(url.toString());
   const response = await request.json();
 
   return response.results as SafeTransaction[];
+}
+
+export async function fetchSafeInfo(chainId: number, safeAddress: string) {
+  const network = getNetworkExplorerInfo(chainId);
+  if (!network) throw new Error("invalid network");
+
+  const url = new URL(
+    `api/v1/safes/${safeAddress}`,
+    network.safeTransactionApi
+  );
+
+  const request = await fetch(url.toString());
+  const response = await request.json();
+  return response as SafeInfo;
 }

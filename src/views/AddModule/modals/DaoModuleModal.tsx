@@ -6,12 +6,13 @@ import { parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
 import { createAndAddModule } from "../../../services";
-import { useRootSelector } from "../../../store";
+import {useRootDispatch, useRootSelector} from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
+import { fetchPendingModules } from "../../../store/modules";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -49,6 +50,8 @@ function getDefaultOracle(chainId: number): string {
 export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
+  const dispatch = useRootDispatch();
+
   const [hasError, setHasError] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();
   const delayModules = useRootSelector(getDelayModules);
@@ -87,6 +90,7 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
 
       await sdk.txs.send({ txs });
       if (onClose) onClose();
+      dispatch(fetchPendingModules(safe));
     } catch (error) {
       console.log("Error deploying module: ");
       console.log(error);

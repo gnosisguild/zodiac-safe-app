@@ -1,7 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { Module, ModulesState, ModuleType, Operation } from "./models";
-import { fetchSafeModulesAddress, fetchSafeTransactions } from "../../services";
+import {
+  fetchSafeInfo,
+  fetchSafeModulesAddress,
+  fetchSafeTransactions,
+} from "../../services";
 import { isMultiSendDataEncoded, sanitizeModule } from "./helpers";
 
 const {
@@ -47,31 +51,30 @@ export const fetchPendingModules = createAsyncThunk(
     chainId: number;
     safeAddress: string;
   }) => {
-    const transactions = await fetchSafeTransactions(chainId, safeAddress);
-    try {
-      const isDaoModuleTxPending = transactions.some(
-        (safeTransaction) =>
-          isMultiSendDataEncoded(safeTransaction.dataDecoded) &&
-          safeTransaction.dataDecoded.parameters[0].valueDecoded.some(
-            (transaction) =>
-              transaction.to.toLowerCase() === MODULE_FACTORY_PROXY &&
-              transaction.dataDecoded &&
-              transaction.dataDecoded.method === "deployModule" &&
-              transaction.dataDecoded.parameters.some(
-                (param) =>
-                  param.name === "masterCopy" &&
-                  param.value.toLowerCase() === DAO_MODULE_MASTER_COPY
-              )
-          )
-      );
+    const safeInfo = await fetchSafeInfo(chainId, safeAddress);
+    const transactions = await fetchSafeTransactions(chainId, safeAddress, {
+      nonce__gte: safeInfo.nonce.toString(),
+    });
 
-      console.log({ isDaoModuleTxPending });
+    const isDaoModuleTxPending = transactions.some(
+      (safeTransaction) =>
+        safeTransaction.dataDecoded &&
+        isMultiSendDataEncoded(safeTransaction.dataDecoded) &&
+        safeTransaction.dataDecoded.parameters[0].valueDecoded.some(
+          (transaction) =>
+            transaction.to.toLowerCase() === MODULE_FACTORY_PROXY &&
+            transaction.dataDecoded &&
+            transaction.dataDecoded.method === "deployModule" &&
+            transaction.dataDecoded.parameters.some(
+              (param) =>
+                param.name === "masterCopy" &&
+                param.value.toLowerCase() === DAO_MODULE_MASTER_COPY
+            )
+        )
+    );
 
-      if (isDaoModuleTxPending) {
-        return [ModuleType.DAO];
-      }
-    } catch (errpr) {
-      console.log("err", errpr);
+    if (isDaoModuleTxPending) {
+      return [ModuleType.DAO];
     }
     return [];
   }
