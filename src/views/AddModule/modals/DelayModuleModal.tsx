@@ -8,10 +8,10 @@ import { createAndAddModule } from "services";
 import { useRootSelector } from "store";
 import { getDaoModules } from "store/modules/selectors";
 import { AttachModuleForm } from "../AttachModuleForm";
-import { useFetchTransaction } from "hooks/useFetchTransaction";
 
 interface DaoModuleModalProps {
   open: boolean;
+
   onClose?(): void;
 }
 
@@ -51,9 +51,6 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     });
   };
 
-  const { setLoading, setSafeTxSuccessful, setSafeHash, loading, loadMessage } =
-    useFetchTransaction(onClose);
-
   const handleAddDelayModule = async () => {
     try {
       const txs = await createAndAddModule(
@@ -66,13 +63,10 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         safe.safeAddress,
         daoModule
       );
-      setLoading(true);
-      const { safeTxHash } = await sdk.txs.send({
-        txs,
-      });
 
-      setSafeTxSuccessful(false);
-      setSafeHash(safeTxHash);
+      await sdk.txs.send({ txs });
+
+      if (onClose) onClose();
     } catch (error) {
       console.log(error);
     }
@@ -88,7 +82,6 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
       onAdd={handleAddDelayModule}
       readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
-      loading={loading}
     >
       <Typography variant="h6" gutterBottom>
         Parameters
@@ -115,23 +108,15 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         </Grid>
       </Grid>
 
-      {loading ? (
-        <Typography variant="h5" className={classes.loadMessage}>
-          {loadMessage}
-        </Typography>
-      ) : (
-        <>
-          <Typography variant="h6" gutterBottom>
-            Deploy Options
-          </Typography>
-          <AttachModuleForm
-            modules={daoModules}
-            value={daoModule}
-            onChange={(value: string) => setDaoModule(value)}
-            type="dao"
-          />
-        </>
-      )}
+      <Typography variant="h6" gutterBottom>
+        Deploy Options
+      </Typography>
+      <AttachModuleForm
+        modules={daoModules}
+        value={daoModule}
+        onChange={(value: string) => setDaoModule(value)}
+        type="dao"
+      />
     </AddModuleModal>
   );
 };

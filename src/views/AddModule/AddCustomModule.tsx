@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  CircularProgress,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import { ArrowIcon } from "../../components/icons/ArrowIcon";
 import { Collapsable } from "../../components/Collapsable";
 import { Row } from "../../components/layout/Row";
@@ -17,7 +12,6 @@ import { useRootSelector } from "../../store";
 import { getDelayModules } from "../../store/modules/selectors";
 import { enableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { useFetchTransaction } from "hooks/useFetchTransaction";
 
 const useStyles = makeStyles((theme) => ({
   clickable: {
@@ -34,40 +28,37 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// TODO: Implement - Add Custom Module
 export const AddCustomModule = () => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
+  const delayModules = useRootSelector(getDelayModules);
+
   const [open, setOpen] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [address, setAddress] = useState("");
   const [isAddressValid, setAddressValid] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();
-  const delayModules = useRootSelector(getDelayModules);
 
   const handleAddressChange = (address: string, isValid: boolean) => {
     setAddress(address);
     setAddressValid(!!address.length && isValid);
   };
 
-  const {
-    setLoading,
-    setSafeTxSuccessful,
-    setSafeHash,
-    loading,
-    loadMessage,
-    error,
-  } = useFetchTransaction();
+  const resetState = () => {
+    setOpen(false);
+    setAddress("");
+    setAddressValid(false);
+    setDelayModule(undefined);
+  };
 
   const addModule = async () => {
-    setLoading(true);
     const tx = await enableModule(safe.safeAddress, address);
 
-    const { safeTxHash } = await sdk.txs.send({
-      txs: [tx],
-    });
-    setSafeTxSuccessful(false);
-    setSafeHash(safeTxHash);
+    try {
+      await sdk.txs.send({ txs: [tx] });
+      resetState();
+    } catch (error) {
+      console.warn("error adding custom module", error);
+    }
   };
 
   const content = (
@@ -106,16 +97,10 @@ export const AddCustomModule = () => {
       <ActionButton
         fullWidth
         disabled={!isAddressValid}
-        startIcon={
-          loading ? (
-            <CircularProgress />
-          ) : (
-            <Icon type="sent" size="md" color="primary" />
-          )
-        }
+        startIcon={<Icon type="sent" size="md" color="primary" />}
         onClick={addModule}
       >
-        {loading ? "Adding Module..." : "Add Module"}
+        Add Module
       </ActionButton>
     </>
   );
