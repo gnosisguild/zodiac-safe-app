@@ -12,7 +12,6 @@ import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { useFetchTransaction } from "hooks/useFetchTransaction";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -72,15 +71,6 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
     });
   };
 
-  const {
-    setLoading,
-    setSafeTxSuccessful,
-    setSafeHash,
-    loading,
-    loadMessage,
-    error,
-  } = useFetchTransaction(onClose);
-
   const handleAddDaoModule = async () => {
     try {
       const minimumBond = parseUnits(params.bond);
@@ -95,13 +85,8 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         delayModule
       );
 
-      setLoading(true);
-      const { safeTxHash } = await sdk.txs.send({
-        txs,
-      });
-
-      setSafeTxSuccessful(false);
-      setSafeHash(safeTxHash);
+      await sdk.txs.send({ txs });
+      if (onClose) onClose();
     } catch (error) {
       console.log("Error deploying module: ");
       console.log(error);
@@ -157,7 +142,6 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
       onAdd={handleAddDaoModule}
       readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
-      loading={loading}
     >
       <Typography variant="h6" gutterBottom>
         Parameters
@@ -226,24 +210,16 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
         </Grid>
       </Grid>
 
-      {loading ? (
-        <Typography variant="h5" className={classes.loadMessage}>
-          {loadMessage}
-        </Typography>
-      ) : (
-        <>
-          <Typography variant="h6" gutterBottom>
-            Deploy Options
-          </Typography>
-          <AttachModuleForm
-            description={description}
-            modules={delayModules}
-            value={delayModule}
-            onChange={(value: string) => setDelayModule(value)}
-            type="delay"
-          />
-        </>
-      )}
+      <Typography variant="h6" gutterBottom>
+        Deploy Options
+      </Typography>
+      <AttachModuleForm
+        description={description}
+        modules={delayModules}
+        value={delayModule}
+        onChange={(value: string) => setDelayModule(value)}
+        type="delay"
+      />
     </AddModuleModal>
   );
 };
