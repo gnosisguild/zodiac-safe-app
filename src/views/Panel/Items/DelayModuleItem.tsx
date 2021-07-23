@@ -70,9 +70,7 @@ export const DelayModuleItem = ({
           gutterBottom
         />
         <div>
-          {/*TODO: Validate delay = timeout*/}
           <Badge>{formatDuration(module.timeout)} delay</Badge>
-          {/*TODO: On click, take to the transaction builder with pre-populated fields to change delay*/}
           <Link
             color="secondary"
             noWrap

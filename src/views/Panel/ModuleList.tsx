@@ -1,4 +1,4 @@
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import React from "react";
 import { Module } from "../../store/modules/models";
 import { setCurrentModule } from "../../store/modules";

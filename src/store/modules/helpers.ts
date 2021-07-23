@@ -56,7 +56,6 @@ export async function fetchDelayModule(
   safe: SafeAppsSDK,
   chainId: number
 ): Promise<DelayModule> {
-  // TODO: Fetch Delay Module Data
   const provider = new JsonRpcProvider(
     `https://rinkeby.infura.io/v3/${process.env.REACT_APP_INFURA_ID}`
   );

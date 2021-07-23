@@ -48,7 +48,7 @@ export const useFetchTransaction = (onClose?: () => void) => {
         return safeTx;
       }
     }
-  }, [safeHash, sdk]);
+  }, [dispatch, loadMessage, onClose, safe, safeHash, sdk]);
 
   const result = useQuery("fetchSafeTx", getSafeTransaction, {
     enabled: !!safeHash && !safeTxSuccessful,

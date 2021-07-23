@@ -33,7 +33,8 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
 
-  const { setLoading, setSafeTxSuccessful, setSafeHash, loading } = useFetchTransaction();
+  const { setLoading, setSafeTxSuccessful, setSafeHash, loading } =
+    useFetchTransaction();
 
   const removeModule = async () => {
     setLoading(true);

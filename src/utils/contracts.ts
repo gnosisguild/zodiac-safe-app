@@ -152,13 +152,21 @@ export const getModuleDataFromEtherscan = memoize(
 
     if (isGenericProxy(bytecode)) {
       const masterAddress = getGenericProxyMaster(bytecode);
-      const module = await getModuleDataFromEtherscan(safeSDK, chainId, masterAddress);
+      const module = await getModuleDataFromEtherscan(
+        safeSDK,
+        chainId,
+        masterAddress
+      );
       return { ...module, address };
     }
 
     if (isGnosisGenericProxy(bytecode)) {
       const masterAddress = await getProxyMaster(address);
-      const module = await getModuleDataFromEtherscan(safeSDK, chainId, masterAddress);
+      const module = await getModuleDataFromEtherscan(
+        safeSDK,
+        chainId,
+        masterAddress
+      );
       return { ...module, address };
     }
 
