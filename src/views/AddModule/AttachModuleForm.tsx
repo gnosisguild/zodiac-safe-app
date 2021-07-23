@@ -7,6 +7,7 @@ import { Address } from "../../components/ethereum/Address";
 import classNames from "classnames";
 import { ModuleWithCooldown } from "../../store/modules/models";
 import { formatDuration } from "../../utils/string";
+import { Column } from "../../components/layout/Column";
 
 interface AttachModuleFormProps {
   modules: ModuleWithCooldown[];
@@ -69,7 +70,7 @@ export const AttachModuleForm = ({
                   checked={value === module.address}
                   onClick={() => onChange(module.address)}
                 />
-                <div>
+                <Column justifyContent="center">
                   {type === "delay" ? (
                     <Badge
                       className={classNames(classes.text, classes.delayText)}
@@ -77,9 +78,6 @@ export const AttachModuleForm = ({
                       {formatDuration(module.timeout)} delay
                     </Badge>
                   ) : null}
-                  {/**
-                   * @TODO Make sure alignment in dao module addresses looks good
-                   */}
                   <Address
                     short
                     hideCopyBtn
@@ -88,7 +86,7 @@ export const AttachModuleForm = ({
                     address={module.address}
                     className={classes.text}
                   />
-                </div>
+                </Column>
               </Row>
             ))
           : null}
