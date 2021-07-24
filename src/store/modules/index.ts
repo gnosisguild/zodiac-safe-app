@@ -7,11 +7,10 @@ import {
   fetchSafeTransactions,
 } from "../../services";
 import { isMultiSendDataEncoded, sanitizeModule } from "./helpers";
-
-const {
-  REACT_APP_MODULE_FACTORY_PROXY: MODULE_FACTORY_PROXY,
-  REACT_APP_DAO_MODULE_MASTER_COPY: DAO_MODULE_MASTER_COPY,
-} = process.env;
+import {
+  getFactoryContractAddress,
+  getModuleContractAddress,
+} from "@gnosis/module-factory";
 
 const initialModulesState: ModulesState = {
   operation: "read",
@@ -56,19 +55,25 @@ export const fetchPendingModules = createAsyncThunk(
       nonce__gte: safeInfo.nonce.toString(),
     });
 
+    const moduleFactoryContractAddress = getFactoryContractAddress(chainId);
+    const daoModuleMasterContractAddress = getModuleContractAddress(
+      chainId,
+      "dao"
+    );
+
     const isDaoModuleTxPending = transactions.some(
       (safeTransaction) =>
         safeTransaction.dataDecoded &&
         isMultiSendDataEncoded(safeTransaction.dataDecoded) &&
         safeTransaction.dataDecoded.parameters[0].valueDecoded.some(
           (transaction) =>
-            transaction.to.toLowerCase() === MODULE_FACTORY_PROXY &&
+            transaction.to.toLowerCase() === moduleFactoryContractAddress &&
             transaction.dataDecoded &&
             transaction.dataDecoded.method === "deployModule" &&
             transaction.dataDecoded.parameters.some(
               (param) =>
                 param.name === "masterCopy" &&
-                param.value.toLowerCase() === DAO_MODULE_MASTER_COPY
+                param.value.toLowerCase() === daoModuleMasterContractAddress
             )
         )
     );
