@@ -5,9 +5,6 @@ import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { createAndAddModule } from "services";
-import { useRootSelector } from "store";
-import { getDaoModules } from "store/modules/selectors";
-import { AttachModuleForm } from "../AttachModuleForm";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -31,8 +28,6 @@ const useStyles = makeStyles((theme) => ({
 
 export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
   const classes = useStyles();
-  const [daoModule, setDaoModule] = useState<string>();
-  const daoModules = useRootSelector(getDaoModules);
 
   const { sdk, safe } = useSafeAppsSDK();
 
@@ -60,8 +55,7 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           txCooldown: params.cooldown,
           txExpiration: params.timeout,
         },
-        safe.safeAddress,
-        daoModule
+        safe.safeAddress
       );
 
       await sdk.txs.send({ txs });
@@ -107,16 +101,6 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           />
         </Grid>
       </Grid>
-
-      <Typography variant="h6" gutterBottom>
-        Deploy Options
-      </Typography>
-      <AttachModuleForm
-        modules={daoModules}
-        value={daoModule}
-        onChange={(value: string) => setDaoModule(value)}
-        type="dao"
-      />
     </AddModuleModal>
   );
 };

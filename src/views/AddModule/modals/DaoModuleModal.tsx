@@ -6,7 +6,7 @@ import { parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
 import { createAndAddModule } from "../../../services";
-import {useRootDispatch, useRootSelector} from "../../../store";
+import { useRootDispatch, useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
@@ -213,17 +213,20 @@ export const DaoModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
           />
         </Grid>
       </Grid>
-
-      <Typography variant="h6" gutterBottom>
-        Deploy Options
-      </Typography>
-      <AttachModuleForm
-        description={description}
-        modules={delayModules}
-        value={delayModule}
-        onChange={(value: string) => setDelayModule(value)}
-        type="delay"
-      />
+      {delayModules.length ? (
+        <>
+          <Typography variant="h6" gutterBottom>
+            Deploy Options
+          </Typography>
+          <AttachModuleForm
+            description={description}
+            modules={delayModules}
+            value={delayModule}
+            onChange={(value: string) => setDelayModule(value)}
+            type="delay"
+          />
+        </>
+      ) : null}
     </AddModuleModal>
   );
 };

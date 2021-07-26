@@ -81,18 +81,21 @@ export const AddCustomModule = () => {
         param={ParamType.fromString("address")}
         onChange={handleAddressChange}
       />
-
-      <Typography variant="h6" gutterBottom>
-        Deploy Options
-      </Typography>
-      <div className={classes.spacing}>
-        <AttachModuleForm
-          modules={delayModules}
-          value={delayModule}
-          onChange={(value) => setDelayModule(value)}
-          type="delay"
-        />
-      </div>
+      {delayModules.length ? (
+        <>
+          <Typography variant="h6" gutterBottom>
+            Deploy Options
+          </Typography>
+          <div className={classes.spacing}>
+            <AttachModuleForm
+              modules={delayModules}
+              value={delayModule}
+              onChange={(value) => setDelayModule(value)}
+              type="delay"
+            />
+          </div>
+        </>
+      ) : null}
 
       <ActionButton
         fullWidth
