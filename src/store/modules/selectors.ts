@@ -32,3 +32,11 @@ export function getOperation(state: RootState) {
 export function getPendingModules(state: RootState) {
   return state.modules.pendingModules;
 }
+
+export function getSafeThreshold(state: RootState) {
+  return state.modules.safeThreshold;
+}
+
+export function getPendingRemoveModule(state: RootState) {
+  return state.modules.pendingRemoveModules;
+}

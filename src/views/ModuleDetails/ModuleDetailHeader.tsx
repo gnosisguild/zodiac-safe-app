@@ -1,12 +1,14 @@
 import React from "react";
-import { Box, CircularProgress, makeStyles } from "@material-ui/core";
+import { Box, makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { useFetchTransaction } from "hooks/useFetchTransaction";
+import { fetchPendingModules } from "../../store/modules";
+import { useRootDispatch, useRootSelector } from "../../store";
+import { getPendingRemoveModule } from "../../store/modules/selectors";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -31,19 +33,15 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
+  const dispatch = useRootDispatch();
   const { sdk, safe } = useSafeAppsSDK();
-
-  const { setLoading, setSafeTxSuccessful, setSafeHash, loading } =
-    useFetchTransaction();
+  const pendingRemoveModule = useRootSelector(getPendingRemoveModule);
+  const isModuleToBeRemoved = pendingRemoveModule.includes(module.address);
 
   const removeModule = async () => {
-    setLoading(true);
     const transactions = await disableModule(safe.safeAddress, module.address);
-    const { safeTxHash } = await sdk.txs.send({
-      txs: [transactions],
-    });
-    setSafeTxSuccessful(false);
-    setSafeHash(safeTxHash);
+    await sdk.txs.send({ txs: [transactions] });
+    dispatch(fetchPendingModules(safe));
   };
 
   return (
@@ -61,18 +59,15 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
 
       <Box flexGrow={1} />
 
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <Button
-          size="md"
-          iconType="delete"
-          variant="outlined"
-          onClick={removeModule}
-        >
-          Remove
-        </Button>
-      )}
+      <Button
+        size="md"
+        iconType="delete"
+        variant="outlined"
+        onClick={removeModule}
+        disabled={isModuleToBeRemoved}
+      >
+        Remove
+      </Button>
     </div>
   );
 };

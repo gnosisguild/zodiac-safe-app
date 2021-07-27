@@ -13,6 +13,10 @@ import { getDelayModules } from "../../store/modules/selectors";
 import { enableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
+interface AddCustomModuleProps {
+  onSubmit?(): void;
+}
+
 const useStyles = makeStyles((theme) => ({
   clickable: {
     cursor: "pointer",
@@ -28,7 +32,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AddCustomModule = () => {
+// TODO: Implement "Attach Delay Module"
+export const AddCustomModule = ({ onSubmit }: AddCustomModuleProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
   const delayModules = useRootSelector(getDelayModules);
@@ -56,6 +61,7 @@ export const AddCustomModule = () => {
     try {
       await sdk.txs.send({ txs: [tx] });
       resetState();
+      if (onSubmit) onSubmit();
     } catch (error) {
       console.warn("error adding custom module", error);
     }

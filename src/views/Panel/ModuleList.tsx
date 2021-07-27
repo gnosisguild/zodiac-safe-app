@@ -1,6 +1,6 @@
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
-import { Module, ModuleType } from "../../store/modules/models";
+import { Module } from "../../store/modules/models";
 import { setCurrentModule } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
@@ -13,7 +13,7 @@ import { Skeleton } from "@material-ui/lab";
 import { PANEL_ITEM_HEIGHT, PanelItem } from "./Items/PanelItem";
 import { ModuleItem } from "./Items/ModuleItem";
 import { resetAddTransaction } from "../../store/transactionBuilder";
-import { DaoModulePendingItem } from "./Items/DaoModulePendingItem";
+import { PendingModuleStates } from "./PendingModuleStates";
 
 interface ModuleListProps {
   modules: Module[];
@@ -47,12 +47,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles();
+
   const dispatch = useRootDispatch();
   const currentModule = useRootSelector(getCurrentModule);
   const modulesLoading = useRootSelector(getIsLoadingModules);
-  const isDaoModulePending = useRootSelector(
-    (state) => ModuleType.DAO in getPendingModules(state)
-  );
+  const pendingModules = useRootSelector(getPendingModules);
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
@@ -68,7 +67,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
     );
   }
 
-  if (!modules.length && !isDaoModulePending) {
+  if (!modules.length && !pendingModules.length) {
     return (
       <PanelItem image={<AvatarEmptyIcon />}>
         <Typography className={classes.emptyModulesText}>
@@ -102,7 +101,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   return (
     <Box display="flex" flexDirection="column">
-      {isDaoModulePending ? <DaoModulePendingItem /> : null}
+      <PendingModuleStates />
       {content}
     </Box>
   );

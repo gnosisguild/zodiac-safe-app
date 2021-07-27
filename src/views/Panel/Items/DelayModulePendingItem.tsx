@@ -1,25 +1,25 @@
-import React from "react";
 import { ModulePendingItem } from "./ModulePendingItem";
-import { LoadingIcon } from "../../../components/icons/LoadingIcon";
 import { ReactComponent as ModulePendingImg } from "../../../assets/images/dao-module-pending.svg";
-import { ReactComponent as RemoveModulePendingImg } from "../../../assets/images/remove-pending-state.svg";
+import React from "react";
+import { LoadingIcon } from "../../../components/icons/LoadingIcon";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { ReactComponent as RemoveIcon } from "../../../assets/icons/delete-icon.svg";
+import { ReactComponent as RemoveModulePendingImg } from "../../../assets/images/remove-pending-state.svg";
 
-interface DaoModulePendingItemProps {
+interface DelayModulePendingItemProps {
   remove?: boolean;
   instant?: boolean;
 }
 
-export const DaoModulePendingItem = ({
+export const DelayModulePendingItem = ({
   remove,
   instant,
-}: DaoModulePendingItemProps) => {
+}: DelayModulePendingItemProps) => {
   if (remove) {
     if (instant)
       return (
         <ModulePendingItem
-          title="DAO Module Removal"
+          title="Delay Module Removal"
           linkText="Transaction confirming..."
           image={<LoadingIcon icon={<RemoveIcon />} />}
         />
@@ -27,25 +27,26 @@ export const DaoModulePendingItem = ({
 
     return (
       <ModulePendingItem
-        title="DAO Module Removal"
+        title="Delay Module Removal"
         linkText="Awaiting approval"
         image={<RemoveModulePendingImg />}
       />
     );
   }
 
-  if (instant)
+  if (instant) {
     return (
       <ModulePendingItem
-        title="DAO Module"
+        title="Delay Module"
         linkText="Transaction confirming..."
         image={<LoadingIcon icon={<AddIcon />} />}
       />
     );
+  }
 
   return (
     <ModulePendingItem
-      title="DAO Module"
+      title="Delay Module"
       linkText="Awaiting approval"
       image={<ModulePendingImg />}
     />

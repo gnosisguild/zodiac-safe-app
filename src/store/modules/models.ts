@@ -4,6 +4,11 @@ export enum ModuleType {
   UNKNOWN,
 }
 
+export enum ModuleOperation {
+  CREATE,
+  REMOVE,
+}
+
 export interface Module {
   name: string;
   address: string;
@@ -45,7 +50,9 @@ export interface ModulesState {
   loadingModules: boolean;
   list: Module[];
   reloadCount: number;
-  pendingModules: ModuleType[];
+  safeThreshold: number;
+  pendingModules: PendingModule[];
+  pendingRemoveModules: string[];
 }
 
 export type Operation = "read" | "write";
@@ -78,6 +85,15 @@ export interface MultiSendDataDecoded extends DataDecoded {
   }[];
 }
 
+export interface DisableModuleDataDecoded extends DataDecoded {
+  method: "disableModule";
+  parameters: {
+    name: string;
+    type: "address";
+    value: string;
+  }[];
+}
+
 export interface SafeTransaction {
   safe: string;
   to: string;
@@ -99,4 +115,9 @@ export interface SafeInfo {
   fallbackHandler: string;
   guard: string;
   version: string;
+}
+
+export interface PendingModule {
+  operation: ModuleOperation;
+  module: ModuleType;
 }

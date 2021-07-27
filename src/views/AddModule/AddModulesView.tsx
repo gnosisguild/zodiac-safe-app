@@ -5,9 +5,12 @@ import { ModuleButton } from "./ModuleButton";
 import { ReactComponent as DaoModuleImage } from "../../assets/images/dao-module.svg";
 import { ReactComponent as DelayModuleImage } from "../../assets/images/delay-module.svg";
 import { AddCustomModule } from "./AddCustomModule";
-import { useRootSelector } from "../../store";
+import { useRootDispatch, useRootSelector } from "../../store";
 import { getModulesList } from "../../store/modules/selectors";
-import { MODULE_MODAL, ModuleModals } from "./modals/ModuleModals";
+import { ModuleModals } from "./modals/ModuleModals";
+import { ModuleType } from "../../store/modules/models";
+import { fetchPendingModules } from "../../store/modules";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,10 +31,17 @@ const useStyles = makeStyles((theme) => ({
 
 export const AddModulesView = () => {
   const classes = useStyles();
+  const dispatch = useRootDispatch();
+  const { safe } = useSafeAppsSDK();
   const hasModules = useRootSelector(
     (state) => getModulesList(state).length > 0
   );
-  const [module, setModule] = useState<MODULE_MODAL>();
+  const [module, setModule] = useState<ModuleType>();
+
+  const handleSubmit = () => {
+    dispatch(fetchPendingModules(safe));
+    setTimeout(() => fetchPendingModules(safe), 3000);
+  };
 
   const title = hasModules ? "Add another module" : "Start by adding a module";
 
@@ -57,7 +67,7 @@ export const AddModulesView = () => {
                 title="Transaction Delay"
                 description="Delay transactions so members can intervene"
                 image={<DelayModuleImage />}
-                onClick={() => setModule(MODULE_MODAL.delay)}
+                onClick={() => setModule(ModuleType.DELAY)}
               />
             </Grid>
             <Grid item xs={6}>
@@ -65,17 +75,21 @@ export const AddModulesView = () => {
                 title="DAO Module"
                 description="Connect Reality.eth questions to your safe"
                 image={<DaoModuleImage />}
-                onClick={() => setModule(MODULE_MODAL.dao)}
+                onClick={() => setModule(ModuleType.DAO)}
               />
             </Grid>
           </Grid>
 
           <div className={classes.divider} />
 
-          <AddCustomModule />
+          <AddCustomModule onSubmit={handleSubmit} />
         </Paper>
       </Row>
-      <ModuleModals selected={module} onClose={() => setModule(undefined)} />
+      <ModuleModals
+        selected={module}
+        onClose={() => setModule(undefined)}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 };

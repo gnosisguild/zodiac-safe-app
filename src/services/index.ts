@@ -213,7 +213,7 @@ export async function createAndAddModule<
 
 export async function fetchSafeModulesAddress(safeAddress: string) {
   const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
-  const [modules] = await safe.getModulesPaginated(AddressOne, 10);
+  const [modules] = await safe.getModulesPaginated(AddressOne, 50);
   return modules as string[];
 }
 

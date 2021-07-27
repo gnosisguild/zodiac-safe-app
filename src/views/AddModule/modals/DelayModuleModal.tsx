@@ -10,6 +10,8 @@ interface DaoModuleModalProps {
   open: boolean;
 
   onClose?(): void;
+
+  onSubmit?(): void;
 }
 
 interface DelayModuleParams {
@@ -26,7 +28,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
+export const DelayModuleModal = ({
+  open,
+  onClose,
+  onSubmit,
+}: DaoModuleModalProps) => {
   const classes = useStyles();
 
   const { sdk, safe } = useSafeAppsSDK();
@@ -60,7 +66,7 @@ export const DelayModuleModal = ({ open, onClose }: DaoModuleModalProps) => {
 
       await sdk.txs.send({ txs });
 
-      if (onClose) onClose();
+      if (onSubmit) onSubmit();
     } catch (error) {
       console.log(error);
     }
