@@ -39,9 +39,17 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const isModuleToBeRemoved = pendingRemoveModule.includes(module.address);
 
   const removeModule = async () => {
-    const transactions = await disableModule(safe.safeAddress, module.address);
-    await sdk.txs.send({ txs: [transactions] });
-    dispatch(fetchPendingModules(safe));
+    try {
+      const transactions = await disableModule(
+        safe.safeAddress,
+        module.address
+      );
+      await sdk.txs.send({ txs: [transactions] });
+      dispatch(fetchPendingModules(safe));
+      setTimeout(() => dispatch(fetchPendingModules(safe)), 5000);
+    } catch (error) {
+      console.warn("could not remove module", error);
+    }
   };
 
   return (

@@ -16,6 +16,7 @@ import {
 import {
   getModulesToBeRemoved,
   isSafeAddModuleTransactionPending,
+  isSafeEnableModuleTransactionPending,
   sanitizeModule,
 } from "./helpers";
 import { getModulesList } from "./selectors";
@@ -78,6 +79,9 @@ export const fetchPendingModules = createAsyncThunk(
     const isDelayModuleTxPending = transactions.some((safeTransaction) =>
       isSafeAddModuleTransactionPending(safeTransaction, chainId, "delay")
     );
+    const isCustomModuleTxPending = transactions.some((safeTransaction) =>
+      isSafeEnableModuleTransactionPending(safeTransaction, safeAddress)
+    );
 
     const pendingRemoveModules = getModulesToBeRemoved(
       transactions,
@@ -99,6 +103,9 @@ export const fetchPendingModules = createAsyncThunk(
     const isDelayModuleRemoveTxPending = removeModuleTypes.includes(
       ModuleType.DELAY
     );
+    const isUnknownModuleRemoveTxPending = removeModuleTypes.includes(
+      ModuleType.UNKNOWN
+    );
 
     const pendingModules: PendingModule[] = [];
 
@@ -116,6 +123,13 @@ export const fetchPendingModules = createAsyncThunk(
       });
     }
 
+    if (isCustomModuleTxPending) {
+      pendingModules.push({
+        operation: ModuleOperation.CREATE,
+        module: ModuleType.UNKNOWN,
+      });
+    }
+
     if (isDaoModuleRemoveTxPending) {
       pendingModules.push({
         operation: ModuleOperation.REMOVE,
@@ -127,6 +141,13 @@ export const fetchPendingModules = createAsyncThunk(
       pendingModules.push({
         operation: ModuleOperation.REMOVE,
         module: ModuleType.DELAY,
+      });
+    }
+
+    if (isUnknownModuleRemoveTxPending) {
+      pendingModules.push({
+        operation: ModuleOperation.REMOVE,
+        module: ModuleType.UNKNOWN,
       });
     }
 

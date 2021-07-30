@@ -192,3 +192,14 @@ export function getModulesToBeRemoved(
       return param.value;
     });
 }
+
+export function isSafeEnableModuleTransactionPending(
+  safeTransaction: SafeTransaction,
+  safeAddress: string
+) {
+  return (
+    safeTransaction.to.toLowerCase() === safeAddress.toLowerCase() &&
+    safeTransaction.dataDecoded &&
+    safeTransaction.dataDecoded.method === "enableModule"
+  );
+}

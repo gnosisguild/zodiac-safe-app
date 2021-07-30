@@ -9,8 +9,8 @@ import {
   getSafeThreshold,
 } from "../../store/modules/selectors";
 import { fetchModulesList, fetchPendingModules } from "../../store/modules";
+import { UnknownModulePendingItem } from "./Items/UnknownModulePendingItem";
 
-// TODO: Add loading state for UNKNOWN Modules
 export const PendingModuleStates = () => {
   const { sdk, safe } = useSafeAppsSDK();
 
@@ -53,6 +53,11 @@ export const PendingModuleStates = () => {
       pending.operation === ModuleOperation.CREATE &&
       pending.module === ModuleType.DELAY
   );
+  const isCreateCustomModulePending = pendingModules.some(
+    (pending) =>
+      pending.operation === ModuleOperation.CREATE &&
+      pending.module === ModuleType.UNKNOWN
+  );
 
   const isRemoveDaoModulePending = pendingModules.some(
     (pending) =>
@@ -60,6 +65,11 @@ export const PendingModuleStates = () => {
       pending.module === ModuleType.DAO
   );
   const isRemoveDelayModulePending = pendingModules.some(
+    (pending) =>
+      pending.operation === ModuleOperation.REMOVE &&
+      pending.module === ModuleType.DELAY
+  );
+  const isRemoveUnknownModulePending = pendingModules.some(
     (pending) =>
       pending.operation === ModuleOperation.REMOVE &&
       pending.module === ModuleType.DELAY
@@ -72,11 +82,17 @@ export const PendingModuleStates = () => {
       {isCreateDelayModulePending ? (
         <DelayModulePendingItem instant={isInstantExecution} />
       ) : null}
+      {isCreateCustomModulePending ? (
+        <UnknownModulePendingItem instant={isInstantExecution} />
+      ) : null}
       {isRemoveDaoModulePending ? (
         <DaoModulePendingItem remove instant={isInstantExecution} />
       ) : null}
       {isRemoveDelayModulePending ? (
         <DelayModulePendingItem remove instant={isInstantExecution} />
+      ) : null}
+      {isRemoveUnknownModulePending ? (
+        <UnknownModulePendingItem remove instant={isInstantExecution} />
       ) : null}
     </>
   );
