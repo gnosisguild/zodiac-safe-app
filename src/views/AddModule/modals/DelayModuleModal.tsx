@@ -90,7 +90,6 @@ export const DelayModuleModal = ({
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={6}>
           <TimeSelect
-            color="secondary"
             label="Timeout"
             defaultValue={params.timeout}
             defaultUnit="hours"
@@ -99,7 +98,6 @@ export const DelayModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <TimeSelect
-            color="secondary"
             label="Cooldown"
             defaultValue={params.cooldown}
             defaultUnit="hours"

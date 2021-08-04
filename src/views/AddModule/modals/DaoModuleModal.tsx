@@ -183,7 +183,6 @@ export const DaoModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <TimeSelect
-            color="secondary"
             label="Timeout"
             defaultValue={params.timeout}
             defaultUnit="hours"
@@ -192,7 +191,6 @@ export const DaoModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <TimeSelect
-            color="secondary"
             label="Cooldown"
             defaultValue={params.cooldown}
             defaultUnit="hours"
@@ -201,7 +199,6 @@ export const DaoModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <TimeSelect
-            color="secondary"
             label="Expiration"
             defaultValue={params.expiration}
             defaultUnit="days"
