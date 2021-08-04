@@ -1,25 +1,29 @@
 import React from "react";
 import {
+  CircularProgress,
   makeStyles,
   Modal,
   Paper,
   Typography,
-  CircularProgress,
+  ButtonProps as MuiButtonProps,
 } from "@material-ui/core";
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import classNames from "classnames";
 import { Link } from "../../../components/text/Link";
 import { TagList } from "../../../components/list/TagList";
+import { Row } from "../../../components/layout/Row";
 
 interface AddModuleModalProps {
   open: boolean;
   title: string;
-  description: string;
+  description?: string;
   image: React.ReactElement;
-  tags: string[];
+  tags?: string[];
   readMoreLink?: string;
   loading?: boolean;
+  ButtonProps?: MuiButtonProps;
+  warning?: React.ReactNode;
 
   onAdd(): void;
 
@@ -71,6 +75,16 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     margin: "0 auto",
   },
+  warningIcon: {
+    marginRight: theme.spacing(1),
+    "& .icon-color": {
+      fill: "#E0B325 !important",
+    },
+  },
+  warningText: {
+    color: "#E0B325",
+    lineHeight: 1,
+  },
 }));
 
 export const AddModuleModal: React.FC<AddModuleModalProps> = ({
@@ -79,11 +93,13 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   description,
   image,
   onAdd,
-  tags,
+  tags = [],
   readMoreLink,
   onClose,
   children,
   loading,
+  ButtonProps,
+  warning,
 }) => {
   const classes = useStyles();
   return (
@@ -109,9 +125,21 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
 
             <TagList tags={tags} />
 
-            <Typography gutterBottom className={classes.description}>
-              {description}
-            </Typography>
+            {description ? (
+              <Typography gutterBottom className={classes.description}>
+                {description}
+              </Typography>
+            ) : null}
+
+            {warning ? (
+              <Row alignItems="center">
+                <Icon type="error" size="md" className={classes.warningIcon} />
+                <Typography variant="body1" className={classes.warningText}>
+                  {warning}
+                </Typography>
+              </Row>
+            ) : null}
+
             {readMoreLink ? (
               <Link
                 href={readMoreLink}
@@ -135,6 +163,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
             fullWidth
             startIcon={<Icon type="sent" size="md" color="primary" />}
             onClick={onAdd}
+            {...ButtonProps}
           >
             Add Module
           </ActionButton>

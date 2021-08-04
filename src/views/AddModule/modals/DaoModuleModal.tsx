@@ -149,7 +149,7 @@ export const DaoModuleModal = ({
       image={<DaoModuleImage />}
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
       onAdd={handleAddDaoModule}
-      readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
+      readMoreLink="https://github.com/gnosis/dao-module"
     >
       <Typography variant="h6" gutterBottom>
         Parameters

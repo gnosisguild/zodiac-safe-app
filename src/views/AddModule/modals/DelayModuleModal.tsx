@@ -81,7 +81,7 @@ export const DelayModuleModal = ({
       image={<DelayModuleImage />}
       tags={["Stackable", "Has SafeApp", "From Gnosis"]}
       onAdd={handleAddDelayModule}
-      readMoreLink="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
+      readMoreLink="https://github.com/gnosis/SafeDelay"
     >
       <Typography variant="h6" gutterBottom>
         Parameters

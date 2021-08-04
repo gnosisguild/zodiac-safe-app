@@ -2,6 +2,7 @@ import React from "react";
 import { DaoModuleModal } from "./DaoModuleModal";
 import { DelayModuleModal } from "./DelayModuleModal";
 import { ModuleType } from "../../../store/modules/models";
+import { CustomModuleModal } from "../CustomModuleModal";
 
 interface ModuleModalsProps {
   selected?: ModuleType;
@@ -25,6 +26,11 @@ export const ModuleModals = ({
         open={selected === ModuleType.DELAY}
         onClose={onClose}
         onSubmit={() => onSubmit && onSubmit(ModuleType.DELAY)}
+      />
+      <CustomModuleModal
+        open={selected === ModuleType.UNKNOWN}
+        onClose={onClose}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.DAO)}
       />
     </>
   );

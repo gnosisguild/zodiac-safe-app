@@ -1,10 +1,12 @@
 import React from "react";
-import { Grid, makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { Row } from "../../components/layout/Row";
 
 interface ModuleButtonProps {
   title: string;
   description: string;
   image: React.ReactElement;
+
   onClick(): void;
 }
 
@@ -13,10 +15,13 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     userSelect: "none",
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.common.white,
   },
   spacing: {
     marginBottom: theme.spacing(1),
+  },
+  imageContainer: {
+    marginRight: theme.spacing(2),
   },
 }));
 
@@ -29,17 +34,15 @@ export const ModuleButton = ({
   const classes = useStyles();
   return (
     <Paper className={classes.root} onClick={onClick}>
-      <Grid container direction="row">
-        <Grid item xs={3}>
-          {image}
-        </Grid>
-        <Grid item xs={9}>
+      <Row>
+        <div className={classes.imageContainer}>{image}</div>
+        <div>
           <Typography variant="h6" className={classes.spacing}>
             {title}
           </Typography>
           <Typography variant="body2">{description}</Typography>
-        </Grid>
-      </Grid>
+        </div>
+      </Row>
     </Paper>
   );
 };
