@@ -15,7 +15,6 @@ import { ActionButton } from "../../components/ActionButton";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { useRootDispatch, useRootSelector } from "../../store";
-import { getCurrentModule } from "../../store/modules/selectors";
 import {
   getTransactionBuilderOpen,
   getTransactions,
@@ -27,8 +26,9 @@ import {
 } from "../../store/transactionBuilder";
 import { ReactComponent as ChevronDown } from "../../assets/icons/chevron-down.svg";
 import { TransactionBuilderTitle } from "./TransactionBuilderTitle";
-import { useSpring, animated } from "react-spring";
-import { serializeModuleTransaction } from "../../store/transactionBuilder/helpers";
+import { animated, useSpring } from "react-spring";
+import { serializeTransaction } from "../../store/transactionBuilder/helpers";
+import { fetchPendingModules } from "../../store/modules";
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
@@ -101,11 +101,10 @@ const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
 
 export const TransactionBuilderModal = () => {
   const classes = useStyles();
-  const { sdk } = useSafeAppsSDK();
+  const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useRootDispatch();
 
   const open = useRootSelector(getTransactionBuilderOpen);
-  const module = useRootSelector(getCurrentModule);
   const transactions = useRootSelector(getTransactions);
 
   const [overIndex, setOverIndex] = useState<number>();
@@ -132,7 +131,7 @@ export const TransactionBuilderModal = () => {
     setOverIndex(undefined);
     setSourceIndex(undefined);
     if (result.destination) {
-      const sorted = Array.from(transactions).map(serializeModuleTransaction);
+      const sorted = Array.from(transactions).map(serializeTransaction);
       const [removed] = sorted.splice(result.source.index, 1);
       sorted.splice(result.destination.index, 0, removed);
       dispatch(setTransactions(sorted));
@@ -140,18 +139,23 @@ export const TransactionBuilderModal = () => {
   };
 
   const handleSubmitTransaction = async () => {
-    if (!module) return;
     try {
       const txs = transactions.map((tx): Transaction => {
         const encoder = new Interface([tx.func]);
         return {
+          to: tx.to,
           value: "0",
-          to: module.address,
           data: encoder.encodeFunctionData(tx.func, tx.params),
         };
       });
       await sdk.txs.send({ txs });
       dispatch(resetTransactions());
+      dispatch(
+        fetchPendingModules({
+          safeAddress: safe.safeAddress,
+          chainId: safe.chainId,
+        })
+      );
     } catch (error) {
       console.log("handleSubmitTransaction:error", error);
     }
@@ -159,14 +163,12 @@ export const TransactionBuilderModal = () => {
 
   const handleTransactionUpdate = useCallback(
     (id, params) => {
-      const txs = transactions
-        .map(serializeModuleTransaction)
-        .map((transaction) => {
-          if (transaction.id !== id) {
-            return transaction;
-          }
-          return { ...transaction, params };
-        });
+      const txs = transactions.map(serializeTransaction).map((transaction) => {
+        if (transaction.id !== id) {
+          return transaction;
+        }
+        return { ...transaction, params };
+      });
       dispatch(setTransactions(txs));
     },
     [dispatch, transactions]
@@ -174,7 +176,7 @@ export const TransactionBuilderModal = () => {
 
   const handleTransactionDelete = useCallback(
     (id) => {
-      const txs = Array.from(transactions).map(serializeModuleTransaction);
+      const txs = Array.from(transactions).map(serializeTransaction);
       const index = txs.findIndex((tx) => tx.id === id);
       if (index >= 0) {
         txs.splice(index, 1);

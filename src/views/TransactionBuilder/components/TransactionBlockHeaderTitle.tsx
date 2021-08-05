@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { Box, Chip, makeStyles } from "@material-ui/core";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 import { AddressChip } from "../../../components/ethereum/AddressChip";
-import { ModuleTransaction } from "../../../store/transactionBuilder/models";
+import { Transaction } from "../../../store/transactionBuilder/models";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 export interface TransactionBlockHeaderTitleProps {
   edit: boolean;
   open: boolean;
-  transaction: ModuleTransaction;
+  transaction: Transaction;
 
   onToggle(): void;
 }

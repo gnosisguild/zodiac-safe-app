@@ -7,7 +7,7 @@ import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Icon } from "@gnosis.pm/safe-react-components";
-import { ModuleTransaction } from "../../../store/transactionBuilder/models";
+import { Transaction } from "../../../store/transactionBuilder/models";
 import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { useRootDispatch, useRootSelector } from "../../../store";
@@ -18,7 +18,7 @@ import { getCurrentModule } from "../../../store/modules/selectors";
 interface AddTransactionBlockProps {
   abi: string | string[];
 
-  onAdd(transaction: ModuleTransaction): void;
+  onAdd(transaction: Transaction): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -64,11 +64,13 @@ const TransactionFields = ({
   }
 
   const handleAdd = (params: any[]) => {
+    if (!module) return;
     onAdd({
-      id: `${func.name}_${new Date().getTime()}`,
       func,
       params,
       module,
+      to: module.address,
+      id: `${func.name}_${new Date().getTime()}`,
     });
   };
 
@@ -135,7 +137,7 @@ export const AddTransactionBlock = ({
       setFuncIndex(getSelectedFunction(writeFunctions, selectedFunc));
   }, [selectedFunc, writeFunctions]);
 
-  const handleAdd = (transaction: ModuleTransaction) => {
+  const handleAdd = (transaction: Transaction) => {
     setFuncIndex(-1);
     onAdd(transaction);
   };

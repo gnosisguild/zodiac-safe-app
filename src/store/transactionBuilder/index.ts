@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   AddTransaction,
-  SerializedModuleTransaction,
+  SerializedTransaction,
   TransactionBuilderState,
 } from "./models";
 
@@ -20,11 +20,11 @@ export const transactionBuilderSlice = createSlice({
     },
     setTransactions(
       state,
-      action: PayloadAction<SerializedModuleTransaction[]>
+      action: PayloadAction<SerializedTransaction[]>
     ) {
       state.transactions = action.payload;
     },
-    addTransaction(state, action: PayloadAction<SerializedModuleTransaction>) {
+    addTransaction(state, action: PayloadAction<SerializedTransaction>) {
       state.transactions.push(action.payload);
     },
     resetTransactions(state) {

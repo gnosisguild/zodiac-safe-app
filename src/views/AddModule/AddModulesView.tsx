@@ -34,7 +34,6 @@ export const AddModulesView = () => {
 
   const handleSubmit = () => {
     dispatch(fetchPendingModules(safe));
-    setTimeout(() => dispatch(fetchPendingModules(safe)), 3000);
   };
 
   const title = hasModules ? "Add another module" : "Start by adding a module";

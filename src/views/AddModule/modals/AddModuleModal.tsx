@@ -1,7 +1,6 @@
 import React from "react";
 import {
   ButtonProps as MuiButtonProps,
-  CircularProgress,
   Fade,
   makeStyles,
   Modal,
@@ -22,11 +21,11 @@ interface AddModuleModalProps {
   image: React.ReactElement;
   tags?: string[];
   readMoreLink?: string;
-  loading?: boolean;
   ButtonProps?: MuiButtonProps;
   warning?: React.ReactNode;
+  hideButton?: boolean;
 
-  onAdd(): void;
+  onAdd?(): void;
 
   onClose?(): void;
 }
@@ -110,9 +109,9 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   readMoreLink,
   onClose,
   children,
-  loading,
   ButtonProps,
   warning,
+  hideButton = false,
 }) => {
   const classes = useStyles();
   return (
@@ -170,12 +169,14 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
           </div>
 
           {children ? (
-            <div className={classes.gutterBottom}>{children}</div>
+            <div
+              className={classNames({ [classes.gutterBottom]: !hideButton })}
+            >
+              {children}
+            </div>
           ) : null}
 
-          {loading ? (
-            <CircularProgress className={classes.loader} />
-          ) : (
+          {hideButton ? null : (
             <ActionButton
               fullWidth
               startIcon={<Icon type="sent" size="md" color="primary" />}

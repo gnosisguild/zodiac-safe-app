@@ -4,18 +4,18 @@ import { Module } from "../modules/models";
 export interface TransactionBuilderState {
   open: boolean;
   addTransaction: AddTransaction;
-  transactions: SerializedModuleTransaction[];
+  transactions: SerializedTransaction[];
 }
 
-export interface ModuleTransaction {
+export interface Transaction {
   id: string;
+  to: string;
   func: FunctionFragment;
   params: any[];
   module?: Module;
 }
 
-export interface SerializedModuleTransaction
-  extends Omit<ModuleTransaction, "func"> {
+export interface SerializedTransaction extends Omit<Transaction, "func"> {
   func: string;
 }
 

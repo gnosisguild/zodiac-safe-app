@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   bagIcon: {
     marginLeft: theme.spacing(4),
+    stroke: "white",
   },
   badge: {
     marginTop: 8,

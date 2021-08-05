@@ -1,5 +1,5 @@
 import { RootState } from "../index";
-import { deserializeModuleTransaction } from "./helpers";
+import { deserializeTransaction } from "./helpers";
 
 export function getAddTransaction(state: RootState) {
   return state.transactionBuilder.addTransaction;
@@ -7,7 +7,7 @@ export function getAddTransaction(state: RootState) {
 
 export function getTransactions(state: RootState) {
   return state.transactionBuilder.transactions.map(
-    deserializeModuleTransaction
+    deserializeTransaction
   );
 }
 

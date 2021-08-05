@@ -11,7 +11,7 @@ import ToggleButton from "@material-ui/lab/ToggleButton";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
-import { ModuleTransaction } from "../../../store/transactionBuilder/models";
+import { Transaction } from "../../../store/transactionBuilder/models";
 import { increaseReloadCount, setOperation } from "../../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import classNames from "classnames";
@@ -19,7 +19,7 @@ import { Operation } from "../../../store/modules/models";
 import { getOperation } from "../../../store/modules/selectors";
 import { AddTransactionBlock } from "../transaction/AddTransactionBlock";
 import { addTransaction } from "../../../store/transactionBuilder";
-import { serializeModuleTransaction } from "../../../store/transactionBuilder/helpers";
+import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
@@ -67,8 +67,8 @@ export const ContractInteractions = ({
     if (operation) dispatch(setOperation(operation));
   };
 
-  const handleAddTransaction = (transaction: ModuleTransaction) => {
-    dispatch(addTransaction(serializeModuleTransaction(transaction)));
+  const handleAddTransaction = (transaction: Transaction) => {
+    dispatch(addTransaction(serializeTransaction(transaction)));
   };
 
   const handleReload = () => dispatch(increaseReloadCount());

@@ -46,7 +46,6 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
       );
       await sdk.txs.send({ txs: [transactions] });
       dispatch(fetchPendingModules(safe));
-      setTimeout(() => dispatch(fetchPendingModules(safe)), 5000);
     } catch (error) {
       console.warn("could not remove module", error);
     }

@@ -1,18 +1,18 @@
-import { ModuleTransaction, SerializedModuleTransaction } from "./models";
+import { Transaction, SerializedTransaction } from "./models";
 import { FunctionFragment, Interface } from "@ethersproject/abi";
 
-export function serializeModuleTransaction(
-  moduleTransaction: ModuleTransaction
-): SerializedModuleTransaction {
+export function serializeTransaction(
+  moduleTransaction: Transaction
+): SerializedTransaction {
   return {
     ...moduleTransaction,
     func: moduleTransaction.func.format("full"),
   };
 }
 
-export function deserializeModuleTransaction(
-  moduleTransaction: SerializedModuleTransaction
-): ModuleTransaction {
+export function deserializeTransaction(
+  moduleTransaction: SerializedTransaction
+): Transaction {
   const interf = new Interface([moduleTransaction.func]);
   return {
     ...moduleTransaction,

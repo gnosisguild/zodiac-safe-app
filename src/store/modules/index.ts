@@ -65,9 +65,11 @@ export const fetchPendingModules = createAsyncThunk(
     {
       safeAddress,
       chainId,
+      retry = true,
     }: {
       chainId: number;
       safeAddress: string;
+      retry?: boolean;
     },
     store
   ) => {
@@ -155,6 +157,14 @@ export const fetchPendingModules = createAsyncThunk(
         operation: ModuleOperation.REMOVE,
         module: ModuleType.UNKNOWN,
       });
+    }
+
+    if (retry) {
+      setTimeout(() => {
+        store.dispatch(
+          fetchPendingModules({ safeAddress, chainId, retry: false })
+        );
+      }, 4000);
     }
 
     return { safeInfo, pendingModules, pendingRemoveModules };

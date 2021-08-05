@@ -217,7 +217,7 @@ export async function fetchSafeModulesAddress(safeAddress: string) {
   return modules as string[];
 }
 
-export async function enableModule(safeAddress: string, module: string) {
+export function enableModule(safeAddress: string, module: string) {
   const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
   return buildTransaction(safe, "enableModule", [module]);
 }

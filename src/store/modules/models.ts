@@ -13,6 +13,7 @@ export interface Module {
   name?: string;
   address: string;
   type: ModuleType;
+  parent?: Module;
 }
 
 export interface ModuleMetadata {

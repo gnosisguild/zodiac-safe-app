@@ -4,13 +4,13 @@ import { makeStyles, Paper, withStyles } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { Draggable } from "react-beautiful-dnd";
 import { TransactionBlockContent } from "./TransactionBlockContent";
-import { ModuleTransaction } from "../../../store/transactionBuilder/models";
+import { Transaction } from "../../../store/transactionBuilder/models";
 
 interface ContractFunctionBlockProps {
   isOver: boolean;
   isOverBefore: boolean;
   index: number;
-  transaction: ModuleTransaction;
+  transaction: Transaction;
 
   onUpdate(id: string, params: any[]): void;
 
