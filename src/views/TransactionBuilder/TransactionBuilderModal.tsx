@@ -135,7 +135,7 @@ export const TransactionBuilderModal = () => {
       const sorted = Array.from(transactions).map(serializeModuleTransaction);
       const [removed] = sorted.splice(result.source.index, 1);
       sorted.splice(result.destination.index, 0, removed);
-      setTransactions(sorted);
+      dispatch(setTransactions(sorted));
     }
   };
 
@@ -178,10 +178,10 @@ export const TransactionBuilderModal = () => {
       const index = txs.findIndex((tx) => tx.id === id);
       if (index >= 0) {
         txs.splice(index, 1);
-        setTransactions(txs);
+        dispatch(setTransactions(txs));
       }
     },
-    [transactions]
+    [dispatch, transactions]
   );
 
   return (
