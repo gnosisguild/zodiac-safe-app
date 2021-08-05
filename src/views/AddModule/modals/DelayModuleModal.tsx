@@ -67,6 +67,7 @@ export const DelayModuleModal = ({
       await sdk.txs.send({ txs });
 
       if (onSubmit) onSubmit();
+      if (onClose) onClose();
     } catch (error) {
       console.log(error);
     }

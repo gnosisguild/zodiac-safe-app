@@ -177,7 +177,7 @@ export async function createAndAddModule<
         chainId,
         Date.now().toString()
       );
-      const enableDelayModuleTransaction = await enableModule(
+      const enableDelayModuleTransaction = enableModule(
         safeAddress,
         delayModuleExpectedAddress
       );

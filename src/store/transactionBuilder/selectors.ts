@@ -6,9 +6,7 @@ export function getAddTransaction(state: RootState) {
 }
 
 export function getTransactions(state: RootState) {
-  return state.transactionBuilder.transactions.map(
-    deserializeTransaction
-  );
+  return state.transactionBuilder.transactions.map(deserializeTransaction);
 }
 
 export function getTransactionBuilderOpen(state: RootState) {

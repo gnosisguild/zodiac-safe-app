@@ -70,20 +70,7 @@ export interface MultiSendDataDecoded extends DataDecoded {
     name: "transactions";
     type: "bytes";
     value: string;
-    valueDecoded: {
-      operation: number;
-      to: string;
-      value: string;
-      data: string;
-      dataDecoded: {
-        method: string;
-        parameters: {
-          name: string;
-          type: string;
-          value: string;
-        }[];
-      };
-    }[];
+    valueDecoded: DecodedTransaction[];
   }[];
 }
 
@@ -96,15 +83,21 @@ export interface DisableModuleDataDecoded extends DataDecoded {
   }[];
 }
 
-export interface SafeTransaction {
-  safe: string;
+export interface RawTransaction {
   to: string;
-  value: string;
   data: string;
-  operation: 0 | 1;
-  gasToken: string;
+  value: string;
   nonce: number;
+  operation: 0 | 1;
+}
+
+export interface DecodedTransaction extends RawTransaction {
   dataDecoded: DataDecoded;
+}
+
+export interface SafeTransaction extends DecodedTransaction {
+  safe: string;
+  gasToken: string;
 }
 
 export interface SafeInfo {

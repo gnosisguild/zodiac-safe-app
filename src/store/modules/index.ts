@@ -15,8 +15,7 @@ import {
 } from "../../services";
 import {
   getModulesToBeRemoved,
-  isSafeAddModuleTransactionPending,
-  isSafeEnableModuleTransactionPending,
+  getPendingModulesToEnable,
   sanitizeModule,
 } from "./helpers";
 import { getModulesList } from "./selectors";
@@ -81,20 +80,17 @@ export const fetchPendingModules = createAsyncThunk(
     const state = store.getState() as RootState;
     const modules = getModulesList(state);
 
-    const isDaoModuleTxPending = transactions.some((safeTransaction) =>
-      isSafeAddModuleTransactionPending(safeTransaction, chainId, "dao")
-    );
-    const isDelayModuleTxPending = transactions.some((safeTransaction) =>
-      isSafeAddModuleTransactionPending(safeTransaction, chainId, "delay")
-    );
-    const isCustomModuleTxPending = transactions.some((safeTransaction) =>
-      isSafeEnableModuleTransactionPending(safeTransaction, safeAddress)
+    const pendingEnableModules = getPendingModulesToEnable(
+      transactions,
+      safeAddress,
+      chainId
     );
 
     const pendingRemoveModules = getModulesToBeRemoved(
       transactions,
       safeAddress
     );
+
     const removeModuleTypes: ModuleType[] = pendingRemoveModules.map(
       (moduleAddress) => {
         const current = modules.find(
@@ -105,59 +101,21 @@ export const fetchPendingModules = createAsyncThunk(
       }
     );
 
-    const isDaoModuleRemoveTxPending = removeModuleTypes.includes(
-      ModuleType.DAO
-    );
-    const isDelayModuleRemoveTxPending = removeModuleTypes.includes(
-      ModuleType.DELAY
-    );
-    const isUnknownModuleRemoveTxPending = removeModuleTypes.includes(
-      ModuleType.UNKNOWN
-    );
-
     const pendingModules: PendingModule[] = [];
 
-    if (isDaoModuleTxPending) {
-      pendingModules.push({
+    pendingModules.push(
+      ...pendingEnableModules.map((moduleType) => ({
         operation: ModuleOperation.CREATE,
-        module: ModuleType.DAO,
-      });
-    }
+        module: moduleType,
+      }))
+    );
 
-    if (isDelayModuleTxPending) {
-      pendingModules.push({
-        operation: ModuleOperation.CREATE,
-        module: ModuleType.DELAY,
-      });
-    }
-
-    if (isCustomModuleTxPending) {
-      pendingModules.push({
-        operation: ModuleOperation.CREATE,
-        module: ModuleType.UNKNOWN,
-      });
-    }
-
-    if (isDaoModuleRemoveTxPending) {
-      pendingModules.push({
+    pendingModules.push(
+      ...removeModuleTypes.map((moduleType) => ({
         operation: ModuleOperation.REMOVE,
-        module: ModuleType.DAO,
-      });
-    }
-
-    if (isDelayModuleRemoveTxPending) {
-      pendingModules.push({
-        operation: ModuleOperation.REMOVE,
-        module: ModuleType.DELAY,
-      });
-    }
-
-    if (isUnknownModuleRemoveTxPending) {
-      pendingModules.push({
-        operation: ModuleOperation.REMOVE,
-        module: ModuleType.UNKNOWN,
-      });
-    }
+        module: moduleType,
+      }))
+    );
 
     if (retry) {
       setTimeout(() => {

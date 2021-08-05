@@ -96,6 +96,7 @@ export const DaoModuleModal = ({
 
       await sdk.txs.send({ txs });
       if (onSubmit) onSubmit();
+      if (onClose) onClose();
     } catch (error) {
       console.log("Error deploying module: ", error);
       setHasError(true);

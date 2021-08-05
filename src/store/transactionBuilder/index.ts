@@ -18,10 +18,7 @@ export const transactionBuilderSlice = createSlice({
     setTransactionBuilderOpen(state, action: PayloadAction<boolean>) {
       state.open = action.payload;
     },
-    setTransactions(
-      state,
-      action: PayloadAction<SerializedTransaction[]>
-    ) {
+    setTransactions(state, action: PayloadAction<SerializedTransaction[]>) {
       state.transactions = action.payload;
     },
     addTransaction(state, action: PayloadAction<SerializedTransaction>) {

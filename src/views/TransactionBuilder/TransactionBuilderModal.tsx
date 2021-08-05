@@ -156,6 +156,7 @@ export const TransactionBuilderModal = () => {
           chainId: safe.chainId,
         })
       );
+      handleClose();
     } catch (error) {
       console.log("handleSubmitTransaction:error", error);
     }

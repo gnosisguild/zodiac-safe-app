@@ -2,7 +2,7 @@ import React from "react";
 import { DaoModuleModal } from "./DaoModuleModal";
 import { DelayModuleModal } from "./DelayModuleModal";
 import { ModuleType } from "../../../store/modules/models";
-import { CustomModuleModal } from "../CustomModuleModal";
+import { CustomModuleModal } from "./CustomModuleModal";
 
 interface ModuleModalsProps {
   selected?: ModuleType;

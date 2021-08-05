@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { ParamInput } from "../../components/ethereum/ParamInput";
+import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { Interface, ParamType } from "@ethersproject/abi";
 import { enableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { ReactComponent as CustomModuleImage } from "../../assets/images/custom-module-logo.svg";
-import { AddModuleModal } from "./modals/AddModuleModal";
-import { ActionButton } from "../../components/ActionButton";
+import { ReactComponent as CustomModuleImage } from "../../../assets/images/custom-module-logo.svg";
+import { AddModuleModal } from "./AddModuleModal";
+import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
-import { ReactComponent as BagIcon } from "../../assets/icons/bag-icon.svg";
+import { ReactComponent as BagIcon } from "../../../assets/icons/bag-icon.svg";
 import { makeStyles } from "@material-ui/core";
-import { useRootDispatch } from "../../store";
-import { addTransaction } from "../../store/transactionBuilder";
-import { SafeAbi } from "../../services/helpers";
-import { serializeTransaction } from "../../store/transactionBuilder/helpers";
+import { useRootDispatch } from "../../../store";
+import { addTransaction } from "../../../store/transactionBuilder";
+import { SafeAbi } from "../../../services/helpers";
+import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
 
 interface AddCustomModuleProps {
   open: boolean;
@@ -67,6 +67,7 @@ export const CustomModuleModal = ({
       await sdk.txs.send({ txs: [tx] });
       resetState();
       if (onSubmit) onSubmit();
+      if (onClose) onClose();
     } catch (error) {
       console.warn("error adding custom module", error);
     }

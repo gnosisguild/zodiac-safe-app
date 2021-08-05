@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   badge: {
     marginTop: 8,
     marginRight: 8,
+    color: theme.palette.common.white,
   },
 }));
 
@@ -44,8 +45,9 @@ export const TransactionBuilderTab = () => {
     <Row className={classes.root} onClick={handleOpen}>
       <TransactionBuilderTitle />
       <Badge
+        showZero
         badgeContent={transaction.length}
-        color="error"
+        color={transaction.length ? "error" : "primary"}
         classes={{ badge: classes.badge }}
       >
         <BagIcon className={classes.bagIcon} />

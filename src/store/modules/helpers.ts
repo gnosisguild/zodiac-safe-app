@@ -14,6 +14,7 @@ import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import {
   DaoModule,
   DataDecoded,
+  DecodedTransaction,
   DelayModule,
   DisableModuleDataDecoded,
   Module,
@@ -116,6 +117,18 @@ export function isDisableModuleDataEncoded(
   return dataEncoded.method === "disableModule";
 }
 
+export function getTransactionsFromSafeTransaction(
+  safeTransaction: SafeTransaction
+): DecodedTransaction[] {
+  if (
+    safeTransaction.dataDecoded &&
+    isMultiSendDataEncoded(safeTransaction.dataDecoded)
+  ) {
+    return safeTransaction.dataDecoded.parameters[0].valueDecoded;
+  }
+  return [safeTransaction];
+}
+
 /**
  * Determine if the safe transaction is a pending add module transaction.
  *
@@ -123,60 +136,78 @@ export function isDisableModuleDataEncoded(
  * @param {number} chainId - Chain Id.
  * @param {string} module - Module Name.
  */
-export function isSafeAddModuleTransactionPending(
+export function getAddModuleTransactionPending(
   safeTransaction: SafeTransaction,
   chainId: number,
   module: keyof ContractAddresses
-): boolean {
+): string[] {
   const moduleFactoryContractAddress = getFactoryContractAddress(chainId);
   const masterContractAddress = getModuleContractAddress(chainId, module);
+
+  const transactions = getTransactionsFromSafeTransaction(safeTransaction);
+
+  const deploysModule = transactions.some(
+    (transaction) =>
+      transaction.to.toLowerCase() ===
+        moduleFactoryContractAddress.toLowerCase() &&
+      transaction.dataDecoded &&
+      transaction.dataDecoded.method === "deployModule" &&
+      transaction.dataDecoded.parameters.some(
+        (param) =>
+          param.name === "masterCopy" &&
+          param.value.toLowerCase() === masterContractAddress.toLowerCase()
+      )
+  );
+
+  if (!deploysModule) {
+    return [];
+  }
+
+  return transactions
+    .filter((tx) => isSafeEnableModuleTransactionPending(tx))
+    .map((tx) => {
+      const param = tx.dataDecoded.parameters.find(
+        (param) => param.name === "module"
+      );
+      return param.value;
+    });
+}
+
+export function isSafeEnableModuleTransactionPending(
+  transaction: DecodedTransaction
+) {
   return (
-    safeTransaction.dataDecoded &&
-    isMultiSendDataEncoded(safeTransaction.dataDecoded) &&
-    safeTransaction.dataDecoded.parameters[0].valueDecoded.some(
-      (transaction) =>
-        transaction.to.toLowerCase() ===
-          moduleFactoryContractAddress.toLowerCase() &&
-        transaction.dataDecoded &&
-        transaction.dataDecoded.method === "deployModule" &&
-        transaction.dataDecoded.parameters.some(
-          (param) =>
-            param.name === "masterCopy" &&
-            param.value.toLowerCase() === masterContractAddress.toLowerCase()
-        )
-    )
+    transaction.dataDecoded && transaction.dataDecoded.method === "enableModule"
   );
 }
 
 /**
  * Determine if the safe transaction is a pending remove module transaction.
  *
- * @param {object} safeTransaction - Safe Transaction.
+ * @param {object} transaction - Transaction.
  * @param {string} safeAddress - Safe Address.
  */
-export function isSafeRemoveModuleTransactionPending(
-  safeTransaction: SafeTransaction,
+export function isRemoveModuleTransactionPending(
+  transaction: DecodedTransaction,
   safeAddress: string
 ): boolean {
   return (
-    safeTransaction.to.toLowerCase() === safeAddress.toLowerCase() &&
-    safeTransaction.dataDecoded &&
-    isDisableModuleDataEncoded(safeTransaction.dataDecoded)
+    transaction.to.toLowerCase() === safeAddress.toLowerCase() &&
+    isDisableModuleDataEncoded(transaction.dataDecoded)
   );
 }
 
 export function getModulesToBeRemoved(
   transactions: SafeTransaction[],
   safeAddress: string
-) {
+): string[] {
   return transactions
-    .filter((safeTransaction) =>
-      isSafeRemoveModuleTransactionPending(safeTransaction, safeAddress)
+    .flatMap(getTransactionsFromSafeTransaction)
+    .filter((transaction) =>
+      isRemoveModuleTransactionPending(transaction, safeAddress)
     )
-    .map((safeTransaction) => safeTransaction.dataDecoded)
-    .filter(isDisableModuleDataEncoded)
-    .map((dataDecoded) => {
-      const param = dataDecoded.parameters.find(
+    .map((transaction) => {
+      const param = transaction.dataDecoded.parameters.find(
         (param) => param.name === "module"
       );
       if (!param) return "";
@@ -184,13 +215,25 @@ export function getModulesToBeRemoved(
     });
 }
 
-export function isSafeEnableModuleTransactionPending(
-  safeTransaction: SafeTransaction,
-  safeAddress: string
-) {
-  return (
-    safeTransaction.to.toLowerCase() === safeAddress.toLowerCase() &&
-    safeTransaction.dataDecoded &&
-    safeTransaction.dataDecoded.method === "enableModule"
+export function getPendingModulesToEnable(
+  transactions: SafeTransaction[],
+  safeAddress: string,
+  chainId: number
+): ModuleType[] {
+  const daoModuleTxPending = transactions.flatMap((safeTransaction) =>
+    getAddModuleTransactionPending(safeTransaction, chainId, "dao")
   );
+  const delayModuleTxPending = transactions.flatMap((safeTransaction) =>
+    getAddModuleTransactionPending(safeTransaction, chainId, "delay")
+  );
+  const moduleTxPending = transactions
+    .flatMap(getTransactionsFromSafeTransaction)
+    .filter((transaction) => isSafeEnableModuleTransactionPending(transaction))
+    .map((transaction): string => transaction.dataDecoded.parameters[0].value);
+
+  return moduleTxPending.map((moduleAddress) => {
+    if (daoModuleTxPending.includes(moduleAddress)) return ModuleType.DAO;
+    if (delayModuleTxPending.includes(moduleAddress)) return ModuleType.DELAY;
+    return ModuleType.UNKNOWN;
+  });
 }
