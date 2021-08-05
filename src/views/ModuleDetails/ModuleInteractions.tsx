@@ -13,7 +13,7 @@ interface ModuleInteractionsProps {
 export const ModuleInteractions = ({ module }: ModuleInteractionsProps) => {
   const { safe, sdk } = useSafeAppsSDK();
   const [loading, setLoading] = useState(true);
-  const [abi, setABI] = useState<string>();
+  const [abi, setABI] = useState<string | string[]>();
 
   useEffect(() => {
     setLoading(true);

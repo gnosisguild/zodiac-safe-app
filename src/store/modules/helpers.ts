@@ -10,8 +10,7 @@ import {
   getModuleContractAddress,
   getModuleInstance,
 } from "@gnosis/module-factory";
-import { isDelayModuleBytecode } from "utils/modulesValidation";
-import { getModuleDataFromEtherscan } from "utils/contracts";
+import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import {
   DaoModule,
   DataDecoded,
@@ -40,22 +39,14 @@ export const sanitizeModule = async (
 ): Promise<Module> => {
   const module = await getModuleDataFromEtherscan(safe, chainId, moduleAddress);
   let name = module.name;
-  let type = ModuleType.UNKNOWN;
 
-  if (name === "DelayModule") {
-    const code = await safe.eth.getCode([module.implAddress]);
-    if (isDelayModuleBytecode(code)) {
-      return await fetchDelayModule(moduleAddress, safe, chainId);
-    }
-  }
-
-  if (name === "DaoModule") {
-    type = ModuleType.DAO;
+  if (module.type === ModuleType.DELAY) {
+    return await fetchDelayModule(moduleAddress, safe, chainId);
   }
 
   return {
     name,
-    type,
+    type: module.type,
     address: moduleAddress,
   };
 };

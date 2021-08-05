@@ -10,7 +10,7 @@ export enum ModuleOperation {
 }
 
 export interface Module {
-  name: string;
+  name?: string;
   address: string;
   type: ModuleType;
 }
@@ -18,8 +18,9 @@ export interface Module {
 export interface ModuleMetadata {
   address: string;
   implAddress: string;
-  name: string;
-  abi: string;
+  type: ModuleType;
+  name?: string;
+  abi?: string | string[];
 }
 
 export interface StackableModule extends ModuleWithCooldown {

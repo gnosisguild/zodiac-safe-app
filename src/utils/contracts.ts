@@ -8,12 +8,17 @@ import memoize from "lodash.memoize";
 import { getNetworkExplorerInfo } from "./explorers";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import {
+  DAO_MODULE_CONTRACT_ABI,
+  DAO_MODULE_CONTRACT_BYTECODE,
+  DELAY_MODULE_CONTRACT_ABI,
+  DELAY_MODULE_CONTRACT_BYTECODE,
   getGenericProxyMaster,
   getProxyMaster,
   isGenericProxy,
   isGnosisGenericProxy,
 } from "./modulesValidation";
-import { ModuleMetadata } from "../store/modules/models";
+import { ModuleMetadata, ModuleType } from "../store/modules/models";
+import retry from "async-retry";
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true;
@@ -39,34 +44,44 @@ export function getWriteFunction(abi: string | string[]) {
 }
 
 export const fetchContractSourceCode = memoize(
-  async (chainId: number, contractAddress: string) => {
-    const network = getNetworkExplorerInfo(chainId);
+  (chainId: number, contractAddress: string) =>
+    retry(
+      async (bail) => {
+        const network = getNetworkExplorerInfo(chainId);
 
-    if (!network) throw new Error("Network data not found");
+        if (!network) throw new Error("Network data not found");
 
-    const { apiUrl, apiKey } = network;
+        const { apiUrl, apiKey } = network;
 
-    const urlParams: Record<string, string> = {
-      module: "contract",
-      action: "getsourcecode",
-      address: contractAddress,
-    };
+        const urlParams: Record<string, string> = {
+          module: "contract",
+          action: "getsourcecode",
+          address: contractAddress,
+        };
 
-    if (apiKey) {
-      urlParams.apiKey = apiKey;
-    }
+        if (apiKey) {
+          urlParams.apiKey = apiKey;
+        }
 
-    const params = new URLSearchParams(urlParams);
+        const params = new URLSearchParams(urlParams);
 
-    const response = await fetch(`${apiUrl}?${params}`);
+        const response = await fetch(`${apiUrl}?${params}`);
 
-    if (!response.ok) throw new Error("Could not fetch contract source code");
+        if (!response.ok)
+          throw new Error("Could not fetch contract source code");
 
-    const { status, result } = await response.json();
-    if (status === "0") throw new Error("Could not fetch contract source code");
+        const { status, result } = await response.json();
+        if (status === "0")
+          throw new Error("Could not fetch contract source code");
 
-    return result[0] as { ABI: string; ContractName: string };
-  },
+        const data = result[0] as { ABI: string; ContractName: string };
+
+        if (!data.ContractName) bail(new Error("Contract is not verified"));
+
+        return data;
+      },
+      { retries: 4, minTimeout: 1000 }
+    ),
   (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
 );
 
@@ -170,17 +185,41 @@ export const getModuleDataFromEtherscan = memoize(
       return { ...module, address };
     }
 
-    const { ABI, ContractName } = await fetchContractSourceCode(
-      chainId,
-      address
-    );
+    switch (bytecode.toLowerCase()) {
+      case DELAY_MODULE_CONTRACT_BYTECODE:
+        return {
+          address,
+          name: "Delay Module",
+          type: ModuleType.DELAY,
+          implAddress: address,
+          abi: DELAY_MODULE_CONTRACT_ABI,
+        };
+      case DAO_MODULE_CONTRACT_BYTECODE:
+        return {
+          address,
+          name: "DAO Module",
+          type: ModuleType.DAO,
+          implAddress: address,
+          abi: DAO_MODULE_CONTRACT_ABI,
+        };
+    }
 
-    return {
-      address,
-      implAddress: address,
-      name: ContractName,
-      abi: ABI,
-    };
+    try {
+      const { ABI, ContractName } = await fetchContractSourceCode(
+        chainId,
+        address
+      );
+
+      return {
+        address,
+        implAddress: address,
+        name: ContractName,
+        abi: ABI,
+        type: ModuleType.UNKNOWN,
+      };
+    } catch (error) {
+      return { address, implAddress: address, type: ModuleType.UNKNOWN };
+    }
   },
   (sdk, chainId, address) => `${chainId}_${address}`
 );

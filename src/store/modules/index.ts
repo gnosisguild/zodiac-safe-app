@@ -45,11 +45,17 @@ export const fetchModulesList = createAsyncThunk(
     safeAddress: string;
   }): Promise<Module[]> => {
     const moduleAddresses = await fetchSafeModulesAddress(safeAddress);
-    const requests = moduleAddresses.map((moduleAddress) =>
-      sanitizeModule(moduleAddress, safeSDK, chainId)
-    );
+
+    const requests = moduleAddresses.map(async (moduleAddress) => {
+      try {
+        return await sanitizeModule(moduleAddress, safeSDK, chainId);
+      } catch (error) {
+        console.log("error sanitizing module", moduleAddress);
+      }
+    });
     requests.reverse();
-    return await Promise.all(requests);
+    const responses = await Promise.all(requests);
+    return responses.filter((module): module is Module => module !== undefined);
   }
 );
 
