@@ -193,7 +193,7 @@ export async function createAndAddModule<
           delayModuleExpectedAddress,
           defaultProvider
         );
-        const enableDaoModuleTx = await buildTransaction(
+        const enableDaoModuleTx = buildTransaction(
           delayModule,
           "enableModule",
           [subModule]

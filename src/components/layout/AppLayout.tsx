@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
   leftPanel: {
     width: "30%",
     maxWidth: 380,
-    minWidth: 270,
+    minWidth: 280,
     overflowY: "auto",
     borderRightStyle: "solid",
     borderRightWidth: 1,

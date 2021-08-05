@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
   arrowIcon: {
     cursor: "pointer",
     color: theme.palette.primary.main,
+    fill: "#B2B5B2",
     width: 18,
     height: 10,
     "&.rotate": {

@@ -12,7 +12,7 @@ import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-emp
 import { Skeleton } from "@material-ui/lab";
 import { PANEL_ITEM_HEIGHT, PanelItem } from "./Items/PanelItem";
 import { ModuleItem } from "./Items/ModuleItem";
-import { resetAddTransaction } from "../../store/transactionBuilder";
+import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
 
 interface ModuleListProps {
@@ -55,7 +55,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
-    dispatch(resetAddTransaction());
+    dispatch(resetNewTransaction());
   };
 
   if (modulesLoading) {

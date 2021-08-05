@@ -1,11 +1,12 @@
 import React from "react";
 import {
+  ButtonProps as MuiButtonProps,
   CircularProgress,
+  Fade,
   makeStyles,
   Modal,
   Paper,
   Typography,
-  ButtonProps as MuiButtonProps,
 } from "@material-ui/core";
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
@@ -31,6 +32,14 @@ interface AddModuleModalProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    outline: "none",
+    maxWidth: 380,
+    margin: theme.spacing(14, 1, 1, 1),
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.background.default,
+  },
   modal: {
     position: "absolute !important" as "absolute",
     paddingBottom: theme.spacing(2),
@@ -40,13 +49,9 @@ const useStyles = makeStyles((theme) => ({
   backdrop: {
     position: "absolute !important" as "absolute",
     backdropFilter: "blur(4px)",
-  },
-  root: {
-    width: "100%",
-    maxWidth: 380,
-    margin: theme.spacing(14, 1, 1, 1),
-    padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
+    animationName: "$blur",
+    animationDuration: "500ms",
+    animationTimingFunction: "ease",
   },
   description: {
     marginTop: theme.spacing(1),
@@ -85,6 +90,14 @@ const useStyles = makeStyles((theme) => ({
     color: "#E0B325",
     lineHeight: 1,
   },
+  "@keyframes blur": {
+    "0%": {
+      backdropFilter: "blur(0px)",
+    },
+    "100%": {
+      backdropFilter: "blur(4px)",
+    },
+  },
 }));
 
 export const AddModuleModal: React.FC<AddModuleModalProps> = ({
@@ -104,71 +117,76 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   const classes = useStyles();
   return (
     <Modal
+      keepMounted
+      disablePortal
       open={open}
       onClose={onClose}
-      disablePortal
-      disableAutoFocus
-      disableEnforceFocus
       className={classNames(classes.modal, classes.row, classes.center)}
       BackdropProps={{
         className: classes.backdrop,
         invisible: true,
       }}
     >
-      <Paper className={classes.root} elevation={3}>
-        <div className={classNames(classes.row, classes.gutterBottom)}>
-          <div className={classes.imageContainer}>{image}</div>
-          <div className={classes.infoContainer}>
-            <Typography variant="h5" gutterBottom>
-              {title}
-            </Typography>
-
-            <TagList tags={tags} />
-
-            {description ? (
-              <Typography gutterBottom className={classes.description}>
-                {description}
+      <Fade in={open}>
+        <Paper className={classes.root} elevation={3}>
+          <div className={classNames(classes.row, classes.gutterBottom)}>
+            <div className={classes.imageContainer}>{image}</div>
+            <div className={classes.infoContainer}>
+              <Typography variant="h5" gutterBottom>
+                {title}
               </Typography>
-            ) : null}
 
-            {warning ? (
-              <Row alignItems="center">
-                <Icon type="error" size="md" className={classes.warningIcon} />
-                <Typography variant="body1" className={classes.warningText}>
-                  {warning}
+              <TagList tags={tags} />
+
+              {description ? (
+                <Typography gutterBottom className={classes.description}>
+                  {description}
                 </Typography>
-              </Row>
-            ) : null}
+              ) : null}
 
-            {readMoreLink ? (
-              <Link
-                href={readMoreLink}
-                target="_blank"
-                className={classes.readMore}
-              >
-                Read more here
-              </Link>
-            ) : null}
+              {warning ? (
+                <Row alignItems="center">
+                  <Icon
+                    type="error"
+                    size="md"
+                    className={classes.warningIcon}
+                  />
+                  <Typography variant="body1" className={classes.warningText}>
+                    {warning}
+                  </Typography>
+                </Row>
+              ) : null}
+
+              {readMoreLink ? (
+                <Link
+                  href={readMoreLink}
+                  target="_blank"
+                  className={classes.readMore}
+                >
+                  Read more here
+                </Link>
+              ) : null}
+            </div>
           </div>
-        </div>
 
-        {children ? (
-          <div className={classes.gutterBottom}>{children}</div>
-        ) : null}
+          {children ? (
+            <div className={classes.gutterBottom}>{children}</div>
+          ) : null}
 
-        {loading ? (
-          <CircularProgress className={classes.loader} />
-        ) : (
-          <ActionButton
-            fullWidth
-            startIcon={<Icon type="sent" size="md" color="primary" />}
-            onClick={onAdd}
-            {...ButtonProps}
-          >
-            Add Module
-          </ActionButton>
-        )}
-      </Paper>
+          {loading ? (
+            <CircularProgress className={classes.loader} />
+          ) : (
+            <ActionButton
+              fullWidth
+              startIcon={<Icon type="sent" size="md" color="primary" />}
+              onClick={onAdd}
+              {...ButtonProps}
+            >
+              Add Module
+            </ActionButton>
+          )}
+        </Paper>
+      </Fade>
     </Modal>
   );
 };

@@ -7,15 +7,17 @@ import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Icon } from "@gnosis.pm/safe-react-components";
-import { ModuleTransaction } from "./TransactionBuilder";
+import { ModuleTransaction } from "../../../store/transactionBuilder/models";
 import { ActionButton } from "../../../components/ActionButton";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import { getAddTransaction } from "../../../store/transactionBuilder/selectors";
-import { resetAddTransaction } from "../../../store/transactionBuilder";
+import { resetNewTransaction } from "../../../store/transactionBuilder";
+import { getCurrentModule } from "../../../store/modules/selectors";
 
 interface AddTransactionBlockProps {
   abi: string | string[];
+
   onAdd(transaction: ModuleTransaction): void;
 }
 
@@ -44,6 +46,7 @@ const TransactionFields = ({
   defaultParams,
 }: TransactionFieldsProps) => {
   const classes = useStyles();
+  const module = useRootSelector(getCurrentModule);
 
   if (!func) {
     return (
@@ -65,6 +68,7 @@ const TransactionFields = ({
       id: `${func.name}_${new Date().getTime()}`,
       func,
       params,
+      module,
     });
   };
 
@@ -102,14 +106,14 @@ const TransactionFields = ({
 const getSelectedFunction = (
   writeFunctions: FunctionFragment[],
   selectedFunc?: string
-): number | undefined => {
+): number => {
   if (selectedFunc) {
     const index = writeFunctions.findIndex(
       (func) => func.format() === selectedFunc
     );
     if (index >= 0) return index;
   }
-  return;
+  return -1;
 };
 
 export const AddTransactionBlock = ({
@@ -132,13 +136,13 @@ export const AddTransactionBlock = ({
   }, [selectedFunc, writeFunctions]);
 
   const handleAdd = (transaction: ModuleTransaction) => {
-    setFuncIndex(undefined);
+    setFuncIndex(-1);
     onAdd(transaction);
   };
 
   const handleFuncChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFuncIndex(parseInt(event.target.value));
-    dispatch(resetAddTransaction());
+    dispatch(resetNewTransaction());
   };
 
   const content = (
@@ -152,7 +156,7 @@ export const AddTransactionBlock = ({
         color="secondary"
         label="Function"
       >
-        <option>Select function</option>
+        <option value={-1}>Select function</option>
         {writeFunctions.map((func, index) => (
           <option key={func.format("full")} value={index}>
             {func.name}

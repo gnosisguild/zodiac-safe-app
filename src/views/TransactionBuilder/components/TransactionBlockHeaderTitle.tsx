@@ -1,7 +1,9 @@
 import React from "react";
 import classNames from "classnames";
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { Box, Chip, makeStyles } from "@material-ui/core";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
+import { AddressChip } from "../../../components/ethereum/AddressChip";
+import { ModuleTransaction } from "../../../store/transactionBuilder/models";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -15,12 +17,16 @@ const useStyles = makeStyles((theme) => ({
   clickable: {
     cursor: "pointer",
   },
+  moduleChip: {
+    marginRight: theme.spacing(1),
+    fontSize: 14,
+  },
 }));
 
 export interface TransactionBlockHeaderTitleProps {
   edit: boolean;
   open: boolean;
-  title: string;
+  transaction: ModuleTransaction;
 
   onToggle(): void;
 }
@@ -28,7 +34,7 @@ export interface TransactionBlockHeaderTitleProps {
 export const TransactionBlockHeaderTitle = ({
   edit,
   open,
-  title,
+  transaction,
   onToggle,
 }: TransactionBlockHeaderTitleProps) => {
   const classes = useStyles();
@@ -39,7 +45,14 @@ export const TransactionBlockHeaderTitle = ({
       })}
       onClick={onToggle}
     >
-      <Typography variant="h6">{title}</Typography>
+      {transaction.module ? (
+        <AddressChip
+          className={classes.moduleChip}
+          address={transaction.module.address}
+          name={transaction.module.name}
+        />
+      ) : null}
+      <Chip label={<b>{transaction.func.name}</b>} />
       <Box flexGrow={1} />
       {!edit ? <ArrowIcon up={open} /> : null}
     </Box>

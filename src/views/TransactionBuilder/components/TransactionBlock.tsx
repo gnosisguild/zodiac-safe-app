@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import classNames from "classnames";
-import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, Paper, withStyles } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { Draggable } from "react-beautiful-dnd";
 import { TransactionBlockContent } from "./TransactionBlockContent";
+import { ModuleTransaction } from "../../../store/transactionBuilder/models";
 
 interface ContractFunctionBlockProps {
-  id: string;
   isOver: boolean;
   isOverBefore: boolean;
   index: number;
-  func: FunctionFragment;
-  params: any[];
+  transaction: ModuleTransaction;
 
   onUpdate(id: string, params: any[]): void;
+
   onDelete(id: string): void;
 }
 
@@ -47,12 +46,10 @@ const TransactionBlockPlaceholder = withStyles((theme) => ({
 }))(Paper);
 
 export const TransactionBlock = ({
-  id,
+  index,
   isOver,
   isOverBefore,
-  index,
-  func,
-  params,
+  transaction,
   onUpdate,
   onDelete,
 }: ContractFunctionBlockProps) => {
@@ -60,6 +57,8 @@ export const TransactionBlock = ({
 
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState(false);
+
+  const { id, params, func } = transaction;
 
   const handleStartEditing = () => {
     setOpen(true);
@@ -94,7 +93,7 @@ export const TransactionBlock = ({
                   drag={{ provider, snapshot }}
                   blockFieldsProps={{ edit: true, paramInputProps }}
                   headerTitleProps={{
-                    title: func.name,
+                    transaction,
                     onToggle: handleToggleContent,
                   }}
                   headerButtonProps={{
@@ -111,7 +110,7 @@ export const TransactionBlock = ({
               drag={{ provider, snapshot }}
               blockFieldsProps={{ edit: false, params, func }}
               headerTitleProps={{
-                title: func.name,
+                transaction: transaction,
                 onToggle: handleToggleContent,
               }}
               headerButtonProps={{

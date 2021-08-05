@@ -1,22 +1,49 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AddTransaction, TransactionBuilderState } from "./models";
+import {
+  AddTransaction,
+  SerializedModuleTransaction,
+  TransactionBuilderState,
+} from "./models";
 
 const initialModulesState: TransactionBuilderState = {
+  open: false,
   addTransaction: {},
+  transactions: [],
 };
 
 export const transactionBuilderSlice = createSlice({
-  name: "modules",
+  name: "transactionBuilder",
   initialState: initialModulesState,
   reducers: {
-    setAddTransaction(state, action: PayloadAction<AddTransaction>) {
+    setTransactionBuilderOpen(state, action: PayloadAction<boolean>) {
+      state.open = action.payload;
+    },
+    setTransactions(
+      state,
+      action: PayloadAction<SerializedModuleTransaction[]>
+    ) {
+      state.transactions = action.payload;
+    },
+    addTransaction(state, action: PayloadAction<SerializedModuleTransaction>) {
+      state.transactions.push(action.payload);
+    },
+    resetTransactions(state) {
+      state.transactions = [];
+    },
+    setNewTransaction(state, action: PayloadAction<AddTransaction>) {
       state.addTransaction = action.payload;
     },
-    resetAddTransaction(state) {
+    resetNewTransaction(state) {
       state.addTransaction = {};
     },
   },
 });
 
-export const { setAddTransaction, resetAddTransaction } =
-  transactionBuilderSlice.actions;
+export const {
+  setTransactionBuilderOpen,
+  setNewTransaction,
+  resetNewTransaction,
+  resetTransactions,
+  addTransaction,
+  setTransactions,
+} = transactionBuilderSlice.actions;

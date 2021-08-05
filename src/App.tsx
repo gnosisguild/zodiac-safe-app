@@ -5,6 +5,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useRootDispatch } from "./store";
 import { Panel } from "./views/Panel/Panel";
 import { Views } from "./Views";
+import { TransactionBuilder } from "./views/TransactionBuilder/TransactionBuilder";
 
 const App: React.FC = () => {
   const dispatch = useRootDispatch();
@@ -23,6 +24,7 @@ const App: React.FC = () => {
   return (
     <AppLayout left={<Panel />}>
       <Views />
+      <TransactionBuilder />
     </AppLayout>
   );
 };

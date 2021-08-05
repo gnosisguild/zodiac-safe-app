@@ -8,7 +8,7 @@ import { Address } from "../../../components/ethereum/Address";
 import { ModuleList } from "../ModuleList";
 import { formatDuration } from "../../../utils/string";
 import { useRootDispatch } from "../../../store";
-import { setAddTransaction } from "../../../store/transactionBuilder";
+import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
 
 interface DelayModuleItemProps extends PanelItemProps {
@@ -37,7 +37,7 @@ export const DelayModuleItem = ({
     dispatch(setCurrentModule(module));
     dispatch(setOperation("write"));
     dispatch(
-      setAddTransaction({
+      setNewTransaction({
         func: "setTxCooldown(uint256)",
         params: [module.cooldown],
       })
