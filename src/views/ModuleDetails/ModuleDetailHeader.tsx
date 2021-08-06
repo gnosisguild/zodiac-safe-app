@@ -41,7 +41,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const removeModule = async () => {
     try {
       const transactions = await disableModule(
-        safe.safeAddress,
+        module.parentModule || safe.safeAddress,
         module.address
       );
       await sdk.txs.send({ txs: [transactions] });

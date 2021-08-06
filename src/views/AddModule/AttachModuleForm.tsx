@@ -5,12 +5,13 @@ import { makeStyles, Radio, Typography } from "@material-ui/core";
 import { Badge } from "../../components/text/Badge";
 import { Address } from "../../components/ethereum/Address";
 import classNames from "classnames";
-import { ModuleWithCooldown } from "../../store/modules/models";
 import { formatDuration } from "../../utils/string";
 import { Column } from "../../components/layout/Column";
+import { Module } from "../../store/modules/models";
+import { isDelayModule } from "../../store/modules/helpers";
 
 interface AttachModuleFormProps {
-  modules: ModuleWithCooldown[];
+  modules: Module[];
   value?: string;
   description?: React.ReactNode;
   type: "dao" | "delay";
@@ -71,7 +72,7 @@ export const AttachModuleForm = ({
                   onClick={() => onChange(module.address)}
                 />
                 <Column justifyContent="center">
-                  {type === "delay" ? (
+                  {isDelayModule(module) ? (
                     <Badge
                       className={classNames(classes.text, classes.delayText)}
                     >

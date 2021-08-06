@@ -18,10 +18,13 @@ import {
   DelayModule,
   DisableModuleDataDecoded,
   Module,
+  ModuleMetadata,
   ModuleType,
   MultiSendDataDecoded,
   SafeTransaction,
 } from "./models";
+import { Contract } from "ethers";
+import { defaultProvider } from "../../services/helpers";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
@@ -45,10 +48,19 @@ export const sanitizeModule = async (
     return await fetchDelayModule(moduleAddress, safe, chainId);
   }
 
+  const subModules = await fetchSubModules(
+    moduleAddress,
+    module.abi,
+    safe,
+    chainId
+  );
+
   return {
+    id: moduleAddress,
     name,
     type: module.type,
     address: moduleAddress,
+    subModules,
   };
 };
 
@@ -61,7 +73,7 @@ export async function fetchDelayModule(
   const delayModule = await getModuleInstance("delay", address, provider);
 
   try {
-    const module = new MultiCallContract(
+    const moduleContract = new MultiCallContract(
       delayModule.address,
       delayModule.interface.fragments.map((frag) => frag)
     );
@@ -69,9 +81,9 @@ export async function fetchDelayModule(
     const ethCallProvider = new MultiCallProvider();
     await ethCallProvider.init(provider);
 
-    const txCooldown = module.txCooldown();
-    const txTimeout = module.txExpiration();
-    const modules = module.getModulesPaginated(AddressOne, 10);
+    const txCooldown = moduleContract.txCooldown();
+    const txTimeout = moduleContract.txExpiration();
+    const modules = moduleContract.getModulesPaginated(AddressOne, 50);
 
     let [cooldown, timeout, [subModules]] = await ethCallProvider.all([
       txCooldown,
@@ -80,28 +92,59 @@ export async function fetchDelayModule(
     ]);
 
     if (subModules) {
-      const requests = subModules.map((moduleAddress: string) =>
-        sanitizeModule(moduleAddress, safe, chainId)
+      const requests = (subModules as string[]).map(
+        async (moduleAddress, index): Promise<Module> => {
+          const subModule = await sanitizeModule(moduleAddress, safe, chainId);
+          return {
+            ...subModule,
+            id: `${address}_${moduleAddress}_${index}`,
+            parentModule: address,
+          };
+        }
       );
       requests.reverse();
       subModules = await Promise.all(requests);
     }
 
     return {
+      address,
+      id: address,
       name: "Delay Module",
       type: ModuleType.DELAY,
-      address,
-      subModules,
+      subModules: subModules || [],
       timeout: timeout.toString(),
       cooldown: cooldown.toString(),
     };
   } catch (error) {
     console.log("Error fetching delay module", error);
     return {
+      id: address,
       name: "Delay Module",
       type: ModuleType.UNKNOWN,
       address: address,
+      subModules: [],
     };
+  }
+}
+
+export async function fetchSubModules(
+  moduleAddress: string,
+  abi: ModuleMetadata["abi"],
+  safe: SafeAppsSDK,
+  chainId: number
+): Promise<Module[]> {
+  try {
+    if (!abi) return [];
+    const contract = new Contract(moduleAddress, abi, defaultProvider);
+    contract.interface.getFunction("getModulesPaginated(address,uint256)");
+    const [subModules] = await contract.getModulesPaginated(AddressOne, 50);
+    return await Promise.all(
+      subModules.map((subModuleAddress: string) =>
+        sanitizeModule(subModuleAddress, safe, chainId)
+      )
+    );
+  } catch (e) {
+    return [];
   }
 }
 

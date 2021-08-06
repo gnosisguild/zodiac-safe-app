@@ -78,7 +78,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   }
 
   const content = modules.map((module) => {
-    const active = module.address === currentModule?.address;
+    const active = module.id === currentModule?.id;
     return (
       <ModuleItem
         key={module.address}

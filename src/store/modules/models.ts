@@ -10,10 +10,12 @@ export enum ModuleOperation {
 }
 
 export interface Module {
+  id: string;
   name?: string;
   address: string;
   type: ModuleType;
-  parent?: Module;
+  subModules: Module[];
+  parentModule?: string;
 }
 
 export interface ModuleMetadata {
@@ -24,26 +26,20 @@ export interface ModuleMetadata {
   abi?: string | string[];
 }
 
-export interface StackableModule extends ModuleWithCooldown {
-  subModules: Module[];
-}
-
-export interface ModuleWithCooldown extends Module {
+export interface DelayModule extends Module {
+  type: ModuleType.DELAY;
   timeout: number;
   cooldown: number;
 }
 
-export interface DelayModule extends StackableModule {
-  type: ModuleType.DELAY;
-}
-
-export interface DaoModule extends ModuleWithCooldown {
+export interface DaoModule extends Module {
   type: ModuleType.DAO;
   executor: string;
   oracle: string;
   expiration: number;
   bond: string;
   templateId: string;
+  cooldown: number;
 }
 
 export interface ModulesState {
