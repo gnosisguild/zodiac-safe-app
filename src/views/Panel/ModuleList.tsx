@@ -7,6 +7,8 @@ import {
   getCurrentModule,
   getIsLoadingModules,
   getPendingModules,
+  getPendingRemoveModuleTransactions,
+  getSafeThreshold,
 } from "../../store/modules/selectors";
 import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg";
 import { Skeleton } from "@material-ui/lab";
@@ -52,6 +54,10 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const currentModule = useRootSelector(getCurrentModule);
   const modulesLoading = useRootSelector(getIsLoadingModules);
   const pendingModules = useRootSelector(getPendingModules);
+  const safeThreshold = useRootSelector(getSafeThreshold);
+  const pendingRemoveTxs = useRootSelector(
+    getPendingRemoveModuleTransactions
+  ).map((tx) => tx.address);
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
@@ -82,6 +88,8 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
     return (
       <ModuleItem
         key={module.address}
+        remove={pendingRemoveTxs.includes(module.address)}
+        instant={safeThreshold === 1}
         module={module}
         active={active}
         sub={sub}

@@ -7,12 +7,15 @@ import { Badge } from "../../../components/text/Badge";
 import { Address } from "../../../components/ethereum/Address";
 import { ModuleList } from "../ModuleList";
 import { formatDuration } from "../../../utils/string";
-import { useRootDispatch } from "../../../store";
+import { useRootDispatch, useRootSelector } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
+import { RemoveIcon } from "../../../components/icons/RemoveIcon";
+import { getSafeThreshold } from "../../../store/modules/selectors";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
+  remove?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -26,10 +29,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const DelayModuleItem = ({
   module,
+  remove,
   ...panelItemProps
 }: DelayModuleItemProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
+  const safeThreshold = useRootSelector(getSafeThreshold);
+  const instant = safeThreshold === 1;
 
   const handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation(); // Avoid triggering ModuleItem click event.
@@ -48,12 +54,16 @@ export const DelayModuleItem = ({
     <>
       <PanelItem
         image={
-          <HashInfo
-            showAvatar
-            avatarSize="lg"
-            showHash={false}
-            hash={module.address}
-          />
+          remove ? (
+            <RemoveIcon instant={instant} />
+          ) : (
+            <HashInfo
+              showAvatar
+              avatarSize="lg"
+              showHash={false}
+              hash={module.address}
+            />
+          )
         }
         {...panelItemProps}
       >

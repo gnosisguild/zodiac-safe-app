@@ -7,8 +7,11 @@ import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
 import { isDelayModule } from "../../../store/modules/helpers";
 import { ModuleList } from "../ModuleList";
+import { RemoveIcon } from "../../../components/icons/RemoveIcon";
 
 interface ModuleItemProps extends PanelItemProps {
+  remove?: boolean;
+  instant?: boolean;
   module: Module;
 }
 
@@ -18,22 +21,33 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const ModuleItem = ({ module, ...panelItemProps }: ModuleItemProps) => {
+export const ModuleItem = ({
+  module,
+  remove = false,
+  instant = false,
+  ...panelItemProps
+}: ModuleItemProps) => {
   const classes = useStyles();
 
   if (isDelayModule(module))
-    return <DelayModuleItem module={module} {...panelItemProps} />;
+    return (
+      <DelayModuleItem module={module} remove={remove} {...panelItemProps} />
+    );
 
   return (
     <>
       <PanelItem
         image={
-          <HashInfo
-            showAvatar
-            avatarSize="lg"
-            showHash={false}
-            hash={module.address}
-          />
+          remove ? (
+            <RemoveIcon instant={instant} />
+          ) : (
+            <HashInfo
+              showAvatar
+              avatarSize="lg"
+              showHash={false}
+              hash={module.address}
+            />
+          )
         }
         {...panelItemProps}
       >
