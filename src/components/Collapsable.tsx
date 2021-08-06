@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
   content: {
     marginTop: theme.spacing(2),
   },
+  hide: {
+    display: "none",
+  },
 }));
 
 export const Collapsable: React.FC<CollapsableProps> = ({
@@ -32,8 +35,12 @@ export const Collapsable: React.FC<CollapsableProps> = ({
   return (
     <Paper {...props} className={classNames(classes.root, className)}>
       {children}
-      {content && open ? (
-        <div className={classNames(classes.content, containerClassName)}>
+      {content ? (
+        <div
+          className={classNames(classes.content, containerClassName, {
+            [classes.hide]: !open,
+          })}
+        >
           {content}
         </div>
       ) : null}
