@@ -139,9 +139,14 @@ export async function fetchSubModules(
     contract.interface.getFunction("getModulesPaginated(address,uint256)");
     const [subModules] = await contract.getModulesPaginated(AddressOne, 50);
     return await Promise.all(
-      subModules.map((subModuleAddress: string) =>
-        sanitizeModule(subModuleAddress, safe, chainId)
-      )
+      subModules.map(async (subModuleAddress: string, index: number) => {
+        const subModule = await sanitizeModule(subModuleAddress, safe, chainId);
+        return {
+          ...subModule,
+          id: `${moduleAddress}_${subModuleAddress}_${index}`,
+          parentModule: moduleAddress,
+        };
+      })
     );
   } catch (e) {
     return [];
