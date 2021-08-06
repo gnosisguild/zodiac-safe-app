@@ -3,15 +3,11 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: "grid",
     height: "100%",
-    flexDirection: "row",
-    flexGrow: 1,
+    gridTemplateColumns:"380px 1fr"
   },
   leftPanel: {
-    width: "30%",
-    maxWidth: 380,
-    minWidth: 280,
     overflowY: "auto",
     borderRightStyle: "solid",
     borderRightWidth: 1,
@@ -20,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     position: "relative",
-    flexGrow: 1,
     overflowY: "auto",
   },
 }));
