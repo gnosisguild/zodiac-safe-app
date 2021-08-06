@@ -19,8 +19,10 @@ import {
   DisableModuleDataDecoded,
   Module,
   ModuleMetadata,
+  ModuleOperation,
   ModuleType,
   MultiSendDataDecoded,
+  PendingModule,
   SafeTransaction,
 } from "./models";
 import { Contract } from "ethers";
@@ -246,9 +248,10 @@ export function isRemoveModuleTransactionPending(
 }
 
 export function getModulesToBeRemoved(
+  modules: Module[],
   transactions: SafeTransaction[],
   safeAddress: string
-): string[] {
+): PendingModule[] {
   return transactions
     .flatMap(getTransactionsFromSafeTransaction)
     .filter((transaction) =>
@@ -260,6 +263,16 @@ export function getModulesToBeRemoved(
       );
       if (!param) return "";
       return param.value;
+    })
+    .map((moduleAddress: string) => {
+      const current = modules.find(
+        (module) => module.address === moduleAddress
+      );
+      return {
+        address: moduleAddress,
+        operation: ModuleOperation.REMOVE,
+        module: current ? current.type : ModuleType.UNKNOWN,
+      };
     });
 }
 
@@ -267,7 +280,7 @@ export function getPendingModulesToEnable(
   transactions: SafeTransaction[],
   safeAddress: string,
   chainId: number
-): ModuleType[] {
+): PendingModule[] {
   const daoModuleTxPending = transactions.flatMap((safeTransaction) =>
     getAddModuleTransactionPending(safeTransaction, chainId, "dao")
   );
@@ -280,8 +293,35 @@ export function getPendingModulesToEnable(
     .map((transaction): string => transaction.dataDecoded.parameters[0].value);
 
   return moduleTxPending.map((moduleAddress) => {
-    if (daoModuleTxPending.includes(moduleAddress)) return ModuleType.DAO;
-    if (delayModuleTxPending.includes(moduleAddress)) return ModuleType.DELAY;
-    return ModuleType.UNKNOWN;
+    if (daoModuleTxPending.includes(moduleAddress))
+      return {
+        address: moduleAddress,
+        module: ModuleType.DAO,
+        operation: ModuleOperation.CREATE,
+      };
+
+    if (delayModuleTxPending.includes(moduleAddress))
+      return {
+        address: moduleAddress,
+        module: ModuleType.DELAY,
+        operation: ModuleOperation.CREATE,
+      };
+
+    return {
+      address: moduleAddress,
+      module: ModuleType.UNKNOWN,
+      operation: ModuleOperation.CREATE,
+    };
   });
+}
+
+export function isModule(module: PendingModule | Module): module is Module {
+  return "subModules" in module;
+}
+
+export function flatAllModules(modules: Module[]): Module[] {
+  const subModules = modules.flatMap((module) =>
+    flatAllModules(module.subModules)
+  );
+  return [...modules, ...subModules];
 }

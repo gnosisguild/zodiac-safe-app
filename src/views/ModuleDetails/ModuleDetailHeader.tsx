@@ -8,7 +8,7 @@ import { disableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { fetchPendingModules } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
-import { getPendingRemoveModule } from "../../store/modules/selectors";
+import { getPendingRemoveModuleTransactions } from "../../store/modules/selectors";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -35,8 +35,13 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
   const { sdk, safe } = useSafeAppsSDK();
-  const pendingRemoveModule = useRootSelector(getPendingRemoveModule);
-  const isModuleToBeRemoved = pendingRemoveModule.includes(module.address);
+  const pendingRemoveModuleTransactions = useRootSelector(
+    getPendingRemoveModuleTransactions
+  );
+
+  const isModuleToBeRemoved = pendingRemoveModuleTransactions
+    .map((pending) => pending.address)
+    .includes(module.address);
 
   const removeModule = async () => {
     try {

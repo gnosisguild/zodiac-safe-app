@@ -3,43 +3,23 @@ import { ReactComponent as ModulePendingImg } from "../../../assets/images/dao-m
 import React from "react";
 import { LoadingIcon } from "../../../components/icons/LoadingIcon";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
-import { ReactComponent as RemoveIcon } from "../../../assets/icons/delete-icon.svg";
-import { ReactComponent as RemoveModulePendingImg } from "../../../assets/images/remove-pending-state.svg";
+import { PanelItemProps } from "./PanelItem";
 
-interface UnknownModulePendingItemProps {
-  remove?: boolean;
+interface UnknownModulePendingItemProps extends PanelItemProps {
   instant?: boolean;
 }
 
 export const UnknownModulePendingItem = ({
-  remove,
   instant,
+  ...props
 }: UnknownModulePendingItemProps) => {
-  if (remove) {
-    if (instant)
-      return (
-        <ModulePendingItem
-          title="Custom Module Removal"
-          linkText="Transaction confirming..."
-          image={<LoadingIcon icon={<RemoveIcon />} />}
-        />
-      );
-
-    return (
-      <ModulePendingItem
-        title="Custom Module Removal"
-        linkText="Awaiting approval"
-        image={<RemoveModulePendingImg />}
-      />
-    );
-  }
-
   if (instant) {
     return (
       <ModulePendingItem
         title="Custom Module"
         linkText="Transaction confirming..."
         image={<LoadingIcon icon={<AddIcon />} />}
+        {...props}
       />
     );
   }
@@ -49,6 +29,7 @@ export const UnknownModulePendingItem = ({
       title="Custom Module"
       linkText="Awaiting approval"
       image={<ModulePendingImg />}
+      {...props}
     />
   );
 };

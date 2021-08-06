@@ -1,13 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import {
-  Module,
-  ModuleOperation,
-  ModulesState,
-  ModuleType,
-  Operation,
-  PendingModule,
-} from "./models";
+import { Module, ModulesState, Operation, PendingModule } from "./models";
 import {
   fetchSafeInfo,
   fetchSafeModulesAddress,
@@ -29,7 +22,7 @@ const initialModulesState: ModulesState = {
   list: [],
   current: undefined,
   pendingModules: [],
-  pendingRemoveModules: [],
+  moduleAdded: false,
 };
 
 export const fetchModulesList = createAsyncThunk(
@@ -87,35 +80,15 @@ export const fetchPendingModules = createAsyncThunk(
     );
 
     const pendingRemoveModules = getModulesToBeRemoved(
+      modules,
       transactions,
       safeAddress
     );
 
-    const removeModuleTypes: ModuleType[] = pendingRemoveModules.map(
-      (moduleAddress) => {
-        const current = modules.find(
-          (module) => module.address === moduleAddress
-        );
-        if (!current) return ModuleType.UNKNOWN;
-        return current.type;
-      }
-    );
-
-    const pendingModules: PendingModule[] = [];
-
-    pendingModules.push(
-      ...pendingEnableModules.map((moduleType) => ({
-        operation: ModuleOperation.CREATE,
-        module: moduleType,
-      }))
-    );
-
-    pendingModules.push(
-      ...removeModuleTypes.map((moduleType) => ({
-        operation: ModuleOperation.REMOVE,
-        module: moduleType,
-      }))
-    );
+    const pendingModules: PendingModule[] = [
+      ...pendingEnableModules,
+      ...pendingRemoveModules,
+    ];
 
     if (retry) {
       setTimeout(() => {
@@ -125,7 +98,7 @@ export const fetchPendingModules = createAsyncThunk(
       }, 4000);
     }
 
-    return { safeInfo, pendingModules, pendingRemoveModules };
+    return { safeInfo, pendingModules };
   }
 );
 
@@ -139,12 +112,21 @@ export const modulesSlice = createSlice({
     setCurrentModule(state, action: PayloadAction<Module>) {
       state.current = action.payload;
       state.operation = "read";
+      state.currentPendingModule = undefined;
     },
     unsetCurrentModule(state) {
       state.current = undefined;
+      state.currentPendingModule = undefined;
     },
     setOperation(state, action: PayloadAction<Operation>) {
       state.operation = action.payload;
+    },
+    setCurrentPendingModule(state, action: PayloadAction<PendingModule>) {
+      state.currentPendingModule = action.payload;
+      state.current = undefined;
+    },
+    setModuleAdded(state, action: PayloadAction<boolean>) {
+      state.moduleAdded = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -166,10 +148,9 @@ export const modulesSlice = createSlice({
       }
     });
     builder.addCase(fetchPendingModules.fulfilled, (state, action) => {
-      const { safeInfo, pendingModules, pendingRemoveModules } = action.payload;
+      const { safeInfo, pendingModules } = action.payload;
       state.safeThreshold = safeInfo.threshold;
       state.pendingModules = pendingModules;
-      state.pendingRemoveModules = pendingRemoveModules;
     });
   },
 });
@@ -179,4 +160,6 @@ export const {
   setCurrentModule,
   unsetCurrentModule,
   setOperation,
+  setCurrentPendingModule,
+  setModuleAdded,
 } = modulesSlice.actions;

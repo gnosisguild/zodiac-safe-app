@@ -1,5 +1,6 @@
 import { RootState } from "../index";
 import { isDaoModule, isDelayModule } from "./helpers";
+import { ModuleOperation } from "./models";
 
 export function getCurrentModule(state: RootState) {
   return state.modules.current;
@@ -33,10 +34,26 @@ export function getPendingModules(state: RootState) {
   return state.modules.pendingModules;
 }
 
+export function getPendingCreateModuleTransactions(state: RootState) {
+  return getPendingModules(state).filter(
+    (tx) => tx.operation === ModuleOperation.CREATE
+  );
+}
+
+export function getPendingRemoveModuleTransactions(state: RootState) {
+  return getPendingModules(state).filter(
+    (tx) => tx.operation === ModuleOperation.REMOVE
+  );
+}
+
 export function getSafeThreshold(state: RootState) {
   return state.modules.safeThreshold;
 }
 
-export function getPendingRemoveModule(state: RootState) {
-  return state.modules.pendingRemoveModules;
+export function getCurrentPendingModule(state: RootState) {
+  return state.modules.currentPendingModule;
+}
+
+export function getModuleAdded(state: RootState) {
+  return state.modules.moduleAdded;
 }

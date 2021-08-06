@@ -3,43 +3,23 @@ import { ReactComponent as ModulePendingImg } from "../../../assets/images/dao-m
 import React from "react";
 import { LoadingIcon } from "../../../components/icons/LoadingIcon";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
-import { ReactComponent as RemoveIcon } from "../../../assets/icons/delete-icon.svg";
-import { ReactComponent as RemoveModulePendingImg } from "../../../assets/images/remove-pending-state.svg";
+import { PanelItemProps } from "./PanelItem";
 
-interface DelayModulePendingItemProps {
-  remove?: boolean;
+interface DelayModulePendingItemProps extends PanelItemProps {
   instant?: boolean;
 }
 
 export const DelayModulePendingItem = ({
-  remove,
   instant,
+  ...props
 }: DelayModulePendingItemProps) => {
-  if (remove) {
-    if (instant)
-      return (
-        <ModulePendingItem
-          title="Delay Module Removal"
-          linkText="Transaction confirming..."
-          image={<LoadingIcon icon={<RemoveIcon />} />}
-        />
-      );
-
-    return (
-      <ModulePendingItem
-        title="Delay Module Removal"
-        linkText="Awaiting approval"
-        image={<RemoveModulePendingImg />}
-      />
-    );
-  }
-
   if (instant) {
     return (
       <ModulePendingItem
         title="Delay Module"
         linkText="Transaction confirming..."
         image={<LoadingIcon icon={<AddIcon />} />}
+        {...props}
       />
     );
   }
@@ -49,6 +29,7 @@ export const DelayModulePendingItem = ({
       title="Delay Module"
       linkText="Awaiting approval"
       image={<ModulePendingImg />}
+      {...props}
     />
   );
 };

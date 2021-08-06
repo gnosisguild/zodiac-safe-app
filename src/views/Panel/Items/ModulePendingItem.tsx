@@ -1,17 +1,16 @@
 import React from "react";
-import { PanelItem } from "./PanelItem";
+import { PanelItem, PanelItemProps } from "./PanelItem";
 import { makeStyles, Typography } from "@material-ui/core";
 import { Link } from "../../../components/text/Link";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { getNetworkExplorerInfo } from "../../../utils/explorers";
 
-interface DaoModulePendingItemProps {
+interface ModulePendingItemProps extends PanelItemProps {
   title: string;
   linkText: string;
-  image?: React.ReactElement | null;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   greyText: {
     fontSize: 14,
     fontWeight: "bold",
@@ -24,7 +23,8 @@ export const ModulePendingItem = ({
   image = null,
   linkText,
   title,
-}: DaoModulePendingItemProps) => {
+  ...props
+}: ModulePendingItemProps) => {
   const classes = useStyles();
   const { safe } = useSafeAppsSDK();
 
@@ -37,7 +37,7 @@ export const ModulePendingItem = ({
     : "";
 
   return (
-    <PanelItem image={image}>
+    <PanelItem image={image} {...props}>
       <Typography className={classes.greyText}>{title}</Typography>
       <Link target="_parent" href={link} className={classes.link}>
         {linkText}

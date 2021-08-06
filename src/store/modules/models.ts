@@ -45,12 +45,13 @@ export interface DaoModule extends Module {
 export interface ModulesState {
   operation: Operation;
   current?: Module;
+  currentPendingModule?: PendingModule;
   loadingModules: boolean;
   list: Module[];
   reloadCount: number;
   safeThreshold: number;
   pendingModules: PendingModule[];
-  pendingRemoveModules: string[];
+  moduleAdded: boolean;
 }
 
 export type Operation = "read" | "write";
@@ -111,4 +112,5 @@ export interface SafeInfo {
 export interface PendingModule {
   operation: ModuleOperation;
   module: ModuleType;
+  address: string;
 }

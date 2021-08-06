@@ -1,23 +1,32 @@
 import React, { useEffect } from "react";
 import { DaoModulePendingItem } from "./Items/DaoModulePendingItem";
 import { DelayModulePendingItem } from "./Items/DelayModulePendingItem";
-import { ModuleOperation, ModuleType } from "../../store/modules/models";
+import { ModuleType } from "../../store/modules/models";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
+  getCurrentPendingModule,
+  getPendingCreateModuleTransactions,
   getPendingModules,
   getSafeThreshold,
 } from "../../store/modules/selectors";
-import { fetchModulesList, fetchPendingModules } from "../../store/modules";
+import {
+  fetchModulesList,
+  fetchPendingModules,
+  setCurrentPendingModule,
+} from "../../store/modules";
 import { UnknownModulePendingItem } from "./Items/UnknownModulePendingItem";
 
 export const PendingModuleStates = () => {
   const { sdk, safe } = useSafeAppsSDK();
 
   const dispatch = useRootDispatch();
-  const pendingModules = useRootSelector(getPendingModules);
+  const currentPending = useRootSelector(getCurrentPendingModule);
+  const pendingModuleTransactions = useRootSelector(getPendingModules);
+  const pendingCreateModuleTransactions = useRootSelector(
+    getPendingCreateModuleTransactions
+  );
   const safeThreshold = useRootSelector(getSafeThreshold);
-
   const isInstantExecution = safeThreshold === 1;
 
   useEffect(() => {
@@ -25,7 +34,7 @@ export const PendingModuleStates = () => {
   }, [dispatch, safe]);
 
   useEffect(() => {
-    if (isInstantExecution && pendingModules.length) {
+    if (isInstantExecution && pendingModuleTransactions.length) {
       const interval = setInterval(
         () => dispatch(fetchPendingModules(safe)),
         3000
@@ -41,59 +50,32 @@ export const PendingModuleStates = () => {
         );
       };
     }
-  }, [dispatch, isInstantExecution, sdk, safe, pendingModules.length]);
+  }, [
+    dispatch,
+    isInstantExecution,
+    sdk,
+    safe,
+    pendingModuleTransactions.length,
+  ]);
 
-  const isCreateDaoModulePending = pendingModules.some(
-    (pending) =>
-      pending.operation === ModuleOperation.CREATE &&
-      pending.module === ModuleType.DAO
-  );
-  const isCreateDelayModulePending = pendingModules.some(
-    (pending) =>
-      pending.operation === ModuleOperation.CREATE &&
-      pending.module === ModuleType.DELAY
-  );
-  const isCreateCustomModulePending = pendingModules.some(
-    (pending) =>
-      pending.operation === ModuleOperation.CREATE &&
-      pending.module === ModuleType.UNKNOWN
-  );
-
-  const isRemoveDaoModulePending = pendingModules.some(
-    (pending) =>
-      pending.operation === ModuleOperation.REMOVE &&
-      pending.module === ModuleType.DAO
-  );
-  const isRemoveDelayModulePending = pendingModules.some(
-    (pending) =>
-      pending.operation === ModuleOperation.REMOVE &&
-      pending.module === ModuleType.DELAY
-  );
-  const isRemoveUnknownModulePending = pendingModules.some(
-    (pending) =>
-      pending.operation === ModuleOperation.REMOVE &&
-      pending.module === ModuleType.DELAY
-  );
   return (
     <>
-      {isCreateDaoModulePending ? (
-        <DaoModulePendingItem instant={isInstantExecution} />
-      ) : null}
-      {isCreateDelayModulePending ? (
-        <DelayModulePendingItem instant={isInstantExecution} />
-      ) : null}
-      {isCreateCustomModulePending ? (
-        <UnknownModulePendingItem instant={isInstantExecution} />
-      ) : null}
-      {isRemoveDaoModulePending ? (
-        <DaoModulePendingItem remove instant={isInstantExecution} />
-      ) : null}
-      {isRemoveDelayModulePending ? (
-        <DelayModulePendingItem remove instant={isInstantExecution} />
-      ) : null}
-      {isRemoveUnknownModulePending ? (
-        <UnknownModulePendingItem remove instant={isInstantExecution} />
-      ) : null}
+      {pendingCreateModuleTransactions.map((pendingModule, index) => {
+        const props = {
+          key: index,
+          instant: isInstantExecution,
+          onClick: () => dispatch(setCurrentPendingModule(pendingModule)),
+          active: currentPending?.address === pendingModule.address,
+        };
+
+        if (pendingModule.module === ModuleType.DAO)
+          return <DaoModulePendingItem {...props} />;
+
+        if (pendingModule.module === ModuleType.DELAY)
+          return <DelayModulePendingItem {...props} />;
+
+        return <UnknownModulePendingItem {...props} />;
+      })}
     </>
   );
 };

@@ -8,7 +8,7 @@ import { useRootDispatch, useRootSelector } from "../../store";
 import { getModulesList } from "../../store/modules/selectors";
 import { ModuleModals } from "./modals/ModuleModals";
 import { ModuleType } from "../../store/modules/models";
-import { fetchPendingModules } from "../../store/modules";
+import { fetchPendingModules, setModuleAdded } from "../../store/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 const useStyles = makeStyles((theme) => ({
@@ -34,6 +34,7 @@ export const AddModulesView = () => {
 
   const handleSubmit = () => {
     dispatch(fetchPendingModules(safe));
+    dispatch(setModuleAdded(true));
   };
 
   const title = hasModules ? "Add another module" : "Start by adding a module";

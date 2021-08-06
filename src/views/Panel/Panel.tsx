@@ -6,6 +6,7 @@ import { Row } from "../../components/layout/Row";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
   getCurrentModule,
+  getCurrentPendingModule,
   getModulesList,
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
@@ -41,6 +42,7 @@ export const Panel = () => {
   const dispatch = useRootDispatch();
   const modulesList = useRootSelector(getModulesList);
   const currentModule = useRootSelector(getCurrentModule);
+  const currentPending = useRootSelector(getCurrentPendingModule);
 
   const handleAddModule = () => {
     dispatch(unsetCurrentModule());
@@ -53,7 +55,7 @@ export const Panel = () => {
           <span className={classes.title}>Module Manager</span>
         </Title>
         <Box flexGrow={1} />
-        {currentModule ? (
+        {currentModule || currentPending ? (
           <Button
             className={classes.smallButton}
             variant="outlined"

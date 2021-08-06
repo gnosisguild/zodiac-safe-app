@@ -2,12 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import { modulesSlice } from "./modules";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { transactionBuilderSlice } from "./transactionBuilder";
+import { modulesMiddleware } from "./modules/middleware";
 
 export const REDUX_STORE = configureStore({
   reducer: {
     modules: modulesSlice.reducer,
     transactionBuilder: transactionBuilderSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(modulesMiddleware),
 });
 
 export type RootState = ReturnType<typeof REDUX_STORE.getState>;
