@@ -1,13 +1,5 @@
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import React from "react";
-import {
-  Box,
-  IconButton,
-  makeStyles,
-  Paper,
-  withStyles,
-} from "@material-ui/core";
-import ToggleButton from "@material-ui/lab/ToggleButton";
+import { Box, IconButton, makeStyles, Paper } from "@material-ui/core";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
@@ -20,25 +12,7 @@ import { getOperation } from "../../../store/modules/selectors";
 import { AddTransactionBlock } from "../transaction/AddTransactionBlock";
 import { addTransaction } from "../../../store/transactionBuilder";
 import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
-
-const StyledToggleButton = withStyles((theme) => ({
-  root: {
-    borderColor: theme.palette.secondary.main,
-    padding: theme.spacing(1, 2.5),
-    "& span": {
-      fontFamily: theme.typography.fontFamily,
-      fontSize: 16,
-      textTransform: "none",
-      color: theme.palette.text.primary + " !important",
-    },
-  },
-  selected: {
-    backgroundColor: theme.palette.secondary.main + " !important",
-    "& span": {
-      color: theme.palette.common.white + " !important",
-    },
-  },
-}))(ToggleButton);
+import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
 
 interface ContractInteractionsProps {
   address: string;
@@ -76,15 +50,10 @@ export const ContractInteractions = ({
   return (
     <>
       <Row alignItems="end">
-        <ToggleButtonGroup
-          exclusive
-          size="small"
+        <ContractOperationToggleButtons
           value={operation}
           onChange={(evt, value) => handleOperationChange(value)}
-        >
-          <StyledToggleButton value="read">Read Contract</StyledToggleButton>
-          <StyledToggleButton value="write">Write Contract</StyledToggleButton>
-        </ToggleButtonGroup>
+        />
 
         <Box flexGrow={1} />
 

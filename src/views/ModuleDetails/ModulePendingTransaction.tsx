@@ -3,6 +3,7 @@ import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import { useRootSelector } from "../../store";
 import { getSafeThreshold } from "../../store/modules/selectors";
+import { ContractOperationToggleButtons } from "./ContractOperationToggleButtons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginLeft: "16px",
   },
+  buttons: {
+    marginTop: theme.spacing(3),
+    opacity: 0.5,
+  },
 }));
 
 export const ModulePendingTransaction = () => {
@@ -56,7 +61,13 @@ export const ModulePendingTransaction = () => {
             you will be able to read and write to it.
           </Typography>
         </Paper>
-      ) : null}
+      ) : (
+        <ContractOperationToggleButtons
+          disabled
+          className={classes.buttons}
+          value="read"
+        />
+      )}
     </div>
   );
 };
