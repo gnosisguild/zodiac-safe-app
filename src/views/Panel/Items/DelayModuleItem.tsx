@@ -72,8 +72,9 @@ export const DelayModuleItem = ({
         </Typography>
         <Address
           short
-          hideCopyBtn
-          hideExplorerBtn
+          showOnHover
+          spacing={0}
+          iconSpacing={1}
           address={module.address}
           variant="body2"
           className={classes.text}

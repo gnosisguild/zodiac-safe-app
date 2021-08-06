@@ -1,6 +1,5 @@
 import { HashInfo } from "../../../components/ethereum/HashInfo";
 import { makeStyles, Typography } from "@material-ui/core";
-import { shortAddress } from "../../../utils/string";
 import { PanelItem, PanelItemProps } from "./PanelItem";
 import React from "react";
 import { Module } from "../../../store/modules/models";
@@ -8,6 +7,7 @@ import { DelayModuleItem } from "./DelayModuleItem";
 import { isDelayModule } from "../../../store/modules/helpers";
 import { ModuleList } from "../ModuleList";
 import { RemoveIcon } from "../../../components/icons/RemoveIcon";
+import { Address } from "../../../components/ethereum/Address";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -54,9 +54,15 @@ export const ModuleItem = ({
         <Typography variant="h6" className={classes.text} gutterBottom>
           {module.name}
         </Typography>
-        <Typography variant="body2" className={classes.text}>
-          {shortAddress(module.address)}
-        </Typography>
+        <Address
+          short
+          showOnHover
+          address={module.address}
+          spacing={0}
+          iconSpacing={1}
+          variant="body2"
+          className={classes.text}
+        />
       </PanelItem>
 
       {module.subModules.length ? (

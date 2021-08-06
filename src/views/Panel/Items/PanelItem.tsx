@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     marginLeft: theme.spacing(2),
+    width: "100%",
   },
 }));
 
