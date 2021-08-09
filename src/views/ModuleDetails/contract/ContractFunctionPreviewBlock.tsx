@@ -47,7 +47,9 @@ export const ContractFunctionPreviewBlock = ({
         </Typography>
         <Box flexGrow={1} />
         <ContractFunctionHeader
-          address={shrink ? "0x0000000000000000000000000000000000000000" : undefined}
+          address={
+            shrink ? "0x0000000000000000000000000000000000000000" : undefined
+          }
         />
         {!shrink ? <ArrowIcon className={classes.expandIcon} /> : null}
       </Row>

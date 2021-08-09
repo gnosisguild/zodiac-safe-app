@@ -7,7 +7,7 @@ import { Transaction } from "../../../store/transactionBuilder/models";
 import { increaseReloadCount, setOperation } from "../../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import classNames from "classnames";
-import { Operation } from "../../../store/modules/models";
+import { ABI, Operation } from "../../../store/modules/models";
 import { getOperation } from "../../../store/modules/selectors";
 import { AddTransactionBlock } from "../transaction/AddTransactionBlock";
 import { addTransaction } from "../../../store/transactionBuilder";
@@ -16,7 +16,7 @@ import { ContractOperationToggleButtons } from "../ContractOperationToggleButton
 
 interface ContractInteractionsProps {
   address: string;
-  abi: string | string[];
+  abi: ABI;
 }
 
 const useStyles = makeStyles((theme) => ({

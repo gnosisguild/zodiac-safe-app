@@ -8,6 +8,8 @@ import { isDelayModule } from "../../../store/modules/helpers";
 import { ModuleList } from "../ModuleList";
 import { Address } from "../../../components/ethereum/Address";
 import { ModulePendingRemoval } from "./ModulePendingRemovalItem";
+import { Badge } from "../../../components/text/Badge";
+import { shortAddress } from "../../../utils/string";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -15,9 +17,12 @@ interface ModuleItemProps extends PanelItemProps {
   module: Module;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
+  },
+  spacing: {
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -42,6 +47,12 @@ export const ModuleItem = ({
   if (isDelayModule(module)) {
     return <DelayModuleItem module={module} {...panelItemProps} />;
   }
+
+  const ownerBadge = module.owner ? (
+    <Badge secondary={shortAddress(module.owner)} className={classes.spacing}>
+      External Owner
+    </Badge>
+  ) : null;
 
   return (
     <>
@@ -70,6 +81,7 @@ export const ModuleItem = ({
           variant="body2"
           className={classes.text}
         />
+        {ownerBadge}
       </PanelItem>
 
       {module.subModules.length ? (

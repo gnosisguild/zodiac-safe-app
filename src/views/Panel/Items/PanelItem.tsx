@@ -17,7 +17,7 @@ export const PANEL_ITEM_HEIGHT = 90;
 const useStyles = makeStyles((theme) => ({
   moduleItem: {
     display: "grid",
-    gridTemplateColumns:"40px 1fr",
+    gridTemplateColumns: "40px 1fr",
     alignItems: "center",
     padding: theme.spacing(0, 2),
     cursor: "pointer",

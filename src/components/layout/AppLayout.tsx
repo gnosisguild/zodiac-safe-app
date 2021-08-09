@@ -5,7 +5,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "grid",
     height: "100%",
-    gridTemplateColumns:"380px 1fr"
+    gridTemplateColumns: "380px 1fr",
   },
   leftPanel: {
     overflowY: "auto",

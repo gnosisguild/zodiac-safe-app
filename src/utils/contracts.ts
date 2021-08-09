@@ -17,7 +17,7 @@ import {
   isGenericProxy,
   isGnosisGenericProxy,
 } from "./modulesValidation";
-import { ModuleMetadata, ModuleType } from "../store/modules/models";
+import { ABI, ModuleMetadata, ModuleType } from "../store/modules/models";
 import retry from "async-retry";
 
 export function isWriteFunction(method: FunctionFragment) {
@@ -29,14 +29,14 @@ export function isReadFunction(method: FunctionFragment) {
   return !isWriteFunction(method);
 }
 
-export function getReadFunction(abi: string | string[]) {
+export function getReadFunction(abi: ABI) {
   return new Interface(abi).fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)
     .filter(isReadFunction);
 }
 
-export function getWriteFunction(abi: string | string[]) {
+export function getWriteFunction(abi: ABI) {
   return new Interface(abi).fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)

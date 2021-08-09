@@ -14,9 +14,10 @@ import { useRootDispatch, useRootSelector } from "../../../store";
 import { getAddTransaction } from "../../../store/transactionBuilder/selectors";
 import { resetNewTransaction } from "../../../store/transactionBuilder";
 import { getCurrentModule } from "../../../store/modules/selectors";
+import { ABI } from "../../../store/modules/models";
 
 interface AddTransactionBlockProps {
-  abi: string | string[];
+  abi: ABI;
 
   onAdd(transaction: Transaction): void;
 }

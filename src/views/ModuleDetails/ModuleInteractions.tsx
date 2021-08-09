@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ContractInteractions } from "./contract/ContractInteractions";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { getModuleDataFromEtherscan } from "../../utils/contracts";
-import { Module } from "../../store/modules/models";
+import { ABI, Module } from "../../store/modules/models";
 import { ModuleNoAvailable } from "./ModuleNoAvailable";
 import { Skeleton } from "@material-ui/lab";
 
@@ -13,7 +13,7 @@ interface ModuleInteractionsProps {
 export const ModuleInteractions = ({ module }: ModuleInteractionsProps) => {
   const { safe, sdk } = useSafeAppsSDK();
   const [loading, setLoading] = useState(true);
-  const [abi, setABI] = useState<string | string[]>();
+  const [abi, setABI] = useState<ABI>();
 
   useEffect(() => {
     setLoading(true);

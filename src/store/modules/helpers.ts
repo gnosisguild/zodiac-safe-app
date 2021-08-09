@@ -57,12 +57,15 @@ export const sanitizeModule = async (
     chainId
   );
 
+  const owner = await fetchModuleOwner(moduleAddress, module.abi);
+
   return {
-    id: moduleAddress,
     name,
+    owner,
+    subModules,
+    id: moduleAddress,
     type: module.type,
     address: moduleAddress,
-    subModules,
   };
 };
 
@@ -73,12 +76,10 @@ export async function fetchDelayModule(
 ): Promise<DelayModule | Module> {
   const provider = new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
   const delayModule = await getModuleInstance("delay", address, provider);
+  const abi = delayModule.interface.fragments.map((frag) => frag);
 
   try {
-    const moduleContract = new MultiCallContract(
-      delayModule.address,
-      delayModule.interface.fragments.map((frag) => frag)
-    );
+    const moduleContract = new MultiCallContract(delayModule.address, abi);
 
     const ethCallProvider = new MultiCallProvider();
     await ethCallProvider.init(provider);
@@ -108,7 +109,10 @@ export async function fetchDelayModule(
       subModules = await Promise.all(requests);
     }
 
+    const owner = await fetchModuleOwner(address, abi);
+
     return {
+      owner,
       address,
       id: address,
       name: "Delay Module",
@@ -152,6 +156,20 @@ export async function fetchSubModules(
     );
   } catch (e) {
     return [];
+  }
+}
+
+export async function fetchModuleOwner(
+  moduleAddress: string,
+  abi: ModuleMetadata["abi"]
+): Promise<string | undefined> {
+  try {
+    if (!abi) return undefined;
+    const contract = new Contract(moduleAddress, abi, defaultProvider);
+    contract.interface.getFunction("owner()");
+    return await contract.owner();
+  } catch (e) {
+    return undefined;
   }
 }
 

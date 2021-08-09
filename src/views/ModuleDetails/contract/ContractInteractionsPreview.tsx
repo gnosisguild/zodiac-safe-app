@@ -3,10 +3,11 @@ import { makeStyles, Paper } from "@material-ui/core";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../../components/layout/Row";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
+import { ABI } from "../../../store/modules/models";
 
-interface ContractInteractionsProps {
+interface ContractInteractionsPreviewProps {
   address: string;
-  abi: string | string[];
+  abi: ABI;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export const ContractInteractionsPreview = ({
   address,
   abi,
-}: ContractInteractionsProps) => {
+}: ContractInteractionsPreviewProps) => {
   const classes = useStyles();
 
   return (

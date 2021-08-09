@@ -1,3 +1,7 @@
+import { Fragment } from "@ethersproject/abi";
+
+export type ABI = string | string[] | Fragment[];
+
 export enum ModuleType {
   DAO,
   DELAY,
@@ -15,6 +19,7 @@ export interface Module {
   address: string;
   type: ModuleType;
   subModules: Module[];
+  owner?: string;
   parentModule?: string;
 }
 
@@ -23,7 +28,7 @@ export interface ModuleMetadata {
   implAddress: string;
   type: ModuleType;
   name?: string;
-  abi?: string | string[];
+  abi?: ABI;
 }
 
 export interface DelayModule extends Module {
