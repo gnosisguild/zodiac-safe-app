@@ -9,6 +9,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: 1,
     borderRadius: 4,
     backgroundColor: theme.palette.primary.light,
+    whiteSpace: "nowrap",
   },
 }));
 

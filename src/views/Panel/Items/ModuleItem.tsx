@@ -6,8 +6,8 @@ import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
 import { isDelayModule } from "../../../store/modules/helpers";
 import { ModuleList } from "../ModuleList";
-import { RemoveIcon } from "../../../components/icons/RemoveIcon";
 import { Address } from "../../../components/ethereum/Address";
+import { ModulePendingRemoval } from "./ModulePendingRemovalItem";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -29,31 +29,38 @@ export const ModuleItem = ({
 }: ModuleItemProps) => {
   const classes = useStyles();
 
-  if (isDelayModule(module))
+  if (remove) {
     return (
-      <DelayModuleItem module={module} remove={remove} {...panelItemProps} />
+      <ModulePendingRemoval
+        module={module}
+        instant={instant}
+        {...panelItemProps}
+      />
     );
+  }
+
+  if (isDelayModule(module)) {
+    return <DelayModuleItem module={module} {...panelItemProps} />;
+  }
 
   return (
     <>
       <PanelItem
         image={
-          remove ? (
-            <RemoveIcon instant={instant} />
-          ) : (
-            <HashInfo
-              showAvatar
-              avatarSize="lg"
-              showHash={false}
-              hash={module.address}
-            />
-          )
+          <HashInfo
+            showAvatar
+            avatarSize="lg"
+            showHash={false}
+            hash={module.address}
+          />
         }
         {...panelItemProps}
       >
-        <Typography variant="h6" className={classes.text} gutterBottom>
-          {module.name}
-        </Typography>
+        {module.name ? (
+          <Typography variant="h6" className={classes.text} gutterBottom>
+            {module.name}
+          </Typography>
+        ) : null}
         <Address
           short
           showOnHover

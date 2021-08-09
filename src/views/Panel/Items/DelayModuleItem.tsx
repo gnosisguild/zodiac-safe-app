@@ -7,15 +7,13 @@ import { Badge } from "../../../components/text/Badge";
 import { Address } from "../../../components/ethereum/Address";
 import { ModuleList } from "../ModuleList";
 import { formatDuration } from "../../../utils/string";
-import { useRootDispatch, useRootSelector } from "../../../store";
+import { useRootDispatch } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
-import { RemoveIcon } from "../../../components/icons/RemoveIcon";
-import { getSafeThreshold } from "../../../store/modules/selectors";
+import { Row } from "../../../components/layout/Row";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
-  remove?: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -24,18 +22,16 @@ const useStyles = makeStyles((theme) => ({
   },
   link: {
     marginLeft: theme.spacing(1),
+    lineHeight: 1,
   },
 }));
 
 export const DelayModuleItem = ({
   module,
-  remove,
   ...panelItemProps
 }: DelayModuleItemProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const safeThreshold = useRootSelector(getSafeThreshold);
-  const instant = safeThreshold === 1;
 
   const handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation(); // Avoid triggering ModuleItem click event.
@@ -54,16 +50,12 @@ export const DelayModuleItem = ({
     <>
       <PanelItem
         image={
-          remove ? (
-            <RemoveIcon instant={instant} />
-          ) : (
-            <HashInfo
-              showAvatar
-              avatarSize="lg"
-              showHash={false}
-              hash={module.address}
-            />
-          )
+          <HashInfo
+            showAvatar
+            avatarSize="lg"
+            showHash={false}
+            hash={module.address}
+          />
         }
         {...panelItemProps}
       >
@@ -80,7 +72,7 @@ export const DelayModuleItem = ({
           className={classes.text}
           gutterBottom
         />
-        <div>
+        <Row alignItems="center">
           <Badge>{formatDuration(module.timeout)} delay</Badge>
           <Link
             color="secondary"
@@ -90,7 +82,7 @@ export const DelayModuleItem = ({
           >
             Change Delay
           </Link>
-        </div>
+        </Row>
       </PanelItem>
 
       {module.subModules.length ? (

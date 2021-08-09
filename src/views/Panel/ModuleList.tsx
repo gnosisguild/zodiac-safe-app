@@ -1,4 +1,4 @@
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import React from "react";
 import { Module } from "../../store/modules/models";
 import { setCurrentModule } from "../../store/modules";
@@ -16,6 +16,7 @@ import { PANEL_ITEM_HEIGHT, PanelItem } from "./Items/PanelItem";
 import { ModuleItem } from "./Items/ModuleItem";
 import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
+import { Column } from "../../components/layout/Column";
 
 interface ModuleListProps {
   modules: Module[];
@@ -23,6 +24,9 @@ interface ModuleListProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    overflowX: "hidden",
+  },
   subModules: {
     position: "relative",
     marginLeft: theme.spacing(10),
@@ -108,9 +112,9 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   }
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Column className={classes.root}>
       <PendingModuleStates />
       {content}
-    </Box>
+    </Column>
   );
 };

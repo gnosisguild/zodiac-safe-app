@@ -27,15 +27,16 @@ const initialModulesState: ModulesState = {
 
 export const fetchModulesList = createAsyncThunk(
   "modules/fetchModulesList",
-  async ({
-    safeSDK,
-    safeAddress,
-    chainId,
-  }: {
-    safeSDK: SafeAppsSDK;
-    chainId: number;
-    safeAddress: string;
-  }): Promise<Module[]> => {
+  async (
+    params: {
+      safeSDK: SafeAppsSDK;
+      chainId: number;
+      safeAddress: string;
+      retry?: boolean;
+    },
+    store
+  ): Promise<Module[]> => {
+    const { safeSDK, safeAddress, chainId, retry } = params;
     const moduleAddresses = await fetchSafeModulesAddress(safeAddress);
 
     const requests = moduleAddresses.map(async (moduleAddress) => {
@@ -47,6 +48,14 @@ export const fetchModulesList = createAsyncThunk(
     });
     requests.reverse();
     const responses = await Promise.all(requests);
+
+    if (retry) {
+      setTimeout(() => {
+        const action = fetchModulesList({ ...params, retry: false });
+        store.dispatch(action);
+      }, 4000);
+    }
+
     return responses.filter((module): module is Module => module !== undefined);
   }
 );

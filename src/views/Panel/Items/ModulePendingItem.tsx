@@ -39,9 +39,11 @@ export const ModulePendingItem = ({
   return (
     <PanelItem image={image} {...props}>
       <Typography className={classes.greyText}>{title}</Typography>
-      <Link target="_parent" href={link} className={classes.link}>
-        {linkText}
-      </Link>
+      <div>
+        <Link target="_parent" href={link} className={classes.link}>
+          {linkText}
+        </Link>
+      </div>
     </PanelItem>
   );
 };
