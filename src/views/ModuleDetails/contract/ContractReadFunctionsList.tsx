@@ -1,16 +1,19 @@
 import React, { useMemo } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { ContractFunctionQueryBlock } from "./ContractFunctionBlock";
+import { ContractFunctionQueryBlock } from "./ContractFunctionQueryBlock";
 import { getReadFunction } from "../../../utils/contracts";
+import { ContractFunctionPreviewBlock } from "./ContractFunctionPreviewBlock";
 
-interface ModuleListFunctionsProps {
+type ModuleListFunctionsProps = {
   address: string;
   abi: string | string[];
-}
+  preview?: boolean;
+};
 
 export const ContractReadFunctionsList = ({
   abi,
   address,
+  preview,
 }: ModuleListFunctionsProps) => {
   const readFunctions: FunctionFragment[] = useMemo(
     () => getReadFunction(abi),
@@ -19,13 +22,19 @@ export const ContractReadFunctionsList = ({
 
   return (
     <>
-      {readFunctions.map((func) => (
-        <ContractFunctionQueryBlock
-          key={func.name}
-          address={address}
-          func={func}
-        />
-      ))}
+      {readFunctions.map((func) => {
+        if (preview) {
+          return <ContractFunctionPreviewBlock key={func.name} func={func} />;
+        }
+
+        return (
+          <ContractFunctionQueryBlock
+            key={func.name}
+            address={address}
+            func={func}
+          />
+        );
+      })}
     </>
   );
 };

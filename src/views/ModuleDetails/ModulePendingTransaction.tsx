@@ -2,15 +2,18 @@ import React from "react";
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import { useRootSelector } from "../../store";
-import { getSafeThreshold } from "../../store/modules/selectors";
-import { ContractOperationToggleButtons } from "./ContractOperationToggleButtons";
+import {
+  getCurrentPendingModule,
+  getSafeThreshold,
+} from "../../store/modules/selectors";
+import { ContractInteractionsPreview } from "./contract/ContractInteractionsPreview";
+import { getModuleABI } from "../../utils/modulesValidation";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3),
   },
   paper: {
-    marginTop: theme.spacing(3),
     padding: theme.spacing(2.5),
     maxWidth: 500,
   },
@@ -24,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: theme.spacing(3),
   },
   addressText: {
     margin: theme.spacing(0, 2, 0, 3),
@@ -37,6 +41,20 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0.5,
   },
 }));
+
+function ModulePendingInstantTx() {
+  const currentPendingTx = useRootSelector(getCurrentPendingModule);
+
+  if (!currentPendingTx) return null;
+
+  const abi = getModuleABI(currentPendingTx.module);
+
+  if (!abi) return null;
+
+  return (
+    <ContractInteractionsPreview address={currentPendingTx.address} abi={abi} />
+  );
+}
 
 export const ModulePendingTransaction = () => {
   const classes = useStyles();
@@ -62,11 +80,7 @@ export const ModulePendingTransaction = () => {
           </Typography>
         </Paper>
       ) : (
-        <ContractOperationToggleButtons
-          disabled
-          className={classes.buttons}
-          value="read"
-        />
+        <ModulePendingInstantTx />
       )}
     </div>
   );

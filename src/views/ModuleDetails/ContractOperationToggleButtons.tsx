@@ -16,6 +16,9 @@ const StyledToggleButton = withStyles((theme) => ({
       textTransform: "none",
       color: theme.palette.text.primary + " !important",
     },
+    "&.Mui-disabled": {
+      opacity: 0.5,
+    },
   },
   selected: {
     backgroundColor: theme.palette.secondary.main + " !important",
