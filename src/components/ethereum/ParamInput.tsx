@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ParamType } from "@ethersproject/abi";
 import { TextField, TextFieldProps } from "../input/TextField";
 import { formatParamValue } from "../../utils/contracts";
+import { MenuItem } from "@material-ui/core";
 
 export interface ParamInputProps
   extends Omit<TextFieldProps, "onChange" | "value" | "label"> {
@@ -74,11 +75,10 @@ export const ParamInput = ({
         label={getLabel(param)}
         value={value}
         onChange={handleChange}
-        SelectProps={{ native: true }}
         {...props}
       >
-        <option value="true">True</option>
-        <option value="false">True</option>
+        <MenuItem value="true">True</MenuItem>
+        <MenuItem value="false">True</MenuItem>
       </TextField>
     );
   }

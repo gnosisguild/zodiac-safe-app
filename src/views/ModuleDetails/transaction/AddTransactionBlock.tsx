@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { Box, makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { TextField } from "../../../components/input/TextField";
@@ -154,16 +154,15 @@ export const AddTransactionBlock = ({
         select
         value={funcIndex}
         onChange={handleFuncChange}
-        SelectProps={{ native: true }}
         className={classNames({ [classes.greyText]: funcIndex === undefined })}
         color="secondary"
         label="Function"
       >
-        <option value={-1}>Select function</option>
+        <MenuItem value={-1}>Select function</MenuItem>
         {writeFunctions.map((func, index) => (
-          <option key={func.format("full")} value={index}>
+          <MenuItem key={func.format("full")} value={index}>
             {func.name}
-          </option>
+          </MenuItem>
         ))}
       </TextField>
       <TransactionFields
