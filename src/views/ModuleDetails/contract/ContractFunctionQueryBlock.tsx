@@ -8,8 +8,9 @@ import { ContractQueryForm } from "../../../components/ethereum/ContractQueryFor
 import { ContractFunctionResult } from "./ContractFunctionResult";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
 import {
+  formatValue,
   isBasicFunction,
-  validateFunctionReturnsHex,
+  isOneResult,
 } from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
 import { ContractFunctionError } from "./ContractFunctionError";
@@ -56,7 +57,16 @@ export const ContractFunctionQueryBlock = ({
   const { loading, result, fetch, error } = useContractQuery();
 
   const isBasic = isBasicFunction(func);
-  const isHexReturned = validateFunctionReturnsHex(func);
+  const oneResult = isOneResult(func);
+
+  const baseType = oneResult && func.outputs ? func.outputs[0].baseType : "";
+  const resultLength =
+    result === undefined || !oneResult
+      ? 0
+      : formatValue(baseType, result[0]).length;
+
+  const maxResultLength = 60;
+  const showResultOnHeader = oneResult && resultLength < maxResultLength;
 
   const execQuery = useCallback(
     (params?: any[]) => {
@@ -81,7 +91,9 @@ export const ContractFunctionQueryBlock = ({
   const content = (
     <>
       <ContractFunctionError error={error} />
-      <ContractFunctionResult loading={loading} func={func} result={result} />
+      {!showResultOnHeader ? (
+        <ContractFunctionResult loading={loading} func={func} result={result} />
+      ) : null}
       <ContractQueryForm func={func}>
         {({ paramInputProps, areParamsValid, getParams }) => (
           <>
@@ -107,13 +119,13 @@ export const ContractFunctionQueryBlock = ({
     </>
   );
 
-  const shrink = isBasic && isHexReturned;
+  const collapsable = !showResultOnHeader || !isBasic;
 
   return (
-    <Collapsable open={open && !shrink} content={content}>
+    <Collapsable open={open && collapsable} content={content}>
       <Row
         alignItems="center"
-        className={classNames({ [classes.clickable]: !shrink })}
+        className={classNames({ [classes.clickable]: collapsable })}
         onClick={() => setOpen(!open)}
       >
         <Typography variant="h6" className={classes.title}>
@@ -121,11 +133,13 @@ export const ContractFunctionQueryBlock = ({
         </Typography>
         <Box flexGrow={1} />
         <ContractFunctionHeader
+          func={func}
+          result={result}
           loading={loading}
           date={lastQueryDate}
-          address={shrink && result ? result[0].toString() : undefined}
+          showResult={showResultOnHeader}
         />
-        {!shrink ? (
+        {collapsable ? (
           <ArrowIcon up={open} className={classes.expandIcon} />
         ) : null}
       </Row>

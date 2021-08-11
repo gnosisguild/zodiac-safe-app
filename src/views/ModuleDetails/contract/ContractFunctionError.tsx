@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.error.main,
     borderStyle: "solid",
     borderWidth: 2,
+    wordWrap: "break-word",
   },
 }));
 

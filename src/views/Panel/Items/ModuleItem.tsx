@@ -76,10 +76,10 @@ export const ModuleItem = ({
           short
           showOnHover
           address={module.address}
-          spacing={0}
-          iconSpacing={1}
-          variant="body2"
-          className={classes.text}
+          TypographyProps={{
+            variant: "body2",
+            className: classes.text,
+          }}
         />
         {ownerBadge}
       </PanelItem>

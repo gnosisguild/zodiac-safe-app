@@ -83,9 +83,8 @@ export const AttachModuleForm = ({
                     short
                     hideCopyBtn
                     hideExplorerBtn
-                    spacing={0}
                     address={module.address}
-                    className={classes.text}
+                    TypographyProps={{ className: classes.text }}
                   />
                 </Column>
               </Row>

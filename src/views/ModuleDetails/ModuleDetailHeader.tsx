@@ -26,8 +26,8 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "16px !important",
     color: theme.palette.text.primary + " !important",
   },
-  icon: {
-    marginLeft: "16px",
+  spacing: {
+    marginLeft: theme.spacing(2),
   },
 }));
 
@@ -67,7 +67,13 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
       <Text size="xl" strong className={classes.text}>
         Address:
       </Text>
-      <Address address={module.address} />
+      <Address
+        address={module.address}
+        classes={{
+          container: classes.spacing,
+          icon: classes.spacing,
+        }}
+      />
 
       <Box flexGrow={1} />
 

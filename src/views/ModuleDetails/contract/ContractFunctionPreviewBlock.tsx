@@ -3,10 +3,7 @@ import { FunctionFragment } from "@ethersproject/abi";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
-import {
-  isBasicFunction,
-  validateFunctionReturnsHex,
-} from "../../../utils/contracts";
+import {isBasicFunction, isOneResult} from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 
@@ -35,9 +32,9 @@ export const ContractFunctionPreviewBlock = ({
   const classes = useStyles();
 
   const isBasic = isBasicFunction(func);
-  const isHexReturned = validateFunctionReturnsHex(func);
+  const oneResult = isOneResult(func);
 
-  const shrink = isBasic && isHexReturned;
+  const shrink = isBasic && oneResult;
 
   return (
     <Collapsable className={classes.root}>
@@ -47,8 +44,10 @@ export const ContractFunctionPreviewBlock = ({
         </Typography>
         <Box flexGrow={1} />
         <ContractFunctionHeader
-          address={
-            shrink ? "0x0000000000000000000000000000000000000000" : undefined
+          func={func}
+          showResult={shrink}
+          result={
+            shrink ? ["0x0000000000000000000000000000000000000000"] : undefined
           }
         />
         {!shrink ? <ArrowIcon className={classes.expandIcon} /> : null}

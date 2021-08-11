@@ -65,12 +65,12 @@ export const DelayModuleItem = ({
         <Address
           short
           showOnHover
-          spacing={0}
-          iconSpacing={1}
           address={module.address}
-          variant="body2"
-          className={classes.text}
-          gutterBottom
+          TypographyProps={{
+            variant: "body2",
+            className: classes.text,
+            gutterBottom: true,
+          }}
         />
         <Row alignItems="center">
           <Badge>{formatDuration(module.timeout)} delay</Badge>

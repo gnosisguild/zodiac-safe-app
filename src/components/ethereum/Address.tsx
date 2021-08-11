@@ -1,84 +1,76 @@
 import React from "react";
-import {
-  makeStyles,
-  Theme,
-  Typography,
-  TypographyProps,
-} from "@material-ui/core";
+import { makeStyles, Typography, TypographyProps } from "@material-ui/core";
 import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components";
 import { AddressExplorerButton } from "./AddressExplorerButton";
 import { shortAddress } from "../../utils/string";
 import classNames from "classnames";
 import { Row } from "../layout/Row";
 
-interface AddressProps extends TypographyProps {
+interface AddressProps {
   address: string;
-  spacing?: number;
-  iconSpacing?: number;
   short?: boolean;
   hideCopyBtn?: boolean;
   hideExplorerBtn?: boolean;
   showOnHover?: boolean;
+  classes?: {
+    icon?: string;
+    container?: string;
+  };
+  TypographyProps?: TypographyProps;
 }
 
-const useStyles = makeStyles<Theme, { spacing: number; iconSpacing: number }>(
-  (theme) => ({
-    root: {
-      alignItems: "center",
+const useStyles = makeStyles((theme) => ({
+  root: {
+    alignItems: "center",
+    minWidth: 0,
+  },
+  icon: {
+    marginLeft: theme.spacing(1),
+  },
+  gutterBottom: {
+    marginBottom: theme.spacing(1),
+  },
+  showOnHover: {
+    "& .btn": {
+      visibility: "hidden",
     },
-    text: (props) => ({
-      marginLeft: theme.spacing(props.spacing),
-    }),
-    icon: (props) => ({
-      marginLeft: theme.spacing(props.iconSpacing),
-    }),
-    gutterBottom: {
-      marginBottom: theme.spacing(1),
+    "&:hover .btn": {
+      visibility: "initial",
     },
-    showOnHover: {
-      "& .btn": {
-        visibility: "hidden",
-      },
-      "&:hover .btn": {
-        visibility: "initial",
-      },
-    },
-  })
-);
+  },
+}));
 
 export const Address = ({
   address,
-  spacing = 2,
-  iconSpacing = 2,
   short = false,
   hideCopyBtn = false,
   hideExplorerBtn = false,
   showOnHover = false,
-  gutterBottom,
-  ...typographyProps
+  classes: { icon, container } = {},
+  TypographyProps,
 }: AddressProps) => {
-  const classes = useStyles({ spacing, iconSpacing });
+  const classes = useStyles();
 
   return (
     <Row
-      className={classNames(classes.root, {
+      className={classNames(classes.root, container, {
         [classes.showOnHover]: showOnHover,
-        [classes.gutterBottom]: gutterBottom,
+        [classes.gutterBottom]: TypographyProps?.gutterBottom,
       })}
     >
-      <Typography noWrap className={classes.text} {...typographyProps}>
+      <Typography noWrap {...TypographyProps}>
         {short ? shortAddress(address) : address}
       </Typography>
       {hideCopyBtn ? null : (
         <CopyToClipboardBtn
           textToCopy={address}
-          className={classNames(classes.icon, "btn")}
+          className={classNames(classes.icon, icon, "btn")}
         />
       )}
       {hideExplorerBtn ? null : (
         <AddressExplorerButton
           address={address}
-          className={classNames(classes.icon, "btn")}
+          className={classNames(classes.icon, icon, "btn")}
         />
       )}
     </Row>

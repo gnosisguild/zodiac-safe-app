@@ -18,7 +18,7 @@ export const useContractQuery = () => {
         setError(undefined);
       })
       .catch((error) => {
-        setError(error);
+        setError(error.message);
         setResult(undefined);
       })
       .finally(() => setLoading(false));

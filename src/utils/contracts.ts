@@ -19,6 +19,7 @@ import {
 } from "./modulesValidation";
 import { ABI, ModuleMetadata, ModuleType } from "../store/modules/models";
 import retry from "async-retry";
+import { BigNumber } from "ethers";
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true;
@@ -89,10 +90,12 @@ export function isBasicFunction(func: FunctionFragment) {
   return !func.inputs.length;
 }
 
-export function validateFunctionReturnsHex(func: FunctionFragment): boolean {
-  if (func.outputs?.length !== 1) return false;
-  const { baseType } = func.outputs[0];
-  return baseType === "address" || baseType.startsWith("bytes");
+export function isOneResult(func: FunctionFragment) {
+  return (
+    func.outputs?.length === 1 &&
+    func.outputs &&
+    func.outputs[0]?.baseType !== "array"
+  );
 }
 
 export function validateFunctionParamValue(
@@ -223,3 +226,14 @@ export const getModuleDataFromEtherscan = memoize(
   },
   (sdk, chainId, address) => `${chainId}_${address}`
 );
+
+export function formatValue(
+  baseType: string,
+  value: string | BigNumber | boolean
+): string {
+  if (baseType === "array" || baseType === "tuple") {
+    value = JSON.stringify(value);
+  }
+
+  return value.toString();
+}

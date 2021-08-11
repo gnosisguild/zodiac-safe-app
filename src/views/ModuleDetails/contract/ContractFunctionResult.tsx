@@ -3,6 +3,7 @@ import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, Paper } from "@material-ui/core";
 import { FunctionOutputs } from "../../../hooks/useContractQuery";
 import { Skeleton } from "@material-ui/lab";
+import { formatValue } from "../../../utils/contracts";
 
 interface ContractFunctionResultProps {
   func: FunctionFragment;
@@ -43,8 +44,12 @@ export const ContractFunctionResult = ({
     <Paper className={classes.root} elevation={0}>
       {func.outputs?.map((param, index) => (
         <div key={index} className={classes.item}>
-          <span className={classes.label}>{param.type}: </span>
-          <span className={classes.value}>{result[index].toString()}</span>
+          <span className={classes.label}>
+            {param.name ? `${param.name} (${param.type})` : param.type}:{" "}
+          </span>
+          <span className={classes.value}>
+            {formatValue(param.baseType, result[index])}
+          </span>
         </div>
       ))}
     </Paper>
