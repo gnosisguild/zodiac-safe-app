@@ -1,6 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 import avertaFont from "@gnosis.pm/safe-react-components/dist/fonts/averta-normal.woff2";
 import avertaBoldFont from "@gnosis.pm/safe-react-components/dist/fonts/averta-bold.woff2";
+import MonacoFont from "./assets/fonts/Monaco.woff";
 
 const GlobalStyle = createGlobalStyle`
     html {
@@ -27,6 +28,11 @@ const GlobalStyle = createGlobalStyle`
         src: local('Averta'), local('Averta Bold'),
         url(${avertaFont}) format('woff2'),
         url(${avertaBoldFont}) format('woff');
+    }
+
+    @font-face {
+        font-family: 'Monaco';
+        src: local('Monaco'), url(${MonacoFont}) format('woff');
     }
 `;
 
