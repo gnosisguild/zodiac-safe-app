@@ -9,18 +9,12 @@ import {
   MultiSendAbi,
   MultiSendAddress,
 } from "services/helpers";
+import { RawTransaction } from "../../store/modules/models";
 
 const PRIV_KEY_ONE =
   "0x990b68b61853f6418233b1f502a220a8770bb38849d9bd8fc552ed55f5899365";
 const PRIV_KEY_TWO =
   "0x0f072260a8d8afe0adb52b6d86d9610f87c2bb17cf3b9e79fe46301e5d83961c";
-
-interface Transaction {
-  data: string;
-  value: string;
-  to: string;
-  nonce: number;
-}
 
 export const BALANCE_IN_ETH = "1";
 
@@ -48,7 +42,7 @@ export const startChain = async () => {
 };
 
 export const prepareSafeTransaction = async (
-  transaction: Transaction,
+  transaction: RawTransaction,
   safe: Contract,
   signer: Signer,
   operation: 0 | 1 | 2 = 0
@@ -95,7 +89,7 @@ const buildSignatureBytes = (signatures: any): string => {
   return signatureBytes;
 };
 
-export const buildSafeTransaction = (transaction: Partial<Transaction>) => {
+export const buildSafeTransaction = (transaction: Partial<RawTransaction>) => {
   return {
     to: transaction.to,
     value: transaction.value || 0,
@@ -111,22 +105,18 @@ export const buildSafeTransaction = (transaction: Partial<Transaction>) => {
 };
 
 export const buildMultiSendSafeTx = async (
-  transactions: Pick<Transaction, "data" | "value" | "to">[],
+  transactions: Pick<RawTransaction, "data" | "value" | "to">[],
   signer: Signer
 ) => {
   const multiSend = new Contract(MultiSendAddress, MultiSendAbi, signer);
   const encodedTxs = transactions.map((t) => encodeMetaTransaction(t)).join("");
   const encodedMultiSend = "0x" + encodedTxs;
 
-  const transaction = buildTransaction(multiSend, "multiSend", [
-    encodedMultiSend,
-  ]);
-
-  return transaction;
+  return buildTransaction(multiSend, "multiSend", [encodedMultiSend]);
 };
 
 const encodeMetaTransaction = (
-  tx: Pick<Transaction, "data" | "value" | "to">
+  tx: Pick<RawTransaction, "data" | "value" | "to">
 ): string => {
   const data = arrayify(tx.data);
   const encoded = solidityPack(

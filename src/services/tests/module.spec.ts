@@ -1,5 +1,6 @@
 import { BigNumber, Contract, Signer, Wallet } from "ethers";
-import { AddressOne, DaoModuleAbi, getSafeInstance } from "services/helpers";
+import { AddressOne, getSafeInstance } from "services/helpers";
+import { getModuleInstance } from "@gnosis/module-factory";
 import {
   buildMultiSendSafeTx,
   prepareSafeTransaction,
@@ -9,7 +10,7 @@ import {
   disableModule,
   editModule,
   enableModule,
-  fetchModules,
+  fetchSafeModulesAddress,
 } from "services";
 
 jest.setTimeout(80000);
@@ -40,7 +41,7 @@ describe("Module interactions ", () => {
 
   describe("DAO Module ", () => {
     test("Should fetch modules from Safe", async () => {
-      const safeModules = await fetchModules(safe.address);
+      const safeModules = await fetchSafeModulesAddress(safe.address);
       expect(Array.isArray(safeModules)).toBeTruthy;
       expect(safeModules).toContainEqual(OLD_DAO_MODULE);
     });
@@ -51,7 +52,7 @@ describe("Module interactions ", () => {
       const NEW_QUESTION_COOLDOWN = "5";
 
       const nonce = await safe.nonce();
-      const daoModule = new Contract(OLD_DAO_MODULE, DaoModuleAbi, signer);
+      const daoModule = getModuleInstance("dao", OLD_DAO_MODULE, signer);
 
       const editModuleTransaction = await editModule("dao", OLD_DAO_MODULE, {
         setMinimumBond: NEW_MINIMUM_BOND,
@@ -82,7 +83,7 @@ describe("Module interactions ", () => {
     });
 
     test("Should disable module of Safe ", async () => {
-      const actualSafeModules = await fetchModules(safe.address);
+      const actualSafeModules = await fetchSafeModulesAddress(safe.address);
       expect(actualSafeModules).toContainEqual(OLD_DAO_MODULE);
 
       const nonce = await safe.nonce();

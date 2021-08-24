@@ -1,36 +1,34 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
-import { Panel } from "./Panel/Panel";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: "grid",
     height: "100%",
-    flexDirection: "row",
-    flexGrow: 1,
+    gridTemplateColumns: "380px 1fr",
   },
   leftPanel: {
-    width: "30%",
-    maxWidth: 380,
-    minWidth: 270,
     overflowY: "auto",
     borderRightStyle: "solid",
     borderRightWidth: 1,
     borderRightColor: theme.palette.divider,
+    backgroundColor: theme.palette.background.paper,
   },
   content: {
-    flexGrow: 1,
+    position: "relative",
     overflowY: "auto",
   },
 }));
 
-export const AppLayout: React.FC = ({ children }) => {
+interface AppLayoutProps {
+  left: React.ReactElement;
+}
+
+export const AppLayout: React.FC<AppLayoutProps> = ({ children, left }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <div className={classes.leftPanel}>
-        <Panel />
-      </div>
+      <div className={classes.leftPanel}>{left}</div>
       <div className={classes.content}>{children}</div>
     </div>
   );
