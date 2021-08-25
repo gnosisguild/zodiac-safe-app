@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
   },
   introBox: {
     gridColumn: "1/3",
+    ['@media (max-width:930px)']: {
+      gridColumn: "1/2"
+    }
   },
   firstModule: {
     gridColumn: 1
