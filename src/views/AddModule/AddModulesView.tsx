@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { ModuleButton } from "./ModuleButton";
 import { ReactComponent as DaoModuleImage } from "../../assets/images/dao-module.svg";
 import { ReactComponent as DelayModuleImage } from "../../assets/images/delay-module.svg";
@@ -15,12 +15,31 @@ const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(3),
   },
+  gridContainer: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(243px, 1fr))",
+    gap: theme.spacing(2),
+    maxWidth: "800px"
+  },
   paper: {
     padding: theme.spacing(2.5, 2),
   },
   spacing: {
     marginBottom: theme.spacing(2),
   },
+  introBox: {
+    gridColumn: "1/3",
+  },
+  firstModule: {
+    gridColumn: 1
+  },
+  modules: {
+    borderRadius: "6px",
+    border: "2px solid white",
+    "&:hover": {
+      borderColor: theme.palette.secondary.main
+    }
+  }
 }));
 
 export const AddModulesView = () => {
@@ -41,8 +60,8 @@ export const AddModulesView = () => {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={3}>
-        <Grid item md={6} xs={8}>
+      <div className={classes.gridContainer}>
+        <div className={classes.introBox}>
           <Paper className={classes.paper}>
             <Typography variant="h4" className={classes.spacing}>
               {title}
@@ -61,33 +80,32 @@ export const AddModulesView = () => {
               .
             </Typography>
           </Paper>
-        </Grid>
-        <Grid item md={6} xs={4} />
-        <Grid item md={3} xs={4}>
+        </div>
+        <div className={`${classes.firstModule} ${classes.modules}`}>
           <ModuleButton
             title="Transaction Delay"
             description="Delay transactions so members can intervene"
             image={<DelayModuleImage />}
             onClick={() => setModule(ModuleType.DELAY)}
           />
-        </Grid>
-        <Grid item md={3} xs={4}>
+        </div>
+        <div className={classes.modules}>
           <ModuleButton
             title="DAO Module"
             description="Connect Reality.eth questions to your safe"
             image={<DaoModuleImage />}
             onClick={() => setModule(ModuleType.DAO)}
           />
-        </Grid>
-        <Grid item md={3} xs={4}>
+        </div>
+        <div className={classes.modules}>
           <ModuleButton
             title="Custom Module"
             description="Connect a pre-existing contract as a module"
             image={<CustomModuleImage />}
             onClick={() => setModule(ModuleType.UNKNOWN)}
           />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
 
       <ModuleModals
         selected={module}
