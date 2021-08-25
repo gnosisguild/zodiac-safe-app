@@ -12,6 +12,7 @@ interface AddressProps {
   hideCopyBtn?: boolean;
   hideExplorerBtn?: boolean;
   showOnHover?: boolean;
+  gutterBottom?: boolean;
   classes?: {
     icon?: string;
     container?: string;
@@ -46,6 +47,7 @@ export const Address = ({
   hideCopyBtn = false,
   hideExplorerBtn = false,
   showOnHover = false,
+  gutterBottom = false,
   classes: { icon, container } = {},
   TypographyProps,
 }: AddressProps) => {
@@ -55,7 +57,7 @@ export const Address = ({
     <Row
       className={classNames(classes.root, container, {
         [classes.showOnHover]: showOnHover,
-        [classes.gutterBottom]: TypographyProps?.gutterBottom,
+        [classes.gutterBottom]: gutterBottom,
       })}
     >
       <Typography noWrap {...TypographyProps}>

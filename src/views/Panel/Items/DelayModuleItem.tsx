@@ -65,11 +65,11 @@ export const DelayModuleItem = ({
         <Address
           short
           showOnHover
+          gutterBottom
           address={module.address}
           TypographyProps={{
             variant: "body2",
             className: classes.text,
-            gutterBottom: true,
           }}
         />
         <Row alignItems="center">
