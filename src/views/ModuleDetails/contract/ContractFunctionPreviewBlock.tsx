@@ -3,7 +3,7 @@ import { FunctionFragment } from "@ethersproject/abi";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
-import {isBasicFunction, isOneResult} from "../../../utils/contracts";
+import { isBasicFunction, isOneResult } from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 
@@ -26,6 +26,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function getPlaceholderValue(func: FunctionFragment): string {
+  if (!isOneResult(func) || !func.outputs) return "";
+  const { baseType } = func.outputs[0];
+
+  if (baseType.includes("int")) return "0";
+  if (baseType === "bool") return "true";
+  return "0x0000000000000000000000000000000000000000";
+}
+
 export const ContractFunctionPreviewBlock = ({
   func,
 }: ContractFunctionPreviewBlockProps) => {
@@ -46,9 +55,7 @@ export const ContractFunctionPreviewBlock = ({
         <ContractFunctionHeader
           func={func}
           showResult={shrink}
-          result={
-            shrink ? ["0x0000000000000000000000000000000000000000"] : undefined
-          }
+          result={shrink ? [getPlaceholderValue(func)] : undefined}
         />
         {!shrink ? <ArrowIcon className={classes.expandIcon} /> : null}
       </Row>
