@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     lineHeight: 1,
   },
+  addressContainer: {
+    marginBottom: theme.spacing(1),
+  }
 }));
 
 export const DelayModuleItem = ({
@@ -65,11 +68,12 @@ export const DelayModuleItem = ({
         <Address
           short
           showOnHover
-          address={module.address}
+          address={module.address} 
+          classes={{container: classes.addressContainer}}
           TypographyProps={{
             variant: "body2",
             className: classes.text,
-            gutterBottom: true,
+            gutterBottom: false,
           }}
         />
         <Row alignItems="center">
