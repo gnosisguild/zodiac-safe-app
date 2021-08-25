@@ -80,7 +80,7 @@ export const DelayModuleModal = ({
       title="Transaction Delay"
       description="Adds a settable delay time to any transaction originating from this module."
       image={<DelayModuleImage />}
-      tags={["Stackable", "Has SafeApp", "From Gnosis"]}
+      tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddDelayModule}
       readMoreLink="https://github.com/gnosis/SafeDelay"
     >

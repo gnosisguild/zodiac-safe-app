@@ -148,7 +148,7 @@ export const DaoModuleModal = ({
       title="DAO Module"
       description="Allows Reality.eth questions to execute a transaction when resolved."
       image={<DaoModuleImage />}
-      tags={["Stackable", "Has SafeApp", "From Gnosis"]}
+      tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddDaoModule}
       readMoreLink="https://github.com/gnosis/dao-module"
     >
