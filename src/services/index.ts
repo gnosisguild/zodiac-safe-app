@@ -8,13 +8,13 @@ import {
   AddressOne,
   buildTransaction,
   DEFAULT_ORACLE_ADDRESSES,
-  defaultProvider,
   SafeAbi,
 } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
 import { SafeInfo, SafeTransaction } from "../store/modules/models";
+import { InfuraProvider } from "@ethersproject/providers";
 
 const MODULE_METHODS = {
   dao: {
@@ -66,6 +66,10 @@ type ModuleParams = {
 
 type KnownMethods<T extends KnownModules> = keyof typeof MODULE_METHODS[T];
 
+export function getProvider(chainId: number) {
+  return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
+}
+
 export async function createAndAddModule<
   Module extends KnownModules,
   Arg = ModuleParams[Module]
@@ -73,9 +77,10 @@ export async function createAndAddModule<
   module: Module,
   args: Arg,
   safeAddress: string,
+  chainId: number,
   subModule?: string
 ): Promise<Transaction[]> {
-  const { chainId } = await defaultProvider.getNetwork();
+  const provider = getProvider(chainId);
   switch (module) {
     case "dao":
       const { timeout, cooldown, expiration, bond, templateId, oracle } =
@@ -95,7 +100,7 @@ export async function createAndAddModule<
           bond,
           templateId,
         ],
-        defaultProvider,
+        provider,
         chainId,
         Date.now().toString()
       );
@@ -103,11 +108,7 @@ export async function createAndAddModule<
       const daoModuleTransactions = [daoModuleDeploymentTx];
 
       if (subModule) {
-        const delayModule = getModuleInstance(
-          "delay",
-          subModule,
-          defaultProvider
-        );
+        const delayModule = getModuleInstance("delay", subModule, provider);
         const addModuleTransaction = buildTransaction(
           delayModule,
           "enableModule",
@@ -118,6 +119,7 @@ export async function createAndAddModule<
       } else {
         const enableDaoModuleTransaction = await enableModule(
           safeAddress,
+          chainId,
           daoModuleExpectedAddress
         );
         daoModuleTransactions.push(enableDaoModuleTransaction);
@@ -135,7 +137,7 @@ export async function createAndAddModule<
       } = await deployAndSetUpModule(
         module,
         [owner, amb, safeAddress, id],
-        defaultProvider,
+        provider,
         chainId,
         Date.now().toString()
       );
@@ -143,11 +145,7 @@ export async function createAndAddModule<
       const ambModuleTransactions = [ambModuleDeploymentTx];
 
       if (subModule) {
-        const delayModule = getModuleInstance(
-          "delay",
-          subModule,
-          defaultProvider
-        );
+        const delayModule = getModuleInstance("delay", subModule, provider);
         const addModuleTransaction = buildTransaction(
           delayModule,
           "enableModule",
@@ -158,6 +156,7 @@ export async function createAndAddModule<
       } else {
         const enableDaoModuleTransaction = await enableModule(
           safeAddress,
+          chainId,
           ambModuleExpectedAddress
         );
         ambModuleTransactions.push(enableDaoModuleTransaction);
@@ -173,12 +172,13 @@ export async function createAndAddModule<
       } = await deployAndSetUpModule(
         module,
         [safeAddress, txCooldown, txExpiration],
-        defaultProvider,
+        provider,
         chainId,
         Date.now().toString()
       );
       const enableDelayModuleTransaction = enableModule(
         safeAddress,
+        chainId,
         delayModuleExpectedAddress
       );
 
@@ -191,7 +191,7 @@ export async function createAndAddModule<
         const delayModule = getModuleInstance(
           "delay",
           delayModuleExpectedAddress,
-          defaultProvider
+          provider
         );
         const enableDaoModuleTx = buildTransaction(
           delayModule,
@@ -200,6 +200,7 @@ export async function createAndAddModule<
         );
         const disableModuleOnSafeTx = await disableModule(
           safeAddress,
+          chainId,
           subModule
         );
         delayTransactions.push(enableDaoModuleTx);
@@ -211,22 +212,36 @@ export async function createAndAddModule<
   throw new Error("Invalid module");
 }
 
-export async function fetchSafeModulesAddress(safeAddress: string) {
-  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
+export async function fetchSafeModulesAddress(
+  safeAddress: string,
+  chainId: number
+) {
+  const provider = getProvider(chainId);
+  const safe = new Contract(safeAddress, SafeAbi, provider);
   const [modules] = await safe.getModulesPaginated(AddressOne, 50);
   return modules as string[];
 }
 
-export function enableModule(safeAddress: string, module: string) {
-  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
+export function enableModule(
+  safeAddress: string,
+  chainId: number,
+  module: string
+) {
+  const provider = getProvider(chainId);
+  const safe = new Contract(safeAddress, SafeAbi, provider);
   return buildTransaction(safe, "enableModule", [module]);
 }
 
-export async function disableModule(safeAddress: string, module: string) {
-  const modules = await fetchSafeModulesAddress(safeAddress);
+export async function disableModule(
+  safeAddress: string,
+  chainId: number,
+  module: string
+) {
+  const provider = getProvider(chainId);
+  const modules = await fetchSafeModulesAddress(safeAddress, chainId);
   if (!modules.length) throw new Error("Safe does not have enabled modules");
   let prevModule = AddressOne;
-  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
+  const safe = new Contract(safeAddress, SafeAbi, provider);
   if (modules.length > 1) {
     const moduleIndex = modules.findIndex(
       (m) => m.toLowerCase() === module.toLowerCase()
@@ -239,6 +254,7 @@ export async function disableModule(safeAddress: string, module: string) {
 export async function editModule<Module extends KnownModules>(
   moduleName: Module,
   address: string,
+  chainId: number,
   methods: Partial<Record<KnownMethods<Module>, string>>
 ) {
   // Add validation to check if module is indeed added
@@ -246,8 +262,8 @@ export async function editModule<Module extends KnownModules>(
   if (!methodsName.length) {
     throw new Error("At least one method must be provided");
   }
-
-  const module = getModuleInstance(moduleName, address, defaultProvider);
+  const provider = getProvider(chainId);
+  const module = getModuleInstance(moduleName, address, provider);
 
   return methodsName.map((method) =>
     buildTransaction(module, method as string, [methods[method]])
@@ -255,12 +271,13 @@ export async function editModule<Module extends KnownModules>(
 }
 
 export const callContract = (
+  chainId: number,
   address: string,
   abi: ContractInterface,
   method: string,
   data: any[] = []
 ) => {
-  const contract = new Contract(address, abi, defaultProvider);
+  const contract = new Contract(address, abi, getProvider(chainId));
   return contract.functions[method](...data);
 };
 

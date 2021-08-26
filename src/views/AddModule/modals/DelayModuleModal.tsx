@@ -61,7 +61,8 @@ export const DelayModuleModal = ({
           txCooldown: params.cooldown,
           txExpiration: params.expiration,
         },
-        safe.safeAddress
+        safe.safeAddress,
+        safe.chainId
       );
 
       await sdk.txs.send({ txs });
