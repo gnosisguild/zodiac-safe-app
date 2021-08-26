@@ -91,18 +91,18 @@ export const DelayModuleModal = ({
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={6}>
           <TimeSelect
-            label="Expiration"
-            defaultValue={params.expiration}
-            defaultUnit="hours"
-            onChange={(value) => onParamChange("expiration", value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TimeSelect
             label="Cooldown"
             defaultValue={params.cooldown}
             defaultUnit="hours"
             onChange={(value) => onParamChange("cooldown", value)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TimeSelect
+            label="Expiration"
+            defaultValue={params.expiration}
+            defaultUnit="hours"
+            onChange={(value) => onParamChange("expiration", value)}
           />
         </Grid>
       </Grid>
