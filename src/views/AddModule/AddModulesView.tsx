@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(243px, 1fr))",
     gap: theme.spacing(2),
-    maxWidth: "800px"
+    maxWidth: "800px",
   },
   paper: {
     padding: theme.spacing(2.5, 2),
@@ -29,20 +29,20 @@ const useStyles = makeStyles((theme) => ({
   },
   introBox: {
     gridColumn: "1/3",
-    ['@media (max-width:930px)']: {
-      gridColumn: "1/2"
-    }
+    "@media (max-width:930px)": {
+      gridColumn: "1/2",
+    },
   },
   firstModule: {
-    gridColumn: 1
+    gridColumn: 1,
   },
   modules: {
     borderRadius: "6px",
     border: "2px solid white",
     "&:hover": {
-      borderColor: theme.palette.secondary.main
-    }
-  }
+      borderColor: theme.palette.secondary.main,
+    },
+  },
 }));
 
 export const AddModulesView = () => {
