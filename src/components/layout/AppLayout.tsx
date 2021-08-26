@@ -29,7 +29,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, left }) => {
   return (
     <div className={classes.root}>
       <div className={classes.leftPanel}>{left}</div>
-      <div className={classes.content}>{children}</div>
+      <div id="app-content" className={classes.content}>
+        {children}
+      </div>
     </div>
   );
 };

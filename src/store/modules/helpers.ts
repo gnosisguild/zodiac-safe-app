@@ -16,7 +16,6 @@ import {
   DataDecoded,
   DecodedTransaction,
   DelayModule,
-  DisableModuleDataDecoded,
   Module,
   ModuleMetadata,
   ModuleOperation,
