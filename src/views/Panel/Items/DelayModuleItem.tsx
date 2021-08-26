@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
   link: {
     marginLeft: theme.spacing(1),
     lineHeight: 1,
+    cursor: "pointer",
   },
 }));
 
