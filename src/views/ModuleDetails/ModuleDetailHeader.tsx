@@ -47,6 +47,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
     try {
       const transactions = await disableModule(
         module.parentModule || safe.safeAddress,
+        safe.chainId,
         module.address
       );
       await sdk.txs.send({ txs: [transactions] });
