@@ -144,7 +144,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
               ) : null}
 
               {warning ? (
-                <Row alignItems="center">
+                <Row>
                   <Icon
                     type="error"
                     size="md"

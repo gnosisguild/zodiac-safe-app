@@ -8,13 +8,14 @@ import { withStyles } from "@material-ui/core";
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
+    backgroundColor: theme.palette.common.white + " !important",
     borderColor: theme.palette.secondary.main,
     padding: theme.spacing(1, 2.5),
     "& span": {
       fontFamily: theme.typography.fontFamily,
       fontSize: 16,
       textTransform: "none",
-      color: theme.palette.text.primary + " !important",
+      color: theme.palette.secondary.main + " !important",
     },
     "&.Mui-disabled": {
       opacity: 0.5,
@@ -38,10 +39,10 @@ export const ContractOperationToggleButtons = ({
 }: ContractOperationToggleButtonsProps) => {
   return (
     <ToggleButtonGroup exclusive size="small" {...props}>
-      <StyledToggleButton disabled={disabled} value="read">
+      <StyledToggleButton disabled={disabled} value="read" disableRipple>
         Read Contract
       </StyledToggleButton>
-      <StyledToggleButton disabled={disabled} value="write">
+      <StyledToggleButton disabled={disabled} value="write" disableRipple>
         Write Contract
       </StyledToggleButton>
     </ToggleButtonGroup>
