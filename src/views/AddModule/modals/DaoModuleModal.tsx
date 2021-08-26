@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
+import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
 import { createAndAddModule } from "../../../services";
@@ -12,6 +12,7 @@ import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
+import { getArbitratorBondToken } from "../../../utils/reality-eth";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -58,9 +59,10 @@ export const DaoModuleModal = ({
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
 
+  const delayModules = useRootSelector(getDelayModules);
   const [hasError, setHasError] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();
-  const delayModules = useRootSelector(getDelayModules);
+  const [bondToken, setBondToken] = useState("ETH");
   const [params, setParams] = useState<DaoModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
     templateId: "",
@@ -69,6 +71,14 @@ export const DaoModuleModal = ({
     expiration: 604800,
     bond: "0.1",
   });
+
+  useEffect(() => {
+    if (params.oracle && isAddress(params.oracle)) {
+      getArbitratorBondToken(params.oracle, safe.chainId)
+        .then((bondToken) => setBondToken(bondToken))
+        .catch(() => setBondToken("ETH"));
+    }
+  }, [params.oracle, safe.chainId]);
 
   const onParamChange = <Field extends keyof DaoModuleParams>(
     field: Field,
@@ -91,6 +101,7 @@ export const DaoModuleModal = ({
           bond: minimumBond.toString(),
         },
         safe.safeAddress,
+        safe.chainId,
         delayModule
       );
 
@@ -107,7 +118,10 @@ export const DaoModuleModal = ({
     // Logic to ignore the "ETH" text at the end of the input
     const input = event.target.value;
     let bondText = input.replace(/[^(0-9|.)]/g, "");
-    if (!input.includes(" ETH") && bondText.length === params.bond.length) {
+    if (
+      !input.includes(" " + bondToken) &&
+      bondText.length === params.bond.length
+    ) {
       bondText = bondText.substr(0, bondText.length - 1);
     }
 
@@ -209,7 +223,7 @@ export const DaoModuleModal = ({
         <Grid item xs={6}>
           <TextField
             color="secondary"
-            value={params.bond + " ETH"}
+            value={params.bond + " " + bondToken}
             label="Bond"
             onChange={handleBondChange}
           />
