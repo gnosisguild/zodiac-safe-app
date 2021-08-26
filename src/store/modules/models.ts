@@ -20,7 +20,7 @@ export interface Module {
   type: ModuleType;
   subModules: Module[];
   owner?: string;
-  parentModule?: string;
+  parentModule: string;
 }
 
 export interface ModuleMetadata {
@@ -118,4 +118,5 @@ export interface PendingModule {
   operation: ModuleOperation;
   module: ModuleType;
   address: string;
+  executor: string;
 }

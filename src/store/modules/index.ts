@@ -41,7 +41,12 @@ export const fetchModulesList = createAsyncThunk(
 
     const requests = moduleAddresses.map(async (moduleAddress) => {
       try {
-        return await sanitizeModule(moduleAddress, safeSDK, chainId);
+        return await sanitizeModule(
+          moduleAddress,
+          safeSDK,
+          chainId,
+          safeAddress
+        );
       } catch (error) {
         console.log("error sanitizing module", moduleAddress);
       }

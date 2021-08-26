@@ -17,6 +17,7 @@ import { ModuleItem } from "./Items/ModuleItem";
 import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
 import { Column } from "../../components/layout/Column";
+import { isPendingModule } from "../../store/modules/helpers";
 
 interface ModuleListProps {
   modules: Module[];
@@ -59,9 +60,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const modulesLoading = useRootSelector(getIsLoadingModules);
   const pendingModules = useRootSelector(getPendingModules);
   const safeThreshold = useRootSelector(getSafeThreshold);
-  const pendingRemoveTxs = useRootSelector(
-    getPendingRemoveModuleTransactions
-  ).map((tx) => tx.address);
+  const pendingRemoveTxs = useRootSelector(getPendingRemoveModuleTransactions);
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
@@ -89,10 +88,11 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   const content = modules.map((module) => {
     const active = module.id === currentModule?.id;
+    const remove = pendingRemoveTxs.some((tx) => isPendingModule(module, tx));
     return (
       <ModuleItem
         key={module.address}
-        remove={pendingRemoveTxs.includes(module.address)}
+        remove={remove}
         instant={safeThreshold === 1}
         module={module}
         active={active}

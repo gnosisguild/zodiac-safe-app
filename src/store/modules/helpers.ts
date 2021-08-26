@@ -40,20 +40,21 @@ export function isDaoModule(module: Module): module is DaoModule {
 
 export const sanitizeModule = async (
   moduleAddress: string,
-  safe: SafeAppsSDK,
-  chainId: number
+  sdk: SafeAppsSDK,
+  chainId: number,
+  parentModule: string
 ): Promise<Module> => {
-  const module = await getModuleDataFromEtherscan(safe, chainId, moduleAddress);
+  const module = await getModuleDataFromEtherscan(sdk, chainId, moduleAddress);
   let name = module.name;
 
   if (module.type === ModuleType.DELAY) {
-    return await fetchDelayModule(moduleAddress, safe, chainId);
+    return await fetchDelayModule(moduleAddress, sdk, chainId, parentModule);
   }
 
   const subModules = await fetchSubModules(
     moduleAddress,
     module.abi,
-    safe,
+    sdk,
     chainId
   );
 
@@ -66,13 +67,15 @@ export const sanitizeModule = async (
     id: moduleAddress,
     type: module.type,
     address: moduleAddress,
+    parentModule: parentModule,
   };
 };
 
 export async function fetchDelayModule(
   address: string,
-  safe: SafeAppsSDK,
-  chainId: number
+  sdk: SafeAppsSDK,
+  chainId: number,
+  parentModule: string
 ): Promise<DelayModule | Module> {
   const provider = new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
   const delayModule = await getModuleInstance("delay", address, provider);
@@ -97,7 +100,12 @@ export async function fetchDelayModule(
     if (subModules) {
       const requests = (subModules as string[]).map(
         async (moduleAddress, index): Promise<Module> => {
-          const subModule = await sanitizeModule(moduleAddress, safe, chainId);
+          const subModule = await sanitizeModule(
+            moduleAddress,
+            sdk,
+            chainId,
+            parentModule
+          );
           return {
             ...subModule,
             id: `${address}_${moduleAddress}_${index}`,
@@ -114,6 +122,7 @@ export async function fetchDelayModule(
     return {
       owner,
       address,
+      parentModule,
       id: address,
       name: "Delay Module",
       type: ModuleType.DELAY,
@@ -124,10 +133,11 @@ export async function fetchDelayModule(
   } catch (error) {
     console.log("Error fetching delay module", error);
     return {
+      address,
+      parentModule,
       id: address,
       name: "Delay Module",
       type: ModuleType.UNKNOWN,
-      address: address,
       subModules: [],
     };
   }
@@ -136,7 +146,7 @@ export async function fetchDelayModule(
 export async function fetchSubModules(
   moduleAddress: string,
   abi: ModuleMetadata["abi"],
-  safe: SafeAppsSDK,
+  sdk: SafeAppsSDK,
   chainId: number
 ): Promise<Module[]> {
   try {
@@ -146,7 +156,12 @@ export async function fetchSubModules(
     const [subModules] = await contract.getModulesPaginated(AddressOne, 50);
     return await Promise.all(
       subModules.map(async (subModuleAddress: string, index: number) => {
-        const subModule = await sanitizeModule(subModuleAddress, safe, chainId);
+        const subModule = await sanitizeModule(
+          subModuleAddress,
+          sdk,
+          chainId,
+          moduleAddress
+        );
         return {
           ...subModule,
           id: `${moduleAddress}_${subModuleAddress}_${index}`,
@@ -279,15 +294,13 @@ export function getModulesToBeRemoved(
       const param = transaction.dataDecoded.parameters.find(
         (param) => param.name === "module"
       );
-      if (!param) return "";
-      return param.value;
-    })
-    .map((moduleAddress: string) => {
+      const moduleAddress = param ? param.value : "";
       const current = modules.find(
         (module) => module.address === moduleAddress
       );
       return {
         address: moduleAddress,
+        executor: transaction.to,
         operation: ModuleOperation.REMOVE,
         module: current ? current.type : ModuleType.UNKNOWN,
       };
@@ -305,32 +318,34 @@ export function getPendingModulesToEnable(
   const delayModuleTxPending = transactions.flatMap((safeTransaction) =>
     getAddModuleTransactionPending(safeTransaction, chainId, "delay")
   );
-  const moduleTxPending = transactions
+  return transactions
     .flatMap(getTransactionsFromSafeTransaction)
     .filter((transaction) => isSafeEnableModuleTransactionPending(transaction))
-    .map((transaction): string => transaction.dataDecoded.parameters[0].value);
+    .map((transaction): PendingModule => {
+      const moduleAddress: string = transaction.dataDecoded.parameters[0].value;
+      if (daoModuleTxPending.includes(moduleAddress))
+        return {
+          address: moduleAddress,
+          executor: transaction.to,
+          module: ModuleType.DAO,
+          operation: ModuleOperation.CREATE,
+        };
 
-  return moduleTxPending.map((moduleAddress) => {
-    if (daoModuleTxPending.includes(moduleAddress))
+      if (delayModuleTxPending.includes(moduleAddress))
+        return {
+          address: moduleAddress,
+          executor: transaction.to,
+          module: ModuleType.DELAY,
+          operation: ModuleOperation.CREATE,
+        };
+
       return {
         address: moduleAddress,
-        module: ModuleType.DAO,
+        executor: transaction.to,
+        module: ModuleType.UNKNOWN,
         operation: ModuleOperation.CREATE,
       };
-
-    if (delayModuleTxPending.includes(moduleAddress))
-      return {
-        address: moduleAddress,
-        module: ModuleType.DELAY,
-        operation: ModuleOperation.CREATE,
-      };
-
-    return {
-      address: moduleAddress,
-      module: ModuleType.UNKNOWN,
-      operation: ModuleOperation.CREATE,
-    };
-  });
+    });
 }
 
 export function isModule(module: PendingModule | Module): module is Module {
@@ -342,4 +357,11 @@ export function flatAllModules(modules: Module[]): Module[] {
     flatAllModules(module.subModules)
   );
   return [...modules, ...subModules];
+}
+
+export function isPendingModule(module: Module, pendingModule: PendingModule) {
+  return (
+    pendingModule.address === module.address &&
+    pendingModule.executor === module.parentModule
+  );
 }
