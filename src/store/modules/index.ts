@@ -37,7 +37,7 @@ export const fetchModulesList = createAsyncThunk(
     store
   ): Promise<Module[]> => {
     const { safeSDK, safeAddress, chainId, retry } = params;
-    const moduleAddresses = await fetchSafeModulesAddress(safeAddress);
+    const moduleAddresses = await fetchSafeModulesAddress(safeAddress, chainId);
 
     const requests = moduleAddresses.map(async (moduleAddress) => {
       try {

@@ -19,6 +19,7 @@ import { Transaction } from "../../store/transactionBuilder/models";
 import { SafeAbi } from "../../services/helpers";
 import { Interface } from "@ethersproject/abi";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
+  const { safe } = useSafeAppsSDK();
   const pendingRemoveModuleTransactions = useRootSelector(
     getPendingRemoveModuleTransactions
   );
@@ -61,6 +63,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
     try {
       const { params } = await disableModule(
         module.parentModule,
+        safe.chainId,
         module.address
       );
       const safeInterface = new Interface(SafeAbi);

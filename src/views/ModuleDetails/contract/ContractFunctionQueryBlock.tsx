@@ -20,6 +20,7 @@ import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { useRootSelector } from "../../../store";
 import { getReloadCount } from "../../../store/modules/selectors";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -50,6 +51,7 @@ export const ContractFunctionQueryBlock = ({
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
   const reloadCount = useRootSelector(getReloadCount);
+  const { safe } = useSafeAppsSDK();
 
   const [open, setOpen] = useState(false);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();
@@ -71,9 +73,9 @@ export const ContractFunctionQueryBlock = ({
   const execQuery = useCallback(
     (params?: any[]) => {
       setLastQueryDate(undefined);
-      fetch(address, [func], func.name, params);
+      fetch(safe.chainId, address, [func], func.name, params);
     },
-    [address, fetch, func]
+    [address, fetch, func, safe.chainId]
   );
 
   useEffect(() => {
