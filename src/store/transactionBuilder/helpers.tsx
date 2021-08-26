@@ -1,5 +1,6 @@
 import { Transaction, SerializedTransaction } from "./models";
 import { FunctionFragment, Interface } from "@ethersproject/abi";
+import { Module } from "../modules/models";
 
 export function serializeTransaction(
   moduleTransaction: Transaction
@@ -18,4 +19,8 @@ export function deserializeTransaction(
     ...moduleTransaction,
     func: FunctionFragment.from(interf.fragments[0]),
   };
+}
+
+export function getRemoveModuleTxId(module: Module) {
+  return `remove_${module.address}_${module.parentModule}`;
 }

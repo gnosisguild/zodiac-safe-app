@@ -5,10 +5,19 @@ import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { fetchPendingModules } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getPendingRemoveModuleTransactions } from "../../store/modules/selectors";
+import {
+  addTransaction,
+  openTransactionBuilder,
+} from "../../store/transactionBuilder";
+import {
+  getRemoveModuleTxId,
+  serializeTransaction,
+} from "../../store/transactionBuilder/helpers";
+import { Transaction } from "../../store/transactionBuilder/models";
+import { SafeAbi } from "../../services/helpers";
+import { Interface } from "@ethersproject/abi";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -34,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const { sdk, safe } = useSafeAppsSDK();
   const pendingRemoveModuleTransactions = useRootSelector(
     getPendingRemoveModuleTransactions
   );
@@ -45,12 +53,21 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
 
   const removeModule = async () => {
     try {
-      const transactions = await disableModule(
-        module.parentModule || safe.safeAddress,
+      const { params } = await disableModule(
+        module.parentModule,
         module.address
       );
-      await sdk.txs.send({ txs: [transactions] });
-      dispatch(fetchPendingModules(safe));
+      const safeInterface = new Interface(SafeAbi);
+      const disableModuleFunc = safeInterface.getFunction("disableModule");
+      const transaction: Transaction = {
+        module,
+        params,
+        id: getRemoveModuleTxId(module),
+        func: disableModuleFunc,
+        to: module.parentModule,
+      };
+      dispatch(addTransaction(serializeTransaction(transaction)));
+      dispatch(openTransactionBuilder(true));
     } catch (error) {
       console.warn("could not remove module", error);
     }

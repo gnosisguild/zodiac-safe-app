@@ -116,7 +116,7 @@ export async function createAndAddModule<
 
         daoModuleTransactions.push(addModuleTransaction);
       } else {
-        const enableDaoModuleTransaction = await enableModule(
+        const enableDaoModuleTransaction = enableModule(
           safeAddress,
           daoModuleExpectedAddress
         );
@@ -156,7 +156,7 @@ export async function createAndAddModule<
 
         ambModuleTransactions.push(addModuleTransaction);
       } else {
-        const enableDaoModuleTransaction = await enableModule(
+        const enableDaoModuleTransaction = enableModule(
           safeAddress,
           ambModuleExpectedAddress
         );
@@ -233,7 +233,11 @@ export async function disableModule(safeAddress: string, module: string) {
     );
     if (moduleIndex > 0) prevModule = modules[moduleIndex - 1];
   }
-  return buildTransaction(safe, "disableModule", [prevModule, module]);
+  const params = [prevModule, module];
+  return {
+    params,
+    ...buildTransaction(safe, "disableModule", params),
+  };
 }
 
 export async function editModule<Module extends KnownModules>(
