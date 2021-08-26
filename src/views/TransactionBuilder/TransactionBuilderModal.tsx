@@ -12,7 +12,7 @@ import {
   getTransactions,
 } from "../../store/transactionBuilder/selectors";
 import {
-  openTransactionBuilder,
+  closeTransactionBuilder,
   resetTransactions,
 } from "../../store/transactionBuilder";
 import { ReactComponent as ChevronDown } from "../../assets/icons/chevron-down.svg";
@@ -64,17 +64,23 @@ interface FadeProps extends HTMLProps<HTMLDivElement> {
   onExited?: () => {};
 }
 
+function getAppContainerDimensions(): { width: number; height: number } {
+  const appContainer = document.querySelector(
+    "#app-content"
+  ) as HTMLElement | null;
+  if (!appContainer)
+    return { width: window.innerWidth, height: window.innerHeight };
+  return { width: appContainer.offsetWidth, height: appContainer.offsetHeight };
+}
+
 const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
   const { in: open, children, onExited, onEnter, ...other } = props;
-  const appContainer = document.querySelector("#app-content") as HTMLElement;
 
-  if (!appContainer) return <div>{children}</div>;
+  const { width, height } = getAppContainerDimensions();
+  const x = width - 300 + "px";
+  const y = height + "px";
 
-  const { offsetWidth, offsetHeight } = appContainer;
-  const x = offsetWidth - 300 + "px";
-  const y = offsetHeight + "px";
-
-  const animatedStyle = useSpring({
+  const style = useSpring({
     from: { transform: `translate(${x}, ${y})`, opacity: 0 },
     to: {
       transform: open ? "translate(0px, 0px)" : `translate(${x}, ${y})`,
@@ -92,12 +98,6 @@ const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
     },
   });
 
-  const style = {
-    width: offsetWidth,
-    marginLeft: "auto",
-    ...animatedStyle,
-  };
-
   return (
     <animated.div {...other} ref={ref} style={style}>
       {children}
@@ -109,11 +109,12 @@ export const TransactionBuilderModal = () => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useRootDispatch();
+  const { width } = getAppContainerDimensions();
 
   const open = useRootSelector(getTransactionBuilderOpen);
   const transactions = useRootSelector(getTransactions);
 
-  const handleClose = () => dispatch(openTransactionBuilder(false));
+  const handleClose = () => dispatch(closeTransactionBuilder());
 
   const handleSubmitTransaction = async () => {
     try {
@@ -146,7 +147,8 @@ export const TransactionBuilderModal = () => {
       open={open}
       onClose={handleClose}
       className={classes.fullWindow}
-      BackdropProps={{ invisible: true }}
+      style={{ width, left: "auto" }}
+      BackdropProps={{ open: false }}
     >
       <Slide in={open} className={classes.fullWindow}>
         <Paper className={classes.fullWindow} elevation={2}>

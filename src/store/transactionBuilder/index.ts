@@ -15,8 +15,11 @@ export const transactionBuilderSlice = createSlice({
   name: "transactionBuilder",
   initialState: initialModulesState,
   reducers: {
-    openTransactionBuilder(state, action: PayloadAction<boolean>) {
-      state.open = action.payload;
+    openTransactionBuilder(state) {
+      state.open = true;
+    },
+    closeTransactionBuilder(state) {
+      state.open = false;
     },
     setTransactions(state, action: PayloadAction<SerializedTransaction[]>) {
       state.transactions = action.payload;
@@ -38,6 +41,7 @@ export const transactionBuilderSlice = createSlice({
 
 export const {
   openTransactionBuilder,
+  closeTransactionBuilder,
   setNewTransaction,
   resetNewTransaction,
   resetTransactions,

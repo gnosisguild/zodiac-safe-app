@@ -40,7 +40,7 @@ export const TransactionBuilderTab = () => {
   const dispatch = useRootDispatch();
   const transaction = useRootSelector(getTransactions);
 
-  const handleOpen = () => dispatch(openTransactionBuilder(true));
+  const handleOpen = () => dispatch(openTransactionBuilder());
 
   const button = (
     <Row className={classes.root} onClick={handleOpen}>

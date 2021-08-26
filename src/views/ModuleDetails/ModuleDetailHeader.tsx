@@ -76,7 +76,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         to: module.parentModule,
       };
       dispatch(addTransaction(serializeTransaction(transaction)));
-      dispatch(openTransactionBuilder(true));
+      dispatch(openTransactionBuilder());
     } catch (error) {
       console.warn("could not remove module", error);
     }
