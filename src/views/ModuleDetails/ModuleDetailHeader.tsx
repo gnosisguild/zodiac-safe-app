@@ -18,6 +18,7 @@ import {
 import { Transaction } from "../../store/transactionBuilder/models";
 import { SafeAbi } from "../../services/helpers";
 import { Interface } from "@ethersproject/abi";
+import { getTransactions } from "../../store/transactionBuilder/selectors";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -46,10 +47,15 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const pendingRemoveModuleTransactions = useRootSelector(
     getPendingRemoveModuleTransactions
   );
+  const txBuildersTransaction = useRootSelector(getTransactions);
 
+  const isRemoveTxOnQueue = txBuildersTransaction.some(
+    (tx) => tx.id === getRemoveModuleTxId(module)
+  );
   const isModuleToBeRemoved = pendingRemoveModuleTransactions
     .map((pending) => pending.address)
     .includes(module.address);
+  const disabledRemoveButton = isRemoveTxOnQueue || isModuleToBeRemoved;
 
   const removeModule = async () => {
     try {
@@ -99,7 +105,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         iconType="delete"
         variant="outlined"
         onClick={removeModule}
-        disabled={isModuleToBeRemoved}
+        disabled={disabledRemoveButton}
       >
         Remove
       </Button>
