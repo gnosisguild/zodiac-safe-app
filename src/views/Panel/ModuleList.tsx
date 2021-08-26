@@ -104,8 +104,15 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (sub) {
     const lines = modules.map((_, index) => {
+      const previous = index && modules[index - 1];
+      const subModulesCount = previous && previous.subModules.length;
+      const subModulesHeight = subModulesCount * PANEL_ITEM_HEIGHT;
+
       const height =
-        (index + 1) * PANEL_ITEM_HEIGHT - PANEL_ITEM_HEIGHT / 2 + 2;
+        2 +
+        subModulesHeight +
+        PANEL_ITEM_HEIGHT * (index + 1) -
+        PANEL_ITEM_HEIGHT / 2;
       return <div key={index} className={classes.line} style={{ height }} />;
     });
     return <div className={classes.subModules}>{[content, lines]}</div>;
