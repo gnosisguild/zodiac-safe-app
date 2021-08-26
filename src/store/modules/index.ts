@@ -89,15 +89,10 @@ export const fetchPendingModules = createAsyncThunk(
 
     const pendingEnableModules = getPendingModulesToEnable(
       transactions,
-      safeAddress,
       chainId
     );
 
-    const pendingRemoveModules = getModulesToBeRemoved(
-      modules,
-      transactions,
-      safeAddress
-    );
+    const pendingRemoveModules = getModulesToBeRemoved(modules, transactions);
 
     const pendingModules: PendingModule[] = [
       ...pendingEnableModules,

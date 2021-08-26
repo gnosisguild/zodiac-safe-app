@@ -21,7 +21,7 @@ import {
 } from "../../store/transactionBuilder/selectors";
 import {
   resetTransactions,
-  setTransactionBuilderOpen,
+  openTransactionBuilder,
   setTransactions,
 } from "../../store/transactionBuilder";
 import { ReactComponent as ChevronDown } from "../../assets/icons/chevron-down.svg";
@@ -125,7 +125,7 @@ export const TransactionBuilderModal = () => {
     }
   };
 
-  const handleClose = () => dispatch(setTransactionBuilderOpen(false));
+  const handleClose = () => dispatch(openTransactionBuilder(false));
 
   const handleDragEnd = (result: DropResult) => {
     setOverIndex(undefined);

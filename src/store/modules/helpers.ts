@@ -194,12 +194,6 @@ export function isMultiSendDataEncoded(
   return dataEncoded.method === "multiSend";
 }
 
-export function isDisableModuleDataEncoded(
-  dataEncoded: DataDecoded
-): dataEncoded is DisableModuleDataDecoded {
-  return dataEncoded.method === "disableModule";
-}
-
 export function getTransactionsFromSafeTransaction(
   safeTransaction: SafeTransaction
 ): DecodedTransaction[] {
@@ -268,28 +262,20 @@ export function isSafeEnableModuleTransactionPending(
  * Determine if the safe transaction is a pending remove module transaction.
  *
  * @param {object} transaction - Transaction.
- * @param {string} safeAddress - Safe Address.
  */
 export function isRemoveModuleTransactionPending(
-  transaction: DecodedTransaction,
-  safeAddress: string
+  transaction: DecodedTransaction
 ): boolean {
-  return (
-    transaction.to.toLowerCase() === safeAddress.toLowerCase() &&
-    isDisableModuleDataEncoded(transaction.dataDecoded)
-  );
+  return transaction.dataDecoded.method === "disableModule";
 }
 
 export function getModulesToBeRemoved(
   modules: Module[],
-  transactions: SafeTransaction[],
-  safeAddress: string
+  transactions: SafeTransaction[]
 ): PendingModule[] {
   return transactions
     .flatMap(getTransactionsFromSafeTransaction)
-    .filter((transaction) =>
-      isRemoveModuleTransactionPending(transaction, safeAddress)
-    )
+    .filter(isRemoveModuleTransactionPending)
     .map((transaction) => {
       const param = transaction.dataDecoded.parameters.find(
         (param) => param.name === "module"
@@ -309,7 +295,6 @@ export function getModulesToBeRemoved(
 
 export function getPendingModulesToEnable(
   transactions: SafeTransaction[],
-  safeAddress: string,
   chainId: number
 ): PendingModule[] {
   const daoModuleTxPending = transactions.flatMap((safeTransaction) =>

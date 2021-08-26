@@ -5,7 +5,7 @@ import { TransactionBuilderTitle } from "./TransactionBuilderTitle";
 import { Row } from "../../components/layout/Row";
 import { ReactComponent as BagIcon } from "../../assets/icons/bag-icon.svg";
 import { useRootDispatch, useRootSelector } from "../../store";
-import { setTransactionBuilderOpen } from "../../store/transactionBuilder";
+import { openTransactionBuilder } from "../../store/transactionBuilder";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
 
 const rootElement = document.getElementById("root");
@@ -39,7 +39,7 @@ export const TransactionBuilderTab = () => {
   const dispatch = useRootDispatch();
   const transaction = useRootSelector(getTransactions);
 
-  const handleOpen = () => dispatch(setTransactionBuilderOpen(true));
+  const handleOpen = () => dispatch(openTransactionBuilder(true));
 
   const button = (
     <Row className={classes.root} onClick={handleOpen}>
