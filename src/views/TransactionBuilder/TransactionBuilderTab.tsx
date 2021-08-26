@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.common.white,
     alignItems: "center",
     zIndex: 1,
+    boxShadow: "0px 0px 6px 1px rgb(40 54 61 / 39%)",
   },
   bagIcon: {
     marginLeft: theme.spacing(4),

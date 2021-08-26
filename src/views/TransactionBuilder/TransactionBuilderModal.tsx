@@ -77,9 +77,10 @@ const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
   const x = window.innerWidth - 300 + "px";
   const y = window.innerHeight + "px";
   const style = useSpring({
-    from: { transform: `translate(${x}, ${y})` },
+    from: { transform: `translate(${x}, ${y})`, opacity: 0 },
     to: {
       transform: open ? "translate(0px, 0px)" : `translate(${x}, ${y})`,
+      opacity: open ? 1 : 0,
     },
     onStart: () => {
       if (open && onEnter) {
