@@ -20,8 +20,8 @@ import {
   getTransactions,
 } from "../../store/transactionBuilder/selectors";
 import {
-  resetTransactions,
   openTransactionBuilder,
+  resetTransactions,
   setTransactions,
 } from "../../store/transactionBuilder";
 import { ReactComponent as ChevronDown } from "../../assets/icons/chevron-down.svg";
@@ -74,9 +74,15 @@ interface FadeProps extends HTMLProps<HTMLDivElement> {
 
 const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
   const { in: open, children, onExited, onEnter, ...other } = props;
-  const x = window.innerWidth - 300 + "px";
-  const y = window.innerHeight + "px";
-  const style = useSpring({
+  const appContainer = document.querySelector("#app-content");
+
+  if (!appContainer) return <div>{children}</div>;
+
+  const { clientWidth, clientHeight } = appContainer;
+  const x = clientWidth - 300 + "px";
+  const y = clientHeight + "px";
+
+  const animatedStyle = useSpring({
     from: { transform: `translate(${x}, ${y})` },
     to: {
       transform: open ? "translate(0px, 0px)" : `translate(${x}, ${y})`,
@@ -92,6 +98,13 @@ const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
       }
     },
   });
+
+  const style = {
+    width: clientWidth,
+    marginLeft: "auto",
+    ...animatedStyle,
+  };
+
   return (
     <animated.div {...other} ref={ref} style={style}>
       {children}
@@ -189,6 +202,8 @@ export const TransactionBuilderModal = () => {
 
   return (
     <Modal
+      disablePortal
+      keepMounted
       open={open}
       onClose={handleClose}
       className={classes.fullWindow}
@@ -244,7 +259,7 @@ export const TransactionBuilderModal = () => {
               startIcon={<Icon type="sent" size="md" color="white" />}
               onClick={handleSubmitTransaction}
             >
-              Submit Transactions
+              Submit Transaction Bundle
             </ActionButton>
           </div>
         </Paper>
