@@ -33,7 +33,7 @@ export interface ModuleMetadata {
 
 export interface DelayModule extends Module {
   type: ModuleType.DELAY;
-  timeout: number;
+  expiration: number;
   cooldown: number;
 }
 

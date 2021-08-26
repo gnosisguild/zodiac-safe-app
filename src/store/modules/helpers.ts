@@ -85,12 +85,12 @@ export async function fetchDelayModule(
     await ethCallProvider.init(provider);
 
     const txCooldown = moduleContract.txCooldown();
-    const txTimeout = moduleContract.txExpiration();
+    const txExpiration = moduleContract.txExpiration();
     const modules = moduleContract.getModulesPaginated(AddressOne, 50);
 
-    let [cooldown, timeout, [subModules]] = await ethCallProvider.all([
+    let [cooldown, expiration, [subModules]] = await ethCallProvider.all([
       txCooldown,
-      txTimeout,
+      txExpiration,
       modules,
     ]);
 
@@ -118,7 +118,7 @@ export async function fetchDelayModule(
       name: "Delay Module",
       type: ModuleType.DELAY,
       subModules: subModules || [],
-      timeout: timeout.toString(),
+      expiration: expiration.toString(),
       cooldown: cooldown.toString(),
     };
   } catch (error) {

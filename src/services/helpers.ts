@@ -31,7 +31,7 @@ export const buildTransaction = (
 };
 
 export const DEFAULT_ORACLE_ADDRESSES: Record<number, string> = {
-  1: "",
+  1: "0x325a2e0F3CCA2ddbaeBB4DfC38Df8D19ca165b47",
   4: "0x3D00D77ee771405628a4bA4913175EcC095538da",
 };
 

@@ -69,7 +69,7 @@ export const AttachDaoModuleForm = ({
                   <Badge
                     className={classNames(classes.text, classes.delayText)}
                   >
-                    {formatDuration(module.timeout)} delay
+                    {formatDuration(module.expiration)} delay
                   </Badge>
                   <Address
                     short

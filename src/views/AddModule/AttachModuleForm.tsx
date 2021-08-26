@@ -76,7 +76,7 @@ export const AttachModuleForm = ({
                     <Badge
                       className={classNames(classes.text, classes.delayText)}
                     >
-                      {formatDuration(module.timeout)} delay
+                      {formatDuration(module.expiration)} delay
                     </Badge>
                   ) : null}
                   <Address

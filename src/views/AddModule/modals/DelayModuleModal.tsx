@@ -15,7 +15,7 @@ interface DaoModuleModalProps {
 }
 
 interface DelayModuleParams {
-  timeout: number;
+  expiration: number;
   cooldown: number;
 }
 
@@ -38,7 +38,7 @@ export const DelayModuleModal = ({
   const { sdk, safe } = useSafeAppsSDK();
 
   const [params, setParams] = useState<DelayModuleParams>({
-    timeout: 86400,
+    expiration: 86400,
     cooldown: 86400,
   });
 
@@ -59,7 +59,7 @@ export const DelayModuleModal = ({
         {
           executor: safe.safeAddress,
           txCooldown: params.cooldown,
-          txExpiration: params.timeout,
+          txExpiration: params.expiration,
         },
         safe.safeAddress
       );
@@ -91,10 +91,10 @@ export const DelayModuleModal = ({
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={6}>
           <TimeSelect
-            label="Timeout"
-            defaultValue={params.timeout}
+            label="Expiration"
+            defaultValue={params.expiration}
             defaultUnit="hours"
-            onChange={(value) => onParamChange("timeout", value)}
+            onChange={(value) => onParamChange("expiration", value)}
           />
         </Grid>
         <Grid item xs={6}>
