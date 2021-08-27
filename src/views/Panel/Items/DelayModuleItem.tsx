@@ -73,7 +73,7 @@ export const DelayModuleItem = ({
             className: classes.text,
           }}
         />
-        <Row alignItems="center">
+        <Row style={{ alignItems: "center" }}>
           <Badge>{formatDuration(module.expiration)} delay</Badge>
           <Link
             color="secondary"

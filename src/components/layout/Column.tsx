@@ -1,8 +1,8 @@
-import React from "react";
-import { BoxProps, makeStyles } from "@material-ui/core";
+import React, { HTMLProps } from "react";
+import { makeStyles } from "@material-ui/core";
 import classNames from "classnames";
 
-type ColumnProps = Omit<BoxProps, "display" | "flexDirection">;
+type ColumnProps = HTMLProps<HTMLDivElement>;
 
 const useStyles = makeStyles(() => ({
   root: {

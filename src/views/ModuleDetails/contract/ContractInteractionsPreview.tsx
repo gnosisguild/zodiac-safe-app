@@ -25,7 +25,7 @@ export const ContractInteractionsPreview = ({
 
   return (
     <>
-      <Row alignItems="end">
+      <Row style={{ alignItems: "end" }}>
         <ContractOperationToggleButtons value="read" disabled />
       </Row>
 

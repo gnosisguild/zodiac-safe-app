@@ -41,7 +41,7 @@ export const Badge: React.FC<BadgeProps> = ({
 
   if (secondary) {
     return (
-      <Row alignItems="center">
+      <Row style={{ alignItems: "center" }}>
         <div
           className={classNames(
             classes.badge,

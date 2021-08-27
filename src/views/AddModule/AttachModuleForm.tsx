@@ -56,7 +56,7 @@ export const AttachModuleForm = ({
   };
 
   return (
-    <Row alignItems="flex-start">
+    <Row style={{ alignItems: "flex-start" }}>
       <Checkbox checked={checked} onChange={handleCheck} />
       <div className={classes.container}>
         <Typography gutterBottom>
@@ -71,7 +71,7 @@ export const AttachModuleForm = ({
                   checked={value === module.address}
                   onClick={() => onChange(module.address)}
                 />
-                <Column justifyContent="center">
+                <Column style={{ justifyContent: "center" }}>
                   {isDelayModule(module) ? (
                     <Badge
                       className={classNames(classes.text, classes.delayText)}

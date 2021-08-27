@@ -50,7 +50,7 @@ export const ContractInteractions = ({
 
   return (
     <>
-      <Row alignItems="end">
+      <Row style={{ alignItems: "end" }}>
         <ContractOperationToggleButtons
           value={operation}
           onChange={(evt, value) => handleOperationChange(value)}

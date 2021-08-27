@@ -51,7 +51,7 @@ export const Panel = () => {
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100%">
-      <Row alignItems="center" className={classes.content}>
+      <Row style={{ alignItems: "center" }} className={classes.content}>
         <Title size="sm" strong withoutMargin>
           <span className={classes.title}>Module Manager</span>
         </Title>

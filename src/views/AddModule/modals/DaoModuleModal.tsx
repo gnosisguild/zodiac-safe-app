@@ -181,7 +181,7 @@ export const DaoModuleModal = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <Row alignItems="center">
+          <Row style={{ alignItems: "center" }}>
             <Typography>TemplateId</Typography>
             <Grow />
             {/*  TODO: Add Link */}

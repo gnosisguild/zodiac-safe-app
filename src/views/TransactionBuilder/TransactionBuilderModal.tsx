@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(1, 2),
     color: theme.palette.common.white,
+    alignItems: "center",
   },
   queryButton: {
     padding: theme.spacing(1, 3),
@@ -153,7 +154,7 @@ export const TransactionBuilderModal = () => {
     >
       <Slide in={open} className={classes.fullWindow}>
         <Paper className={classes.fullWindow} elevation={2}>
-          <Row alignItems="center" className={classes.header}>
+          <Row className={classes.header}>
             <TransactionBuilderTitle />
 
             <Grow />

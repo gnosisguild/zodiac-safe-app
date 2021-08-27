@@ -127,7 +127,7 @@ export const ContractFunctionQueryBlock = ({
   return (
     <Collapsable open={open && collapsable} content={content}>
       <Row
-        alignItems="center"
+        style={{ alignItems: "center" }}
         className={classNames({ [classes.clickable]: collapsable })}
         onClick={() => setOpen(!open)}
       >

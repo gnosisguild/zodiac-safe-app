@@ -78,7 +78,13 @@ const Main = () => {
         <GlobalStyle />
         <SafeProvider
           loader={
-            <Row alignItems="center" justifyContent="center" height="100%">
+            <Row
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+              }}
+            >
               <Loader size="md" />
             </Row>
           }

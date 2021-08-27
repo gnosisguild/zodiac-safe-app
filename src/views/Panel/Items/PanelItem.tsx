@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
   content: {
     marginLeft: theme.spacing(2),
     width: "100%",
+    justifyContent: "center",
   },
 }));
 
@@ -88,9 +89,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
       )}
     >
       {image}
-      <Column justifyContent="center" className={classes.content}>
-        {children}
-      </Column>
+      <Column className={classes.content}>{children}</Column>
     </Paper>
   );
 };
