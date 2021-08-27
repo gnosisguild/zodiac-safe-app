@@ -36,7 +36,7 @@ export const TransactionTimeField = ({
       {...props}
       label={label || "Time"}
       defaultValue={defaultValue}
-      defaultUnit="minutes"
+      defaultUnit="seconds"
       onChange={(time) => onChange(time, true)}
     />
   );
