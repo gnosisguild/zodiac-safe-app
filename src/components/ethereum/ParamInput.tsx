@@ -3,11 +3,12 @@ import { ParamType } from "@ethersproject/abi";
 import { TextField, TextFieldProps } from "../input/TextField";
 import { formatParamValue } from "../../utils/contracts";
 import { MenuItem } from "@material-ui/core";
+import { BigNumber } from "ethers";
 
 export interface ParamInputProps
   extends Omit<TextFieldProps, "onChange" | "value" | "label"> {
   param: ParamType;
-  value?: string | boolean;
+  value?: string | boolean | BigNumber;
   label?: string;
 
   onChange(value: any, valid: boolean): void;
