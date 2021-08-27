@@ -4,6 +4,7 @@ import { Box, Chip, makeStyles } from "@material-ui/core";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 import { AddressChip } from "../../../components/ethereum/AddressChip";
 import { Transaction } from "../../../store/transactionBuilder/models";
+import { Grow } from "../../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -53,7 +54,7 @@ export const TransactionBlockHeaderTitle = ({
         />
       ) : null}
       <Chip label={<b>{transaction.func.name}</b>} />
-      <Box flexGrow={1} />
+      <Grow />
       {!edit ? <ArrowIcon up={open} /> : null}
     </Box>
   );

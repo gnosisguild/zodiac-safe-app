@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, IconButton, makeStyles, Paper } from "@material-ui/core";
+import { IconButton, makeStyles, Paper } from "@material-ui/core";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
@@ -13,6 +13,7 @@ import { AddTransactionBlock } from "../transaction/AddTransactionBlock";
 import { addTransaction } from "../../../store/transactionBuilder";
 import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
+import { Grow } from "../../../components/layout/Grow";
 
 interface ContractInteractionsProps {
   address: string;
@@ -55,7 +56,7 @@ export const ContractInteractions = ({
           onChange={(evt, value) => handleOperationChange(value)}
         />
 
-        <Box flexGrow={1} />
+        <Grow />
 
         {operation === "read" ? (
           <IconButton onClick={handleReload}>

@@ -10,6 +10,7 @@ import {
   getModulesList,
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
+import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -54,7 +55,7 @@ export const Panel = () => {
         <Title size="sm" strong withoutMargin>
           <span className={classes.title}>Module Manager</span>
         </Title>
-        <Box flexGrow={1} />
+        <Grow />
         {currentModule || currentPending ? (
           <Button
             className={classes.smallButton}

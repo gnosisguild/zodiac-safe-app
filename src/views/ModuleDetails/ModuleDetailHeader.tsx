@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
@@ -20,6 +20,7 @@ import { SafeAbi } from "../../services/helpers";
 import { Interface } from "@ethersproject/abi";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Grow } from "../../components/layout/Grow";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -101,7 +102,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         }}
       />
 
-      <Box flexGrow={1} />
+      <Grow />
 
       <Button
         size="md"

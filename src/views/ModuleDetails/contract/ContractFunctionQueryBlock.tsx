@@ -21,6 +21,7 @@ import { useRootSelector } from "../../../store";
 import { getReloadCount } from "../../../store/modules/selectors";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Grow } from "../../../components/layout/Grow";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -133,7 +134,7 @@ export const ContractFunctionQueryBlock = ({
         <Typography variant="h6" className={classes.title}>
           {func.name}
         </Typography>
-        <Box flexGrow={1} />
+        <Grow />
         <ContractFunctionHeader
           func={func}
           result={result}

@@ -1,6 +1,6 @@
 import React, { HTMLProps } from "react";
 import { Row } from "../../components/layout/Row";
-import { Box, Button, makeStyles, Modal, Paper } from "@material-ui/core";
+import { Button, makeStyles, Modal, Paper } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { Interface } from "@ethersproject/abi";
 import { ActionButton } from "../../components/ActionButton";
@@ -21,6 +21,7 @@ import { animated, useSpring } from "react-spring";
 import { fetchPendingModules } from "../../store/modules";
 import { TransactionBuilderList } from "./components/TransactionBuilderList";
 import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
+import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
@@ -155,7 +156,7 @@ export const TransactionBuilderModal = () => {
           <Row alignItems="center" className={classes.header}>
             <TransactionBuilderTitle />
 
-            <Box flexGrow={1} />
+            <Grow />
 
             <Button
               onClick={handleClose}

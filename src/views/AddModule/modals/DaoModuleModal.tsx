@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
+import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
@@ -13,6 +13,7 @@ import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
+import { Grow } from "../../../components/layout/Grow";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -182,7 +183,7 @@ export const DaoModuleModal = ({
         <Grid item xs={12}>
           <Row alignItems="center">
             <Typography>TemplateId</Typography>
-            <Box flexGrow={1} />
+            <Grow />
             {/*  TODO: Add Link */}
             <Link color="secondary">Get a template here</Link>
           </Row>

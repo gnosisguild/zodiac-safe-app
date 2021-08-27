@@ -1,8 +1,17 @@
 import React from "react";
-import { Box, BoxProps } from "@material-ui/core";
+import { BoxProps, makeStyles } from "@material-ui/core";
+import classNames from "classnames";
 
 type ColumnProps = Omit<BoxProps, "display" | "flexDirection">;
 
-export const Column = (props: ColumnProps) => {
-  return <Box display="flex" flexDirection="column" {...props} />;
+const useStyles = makeStyles(() => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+  },
+}));
+
+export const Column = ({ className, ...props }: ColumnProps) => {
+  const classes = useStyles();
+  return <div className={classNames(classes.root, className)} {...props} />;
 };

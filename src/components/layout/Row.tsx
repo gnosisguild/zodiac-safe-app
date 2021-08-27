@@ -1,8 +1,17 @@
 import React from "react";
-import { Box, BoxProps } from "@material-ui/core";
+import { BoxProps, makeStyles } from "@material-ui/core";
+import classNames from "classnames";
 
 type RowProps = Omit<BoxProps, "display" | "flexDirection">;
 
-export const Row = (props: RowProps) => {
-  return <Box display="flex" flexDirection="row" {...props} />;
+const useStyles = makeStyles(() => ({
+  root: {
+    display: "flex",
+    flexDirection: "row",
+  },
+}));
+
+export const Row = ({ className, ...props }: RowProps) => {
+  const classes = useStyles();
+  return <div className={classNames(classes.root, className)} {...props} />;
 };

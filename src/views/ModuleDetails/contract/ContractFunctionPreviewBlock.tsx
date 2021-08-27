@@ -1,11 +1,12 @@
 import React from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
 import { isBasicFunction, isOneResult } from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
+import { Grow } from "../../../components/layout/Grow";
 
 interface ContractFunctionPreviewBlockProps {
   func: FunctionFragment;
@@ -51,7 +52,7 @@ export const ContractFunctionPreviewBlock = ({
         <Typography variant="h6" className={classes.title}>
           {func.name}
         </Typography>
-        <Box flexGrow={1} />
+        <Grow />
         <ContractFunctionHeader
           func={func}
           showResult={shrink}
