@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// TODO: Implement "Attach Delay Module"
 export const CustomModuleModal = ({
   onSubmit,
   open,

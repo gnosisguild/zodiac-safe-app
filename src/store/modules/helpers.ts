@@ -4,12 +4,7 @@ import {
 } from "ethcall";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { InfuraProvider } from "@ethersproject/providers";
-import {
-  ContractAddresses,
-  getFactoryContractAddress,
-  getModuleContractAddress,
-  getModuleInstance,
-} from "@gnosis/module-factory";
+import { getModuleInstance } from "@gnosis/zodiac";
 import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import {
   DaoModule,
@@ -26,6 +21,8 @@ import {
 } from "./models";
 import { Contract } from "ethers";
 import { defaultProvider } from "../../services/helpers";
+import { getFactoryAndMasterCopy, KnownModules } from "@gnosis/zodiac";
+import { getProvider } from "../../services";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
@@ -215,23 +212,24 @@ export function getTransactionsFromSafeTransaction(
 export function getAddModuleTransactionPending(
   safeTransaction: SafeTransaction,
   chainId: number,
-  module: keyof ContractAddresses
+  module: keyof KnownModules
 ): string[] {
-  const moduleFactoryContractAddress = getFactoryContractAddress(chainId);
-  const masterContractAddress = getModuleContractAddress(chainId, module);
+  const provider = getProvider(chainId);
+
+  const { factory: factoryContract, module: moduleContract } =
+    getFactoryAndMasterCopy(module, provider, chainId);
 
   const transactions = getTransactionsFromSafeTransaction(safeTransaction);
 
   const deploysModule = transactions.some(
     (transaction) =>
-      transaction.to.toLowerCase() ===
-        moduleFactoryContractAddress.toLowerCase() &&
+      transaction.to.toLowerCase() === factoryContract.address.toLowerCase() &&
       transaction.dataDecoded &&
       transaction.dataDecoded.method === "deployModule" &&
       transaction.dataDecoded.parameters.some(
         (param) =>
           param.name === "masterCopy" &&
-          param.value.toLowerCase() === masterContractAddress.toLowerCase()
+          param.value.toLowerCase() === moduleContract.address.toLowerCase()
       )
   );
 

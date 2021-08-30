@@ -1,9 +1,5 @@
 import { Contract } from "ethers";
-import {
-  deployAndSetUpModule,
-  getModuleInstance,
-} from "@gnosis/module-factory";
-import { formatBytes32String } from "ethers/lib/utils";
+import { deployAndSetUpModule, getModuleInstance } from "@gnosis/zodiac";
 import {
   AddressOne,
   buildTransaction,
@@ -77,38 +73,62 @@ export async function createAndAddModule<
   module: Module,
   args: Arg,
   safeAddress: string,
-  chainId: number,
-  subModule?: string
+  chainId: number
 ): Promise<Transaction[]> {
   const provider = getProvider(chainId);
   switch (module) {
     case "dao":
-      const { timeout, cooldown, expiration, bond, templateId, oracle } =
-        args as unknown as DaoModuleParams;
+      const {
+        timeout,
+        cooldown,
+        expiration,
+        bond,
+        templateId,
+        oracle,
+        executor,
+      } = args as unknown as DaoModuleParams;
       const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
-      let {
+      const {
         transaction: daoModuleDeploymentTx,
         expectedModuleAddress: daoModuleExpectedAddress,
-      } = await deployAndSetUpModule(
-        module,
-        [
-          subModule || safeAddress,
-          ORACLE_ADDRESS,
-          timeout,
-          cooldown,
-          expiration,
-          bond,
-          templateId,
-        ],
+      } = deployAndSetUpModule(
+        "dao",
+        {
+          types: [
+            "address",
+            "address",
+            "address",
+            "uint32",
+            "uint32",
+            "uint32",
+            "uint256",
+            "uint256",
+          ],
+          values: [
+            safeAddress,
+            executor,
+            ORACLE_ADDRESS,
+            timeout,
+            cooldown,
+            expiration,
+            bond,
+            templateId,
+          ],
+        },
         provider,
         chainId,
         Date.now().toString()
       );
 
-      const daoModuleTransactions = [daoModuleDeploymentTx];
+      const daoModuleTransactions: Transaction[] = [
+        {
+          ...daoModuleDeploymentTx,
+          value: daoModuleDeploymentTx.value.toString(),
+        },
+      ];
 
-      if (subModule) {
-        const delayModule = getModuleInstance("delay", subModule, provider);
+      if (executor !== safeAddress) {
+        const delayModule = getModuleInstance("delay", executor, provider);
         const addModuleTransaction = buildTransaction(
           delayModule,
           "enableModule",
@@ -126,52 +146,17 @@ export async function createAndAddModule<
       }
 
       return daoModuleTransactions;
-
-    case "amb":
-      const { amb, owner } = args as unknown as AmbModuleParams;
-
-      const id = formatBytes32String(chainId.toString());
-      const {
-        transaction: ambModuleDeploymentTx,
-        expectedModuleAddress: ambModuleExpectedAddress,
-      } = await deployAndSetUpModule(
-        module,
-        [owner, amb, safeAddress, id],
-        provider,
-        chainId,
-        Date.now().toString()
-      );
-
-      const ambModuleTransactions = [ambModuleDeploymentTx];
-
-      if (subModule) {
-        const delayModule = getModuleInstance("delay", subModule, provider);
-        const addModuleTransaction = buildTransaction(
-          delayModule,
-          "enableModule",
-          [ambModuleExpectedAddress]
-        );
-
-        ambModuleTransactions.push(addModuleTransaction);
-      } else {
-        const enableDaoModuleTransaction = enableModule(
-          safeAddress,
-          chainId,
-          ambModuleExpectedAddress
-        );
-        ambModuleTransactions.push(enableDaoModuleTransaction);
-      }
-
-      return ambModuleTransactions;
-
     case "delay":
       const { txCooldown, txExpiration } = args as unknown as DelayModuleParams;
       const {
         transaction: delayModuleDeploymentTx,
         expectedModuleAddress: delayModuleExpectedAddress,
-      } = await deployAndSetUpModule(
-        module,
-        [safeAddress, txCooldown, txExpiration],
+      } = deployAndSetUpModule(
+        "delay",
+        {
+          types: ["address", "address", "uint256", "uint256"],
+          values: [safeAddress, safeAddress, txCooldown, txExpiration],
+        },
         provider,
         chainId,
         Date.now().toString()
@@ -182,31 +167,13 @@ export async function createAndAddModule<
         delayModuleExpectedAddress
       );
 
-      const delayTransactions = [
-        delayModuleDeploymentTx,
+      return [
+        {
+          ...delayModuleDeploymentTx,
+          value: delayModuleDeploymentTx.value.toString(),
+        },
         enableDelayModuleTransaction,
       ];
-
-      if (subModule) {
-        const delayModule = getModuleInstance(
-          "delay",
-          delayModuleExpectedAddress,
-          provider
-        );
-        const enableDaoModuleTx = buildTransaction(
-          delayModule,
-          "enableModule",
-          [subModule]
-        );
-        const disableModuleOnSafeTx = await disableModule(
-          safeAddress,
-          chainId,
-          subModule
-        );
-        delayTransactions.push(enableDaoModuleTx);
-        delayTransactions.push(disableModuleOnSafeTx);
-      }
-      return delayTransactions;
   }
 
   throw new Error("Invalid module");

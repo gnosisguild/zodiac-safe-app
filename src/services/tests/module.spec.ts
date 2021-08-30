@@ -1,6 +1,6 @@
 import { BigNumber, Contract, Signer, Wallet } from "ethers";
 import { AddressOne, getSafeInstance } from "services/helpers";
-import { getModuleInstance } from "@gnosis/module-factory";
+import { getModuleInstance } from "@gnosis/zodiac";
 import {
   buildMultiSendSafeTx,
   prepareSafeTransaction,

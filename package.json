@@ -11,7 +11,7 @@
     "@gnosis.pm/safe-apps-react-sdk": "3.0.0",
     "@gnosis.pm/safe-deployments": "^1.0.0",
     "@gnosis.pm/safe-react-components": "^0.6.0",
-    "@gnosis/module-factory": "github:gnosis/module-factory#master",
+    "@gnosis/zodiac": "github:carlosfebres/zodiac#feat-factory-lib",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
@@ -19,7 +19,7 @@
     "async-retry": "^1.3.1",
     "classnames": "^2.3.1",
     "ethcall": "^3.4.1",
-    "ethers": "5.4.0",
+    "ethers": "^5.4.6",
     "lodash.memoize": "^4.1.2",
     "material-ui": "^0.20.2",
     "react": "^17.0.1",
@@ -53,7 +53,7 @@
     "build": "react-app-rewired build",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
-    "postinstall": "cd ./node_modules/@gnosis/module-factory && yarn && yarn build"
+    "postinstall": "cd ./node_modules/@gnosis/zodiac && yarn --ignore-scripts && yarn build:factory"
   },
   "eslintConfig": {
     "extends": [

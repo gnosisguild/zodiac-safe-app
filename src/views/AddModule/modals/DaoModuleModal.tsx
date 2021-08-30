@@ -51,7 +51,6 @@ function getDefaultOracle(chainId: number): string {
   return "";
 }
 
-// TODO: Implement "Attach Delay Module"
 export const DaoModuleModal = ({
   open,
   onClose,
@@ -97,13 +96,12 @@ export const DaoModuleModal = ({
       const txs = await createAndAddModule(
         "dao",
         {
-          executor: safe.safeAddress,
+          executor: delayModule || safe.safeAddress,
           ...params,
           bond: minimumBond.toString(),
         },
         safe.safeAddress,
-        safe.chainId,
-        delayModule
+        safe.chainId
       );
 
       await sdk.txs.send({ txs });
