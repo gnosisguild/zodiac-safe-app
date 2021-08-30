@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "flex-start",
   },
   backdrop: {
-    position: "absolute !important" as "absolute",
     backdropFilter: "blur(4px)",
     animationName: "$blur",
     animationDuration: "500ms",
@@ -117,7 +116,6 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   return (
     <Modal
       keepMounted
-      disablePortal
       open={open}
       onClose={onClose}
       className={classNames(classes.modal, classes.row, classes.center)}

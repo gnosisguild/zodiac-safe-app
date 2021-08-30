@@ -26,9 +26,11 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2.5, 2),
+    background: theme.palette.background.default,
   },
-  spacing: {
+  title: {
     marginBottom: theme.spacing(2),
+    fontSize: "20px",
   },
   introBox: {
     gridColumn: "1/3",
@@ -69,7 +71,7 @@ export const AddModulesView = () => {
       <div className={classes.gridContainer}>
         <div className={classes.introBox}>
           <Paper className={classes.paper}>
-            <Typography variant="h4" className={classes.spacing}>
+            <Typography variant="h4" className={classes.title}>
               {title}
             </Typography>
             <Typography variant="body2">

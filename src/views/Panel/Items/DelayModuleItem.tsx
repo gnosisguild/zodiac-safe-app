@@ -19,6 +19,12 @@ interface DelayModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
+    fontSize: "12px",
+    color:"rgb(93, 109, 116)",
+    letterSpacing: "1px",
+  },
+  moduleName: {
+    textTransform: "uppercase",
   },
   link: {
     marginLeft: theme.spacing(1),
@@ -60,7 +66,7 @@ export const DelayModuleItem = ({
         }
         {...panelItemProps}
       >
-        <Typography variant="h6" className={classes.text} gutterBottom>
+        <Typography variant="h6" className={`${classes.text} ${classes.moduleName}`} gutterBottom>
           {module.name}
         </Typography>
         <Address
