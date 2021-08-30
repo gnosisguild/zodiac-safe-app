@@ -182,8 +182,13 @@ export const DaoModuleModal = ({
           <Row style={{ alignItems: "center" }}>
             <Typography>TemplateId</Typography>
             <Grow />
-            {/*  TODO: Add Link */}
-            <Link color="secondary">Get a template here</Link>
+            <Link
+              color="secondary"
+              href="https://reality.eth.link/app/template-generator/"
+              target="_blank"
+            >
+              Get a template here
+            </Link>
           </Row>
           <TextField
             color="secondary"
