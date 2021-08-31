@@ -4,7 +4,11 @@ import {
 } from "ethcall";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import { InfuraProvider } from "@ethersproject/providers";
-import { getModuleInstance } from "@gnosis/zodiac";
+import {
+  CONTRACT_ADDRESSES,
+  getModuleInstance,
+  KnownModules,
+} from "@gnosis/zodiac";
 import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import {
   DaoModule,
@@ -12,6 +16,7 @@ import {
   DecodedTransaction,
   DelayModule,
   Module,
+  MODULE_TYPES,
   ModuleMetadata,
   ModuleOperation,
   ModuleType,
@@ -21,8 +26,6 @@ import {
 } from "./models";
 import { Contract } from "ethers";
 import { defaultProvider } from "../../services/helpers";
-import { getFactoryAndMasterCopy, KnownModules } from "@gnosis/zodiac";
-import { getProvider } from "../../services";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
@@ -202,49 +205,47 @@ export function getTransactionsFromSafeTransaction(
   return [safeTransaction];
 }
 
+export function getContractsModuleType(
+  chainId: number,
+  contractAddress: string
+): ModuleType {
+  const contractAddresses = CONTRACT_ADDRESSES[chainId];
+  if (!contractAddresses) return ModuleType.UNKNOWN;
+  const entry = Object.entries(contractAddresses).find(
+    ([, contract]) => contract === contractAddress
+  );
+  if (!entry) return ModuleType.UNKNOWN;
+  return MODULE_TYPES[entry[0] as keyof KnownModules] || ModuleType.UNKNOWN;
+}
+
 /**
  * Determine if the safe transaction is a pending add module transaction.
  *
  * @param {object} safeTransaction - Safe Transaction.
  * @param {number} chainId - Chain Id.
- * @param {string} module - Module Name.
  */
-export function getAddModuleTransactionPending(
+export function getAddModuleTransactionModuleType(
   safeTransaction: SafeTransaction,
-  chainId: number,
-  module: keyof KnownModules
-): string[] {
-  const provider = getProvider(chainId);
-
-  const { factory: factoryContract, module: moduleContract } =
-    getFactoryAndMasterCopy(module, provider, chainId);
-
+  chainId: number
+): ModuleType | undefined {
+  const factoryAddress = CONTRACT_ADDRESSES[chainId]?.factory || "";
   const transactions = getTransactionsFromSafeTransaction(safeTransaction);
 
-  const deploysModule = transactions.some(
+  const deploysModule = transactions.find(
     (transaction) =>
-      transaction.to.toLowerCase() === factoryContract.address.toLowerCase() &&
+      transaction.to.toLowerCase() === factoryAddress.toLowerCase() &&
       transaction.dataDecoded &&
-      transaction.dataDecoded.method === "deployModule" &&
-      transaction.dataDecoded.parameters.some(
-        (param) =>
-          param.name === "masterCopy" &&
-          param.value.toLowerCase() === moduleContract.address.toLowerCase()
-      )
+      transaction.dataDecoded.method === "deployModule"
   );
+  if (!deploysModule) return;
 
-  if (!deploysModule) {
-    return [];
-  }
+  const masterCopyParam = deploysModule.dataDecoded.parameters?.find(
+    (param) => param.name === "masterCopy"
+  );
+  if (!masterCopyParam) return;
 
-  return transactions
-    .filter((tx) => isSafeEnableModuleTransactionPending(tx))
-    .map((tx) => {
-      const param = tx.dataDecoded.parameters.find(
-        (param) => param.name === "module"
-      );
-      return param.value;
-    });
+  const masterCopyAddress = masterCopyParam.value || "";
+  return getContractsModuleType(chainId, masterCopyAddress);
 }
 
 export function isSafeEnableModuleTransactionPending(
@@ -277,7 +278,7 @@ export function getModulesToBeRemoved(
       const param = transaction.dataDecoded.parameters.find(
         (param) => param.name === "module"
       );
-      const moduleAddress = param ? param.value : "";
+      const moduleAddress = param && param.value ? param.value : "";
       const current = modules.find(
         (module) => module.address === moduleAddress
       );
@@ -290,41 +291,57 @@ export function getModulesToBeRemoved(
     });
 }
 
+function getModuleTypeForAddTransactions(
+  transactions: SafeTransaction[],
+  chainId: number
+): Record<string, ModuleType> {
+  return transactions
+    .map((safeTransaction) => {
+      const enableModuleTx = getTransactionsFromSafeTransaction(
+        safeTransaction
+      ).find(isSafeEnableModuleTransactionPending);
+
+      if (!enableModuleTx) return undefined;
+
+      const type = getAddModuleTransactionModuleType(safeTransaction, chainId);
+      const param = enableModuleTx.dataDecoded.parameters?.find(
+        (param) => param.name === "module"
+      );
+      const moduleExpectedAddress = param?.value;
+      if (!type || !moduleExpectedAddress) return undefined;
+      return { address: moduleExpectedAddress, type };
+    })
+    .reduce((obj, value) => {
+      if (value)
+        return {
+          ...obj,
+          [value.address]: value.type,
+        };
+      return obj;
+    }, {});
+}
+
 export function getPendingModulesToEnable(
   transactions: SafeTransaction[],
   chainId: number
 ): PendingModule[] {
-  const daoModuleTxPending = transactions.flatMap((safeTransaction) =>
-    getAddModuleTransactionPending(safeTransaction, chainId, "dao")
+  const modulesTypesByContractAddress = getModuleTypeForAddTransactions(
+    transactions,
+    chainId
   );
-  const delayModuleTxPending = transactions.flatMap((safeTransaction) =>
-    getAddModuleTransactionPending(safeTransaction, chainId, "delay")
-  );
+
   return transactions
     .flatMap(getTransactionsFromSafeTransaction)
     .filter((transaction) => isSafeEnableModuleTransactionPending(transaction))
     .map((transaction): PendingModule => {
-      const moduleAddress: string = transaction.dataDecoded.parameters[0].value;
-      if (daoModuleTxPending.includes(moduleAddress))
-        return {
-          address: moduleAddress,
-          executor: transaction.to,
-          module: ModuleType.DAO,
-          operation: ModuleOperation.CREATE,
-        };
-
-      if (delayModuleTxPending.includes(moduleAddress))
-        return {
-          address: moduleAddress,
-          executor: transaction.to,
-          module: ModuleType.DELAY,
-          operation: ModuleOperation.CREATE,
-        };
-
+      const moduleAddress: string =
+        transaction.dataDecoded.parameters[0].value || "";
+      const moduleType =
+        modulesTypesByContractAddress[moduleAddress] || ModuleType.UNKNOWN;
       return {
         address: moduleAddress,
         executor: transaction.to,
-        module: ModuleType.UNKNOWN,
+        module: moduleType,
         operation: ModuleOperation.CREATE,
       };
     });

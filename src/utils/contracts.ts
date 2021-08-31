@@ -8,11 +8,8 @@ import memoize from "lodash.memoize";
 import { getNetworkExplorerInfo } from "./explorers";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import {
-  DAO_MODULE_CONTRACT_ABI,
-  DAO_MODULE_CONTRACT_BYTECODE,
-  DELAY_MODULE_CONTRACT_ABI,
-  DELAY_MODULE_CONTRACT_BYTECODE,
   getGenericProxyMaster,
+  getModuleContractMetadataByBytecode,
   getProxyMaster,
   isGenericProxy,
   isGnosisGenericProxy,
@@ -188,23 +185,14 @@ export const getModuleDataFromEtherscan = memoize(
       return { ...module, address };
     }
 
-    switch (bytecode.toLowerCase()) {
-      case DELAY_MODULE_CONTRACT_BYTECODE:
-        return {
-          address,
-          name: "Delay Module",
-          type: ModuleType.DELAY,
-          implAddress: address,
-          abi: DELAY_MODULE_CONTRACT_ABI,
-        };
-      case DAO_MODULE_CONTRACT_BYTECODE:
-        return {
-          address,
-          name: "DAO Module",
-          type: ModuleType.DAO,
-          implAddress: address,
-          abi: DAO_MODULE_CONTRACT_ABI,
-        };
+    const standardContract = getModuleContractMetadataByBytecode(bytecode);
+
+    if (standardContract) {
+      return {
+        address,
+        implAddress: address,
+        ...standardContract,
+      };
     }
 
     try {

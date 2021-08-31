@@ -4,7 +4,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { createAndAddModule } from "services";
+import { deployDelayModule } from "services";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -54,16 +54,11 @@ export const DelayModuleModal = ({
 
   const handleAddDelayModule = async () => {
     try {
-      const txs = await createAndAddModule(
-        "delay",
-        {
-          executor: safe.safeAddress,
-          txCooldown: params.cooldown,
-          txExpiration: params.expiration,
-        },
-        safe.safeAddress,
-        safe.chainId
-      );
+      const txs = deployDelayModule(safe.safeAddress, safe.chainId, {
+        executor: safe.safeAddress,
+        cooldown: params.cooldown,
+        expiration: params.expiration,
+      });
 
       await sdk.txs.send({ txs });
 

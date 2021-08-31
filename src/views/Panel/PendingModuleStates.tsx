@@ -1,7 +1,4 @@
 import React, { useEffect } from "react";
-import { DaoModulePendingItem } from "./Items/DaoModulePendingItem";
-import { DelayModulePendingItem } from "./Items/DelayModulePendingItem";
-import { ModuleType } from "../../store/modules/models";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
@@ -15,7 +12,11 @@ import {
   fetchPendingModules,
   setCurrentPendingModule,
 } from "../../store/modules";
-import { UnknownModulePendingItem } from "./Items/UnknownModulePendingItem";
+import { ModulePendingItem } from "./Items/ModulePendingItem";
+import { LoadingIcon } from "../../components/icons/LoadingIcon";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-icon.svg";
+import { ReactComponent as ModulePendingImg } from "../../assets/images/dao-module-pending.svg";
+import { getModuleContractMetadata } from "../../utils/modulesValidation";
 
 export const PendingModuleStates = () => {
   const { sdk, safe } = useSafeAppsSDK();
@@ -59,6 +60,15 @@ export const PendingModuleStates = () => {
     pendingModuleTransactions.length,
   ]);
 
+  const image = isInstantExecution ? (
+    <LoadingIcon icon={<AddIcon />} />
+  ) : (
+    <ModulePendingImg />
+  );
+  const linkText = isInstantExecution
+    ? "Transaction confirming..."
+    : "Awaiting approval";
+
   return (
     <>
       {pendingCreateModuleTransactions.map((pendingModule, index) => {
@@ -68,14 +78,16 @@ export const PendingModuleStates = () => {
           onClick: () => dispatch(setCurrentPendingModule(pendingModule)),
           active: currentPending?.address === pendingModule.address,
         };
-
-        if (pendingModule.module === ModuleType.DAO)
-          return <DaoModulePendingItem {...props} />;
-
-        if (pendingModule.module === ModuleType.DELAY)
-          return <DelayModulePendingItem {...props} />;
-
-        return <UnknownModulePendingItem {...props} />;
+        const metadata = getModuleContractMetadata(pendingModule.module);
+        const name = metadata?.name || "Unknown Module";
+        return (
+          <ModulePendingItem
+            title={name}
+            linkText={linkText}
+            image={image}
+            {...props}
+          />
+        );
       })}
     </>
   );

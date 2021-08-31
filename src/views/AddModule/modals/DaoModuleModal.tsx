@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
-import { createAndAddModule } from "../../../services";
+import { deployDAOModule } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
@@ -14,6 +14,7 @@ import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
 import { Grow } from "../../../components/layout/Grow";
+import { ModuleType } from "../../../store/modules/models";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -93,16 +94,11 @@ export const DaoModuleModal = ({
   const handleAddDaoModule = async () => {
     try {
       const minimumBond = parseUnits(params.bond);
-      const txs = await createAndAddModule(
-        "dao",
-        {
-          executor: delayModule || safe.safeAddress,
-          ...params,
-          bond: minimumBond.toString(),
-        },
-        safe.safeAddress,
-        safe.chainId
-      );
+      const txs = deployDAOModule(safe.safeAddress, safe.chainId, {
+        ...params,
+        executor: delayModule || safe.safeAddress,
+        bond: minimumBond.toString(),
+      });
 
       await sdk.txs.send({ txs });
       if (onSubmit) onSubmit();
@@ -114,7 +110,7 @@ export const DaoModuleModal = ({
   };
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Logic to ignore the "ETH" text at the end of the input
+    // Logic to ignore the TOKEN text at the end of the input
     const input = event.target.value;
     let bondText = input.replace(/[^(0-9|.)]/g, "");
     if (
@@ -243,7 +239,7 @@ export const DaoModuleModal = ({
             modules={delayModules}
             value={delayModule}
             onChange={(value: string) => setDelayModule(value)}
-            type="delay"
+            type={ModuleType.DELAY}
           />
         </>
       ) : null}

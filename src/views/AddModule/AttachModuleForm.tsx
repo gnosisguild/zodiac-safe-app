@@ -7,14 +7,14 @@ import { Address } from "../../components/ethereum/Address";
 import classNames from "classnames";
 import { formatDuration } from "../../utils/string";
 import { Column } from "../../components/layout/Column";
-import { Module } from "../../store/modules/models";
+import { Module, ModuleType } from "../../store/modules/models";
 import { isDelayModule } from "../../store/modules/helpers";
 
 interface AttachModuleFormProps {
   modules: Module[];
   value?: string;
   description?: React.ReactNode;
-  type: "dao" | "delay";
+  type: ModuleType;
 
   onChange(address?: string): void;
 }
