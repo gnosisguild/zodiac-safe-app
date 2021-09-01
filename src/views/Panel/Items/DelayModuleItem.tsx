@@ -11,6 +11,7 @@ import { useRootDispatch } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
 import { Row } from "../../../components/layout/Row";
+import classNames from "classnames";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
@@ -68,7 +69,7 @@ export const DelayModuleItem = ({
       >
         <Typography
           variant="h6"
-          className={`${classes.text} ${classes.moduleName}`}
+          className={classNames(classes.text, classes.moduleName)}
           gutterBottom
         >
           {module.name}
