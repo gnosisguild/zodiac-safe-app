@@ -21,6 +21,10 @@ interface ModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
+    fontSize: "12px",
+    textTransform: "uppercase",
+    color: "rgb(93, 109, 116)",
+    letterSpacing: "1px",
   },
   spacing: {
     marginTop: theme.spacing(1),

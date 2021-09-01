@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     userSelect: "none",
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: theme.palette.background.default,
   },
   spacing: {
     marginBottom: theme.spacing(1),

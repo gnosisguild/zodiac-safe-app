@@ -11,6 +11,7 @@ import { useRootDispatch } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
 import { Row } from "../../../components/layout/Row";
+import classNames from "classnames";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
@@ -19,6 +20,12 @@ interface DelayModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
+    fontSize: "12px",
+    color: "rgb(93, 109, 116)",
+    letterSpacing: "1px",
+  },
+  moduleName: {
+    textTransform: "uppercase",
   },
   link: {
     marginLeft: theme.spacing(1),
@@ -60,7 +67,11 @@ export const DelayModuleItem = ({
         }
         {...panelItemProps}
       >
-        <Typography variant="h6" className={classes.text} gutterBottom>
+        <Typography
+          variant="h6"
+          className={classNames(classes.text, classes.moduleName)}
+          gutterBottom
+        >
           {module.name}
         </Typography>
         <Address

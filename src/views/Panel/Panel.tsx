@@ -19,11 +19,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   title: {
-    letterSpacing: -1,
-    fontSize: 28,
+    fontSize: 20,
   },
   content: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(2, 2.5),
     boxSizing: "content-box",
     minHeight: 40,
   },
