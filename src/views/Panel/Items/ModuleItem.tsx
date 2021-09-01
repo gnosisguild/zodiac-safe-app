@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: 1,
     fontSize: "12px",
     textTransform: "uppercase",
-    color:"rgb(93, 109, 116)",
+    color: "rgb(93, 109, 116)",
     letterSpacing: "1px",
   },
   spacing: {

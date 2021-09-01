@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100%",
     outline: "none",
-    borderRadius: "0"
+    borderRadius: "0",
   },
   header: {
     backgroundColor: theme.palette.secondary.main,

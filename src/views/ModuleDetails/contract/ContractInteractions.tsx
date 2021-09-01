@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
   content: {
     padding: theme.spacing(2.5),
     marginTop: theme.spacing(3),
-    background: theme.palette.background.default
+    background: theme.palette.background.default,
   },
   hide: {
     display: "none",
