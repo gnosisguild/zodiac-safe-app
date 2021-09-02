@@ -68,9 +68,6 @@ export const ContractFunctionQueryBlock = ({
       ? 0
       : formatValue(baseType, result[0]).length;
 
-  const maxResultLength = 60;
-  const showResultOnHeader = oneResult && resultLength < maxResultLength;
-
   const execQuery = useCallback(
     (params?: any[]) => {
       setLastQueryDate(undefined);
@@ -90,6 +87,11 @@ export const ContractFunctionQueryBlock = ({
       execQuery();
     }
   }, [execQuery, isBasic, reloadCount]);
+
+  const maxResultLength = 60;
+  const showResultOnHeader =
+    oneResult && resultLength < maxResultLength && !error;
+  const collapsable = !showResultOnHeader || !isBasic;
 
   const content = (
     <>
@@ -121,8 +123,6 @@ export const ContractFunctionQueryBlock = ({
       </ContractQueryForm>
     </>
   );
-
-  const collapsable = !showResultOnHeader || !isBasic;
 
   return (
     <Collapsable open={open && collapsable} content={content}>
