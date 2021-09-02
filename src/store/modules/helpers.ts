@@ -297,9 +297,9 @@ function getModuleTypeForAddTransactions(
 ): Record<string, ModuleType> {
   return transactions
     .map((safeTransaction) => {
-      const enableModuleTx = getTransactionsFromSafeTransaction(
-        safeTransaction
-      ).find(isSafeEnableModuleTransactionPending);
+      const enableModuleTx = getTransactionsFromSafeTransaction(safeTransaction)
+        .reverse()
+        .find(isSafeEnableModuleTransactionPending);
 
       if (!enableModuleTx) return undefined;
 

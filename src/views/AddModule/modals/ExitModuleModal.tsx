@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grid, makeStyles, Typography } from "@material-ui/core";
+import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as CustomModuleImage } from "../../../assets/images/custom-module-logo.svg";
-import { ExitModuleParams, deployExitModule } from "../../../services";
+import { deployExitModule, ExitModuleParams } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
+import { Row } from "../../../components/layout/Row";
+import { Grow } from "../../../components/layout/Grow";
 
 interface ExitModuleModalProps {
   open: boolean;
@@ -24,6 +26,9 @@ const useStyles = makeStyles((theme) => ({
   loadMessage: {
     textAlign: "center",
   },
+  text: {
+    fontSize: 14,
+  },
 }));
 
 export const ExitModuleModal = ({
@@ -39,12 +44,17 @@ export const ExitModuleModal = ({
   >({
     tokenContract: false,
     circulatingSupply: false,
+    circulatingSupplyAddress: false,
   });
   const [params, setParams] = useState<ExitModuleParamsInput>({
     tokenContract: "",
     circulatingSupply: "",
   });
-  const isValid = Object.values(errors).every((x) => x);
+  const [enterAddress, setEnterAddress] = useState(false);
+
+  const isValid =
+    errors.tokenContract &&
+    (enterAddress ? errors.circulatingSupplyAddress : errors.circulatingSupply);
 
   const onParamChange = <Field extends keyof ExitModuleParamsInput>(
     field: Field,
@@ -60,8 +70,17 @@ export const ExitModuleModal = ({
 
   const handleAddExitModule = async () => {
     try {
+      const args = enterAddress
+        ? {
+            tokenContract: params.tokenContract,
+            circulatingSupplyAddress: params.circulatingSupplyAddress,
+          }
+        : {
+            tokenContract: params.tokenContract,
+            circulatingSupply: params.circulatingSupply,
+          };
       const txs = deployExitModule(safe.safeAddress, safe.chainId, {
-        ...params,
+        ...args,
         executor: safe.safeAddress,
       });
 
@@ -102,15 +121,45 @@ export const ExitModuleModal = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
-            value={params.circulatingSupply}
-            label="Circulating Supply Contract Address"
-            onChange={(value, valid) =>
-              onParamChange("circulatingSupply", value, valid)
-            }
-          />
+          <Row style={{ alignItems: "center" }}>
+            <Typography className={classes.text}>
+              Circulating Supply {enterAddress ? "Address" : "Amount"}
+            </Typography>
+            <Grow />
+            <Link
+              color="secondary"
+              target="_blank"
+              onClick={() => setEnterAddress(!enterAddress)}
+            >
+              {enterAddress ? "deploy a new contract" : "already deployed?"}
+            </Link>
+          </Row>
+
+          {enterAddress ? (
+            <ParamInput
+              key="circulatingSupplyAddress"
+              param={ParamType.from("address")}
+              color="secondary"
+              value={params.circulatingSupplyAddress}
+              onChange={(value, valid) =>
+                onParamChange("circulatingSupplyAddress", value, valid)
+              }
+              label={undefined}
+              placeholder="0x325a2e0F3CCA2ddbaeBB4DfC38Df8D19ca165b47"
+            />
+          ) : (
+            <ParamInput
+              key="circulatingSupply"
+              param={ParamType.from("uint256")}
+              color="secondary"
+              value={params.circulatingSupply}
+              onChange={(value, valid) =>
+                onParamChange("circulatingSupply", value, valid)
+              }
+              label={undefined}
+              placeholder="16579517055253348798759097"
+            />
+          )}
         </Grid>
       </Grid>
     </AddModuleModal>
