@@ -1,16 +1,8 @@
-import React, { HTMLProps, useCallback, useState } from "react";
+import React, { HTMLProps } from "react";
 import { Row } from "../../components/layout/Row";
-import { Box, Button, makeStyles, Modal, Paper } from "@material-ui/core";
+import { Button, makeStyles, Modal, Paper } from "@material-ui/core";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { Interface } from "@ethersproject/abi";
-import { TransactionBlock } from "./components/TransactionBlock";
-import {
-  DragDropContext,
-  DragStart,
-  DragUpdate,
-  Droppable,
-  DropResult,
-} from "react-beautiful-dnd";
 import { ActionButton } from "../../components/ActionButton";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
@@ -20,36 +12,36 @@ import {
   getTransactions,
 } from "../../store/transactionBuilder/selectors";
 import {
+  closeTransactionBuilder,
   resetTransactions,
-  setTransactionBuilderOpen,
-  setTransactions,
 } from "../../store/transactionBuilder";
 import { ReactComponent as ChevronDown } from "../../assets/icons/chevron-down.svg";
 import { TransactionBuilderTitle } from "./TransactionBuilderTitle";
 import { animated, useSpring } from "react-spring";
-import { serializeTransaction } from "../../store/transactionBuilder/helpers";
 import { fetchPendingModules } from "../../store/modules";
+import { TransactionBuilderList } from "./components/TransactionBuilderList";
+import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
+import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
-    outline: "none",
+    display: "flex",
+    flexDirection: "column",
     width: "100%",
     height: "100%",
+    outline: "none",
+    borderRadius: "0",
   },
   header: {
     backgroundColor: theme.palette.secondary.main,
-    padding: theme.spacing(1),
+    padding: theme.spacing(1, 2),
     color: theme.palette.common.white,
+    alignItems: "center",
   },
   queryButton: {
     padding: theme.spacing(1, 3),
     borderRadius: 10,
     boxShadow: "none",
-  },
-  infoText: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    maxWidth: 350,
   },
   minimizeButton: {
     fontSize: 24,
@@ -62,6 +54,9 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     padding: theme.spacing(3, 2, 2, 2),
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
   },
 }));
 
@@ -72,10 +67,22 @@ interface FadeProps extends HTMLProps<HTMLDivElement> {
   onExited?: () => {};
 }
 
+function getAppContainerDimensions(): { width: number; height: number } {
+  const appContainer = document.querySelector(
+    "#app-content"
+  ) as HTMLElement | null;
+  if (!appContainer)
+    return { width: window.innerWidth, height: window.innerHeight };
+  return { width: appContainer.offsetWidth, height: appContainer.offsetHeight };
+}
+
 const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
   const { in: open, children, onExited, onEnter, ...other } = props;
-  const x = window.innerWidth - 300 + "px";
-  const y = window.innerHeight + "px";
+
+  const { width, height } = getAppContainerDimensions();
+  const x = width - 300 + "px";
+  const y = height + "px";
+
   const style = useSpring({
     from: { transform: `translate(${x}, ${y})`, opacity: 0 },
     to: {
@@ -93,6 +100,7 @@ const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
       }
     },
   });
+
   return (
     <animated.div {...other} ref={ref} style={style}>
       {children}
@@ -104,40 +112,12 @@ export const TransactionBuilderModal = () => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useRootDispatch();
+  const { width } = getAppContainerDimensions();
 
   const open = useRootSelector(getTransactionBuilderOpen);
   const transactions = useRootSelector(getTransactions);
 
-  const [overIndex, setOverIndex] = useState<number>();
-  const [sourceIndex, setSourceIndex] = useState<number>();
-
-  const handleDragStart = (result: DragStart) => {
-    setSourceIndex(result.source.index);
-  };
-
-  const handleDragUpdate = (update: DragUpdate) => {
-    if (
-      update.destination &&
-      update.destination.index !== update.source.index
-    ) {
-      setOverIndex(update.destination.index);
-    } else {
-      setOverIndex(undefined);
-    }
-  };
-
-  const handleClose = () => dispatch(setTransactionBuilderOpen(false));
-
-  const handleDragEnd = (result: DropResult) => {
-    setOverIndex(undefined);
-    setSourceIndex(undefined);
-    if (result.destination) {
-      const sorted = Array.from(transactions).map(serializeTransaction);
-      const [removed] = sorted.splice(result.source.index, 1);
-      sorted.splice(result.destination.index, 0, removed);
-      dispatch(setTransactions(sorted));
-    }
-  };
+  const handleClose = () => dispatch(closeTransactionBuilder());
 
   const handleSubmitTransaction = async () => {
     try {
@@ -163,44 +143,22 @@ export const TransactionBuilderModal = () => {
     }
   };
 
-  const handleTransactionUpdate = useCallback(
-    (id, params) => {
-      const txs = transactions.map(serializeTransaction).map((transaction) => {
-        if (transaction.id !== id) {
-          return transaction;
-        }
-        return { ...transaction, params };
-      });
-      dispatch(setTransactions(txs));
-    },
-    [dispatch, transactions]
-  );
-
-  const handleTransactionDelete = useCallback(
-    (id) => {
-      const txs = Array.from(transactions).map(serializeTransaction);
-      const index = txs.findIndex((tx) => tx.id === id);
-      if (index >= 0) {
-        txs.splice(index, 1);
-        dispatch(setTransactions(txs));
-      }
-    },
-    [dispatch, transactions]
-  );
-
   return (
     <Modal
+      disablePortal
+      keepMounted
       open={open}
       onClose={handleClose}
       className={classes.fullWindow}
-      BackdropProps={{ invisible: true }}
+      style={{ width, left: "auto" }}
+      BackdropProps={{ open: false }}
     >
       <Slide in={open} className={classes.fullWindow}>
         <Paper className={classes.fullWindow} elevation={2}>
-          <Row alignItems="center" className={classes.header}>
+          <Row className={classes.header}>
             <TransactionBuilderTitle />
 
-            <Box flexGrow={1} />
+            <Grow />
 
             <Button
               onClick={handleClose}
@@ -212,30 +170,11 @@ export const TransactionBuilderModal = () => {
           </Row>
 
           <div className={classes.content}>
-            <DragDropContext
-              onDragStart={handleDragStart}
-              onDragUpdate={handleDragUpdate}
-              onDragEnd={handleDragEnd}
-            >
-              <Droppable droppableId="transactions">
-                {(provider) => (
-                  <div ref={provider.innerRef} {...provider.droppableProps}>
-                    {transactions.map((transaction, index) => (
-                      <TransactionBlock
-                        index={index}
-                        key={transaction.id}
-                        transaction={transaction}
-                        isOver={index === overIndex}
-                        isOverBefore={sourceIndex ? index < sourceIndex : false}
-                        onUpdate={handleTransactionUpdate}
-                        onDelete={handleTransactionDelete}
-                      />
-                    ))}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-
+            {transactions.length ? (
+              <TransactionBuilderList transactions={transactions} />
+            ) : (
+              <TransactionBuilderEmptyList />
+            )}
             <ActionButton
               fullWidth
               variant="contained"
@@ -245,7 +184,7 @@ export const TransactionBuilderModal = () => {
               startIcon={<Icon type="sent" size="md" color="white" />}
               onClick={handleSubmitTransaction}
             >
-              Submit Transactions
+              Submit Transaction Bundle
             </ActionButton>
           </div>
         </Paper>

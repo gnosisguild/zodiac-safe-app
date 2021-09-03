@@ -11,6 +11,7 @@ import { useRootDispatch } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
 import { Row } from "../../../components/layout/Row";
+import classNames from "classnames";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
@@ -19,15 +20,18 @@ interface DelayModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
+    fontSize: "12px",
+    color: "rgb(93, 109, 116)",
+    letterSpacing: "1px",
+  },
+  moduleName: {
+    textTransform: "uppercase",
   },
   link: {
     marginLeft: theme.spacing(1),
     lineHeight: 1,
-    cursor: 'pointer',
+    cursor: "pointer",
   },
-  addressContainer: {
-    marginBottom: theme.spacing(1),
-  }
 }));
 
 export const DelayModuleItem = ({
@@ -63,22 +67,25 @@ export const DelayModuleItem = ({
         }
         {...panelItemProps}
       >
-        <Typography variant="h6" className={classes.text} gutterBottom>
+        <Typography
+          variant="h6"
+          className={classNames(classes.text, classes.moduleName)}
+          gutterBottom
+        >
           {module.name}
         </Typography>
         <Address
           short
           showOnHover
-          address={module.address} 
-          classes={{container: classes.addressContainer}}
+          gutterBottom
+          address={module.address}
           TypographyProps={{
             variant: "body2",
             className: classes.text,
-            gutterBottom: false,
           }}
         />
-        <Row alignItems="center">
-          <Badge>{formatDuration(module.timeout)} delay</Badge>
+        <Row style={{ alignItems: "center" }}>
+          <Badge>{formatDuration(module.expiration)} delay</Badge>
           <Link
             color="secondary"
             noWrap

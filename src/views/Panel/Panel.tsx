@@ -10,6 +10,7 @@ import {
   getModulesList,
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
+import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
   hashInfo: {
@@ -18,11 +19,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   title: {
-    letterSpacing: -1,
-    fontSize: 28,
+    fontSize: 20,
   },
   content: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(2, 2.5),
     boxSizing: "content-box",
     minHeight: 40,
   },
@@ -50,11 +50,11 @@ export const Panel = () => {
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100%">
-      <Row alignItems="center" className={classes.content}>
+      <Row style={{ alignItems: "center" }} className={classes.content}>
         <Title size="sm" strong withoutMargin>
           <span className={classes.title}>Module Manager</span>
         </Title>
-        <Box flexGrow={1} />
+        <Grow />
         {currentModule || currentPending ? (
           <Button
             className={classes.smallButton}

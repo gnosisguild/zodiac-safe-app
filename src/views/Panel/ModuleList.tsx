@@ -17,6 +17,7 @@ import { ModuleItem } from "./Items/ModuleItem";
 import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
 import { Column } from "../../components/layout/Column";
+import { isPendingModule } from "../../store/modules/helpers";
 
 interface ModuleListProps {
   modules: Module[];
@@ -59,9 +60,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const modulesLoading = useRootSelector(getIsLoadingModules);
   const pendingModules = useRootSelector(getPendingModules);
   const safeThreshold = useRootSelector(getSafeThreshold);
-  const pendingRemoveTxs = useRootSelector(
-    getPendingRemoveModuleTransactions
-  ).map((tx) => tx.address);
+  const pendingRemoveTxs = useRootSelector(getPendingRemoveModuleTransactions);
 
   const handleClick = (module: Module) => {
     dispatch(setCurrentModule(module));
@@ -89,10 +88,11 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   const content = modules.map((module) => {
     const active = module.id === currentModule?.id;
+    const remove = pendingRemoveTxs.some((tx) => isPendingModule(module, tx));
     return (
       <ModuleItem
         key={module.address}
-        remove={pendingRemoveTxs.includes(module.address)}
+        remove={remove}
         instant={safeThreshold === 1}
         module={module}
         active={active}
@@ -104,8 +104,15 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (sub) {
     const lines = modules.map((_, index) => {
+      const previous = index && modules[index - 1];
+      const subModulesCount = previous && previous.subModules.length;
+      const subModulesHeight = subModulesCount * PANEL_ITEM_HEIGHT;
+
       const height =
-        (index + 1) * PANEL_ITEM_HEIGHT - PANEL_ITEM_HEIGHT / 2 + 2;
+        2 +
+        subModulesHeight +
+        PANEL_ITEM_HEIGHT * (index + 1) -
+        PANEL_ITEM_HEIGHT / 2;
       return <div key={index} className={classes.line} style={{ height }} />;
     });
     return <div className={classes.subModules}>{[content, lines]}</div>;

@@ -1,12 +1,23 @@
 import { Fragment } from "@ethersproject/abi";
+import { KnownModules } from "@gnosis/zodiac";
 
 export type ABI = string | string[] | Fragment[];
 
 export enum ModuleType {
-  DAO,
-  DELAY,
-  UNKNOWN,
+  DAO = "dao",
+  DELAY = "delay",
+  AMB = "amb",
+  EXIT = "exit",
+  UNKNOWN = "unknown",
 }
+
+export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
+  dao: ModuleType.DAO,
+  delay: ModuleType.DELAY,
+  amb: ModuleType.AMB,
+  exit: ModuleType.EXIT,
+  scopeGuard: ModuleType.UNKNOWN,
+};
 
 export enum ModuleOperation {
   CREATE,
@@ -20,7 +31,7 @@ export interface Module {
   type: ModuleType;
   subModules: Module[];
   owner?: string;
-  parentModule?: string;
+  parentModule: string;
 }
 
 export interface ModuleMetadata {
@@ -29,11 +40,12 @@ export interface ModuleMetadata {
   type: ModuleType;
   name?: string;
   abi?: ABI;
+  bytecode?: string;
 }
 
 export interface DelayModule extends Module {
   type: ModuleType.DELAY;
-  timeout: number;
+  expiration: number;
   cooldown: number;
 }
 
@@ -63,7 +75,7 @@ export type Operation = "read" | "write";
 
 export interface DataDecoded {
   method: string;
-  parameters: any[];
+  parameters: { name?: string; value?: string }[];
 }
 
 export interface MultiSendDataDecoded extends DataDecoded {
@@ -118,4 +130,5 @@ export interface PendingModule {
   operation: ModuleOperation;
   module: ModuleType;
   address: string;
+  executor: string;
 }

@@ -37,11 +37,16 @@ export const fetchModulesList = createAsyncThunk(
     store
   ): Promise<Module[]> => {
     const { safeSDK, safeAddress, chainId, retry } = params;
-    const moduleAddresses = await fetchSafeModulesAddress(safeAddress);
+    const moduleAddresses = await fetchSafeModulesAddress(safeAddress, chainId);
 
     const requests = moduleAddresses.map(async (moduleAddress) => {
       try {
-        return await sanitizeModule(moduleAddress, safeSDK, chainId);
+        return await sanitizeModule(
+          moduleAddress,
+          safeSDK,
+          chainId,
+          safeAddress
+        );
       } catch (error) {
         console.log("error sanitizing module", moduleAddress);
       }
@@ -84,15 +89,10 @@ export const fetchPendingModules = createAsyncThunk(
 
     const pendingEnableModules = getPendingModulesToEnable(
       transactions,
-      safeAddress,
       chainId
     );
 
-    const pendingRemoveModules = getModulesToBeRemoved(
-      modules,
-      transactions,
-      safeAddress
-    );
+    const pendingRemoveModules = getModulesToBeRemoved(modules, transactions);
 
     const pendingModules: PendingModule[] = [
       ...pendingEnableModules,

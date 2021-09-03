@@ -7,7 +7,7 @@ import {
   getSafeThreshold,
 } from "../../store/modules/selectors";
 import { ContractInteractionsPreview } from "./contract/ContractInteractionsPreview";
-import { getModuleABI } from "../../utils/modulesValidation";
+import { getModuleContractMetadata } from "../../utils/modulesValidation";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,12 +47,15 @@ function ModulePendingInstantTx() {
 
   if (!currentPendingTx) return null;
 
-  const abi = getModuleABI(currentPendingTx.module);
+  const metadata = getModuleContractMetadata(currentPendingTx.module);
 
-  if (!abi) return null;
+  if (!metadata || !metadata.abi) return null;
 
   return (
-    <ContractInteractionsPreview address={currentPendingTx.address} abi={abi} />
+    <ContractInteractionsPreview
+      address={currentPendingTx.address}
+      abi={metadata.abi}
+    />
   );
 }
 

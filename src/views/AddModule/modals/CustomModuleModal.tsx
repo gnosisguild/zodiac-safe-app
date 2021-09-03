@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// TODO: Implement "Attach Delay Module"
 export const CustomModuleModal = ({
   onSubmit,
   open,
@@ -61,7 +60,7 @@ export const CustomModuleModal = ({
   };
 
   const addModule = async () => {
-    const tx = enableModule(safe.safeAddress, moduleAddress);
+    const tx = enableModule(safe.safeAddress, safe.chainId, moduleAddress);
 
     try {
       await sdk.txs.send({ txs: [tx] });

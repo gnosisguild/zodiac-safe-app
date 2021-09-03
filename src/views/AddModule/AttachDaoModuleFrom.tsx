@@ -52,7 +52,7 @@ export const AttachDaoModuleForm = ({
   };
 
   return (
-    <Row alignItems="flex-start">
+    <Row style={{ alignItems: "flex-start" }}>
       <Checkbox checked={checked} onChange={handleCheck} />
       <div className={classes.container}>
         <Typography gutterBottom>Attach to Delay Module</Typography>
@@ -69,7 +69,7 @@ export const AttachDaoModuleForm = ({
                   <Badge
                     className={classNames(classes.text, classes.delayText)}
                   >
-                    {formatDuration(module.timeout)} delay
+                    {formatDuration(module.expiration)} delay
                   </Badge>
                   <Address
                     short

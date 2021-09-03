@@ -1,14 +1,26 @@
 import React from "react";
-import { Box, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
 import { Button, Text } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { fetchPendingModules } from "../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getPendingRemoveModuleTransactions } from "../../store/modules/selectors";
+import {
+  addTransaction,
+  openTransactionBuilder,
+} from "../../store/transactionBuilder";
+import {
+  getRemoveModuleTxId,
+  serializeTransaction,
+} from "../../store/transactionBuilder/helpers";
+import { Transaction } from "../../store/transactionBuilder/models";
+import { SafeAbi } from "../../services/helpers";
+import { Interface } from "@ethersproject/abi";
+import { getTransactions } from "../../store/transactionBuilder/selectors";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Grow } from "../../components/layout/Grow";
 
 interface ModuleDetailHeaderProps {
   module: Module;
@@ -34,23 +46,38 @@ const useStyles = makeStyles((theme) => ({
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const { sdk, safe } = useSafeAppsSDK();
+  const { safe } = useSafeAppsSDK();
   const pendingRemoveModuleTransactions = useRootSelector(
     getPendingRemoveModuleTransactions
   );
+  const txBuildersTransaction = useRootSelector(getTransactions);
 
+  const isRemoveTxOnQueue = txBuildersTransaction.some(
+    (tx) => tx.id === getRemoveModuleTxId(module)
+  );
   const isModuleToBeRemoved = pendingRemoveModuleTransactions
     .map((pending) => pending.address)
     .includes(module.address);
+  const disabledRemoveButton = isRemoveTxOnQueue || isModuleToBeRemoved;
 
   const removeModule = async () => {
     try {
-      const transactions = await disableModule(
-        module.parentModule || safe.safeAddress,
+      const { params } = await disableModule(
+        module.parentModule,
+        safe.chainId,
         module.address
       );
-      await sdk.txs.send({ txs: [transactions] });
-      dispatch(fetchPendingModules(safe));
+      const safeInterface = new Interface(SafeAbi);
+      const disableModuleFunc = safeInterface.getFunction("disableModule");
+      const transaction: Transaction = {
+        module,
+        params,
+        id: getRemoveModuleTxId(module),
+        func: disableModuleFunc,
+        to: module.parentModule,
+      };
+      dispatch(addTransaction(serializeTransaction(transaction)));
+      dispatch(openTransactionBuilder());
     } catch (error) {
       console.warn("could not remove module", error);
     }
@@ -75,14 +102,14 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         }}
       />
 
-      <Box flexGrow={1} />
+      <Grow />
 
       <Button
         size="md"
         iconType="delete"
         variant="outlined"
         onClick={removeModule}
-        disabled={isModuleToBeRemoved}
+        disabled={disabledRemoveButton}
       >
         Remove
       </Button>

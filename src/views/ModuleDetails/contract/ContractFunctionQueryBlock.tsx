@@ -20,6 +20,8 @@ import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { useRootSelector } from "../../../store";
 import { getReloadCount } from "../../../store/modules/selectors";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Grow } from "../../../components/layout/Grow";
 
 interface ContractFunctionBlockProps {
   address: string;
@@ -50,6 +52,7 @@ export const ContractFunctionQueryBlock = ({
 }: ContractFunctionBlockProps) => {
   const classes = useStyles();
   const reloadCount = useRootSelector(getReloadCount);
+  const { safe } = useSafeAppsSDK();
 
   const [open, setOpen] = useState(false);
   const [lastQueryDate, setLastQueryDate] = useState<Date>();
@@ -65,15 +68,12 @@ export const ContractFunctionQueryBlock = ({
       ? 0
       : formatValue(baseType, result[0]).length;
 
-  const maxResultLength = 60;
-  const showResultOnHeader = oneResult && resultLength < maxResultLength;
-
   const execQuery = useCallback(
     (params?: any[]) => {
       setLastQueryDate(undefined);
-      fetch(address, [func], func.name, params);
+      fetch(safe.chainId, address, [func], func.name, params);
     },
-    [address, fetch, func]
+    [address, fetch, func, safe.chainId]
   );
 
   useEffect(() => {
@@ -87,6 +87,11 @@ export const ContractFunctionQueryBlock = ({
       execQuery();
     }
   }, [execQuery, isBasic, reloadCount]);
+
+  const maxResultLength = 60;
+  const showResultOnHeader =
+    oneResult && resultLength < maxResultLength && !error;
+  const collapsable = !showResultOnHeader || !isBasic;
 
   const content = (
     <>
@@ -119,19 +124,17 @@ export const ContractFunctionQueryBlock = ({
     </>
   );
 
-  const collapsable = !showResultOnHeader || !isBasic;
-
   return (
     <Collapsable open={open && collapsable} content={content}>
       <Row
-        alignItems="center"
+        style={{ alignItems: "center" }}
         className={classNames({ [classes.clickable]: collapsable })}
         onClick={() => setOpen(!open)}
       >
         <Typography variant="h6" className={classes.title}>
           {func.name}
         </Typography>
-        <Box flexGrow={1} />
+        <Grow />
         <ContractFunctionHeader
           func={func}
           result={result}

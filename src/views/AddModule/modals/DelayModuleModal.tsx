@@ -4,7 +4,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { createAndAddModule } from "services";
+import { deployDelayModule } from "services";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -15,8 +15,8 @@ interface DaoModuleModalProps {
 }
 
 interface DelayModuleParams {
-  timeout: number;
-  cooldown: number;
+  expiration: string;
+  cooldown: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -38,8 +38,8 @@ export const DelayModuleModal = ({
   const { sdk, safe } = useSafeAppsSDK();
 
   const [params, setParams] = useState<DelayModuleParams>({
-    timeout: 86400,
-    cooldown: 86400,
+    expiration: "86400",
+    cooldown: "86400",
   });
 
   const onParamChange = <Field extends keyof DelayModuleParams>(
@@ -54,15 +54,11 @@ export const DelayModuleModal = ({
 
   const handleAddDelayModule = async () => {
     try {
-      const txs = await createAndAddModule(
-        "delay",
-        {
-          executor: safe.safeAddress,
-          txCooldown: params.cooldown,
-          txExpiration: params.timeout,
-        },
-        safe.safeAddress
-      );
+      const txs = deployDelayModule(safe.safeAddress, safe.chainId, {
+        executor: safe.safeAddress,
+        cooldown: params.cooldown,
+        expiration: params.expiration,
+      });
 
       await sdk.txs.send({ txs });
 
@@ -91,18 +87,18 @@ export const DelayModuleModal = ({
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={6}>
           <TimeSelect
-            label="Timeout"
-            defaultValue={params.timeout}
-            defaultUnit="hours"
-            onChange={(value) => onParamChange("timeout", value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TimeSelect
             label="Cooldown"
             defaultValue={params.cooldown}
             defaultUnit="hours"
             onChange={(value) => onParamChange("cooldown", value)}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TimeSelect
+            label="Expiration"
+            defaultValue={params.expiration}
+            defaultUnit="hours"
+            onChange={(value) => onParamChange("expiration", value)}
           />
         </Grid>
       </Grid>

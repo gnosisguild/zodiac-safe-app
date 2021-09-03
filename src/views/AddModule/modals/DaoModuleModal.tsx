@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core";
+import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
-import { parseUnits } from "ethers/lib/utils";
+import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
-import { createAndAddModule } from "../../../services";
+import { deployDAOModule } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
+import { getArbitratorBondToken } from "../../../utils/reality-eth";
+import { Grow } from "../../../components/layout/Grow";
+import { ModuleType } from "../../../store/modules/models";
+import { ParamInput } from "../../../components/ethereum/ParamInput";
+import { ParamType } from "@ethersproject/abi";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -24,9 +29,9 @@ interface DaoModuleModalProps {
 interface DaoModuleParams {
   oracle: string;
   templateId: string;
-  timeout: number;
-  cooldown: number;
-  expiration: number;
+  timeout: string;
+  cooldown: string;
+  expiration: string;
   bond: string;
 }
 
@@ -49,7 +54,6 @@ function getDefaultOracle(chainId: number): string {
   return "";
 }
 
-// TODO: Implement "Attach Delay Module"
 export const DaoModuleModal = ({
   open,
   onClose,
@@ -58,56 +62,73 @@ export const DaoModuleModal = ({
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
 
-  const [hasError, setHasError] = useState(false);
-  const [delayModule, setDelayModule] = useState<string>();
   const delayModules = useRootSelector(getDelayModules);
+  const [delayModule, setDelayModule] = useState<string>();
+  const [bondToken, setBondToken] = useState("ETH");
   const [params, setParams] = useState<DaoModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
     templateId: "",
-    timeout: 86400,
-    cooldown: 86400,
-    expiration: 604800,
+    timeout: "86400",
+    cooldown: "86400",
+    expiration: "604800",
     bond: "0.1",
   });
+  const [validFields, setValidFields] = useState({
+    oracle: !!params.oracle,
+    templateId: !!params.templateId,
+    bond: !!params.bond,
+  });
+  const isValid = Object.values(validFields).every((field) => field);
+
+  useEffect(() => {
+    if (params.oracle && isAddress(params.oracle)) {
+      getArbitratorBondToken(params.oracle, safe.chainId)
+        .then((bondToken) => setBondToken(bondToken))
+        .catch(() => setBondToken("ETH"));
+    }
+  }, [params.oracle, safe.chainId]);
 
   const onParamChange = <Field extends keyof DaoModuleParams>(
     field: Field,
-    value: DaoModuleParams[Field]
+    value: DaoModuleParams[Field],
+    valid?: boolean
   ) => {
     setParams({
       ...params,
       [field]: value,
     });
+    if (valid !== undefined)
+      setValidFields({
+        ...validFields,
+        [field]: valid,
+      });
   };
 
   const handleAddDaoModule = async () => {
     try {
       const minimumBond = parseUnits(params.bond);
-      const txs = await createAndAddModule(
-        "dao",
-        {
-          executor: safe.safeAddress,
-          ...params,
-          bond: minimumBond.toString(),
-        },
-        safe.safeAddress,
-        delayModule
-      );
+      const txs = deployDAOModule(safe.safeAddress, safe.chainId, {
+        ...params,
+        executor: delayModule || safe.safeAddress,
+        bond: minimumBond.toString(),
+      });
 
       await sdk.txs.send({ txs });
       if (onSubmit) onSubmit();
       if (onClose) onClose();
     } catch (error) {
       console.log("Error deploying module: ", error);
-      setHasError(true);
     }
   };
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Logic to ignore the "ETH" text at the end of the input
+    // Logic to ignore the TOKEN text at the end of the input
     const input = event.target.value;
     let bondText = input.replace(/[^(0-9|.)]/g, "");
-    if (!input.includes(" ETH") && bondText.length === params.bond.length) {
+    if (
+      !input.includes(" " + bondToken) &&
+      bondText.length === params.bond.length
+    ) {
       bondText = bondText.substr(0, bondText.length - 1);
     }
 
@@ -151,6 +172,7 @@ export const DaoModuleModal = ({
       tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddDaoModule}
       readMoreLink="https://github.com/gnosis/dao-module"
+      ButtonProps={{ disabled: !isValid }}
     >
       <Typography variant="h6" gutterBottom>
         Parameters
@@ -158,27 +180,34 @@ export const DaoModuleModal = ({
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
-          <TextField
+          <ParamInput
+            param={ParamType.from("address")}
             color="secondary"
             value={params.oracle}
             label="Oracle (oracle)"
-            onChange={(event) => onParamChange("oracle", event.target.value)}
+            onChange={(value, valid) => onParamChange("oracle", value, valid)}
           />
         </Grid>
         <Grid item xs={12}>
-          <Row alignItems="center">
+          <Row style={{ alignItems: "center" }}>
             <Typography>TemplateId</Typography>
-            <Box flexGrow={1} />
-            {/*  TODO: Add Link */}
-            <Link color="secondary">Get a template here</Link>
+            <Grow />
+            <Link
+              color="secondary"
+              href="https://reality.eth.link/app/template-generator/"
+              target="_blank"
+            >
+              Get a template here
+            </Link>
           </Row>
-          <TextField
+          <ParamInput
+            param={ParamType.from("uint256")}
             color="secondary"
             placeholder="10929783"
+            label={undefined}
             value={params.templateId}
-            error={hasError}
-            onChange={(event) =>
-              onParamChange("templateId", event.target.value)
+            onChange={(value, valid) =>
+              onParamChange("templateId", value, valid)
             }
           />
         </Grid>
@@ -209,7 +238,7 @@ export const DaoModuleModal = ({
         <Grid item xs={6}>
           <TextField
             color="secondary"
-            value={params.bond + " ETH"}
+            value={params.bond + " " + bondToken}
             label="Bond"
             onChange={handleBondChange}
           />
@@ -225,7 +254,7 @@ export const DaoModuleModal = ({
             modules={delayModules}
             value={delayModule}
             onChange={(value: string) => setDelayModule(value)}
-            type="delay"
+            type={ModuleType.DELAY}
           />
         </>
       ) : null}

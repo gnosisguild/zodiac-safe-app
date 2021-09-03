@@ -7,14 +7,14 @@ import { Address } from "../../components/ethereum/Address";
 import classNames from "classnames";
 import { formatDuration } from "../../utils/string";
 import { Column } from "../../components/layout/Column";
-import { Module } from "../../store/modules/models";
+import { Module, ModuleType } from "../../store/modules/models";
 import { isDelayModule } from "../../store/modules/helpers";
 
 interface AttachModuleFormProps {
   modules: Module[];
   value?: string;
   description?: React.ReactNode;
-  type: "dao" | "delay";
+  type: ModuleType;
 
   onChange(address?: string): void;
 }
@@ -56,7 +56,7 @@ export const AttachModuleForm = ({
   };
 
   return (
-    <Row alignItems="flex-start">
+    <Row style={{ alignItems: "flex-start" }}>
       <Checkbox checked={checked} onChange={handleCheck} />
       <div className={classes.container}>
         <Typography gutterBottom>
@@ -71,12 +71,12 @@ export const AttachModuleForm = ({
                   checked={value === module.address}
                   onClick={() => onChange(module.address)}
                 />
-                <Column justifyContent="center">
+                <Column style={{ justifyContent: "center" }}>
                   {isDelayModule(module) ? (
                     <Badge
                       className={classNames(classes.text, classes.delayText)}
                     >
-                      {formatDuration(module.timeout)} delay
+                      {formatDuration(module.expiration)} delay
                     </Badge>
                   ) : null}
                   <Address

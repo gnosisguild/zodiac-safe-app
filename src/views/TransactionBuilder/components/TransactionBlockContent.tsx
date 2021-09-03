@@ -84,7 +84,7 @@ export const TransactionBlockContent = ({
       })}
       content={<TransactionBlockFields {...blockFieldsProps} />}
     >
-      <Row alignItems="center">
+      <Row style={{ alignItems: "center" }}>
         <div className={classes.grip} {...drag.provider.dragHandleProps}>
           <GripIcon />
         </div>

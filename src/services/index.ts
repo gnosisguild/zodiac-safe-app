@@ -1,266 +1,356 @@
-import { Contract } from "ethers";
-import {
-  deployAndSetUpModule,
-  getModuleInstance,
-} from "@gnosis/module-factory";
-import { formatBytes32String } from "ethers/lib/utils";
+import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
+import { deployAndSetUpModule, getModuleInstance } from "@gnosis/zodiac";
 import {
   AddressOne,
   buildTransaction,
   DEFAULT_ORACLE_ADDRESSES,
-  defaultProvider,
   SafeAbi,
 } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
 import { SafeInfo, SafeTransaction } from "../store/modules/models";
-
-const MODULE_METHODS = {
-  dao: {
-    setArbitrator: "setArbitrator",
-    setQuestionTimeout: "setQuestionTimeout",
-    setQuestionCooldown: "setQuestionCooldown",
-    setMinimumBond: "setMinimumBond",
-    setTemplate: "setTemplate",
-    setAnswerExpiration: "setAnswerExpiration",
-  },
-  amb: {
-    setAmb: "setAmb",
-    setChainId: "setChainId",
-    setOwner: "setOwner",
-  },
-  delay: {
-    setTxCooldown: "setTxCooldown",
-    setTxExpiration: "setTxExpiration",
-  },
-};
-
-type KnownModules = keyof typeof MODULE_METHODS;
+import { InfuraProvider } from "@ethersproject/providers";
+import { calculateProxyAddress, getFactoryAndMasterCopy } from "@gnosis/zodiac";
 
 interface DaoModuleParams {
   executor: string;
   oracle?: string;
-  timeout: number;
-  bond: number;
-  templateId: number;
-  cooldown: number;
-  expiration: number;
-}
-
-interface AmbModuleParams {
-  amb: string;
-  owner: string;
+  bond: string;
+  templateId: string;
+  timeout: string;
+  cooldown: string;
+  expiration: string;
 }
 
 interface DelayModuleParams {
-  txCooldown: number;
-  txExpiration: number;
+  executor: string;
+  cooldown: string;
+  expiration: string;
 }
 
-type ModuleParams = {
-  delay: DelayModuleParams;
-  amb: AmbModuleParams;
-  dao: DaoModuleParams;
-};
+export interface AMBModuleParams {
+  amb: string;
+  controller: string;
+  executor: string;
+  chainId: string;
+}
 
-type KnownMethods<T extends KnownModules> = keyof typeof MODULE_METHODS[T];
+export interface ExitModuleParams {
+  executor: string;
+  tokenContract: string;
+  circulatingSupply?: string;
+  circulatingSupplyAddress?: string;
+}
 
-export async function createAndAddModule<
-  Module extends KnownModules,
-  Arg = ModuleParams[Module]
->(
-  module: Module,
-  args: Arg,
+export const CIRCULATING_SUPPLY_CONTRACT_ABI = [
+  "constructor(uint256 _circulatingSupply)",
+  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+  "function circulatingSupply() view returns (uint256)",
+  "function get() view returns (uint256)",
+  "function initialized() view returns (bool)",
+  "function owner() view returns (address)",
+  "function renounceOwnership()",
+  "function set(uint256 _circulatingSupply)",
+  "function setUp(bytes initializeParams)",
+  "function transferOwnership(address newOwner)",
+];
+
+export const CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS =
+  "0xEe0452776f5A724Fb20038216F50b6cF6288f246";
+
+export function getProvider(chainId: number) {
+  return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
+}
+
+export function deployDAOModule(
   safeAddress: string,
-  subModule?: string
-): Promise<Transaction[]> {
-  const { chainId } = await defaultProvider.getNetwork();
-  switch (module) {
-    case "dao":
-      const { timeout, cooldown, expiration, bond, templateId, oracle } =
-        args as unknown as DaoModuleParams;
-      const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
-      let {
-        transaction: daoModuleDeploymentTx,
-        expectedModuleAddress: daoModuleExpectedAddress,
-      } = await deployAndSetUpModule(
-        module,
-        [
-          subModule || safeAddress,
-          ORACLE_ADDRESS,
-          timeout,
-          cooldown,
-          expiration,
-          bond,
-          templateId,
-        ],
-        defaultProvider,
-        chainId,
-        Date.now().toString()
-      );
-
-      const daoModuleTransactions = [daoModuleDeploymentTx];
-
-      if (subModule) {
-        const delayModule = getModuleInstance(
-          "delay",
-          subModule,
-          defaultProvider
-        );
-        const addModuleTransaction = buildTransaction(
-          delayModule,
-          "enableModule",
-          [daoModuleExpectedAddress]
-        );
-
-        daoModuleTransactions.push(addModuleTransaction);
-      } else {
-        const enableDaoModuleTransaction = await enableModule(
-          safeAddress,
-          daoModuleExpectedAddress
-        );
-        daoModuleTransactions.push(enableDaoModuleTransaction);
-      }
-
-      return daoModuleTransactions;
-
-    case "amb":
-      const { amb, owner } = args as unknown as AmbModuleParams;
-
-      const id = formatBytes32String(chainId.toString());
-      const {
-        transaction: ambModuleDeploymentTx,
-        expectedModuleAddress: ambModuleExpectedAddress,
-      } = await deployAndSetUpModule(
-        module,
-        [owner, amb, safeAddress, id],
-        defaultProvider,
-        chainId,
-        Date.now().toString()
-      );
-
-      const ambModuleTransactions = [ambModuleDeploymentTx];
-
-      if (subModule) {
-        const delayModule = getModuleInstance(
-          "delay",
-          subModule,
-          defaultProvider
-        );
-        const addModuleTransaction = buildTransaction(
-          delayModule,
-          "enableModule",
-          [ambModuleExpectedAddress]
-        );
-
-        ambModuleTransactions.push(addModuleTransaction);
-      } else {
-        const enableDaoModuleTransaction = await enableModule(
-          safeAddress,
-          ambModuleExpectedAddress
-        );
-        ambModuleTransactions.push(enableDaoModuleTransaction);
-      }
-
-      return ambModuleTransactions;
-
-    case "delay":
-      const { txCooldown, txExpiration } = args as unknown as DelayModuleParams;
-      const {
-        transaction: delayModuleDeploymentTx,
-        expectedModuleAddress: delayModuleExpectedAddress,
-      } = await deployAndSetUpModule(
-        module,
-        [safeAddress, txCooldown, txExpiration],
-        defaultProvider,
-        chainId,
-        Date.now().toString()
-      );
-      const enableDelayModuleTransaction = enableModule(
+  chainId: number,
+  args: DaoModuleParams
+) {
+  const { timeout, cooldown, expiration, bond, templateId, oracle, executor } =
+    args;
+  const provider = getProvider(chainId);
+  const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
+  const {
+    transaction: daoModuleDeploymentTx,
+    expectedModuleAddress: daoModuleExpectedAddress,
+  } = deployAndSetUpModule(
+    "dao",
+    {
+      types: [
+        "address",
+        "address",
+        "address",
+        "uint32",
+        "uint32",
+        "uint32",
+        "uint256",
+        "uint256",
+      ],
+      values: [
         safeAddress,
-        delayModuleExpectedAddress
-      );
+        executor,
+        ORACLE_ADDRESS,
+        timeout,
+        cooldown,
+        expiration,
+        bond,
+        templateId,
+      ],
+    },
+    provider,
+    chainId,
+    Date.now().toString()
+  );
 
-      const delayTransactions = [
-        delayModuleDeploymentTx,
-        enableDelayModuleTransaction,
-      ];
+  const daoModuleTransactions: Transaction[] = [
+    {
+      ...daoModuleDeploymentTx,
+      value: daoModuleDeploymentTx.value.toString(),
+    },
+  ];
 
-      if (subModule) {
-        const delayModule = getModuleInstance(
-          "delay",
-          delayModuleExpectedAddress,
-          defaultProvider
-        );
-        const enableDaoModuleTx = buildTransaction(
-          delayModule,
-          "enableModule",
-          [subModule]
-        );
-        const disableModuleOnSafeTx = await disableModule(
-          safeAddress,
-          subModule
-        );
-        delayTransactions.push(enableDaoModuleTx);
-        delayTransactions.push(disableModuleOnSafeTx);
-      }
-      return delayTransactions;
+  if (executor !== safeAddress) {
+    const delayModule = getModuleInstance("delay", executor, provider);
+    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
+      daoModuleExpectedAddress,
+    ]);
+
+    daoModuleTransactions.push(addModuleTransaction);
+  } else {
+    const enableDaoModuleTransaction = enableModule(
+      safeAddress,
+      chainId,
+      daoModuleExpectedAddress
+    );
+    daoModuleTransactions.push(enableDaoModuleTransaction);
   }
 
-  throw new Error("Invalid module");
+  return daoModuleTransactions;
 }
 
-export async function fetchSafeModulesAddress(safeAddress: string) {
-  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
+export function deployDelayModule(
+  safeAddress: string,
+  chainId: number,
+  args: DelayModuleParams
+) {
+  const provider = getProvider(chainId);
+  const { cooldown, expiration, executor } =
+    args as unknown as DelayModuleParams;
+  const {
+    transaction: delayModuleDeploymentTx,
+    expectedModuleAddress: delayModuleExpectedAddress,
+  } = deployAndSetUpModule(
+    "delay",
+    {
+      types: ["address", "address", "uint256", "uint256"],
+      values: [safeAddress, executor, cooldown, expiration],
+    },
+    provider,
+    chainId,
+    Date.now().toString()
+  );
+  const enableDelayModuleTransaction = enableModule(
+    safeAddress,
+    chainId,
+    delayModuleExpectedAddress
+  );
+
+  return [
+    {
+      ...delayModuleDeploymentTx,
+      value: delayModuleDeploymentTx.value.toString(),
+    },
+    enableDelayModuleTransaction,
+  ];
+}
+
+export function deployAMBModule(
+  safeAddress: string,
+  chainId: number,
+  args: AMBModuleParams
+) {
+  const provider = getProvider(chainId);
+  const { executor, controller, amb, chainId: ambChainId } = args;
+
+  const { transaction, expectedModuleAddress } = deployAndSetUpModule(
+    "amb",
+    {
+      types: ["address", "address", "address", "address", "bytes32"],
+      values: [
+        safeAddress,
+        executor,
+        amb,
+        controller,
+        ethers.utils.hexZeroPad(BigNumber.from(ambChainId).toHexString(), 32),
+      ],
+    },
+    provider,
+    chainId,
+    Date.now().toString()
+  );
+
+  const enableModuleTransaction = enableModule(
+    safeAddress,
+    chainId,
+    expectedModuleAddress
+  );
+
+  return [
+    {
+      ...transaction,
+      value: transaction.value.toString(),
+    },
+    enableModuleTransaction,
+  ];
+}
+
+export function deployCirculatingSupplyContract(
+  chainId: number,
+  circulatingSupply: BigNumberish,
+  saltNonce: string
+) {
+  const provider = getProvider(chainId);
+  const circulatingSupplyContract = new ethers.Contract(
+    CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS,
+    CIRCULATING_SUPPLY_CONTRACT_ABI
+  );
+  const { factory } = getFactoryAndMasterCopy("exit", provider, chainId);
+
+  const encodedInitParams = new ethers.utils.AbiCoder().encode(
+    ["uint256"],
+    [circulatingSupply]
+  );
+  const moduleSetupData =
+    circulatingSupplyContract.interface.encodeFunctionData("setUp", [
+      encodedInitParams,
+    ]);
+
+  const expectedAddress = calculateProxyAddress(
+    factory,
+    circulatingSupplyContract.address,
+    moduleSetupData,
+    saltNonce
+  );
+
+  const deployData = factory.interface.encodeFunctionData("deployModule", [
+    circulatingSupplyContract.address,
+    moduleSetupData,
+    saltNonce,
+  ]);
+
+  const transaction = {
+    data: deployData,
+    to: factory.address,
+    value: "0",
+  };
+  return {
+    transaction,
+    expectedAddress,
+  };
+}
+
+export function deployExitModule(
+  safeAddress: string,
+  chainId: number,
+  args: ExitModuleParams
+) {
+  const provider = getProvider(chainId);
+  const txs: Transaction[] = [];
+  const { executor, tokenContract, circulatingSupply } = args;
+  let { circulatingSupplyAddress } = args;
+
+  if (!circulatingSupplyAddress) {
+    if (!circulatingSupply) throw new Error("Invalid circulating supply");
+
+    const { transaction: deployCirculationSupplyTx, expectedAddress } =
+      deployCirculatingSupplyContract(
+        chainId,
+        circulatingSupply,
+        Date.now().toString()
+      );
+
+    txs.push(deployCirculationSupplyTx);
+    circulatingSupplyAddress = expectedAddress;
+  }
+
+  const { transaction, expectedModuleAddress } = deployAndSetUpModule(
+    "exit",
+    {
+      types: ["address", "address", "address", "address"],
+      values: [safeAddress, executor, tokenContract, circulatingSupplyAddress],
+    },
+    provider,
+    chainId,
+    Date.now().toString()
+  );
+  txs.push({
+    ...transaction,
+    value: transaction.value.toString(),
+  });
+
+  const enableModuleTransaction = enableModule(
+    safeAddress,
+    chainId,
+    expectedModuleAddress
+  );
+  txs.push(enableModuleTransaction);
+
+  return txs;
+}
+
+export async function fetchSafeModulesAddress(
+  safeAddress: string,
+  chainId: number
+) {
+  const provider = getProvider(chainId);
+  const safe = new Contract(safeAddress, SafeAbi, provider);
   const [modules] = await safe.getModulesPaginated(AddressOne, 50);
   return modules as string[];
 }
 
-export function enableModule(safeAddress: string, module: string) {
-  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
+export function enableModule(
+  safeAddress: string,
+  chainId: number,
+  module: string
+) {
+  const provider = getProvider(chainId);
+  const safe = new Contract(safeAddress, SafeAbi, provider);
   return buildTransaction(safe, "enableModule", [module]);
 }
 
-export async function disableModule(safeAddress: string, module: string) {
-  const modules = await fetchSafeModulesAddress(safeAddress);
+export async function disableModule(
+  safeAddress: string,
+  chainId: number,
+  module: string
+) {
+  const provider = getProvider(chainId);
+  const modules = await fetchSafeModulesAddress(safeAddress, chainId);
   if (!modules.length) throw new Error("Safe does not have enabled modules");
   let prevModule = AddressOne;
-  const safe = new Contract(safeAddress, SafeAbi, defaultProvider);
+  const safe = new Contract(safeAddress, SafeAbi, provider);
   if (modules.length > 1) {
     const moduleIndex = modules.findIndex(
       (m) => m.toLowerCase() === module.toLowerCase()
     );
     if (moduleIndex > 0) prevModule = modules[moduleIndex - 1];
   }
-  return buildTransaction(safe, "disableModule", [prevModule, module]);
-}
-
-export async function editModule<Module extends KnownModules>(
-  moduleName: Module,
-  address: string,
-  methods: Partial<Record<KnownMethods<Module>, string>>
-) {
-  // Add validation to check if module is indeed added
-  const methodsName = Object.keys(methods) as Array<keyof typeof methods>;
-  if (!methodsName.length) {
-    throw new Error("At least one method must be provided");
-  }
-
-  const module = getModuleInstance(moduleName, address, defaultProvider);
-
-  return methodsName.map((method) =>
-    buildTransaction(module, method as string, [methods[method]])
-  );
+  const params = [prevModule, module];
+  return {
+    params,
+    ...buildTransaction(safe, "disableModule", params),
+  };
 }
 
 export const callContract = (
+  chainId: number,
   address: string,
   abi: ContractInterface,
   method: string,
   data: any[] = []
 ) => {
-  const contract = new Contract(address, abi, defaultProvider);
+  const contract = new Contract(address, abi, getProvider(chainId));
   return contract.functions[method](...data);
 };
 

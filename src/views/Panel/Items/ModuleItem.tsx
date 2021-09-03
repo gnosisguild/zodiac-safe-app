@@ -10,6 +10,7 @@ import { Address } from "../../../components/ethereum/Address";
 import { ModulePendingRemoval } from "./ModulePendingRemovalItem";
 import { Badge } from "../../../components/text/Badge";
 import { shortAddress } from "../../../utils/string";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -20,6 +21,10 @@ interface ModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
+    fontSize: "12px",
+    textTransform: "uppercase",
+    color: "rgb(93, 109, 116)",
+    letterSpacing: "1px",
   },
   spacing: {
     marginTop: theme.spacing(1),
@@ -33,6 +38,7 @@ export const ModuleItem = ({
   ...panelItemProps
 }: ModuleItemProps) => {
   const classes = useStyles();
+  const { safe } = useSafeAppsSDK();
 
   if (remove) {
     return (
@@ -48,11 +54,12 @@ export const ModuleItem = ({
     return <DelayModuleItem module={module} {...panelItemProps} />;
   }
 
-  const ownerBadge = module.owner ? (
-    <Badge secondary={shortAddress(module.owner)} className={classes.spacing}>
-      External Owner
-    </Badge>
-  ) : null;
+  const ownerBadge =
+    module.owner && module.owner !== safe.safeAddress ? (
+      <Badge secondary={shortAddress(module.owner)} className={classes.spacing}>
+        External Owner
+      </Badge>
+    ) : null;
 
   return (
     <>

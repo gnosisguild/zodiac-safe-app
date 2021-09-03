@@ -10,13 +10,20 @@ interface ModulePendingItemProps extends PanelItemProps {
   linkText: string;
 }
 
-const useStyles = makeStyles(() => ({
-  greyText: {
-    fontSize: 14,
+const useStyles = makeStyles((theme) => ({
+  title: {
     fontWeight: "bold",
-    color: "rgba(0,20,40,0.5)",
+    fontSize: 12,
+    color: "rgb(93, 109, 116)",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+    marginBottom: theme.spacing(0.5),
   },
-  link: { fontSize: 12 },
+  link: {
+    fontSize: 12,
+    textTransform: "uppercase",
+    color: "rgb(93, 109, 116)",
+  },
 }));
 
 export const ModulePendingItem = ({
@@ -38,7 +45,7 @@ export const ModulePendingItem = ({
 
   return (
     <PanelItem image={image} {...props}>
-      <Typography className={classes.greyText}>{title}</Typography>
+      <Typography className={classes.title}>{title}</Typography>
       <div>
         <Link target="_parent" href={link} className={classes.link}>
           {linkText}

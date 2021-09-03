@@ -10,6 +10,7 @@ import { ModuleModals } from "./modals/ModuleModals";
 import { ModuleType } from "../../store/modules/models";
 import { fetchPendingModules, setModuleAdded } from "../../store/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import classNames from "classnames";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,32 +18,36 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(243px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(284px, 1fr))",
     gap: theme.spacing(2),
-    maxWidth: "800px"
+    "@media (max-width:930px)": {
+      gridTemplateColumns: "repeat(auto-fill, minmax(243px, 1fr))",
+    },
   },
   paper: {
     padding: theme.spacing(2.5, 2),
+    background: theme.palette.background.default,
   },
-  spacing: {
+  title: {
     marginBottom: theme.spacing(2),
+    fontSize: "20px",
   },
   introBox: {
     gridColumn: "1/3",
-    ['@media (max-width:930px)']: {
-      gridColumn: "1/2"
-    }
+    "@media (max-width:930px)": {
+      gridColumn: "1/2",
+    },
   },
   firstModule: {
-    gridColumn: 1
+    gridColumn: 1,
   },
   modules: {
     borderRadius: "6px",
     border: "2px solid white",
     "&:hover": {
-      borderColor: theme.palette.secondary.main
-    }
-  }
+      borderColor: theme.palette.secondary.main,
+    },
+  },
 }));
 
 export const AddModulesView = () => {
@@ -66,7 +71,7 @@ export const AddModulesView = () => {
       <div className={classes.gridContainer}>
         <div className={classes.introBox}>
           <Paper className={classes.paper}>
-            <Typography variant="h4" className={classes.spacing}>
+            <Typography variant="h4" className={classes.title}>
               {title}
             </Typography>
             <Typography variant="body2">
@@ -84,7 +89,7 @@ export const AddModulesView = () => {
             </Typography>
           </Paper>
         </div>
-        <div className={`${classes.firstModule} ${classes.modules}`}>
+        <div className={classNames(classes.firstModule, classes.modules)}>
           <ModuleButton
             title="Transaction Delay"
             description="Delay transactions so members can intervene"
@@ -98,6 +103,22 @@ export const AddModulesView = () => {
             description="Connect Reality.eth questions to your safe"
             image={<DaoModuleImage />}
             onClick={() => setModule(ModuleType.DAO)}
+          />
+        </div>
+        <div className={classes.modules}>
+          <ModuleButton
+            title="AMB Module"
+            description="Execute transactions initiated on another chain"
+            image={<CustomModuleImage />}
+            onClick={() => setModule(ModuleType.AMB)}
+          />
+        </div>
+        <div className={classes.modules}>
+          <ModuleButton
+            title="Exit Module"
+            description="Connect Reality.eth questions to your safe"
+            image={<CustomModuleImage />}
+            onClick={() => setModule(ModuleType.EXIT)}
           />
         </div>
         <div className={classes.modules}>

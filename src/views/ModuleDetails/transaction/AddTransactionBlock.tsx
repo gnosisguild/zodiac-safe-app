@@ -9,12 +9,12 @@ import classNames from "classnames";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import { Transaction } from "../../../store/transactionBuilder/models";
 import { ActionButton } from "../../../components/ActionButton";
-import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import { getAddTransaction } from "../../../store/transactionBuilder/selectors";
 import { resetNewTransaction } from "../../../store/transactionBuilder";
 import { getCurrentModule } from "../../../store/modules/selectors";
 import { ABI } from "../../../store/modules/models";
+import { TransactionField } from "./TransactionField";
 
 interface AddTransactionBlockProps {
   abi: ABI;
@@ -81,7 +81,7 @@ const TransactionFields = ({
         <>
           {paramInputProps.map((props, index) => (
             <Box marginTop={2} key={index}>
-              <ParamInput {...props} />
+              <TransactionField func={func} param={props} />
             </Box>
           ))}
           <ActionButton
