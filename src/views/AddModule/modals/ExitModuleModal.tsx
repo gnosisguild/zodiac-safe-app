@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
   text: {
     fontSize: 14,
   },
+  textLink: {
+    cursor: "pointer",
+  },
 }));
 
 export const ExitModuleModal = ({
@@ -130,8 +133,9 @@ export const ExitModuleModal = ({
               color="secondary"
               target="_blank"
               onClick={() => setEnterAddress(!enterAddress)}
+              className={classes.textLink}
             >
-              {enterAddress ? "deploy a new contract" : "already deployed?"}
+              {enterAddress ? "Deploy a New Contract" : "Use Existing Contract"}
             </Link>
           </Row>
 
