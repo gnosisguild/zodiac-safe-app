@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   inputContainer: {
     padding: theme.spacing(1, 0, 1, 1),
+    flexGrow: 1,
   },
   input: {
     "& input": {
@@ -97,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   dropdownContainer: {
-    maxWidth: "120px"
+    maxWidth: "120px",
   },
   dropdown: {
     borderRadius: 8,
