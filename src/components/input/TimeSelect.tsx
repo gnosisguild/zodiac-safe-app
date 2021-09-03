@@ -35,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
+    flexWrap: "nowrap",
+    justifyContent: "flex-end",
     "&::after": {
       content: "''",
       position: "absolute",
@@ -93,6 +95,9 @@ const useStyles = makeStyles((theme) => ({
       right: 0,
       top: 0,
     },
+  },
+  dropdownContainer: {
+    maxWidth: "120px"
   },
   dropdown: {
     borderRadius: 8,
@@ -154,7 +159,7 @@ export const TimeSelect = ({
     <div>
       <InputLabel className={classes.label}>{label}</InputLabel>
       <Grid container className={classes.root}>
-        <Grid item xs={4} className={classes.inputContainer}>
+        <Grid item className={classes.inputContainer}>
           <InputBase
             className={classes.input}
             value={amount}
@@ -162,7 +167,7 @@ export const TimeSelect = ({
             onChange={(evt) => handleAmountChange(evt.target.value)}
           />
         </Grid>
-        <Grid item xs={8}>
+        <Grid item xs={8} className={classes.dropdownContainer}>
           <Select
             disableUnderline
             open={open}
