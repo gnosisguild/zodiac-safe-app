@@ -15,8 +15,8 @@ interface DaoModuleModalProps {
 }
 
 interface DelayModuleParams {
-  expiration: number;
-  cooldown: number;
+  expiration: string;
+  cooldown: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -38,8 +38,8 @@ export const DelayModuleModal = ({
   const { sdk, safe } = useSafeAppsSDK();
 
   const [params, setParams] = useState<DelayModuleParams>({
-    expiration: 86400,
-    cooldown: 86400,
+    expiration: "86400",
+    cooldown: "86400",
   });
 
   const onParamChange = <Field extends keyof DelayModuleParams>(

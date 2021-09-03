@@ -15,17 +15,17 @@ import { InfuraProvider } from "@ethersproject/providers";
 interface DaoModuleParams {
   executor: string;
   oracle?: string;
-  timeout: number;
   bond: string;
   templateId: string;
-  cooldown: number;
-  expiration: number;
+  timeout: string;
+  cooldown: string;
+  expiration: string;
 }
 
 interface DelayModuleParams {
   executor: string;
-  cooldown: number;
-  expiration: number;
+  cooldown: string;
+  expiration: string;
 }
 
 export interface AMBModuleParams {

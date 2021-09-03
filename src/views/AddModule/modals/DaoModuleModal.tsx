@@ -27,9 +27,9 @@ interface DaoModuleModalProps {
 interface DaoModuleParams {
   oracle: string;
   templateId: string;
-  timeout: number;
-  cooldown: number;
-  expiration: number;
+  timeout: string;
+  cooldown: string;
+  expiration: string;
   bond: string;
 }
 
@@ -67,9 +67,9 @@ export const DaoModuleModal = ({
   const [params, setParams] = useState<DaoModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
     templateId: "",
-    timeout: 86400,
-    cooldown: 86400,
-    expiration: 604800,
+    timeout: "86400",
+    cooldown: "86400",
+    expiration: "604800",
     bond: "0.1",
   });
 

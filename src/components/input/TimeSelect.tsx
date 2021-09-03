@@ -8,7 +8,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
 
 const unitConversion = {
@@ -21,11 +21,11 @@ const unitConversion = {
 type Unit = keyof typeof unitConversion;
 
 interface TimeSelectProps {
-  defaultValue?: number;
+  defaultValue?: BigNumberish;
   defaultUnit?: Unit;
   label: string;
 
-  onChange(time: number): void;
+  onChange(time: string): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -110,14 +110,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function calculateTime(amount: number, unit: Unit) {
-  return amount * unitConversion[unit];
+function calculateTime(amount: string, unit: Unit): BigNumber {
+  return BigNumber.from(amount).mul(unitConversion[unit]);
 }
 
 export const TimeSelect = ({
   onChange,
   defaultUnit = "hours",
-  defaultValue = 0,
+  defaultValue = "0",
   label,
 }: TimeSelectProps) => {
   const classes = useStyles();
@@ -134,17 +134,19 @@ export const TimeSelect = ({
   const selectRef = React.useRef<HTMLDivElement>(null);
 
   const handleAmountChange = (_amount: string) => {
-    const newAmount = parseInt(_amount || "0");
-    if (isNaN(newAmount)) return;
-    setAmount(_amount);
-    onChange(calculateTime(newAmount, unit));
+    try {
+      const newAmount = calculateTime(_amount || "0", unit);
+      setAmount(_amount);
+      onChange(newAmount.toString());
+    } catch (err) {
+      console.warn("invalid time");
+    }
   };
 
   const handleUnitChange = (newUnit: Unit) => {
     handleClose();
     setUnit(newUnit);
-    if (amount !== undefined)
-      onChange(calculateTime(parseInt(amount || "0"), newUnit));
+    if (amount) onChange(calculateTime(amount, newUnit).toString());
   };
 
   useEffect(() => {

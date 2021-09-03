@@ -5,6 +5,7 @@ import {
 import React from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { TimeSelect } from "../../../components/input/TimeSelect";
+import { BigNumberish } from "ethers";
 
 interface TransactionFieldProps {
   param: ParamInputProps;
@@ -30,12 +31,12 @@ export const TransactionTimeField = ({
   onChange,
   ...props
 }: ParamInputProps) => {
-  const defaultValue = parseInt((value as string) || "0");
+  const defaultValue = value || "0";
   return (
     <TimeSelect
       {...props}
       label={label || "Time"}
-      defaultValue={defaultValue}
+      defaultValue={defaultValue as BigNumberish}
       defaultUnit="seconds"
       onChange={(time) => onChange(time, true)}
     />
