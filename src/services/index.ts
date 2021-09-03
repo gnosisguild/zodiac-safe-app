@@ -52,12 +52,12 @@ export const CIRCULATING_SUPPLY_CONTRACT_ABI = [
   "function owner() view returns (address)",
   "function renounceOwnership()",
   "function set(uint256 _circulatingSupply)",
-  "function setUp(uint256 _circulatingSupply)",
+  "function setUp(bytes initializeParams)",
   "function transferOwnership(address newOwner)",
 ];
 
 export const CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS =
-  "0x40fB27965411680Ec5fEb835dF2d3F4399049862";
+  "0xEe0452776f5A724Fb20038216F50b6cF6288f246";
 
 export function getProvider(chainId: number) {
   return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
@@ -218,9 +218,13 @@ export function deployCirculatingSupplyContract(
   );
   const { factory } = getFactoryAndMasterCopy("exit", provider, chainId);
 
+  const encodedInitParams = new ethers.utils.AbiCoder().encode(
+    ["uint256"],
+    [circulatingSupply]
+  );
   const moduleSetupData =
     circulatingSupplyContract.interface.encodeFunctionData("setUp", [
-      circulatingSupply,
+      encodedInitParams,
     ]);
 
   const expectedAddress = calculateProxyAddress(
