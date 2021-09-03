@@ -53,7 +53,7 @@ export const ParamInput = ({
     }
 
     if (!_value.length) {
-      onChange(_value, true);
+      onChange(_value, false);
       setError(undefined);
       return;
     }

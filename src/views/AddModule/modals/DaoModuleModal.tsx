@@ -15,6 +15,8 @@ import { TimeSelect } from "../../../components/input/TimeSelect";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
 import { Grow } from "../../../components/layout/Grow";
 import { ModuleType } from "../../../store/modules/models";
+import { ParamInput } from "../../../components/ethereum/ParamInput";
+import { ParamType } from "@ethersproject/abi";
 
 interface DaoModuleModalProps {
   open: boolean;
@@ -61,7 +63,6 @@ export const DaoModuleModal = ({
   const { sdk, safe } = useSafeAppsSDK();
 
   const delayModules = useRootSelector(getDelayModules);
-  const [hasError, setHasError] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();
   const [bondToken, setBondToken] = useState("ETH");
   const [params, setParams] = useState<DaoModuleParams>({
@@ -72,6 +73,12 @@ export const DaoModuleModal = ({
     expiration: "604800",
     bond: "0.1",
   });
+  const [validFields, setValidFields] = useState({
+    oracle: !!params.oracle,
+    templateId: !!params.templateId,
+    bond: !!params.bond,
+  });
+  const isValid = Object.values(validFields).every((field) => field);
 
   useEffect(() => {
     if (params.oracle && isAddress(params.oracle)) {
@@ -83,12 +90,18 @@ export const DaoModuleModal = ({
 
   const onParamChange = <Field extends keyof DaoModuleParams>(
     field: Field,
-    value: DaoModuleParams[Field]
+    value: DaoModuleParams[Field],
+    valid?: boolean
   ) => {
     setParams({
       ...params,
       [field]: value,
     });
+    if (valid !== undefined)
+      setValidFields({
+        ...validFields,
+        [field]: valid,
+      });
   };
 
   const handleAddDaoModule = async () => {
@@ -105,7 +118,6 @@ export const DaoModuleModal = ({
       if (onClose) onClose();
     } catch (error) {
       console.log("Error deploying module: ", error);
-      setHasError(true);
     }
   };
 
@@ -160,6 +172,7 @@ export const DaoModuleModal = ({
       tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddDaoModule}
       readMoreLink="https://github.com/gnosis/dao-module"
+      ButtonProps={{ disabled: !isValid }}
     >
       <Typography variant="h6" gutterBottom>
         Parameters
@@ -167,11 +180,12 @@ export const DaoModuleModal = ({
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
-          <TextField
+          <ParamInput
+            param={ParamType.from("address")}
             color="secondary"
             value={params.oracle}
             label="Oracle (oracle)"
-            onChange={(event) => onParamChange("oracle", event.target.value)}
+            onChange={(value, valid) => onParamChange("oracle", value, valid)}
           />
         </Grid>
         <Grid item xs={12}>
@@ -186,13 +200,14 @@ export const DaoModuleModal = ({
               Get a template here
             </Link>
           </Row>
-          <TextField
+          <ParamInput
+            param={ParamType.from("uint256")}
             color="secondary"
             placeholder="10929783"
+            label={undefined}
             value={params.templateId}
-            error={hasError}
-            onChange={(event) =>
-              onParamChange("templateId", event.target.value)
+            onChange={(value, valid) =>
+              onParamChange("templateId", value, valid)
             }
           />
         </Grid>
