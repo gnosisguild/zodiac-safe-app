@@ -1,4 +1,4 @@
-import { BigNumber, Contract, ethers } from "ethers";
+import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
 import { deployAndSetUpModule, getModuleInstance } from "@gnosis/zodiac";
 import {
   AddressOne,
@@ -11,6 +11,7 @@ import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
 import { SafeInfo, SafeTransaction } from "../store/modules/models";
 import { InfuraProvider } from "@ethersproject/providers";
+import { calculateProxyAddress, getFactoryAndMasterCopy } from "@gnosis/zodiac";
 
 interface DaoModuleParams {
   executor: string;
@@ -38,8 +39,25 @@ export interface AMBModuleParams {
 export interface ExitModuleParams {
   executor: string;
   tokenContract: string;
-  circulatingSupply: string;
+  circulatingSupply?: string;
+  circulatingSupplyAddress?: string;
 }
+
+export const CIRCULATING_SUPPLY_CONTRACT_ABI = [
+  "constructor(uint256 _circulatingSupply)",
+  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
+  "function circulatingSupply() view returns (uint256)",
+  "function get() view returns (uint256)",
+  "function initialized() view returns (bool)",
+  "function owner() view returns (address)",
+  "function renounceOwnership()",
+  "function set(uint256 _circulatingSupply)",
+  "function setUp(bytes initializeParams)",
+  "function transferOwnership(address newOwner)",
+];
+
+export const CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS =
+  "0xEe0452776f5A724Fb20038216F50b6cF6288f246";
 
 export function getProvider(chainId: number) {
   return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
@@ -188,37 +206,98 @@ export function deployAMBModule(
   ];
 }
 
+export function deployCirculatingSupplyContract(
+  chainId: number,
+  circulatingSupply: BigNumberish,
+  saltNonce: string
+) {
+  const provider = getProvider(chainId);
+  const circulatingSupplyContract = new ethers.Contract(
+    CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS,
+    CIRCULATING_SUPPLY_CONTRACT_ABI
+  );
+  const { factory } = getFactoryAndMasterCopy("exit", provider, chainId);
+
+  const encodedInitParams = new ethers.utils.AbiCoder().encode(
+    ["uint256"],
+    [circulatingSupply]
+  );
+  const moduleSetupData =
+    circulatingSupplyContract.interface.encodeFunctionData("setUp", [
+      encodedInitParams,
+    ]);
+
+  const expectedAddress = calculateProxyAddress(
+    factory,
+    circulatingSupplyContract.address,
+    moduleSetupData,
+    saltNonce
+  );
+
+  const deployData = factory.interface.encodeFunctionData("deployModule", [
+    circulatingSupplyContract.address,
+    moduleSetupData,
+    saltNonce,
+  ]);
+
+  const transaction = {
+    data: deployData,
+    to: factory.address,
+    value: "0",
+  };
+  return {
+    transaction,
+    expectedAddress,
+  };
+}
+
 export function deployExitModule(
   safeAddress: string,
   chainId: number,
   args: ExitModuleParams
 ) {
   const provider = getProvider(chainId);
+  const txs: Transaction[] = [];
   const { executor, tokenContract, circulatingSupply } = args;
+  let { circulatingSupplyAddress } = args;
+
+  if (!circulatingSupplyAddress) {
+    if (!circulatingSupply) throw new Error("Invalid circulating supply");
+
+    const { transaction: deployCirculationSupplyTx, expectedAddress } =
+      deployCirculatingSupplyContract(
+        chainId,
+        circulatingSupply,
+        Date.now().toString()
+      );
+
+    txs.push(deployCirculationSupplyTx);
+    circulatingSupplyAddress = expectedAddress;
+  }
+
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
     "exit",
     {
       types: ["address", "address", "address", "address"],
-      values: [safeAddress, executor, tokenContract, circulatingSupply],
+      values: [safeAddress, executor, tokenContract, circulatingSupplyAddress],
     },
     provider,
     chainId,
     Date.now().toString()
   );
+  txs.push({
+    ...transaction,
+    value: transaction.value.toString(),
+  });
 
   const enableModuleTransaction = enableModule(
     safeAddress,
     chainId,
     expectedModuleAddress
   );
+  txs.push(enableModuleTransaction);
 
-  return [
-    {
-      ...transaction,
-      value: transaction.value.toString(),
-    },
-    enableModuleTransaction,
-  ];
+  return txs;
 }
 
 export async function fetchSafeModulesAddress(
