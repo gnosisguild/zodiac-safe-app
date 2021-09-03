@@ -12,7 +12,7 @@ export enum ModuleType {
 }
 
 export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
-  dao: ModuleType.UNKNOWN,
+  dao: ModuleType.DAO,
   delay: ModuleType.DELAY,
   amb: ModuleType.AMB,
   exit: ModuleType.EXIT,
