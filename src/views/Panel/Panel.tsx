@@ -7,34 +7,34 @@ import { useRootDispatch, useRootSelector } from "../../store";
 import {
   getCurrentModule,
   getCurrentPendingModule,
-  getModulesList,
+  getModulesList
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
 import { Grow } from "../../components/layout/Grow";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   hashInfo: {
     "& p": {
-      color: theme.palette.text.primary + " !important",
-    },
+      color: theme.palette.text.primary + " !important"
+    }
   },
   title: {
-    fontSize: 20,
+    fontSize: 20
   },
   content: {
     padding: theme.spacing(2, 2.5),
     boxSizing: "content-box",
-    minHeight: 40,
+    minHeight: 40
   },
   smallButton: {
     minWidth: "auto !important",
     height: "auto !important",
     padding: "8px 12px 8px 12px !important",
-    borderRadius: "2px !important",
+    borderRadius: "2px !important"
   },
   moduleList: {
-    marginTop: theme.spacing(3),
-  },
+    marginTop: theme.spacing(3)
+  }
 }));
 
 export const Panel = () => {
@@ -52,7 +52,7 @@ export const Panel = () => {
     <Box display="flex" flexDirection="column" minHeight="100%">
       <Row style={{ alignItems: "center" }} className={classes.content}>
         <Title size="sm" strong withoutMargin>
-          <span className={classes.title}>Module Manager</span>
+          <span className={classes.title}>Zodiac</span>
         </Title>
         <Grow />
         {currentModule || currentPending ? (

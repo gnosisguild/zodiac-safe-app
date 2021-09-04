@@ -104,7 +104,7 @@ export const ExitModuleModal = ({
       image={<CustomModuleImage />}
       tags={["From Gnosis"]}
       onAdd={handleAddExitModule}
-      readMoreLink="https://github.com/gnosis/SafeExit"
+      readMoreLink="https://github.com/gnosis/zodiac-module-exit"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography variant="h6" gutterBottom>

@@ -1,7 +1,7 @@
 {
-  "short_name": "Module Manager",
-  "name": "Module Manager",
-  "description": "Deploy and manage modules for your Gnosis Safe",
+  "short_name": "Zodiac Module Manager",
+  "name": "Zodiac Module Manager",
+  "description": "Deploy and manage Zodiac modules for your Gnosis Safe",
   "iconPath": "gnosis-safe-logo.png",
   "icons": [
     {
