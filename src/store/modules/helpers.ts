@@ -8,7 +8,7 @@ import {
   CONTRACT_ADDRESSES,
   getModuleInstance,
   KnownModules,
-} from "@gnosis/zodiac";
+} from "@zodiacdao/zodiac";
 import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import {
   DaoModule,
