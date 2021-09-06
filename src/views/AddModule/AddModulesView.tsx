@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { ModuleButton } from "./ModuleButton";
-import { ReactComponent as DaoModuleImage } from "../../assets/images/dao-module.svg";
+import { ReactComponent as RealityModuleImage } from "../../assets/images/dao-module.svg";
 import { ReactComponent as DelayModuleImage } from "../../assets/images/delay-module.svg";
 import { ReactComponent as CustomModuleImage } from "../../assets/images/custom-module-logo.svg";
 import { useRootDispatch, useRootSelector } from "../../store";
@@ -101,8 +101,8 @@ export const AddModulesView = () => {
           <ModuleButton
             title="DAO Module"
             description="Connect Reality.eth questions to your safe"
-            image={<DaoModuleImage />}
-            onClick={() => setModule(ModuleType.DAO)}
+            image={<RealityModuleImage />}
+            onClick={() => setModule(ModuleType.REALITY_ETH)}
           />
         </div>
         <div className={classes.modules}>

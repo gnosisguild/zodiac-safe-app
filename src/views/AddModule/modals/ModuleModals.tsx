@@ -1,5 +1,5 @@
 import React from "react";
-import { DaoModuleModal } from "./DaoModuleModal";
+import { RealityModuleModal } from "./RealityModuleModal";
 import { DelayModuleModal } from "./DelayModuleModal";
 import { ModuleType } from "../../../store/modules/models";
 import { CustomModuleModal } from "./CustomModuleModal";
@@ -21,10 +21,10 @@ export const ModuleModals = ({
 }: ModuleModalsProps) => {
   return (
     <>
-      <DaoModuleModal
-        open={selected === ModuleType.DAO}
+      <RealityModuleModal
+        open={selected === ModuleType.REALITY_ETH}
         onClose={onClose}
-        onSubmit={() => onSubmit && onSubmit(ModuleType.DAO)}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.REALITY_ETH)}
       />
       <DelayModuleModal
         open={selected === ModuleType.DELAY}
@@ -39,12 +39,12 @@ export const ModuleModals = ({
       <ExitModuleModal
         open={selected === ModuleType.EXIT}
         onClose={onClose}
-        onSubmit={() => onSubmit && onSubmit(ModuleType.AMB)}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.EXIT)}
       />
       <CustomModuleModal
         open={selected === ModuleType.UNKNOWN}
         onClose={onClose}
-        onSubmit={() => onSubmit && onSubmit(ModuleType.DAO)}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.UNKNOWN)}
       />
     </>
   );

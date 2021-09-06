@@ -13,7 +13,7 @@ const ERC20_CONTRACT_ABI = [
 export async function getArbitratorBondToken(
   address: string,
   chainId: number
-): Promise<string> {
+): Promise<{ isERC20: boolean; symbol: string }> {
   const provider = getProvider(chainId);
   try {
     const realityEthErc20Contract = new Contract(
@@ -22,13 +22,20 @@ export async function getArbitratorBondToken(
       provider
     );
     const tokenAddress: string = await realityEthErc20Contract.token();
+    console.log({ tokenAddress });
     const tokenContract = new Contract(
       tokenAddress,
       ERC20_CONTRACT_ABI,
       provider
     );
-    return await tokenContract.symbol();
+    return {
+      isERC20: true,
+      symbol: await tokenContract.symbol(),
+    };
   } catch (err) {
-    return "ETH";
+    return {
+      isERC20: false,
+      symbol: "ETH",
+    };
   }
 }
