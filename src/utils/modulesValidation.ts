@@ -16,17 +16,11 @@ const GNOSIS_GENERIC_PROXY_CONTRACT_ABI = [
 ];
 
 export function getModuleType(type: string): ModuleType {
-  switch (type) {
-    case "dao":
-      return ModuleType.DAO;
-    case "delay":
-      return ModuleType.DELAY;
-    case "amb":
-      return ModuleType.AMB;
-    case "exit":
-      return ModuleType.EXIT;
-  }
-  return ModuleType.UNKNOWN;
+  const moduleType = Object.values(ModuleType).find(
+    (moduleType) => moduleType === type
+  );
+  if (!moduleType) return ModuleType.UNKNOWN;
+  return moduleType;
 }
 
 export function getModuleContractMetadata(

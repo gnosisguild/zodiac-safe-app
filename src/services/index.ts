@@ -14,10 +14,10 @@ import {
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
-import { SafeInfo, SafeTransaction } from "../store/modules/models";
+import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
 import { InfuraProvider } from "@ethersproject/providers";
 
-interface DaoModuleParams {
+interface RealityModuleParams {
   executor: string;
   oracle?: string;
   bond: string;
@@ -67,11 +67,13 @@ export function getProvider(chainId: number) {
   return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
 }
 
-export function deployDAOModule(
+export function deployRealityModule(
   safeAddress: string,
   chainId: number,
-  args: DaoModuleParams
+  args: RealityModuleParams,
+  isERC20?: boolean
 ) {
+  const type = isERC20 ? ModuleType.REALITY_ERC20 : ModuleType.REALITY_ETH;
   const { timeout, cooldown, expiration, bond, templateId, oracle, executor } =
     args;
   const provider = getProvider(chainId);
@@ -80,7 +82,7 @@ export function deployDAOModule(
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,
   } = deployAndSetUpModule(
-    "dao",
+    type,
     {
       types: [
         "address",

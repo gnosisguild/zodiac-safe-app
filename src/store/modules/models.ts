@@ -4,7 +4,8 @@ import { KnownModules } from "@zodiacdao/zodiac";
 export type ABI = string | string[] | Fragment[];
 
 export enum ModuleType {
-  DAO = "dao",
+  REALITY_ETH = "realityETH",
+  REALITY_ERC20 = "realityERC20",
   DELAY = "delay",
   AMB = "amb",
   EXIT = "exit",
@@ -12,7 +13,8 @@ export enum ModuleType {
 }
 
 export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
-  dao: ModuleType.DAO,
+  realityETH: ModuleType.REALITY_ETH,
+  realityERC20: ModuleType.REALITY_ERC20,
   delay: ModuleType.DELAY,
   amb: ModuleType.AMB,
   exit: ModuleType.EXIT,
@@ -49,8 +51,8 @@ export interface DelayModule extends Module {
   cooldown: number;
 }
 
-export interface DaoModule extends Module {
-  type: ModuleType.DAO;
+export interface RealityModule extends Module {
+  type: ModuleType.REALITY_ETH;
   executor: string;
   oracle: string;
   expiration: number;

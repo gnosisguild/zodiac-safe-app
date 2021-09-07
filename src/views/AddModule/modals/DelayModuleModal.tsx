@@ -6,7 +6,7 @@ import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { deployDelayModule } from "services";
 
-interface DaoModuleModalProps {
+interface DelayModuleModalProps {
   open: boolean;
 
   onClose?(): void;
@@ -32,7 +32,7 @@ export const DelayModuleModal = ({
   open,
   onClose,
   onSubmit,
-}: DaoModuleModalProps) => {
+}: DelayModuleModalProps) => {
   const classes = useStyles();
 
   const { sdk, safe } = useSafeAppsSDK();

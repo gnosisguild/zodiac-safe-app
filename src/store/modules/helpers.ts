@@ -11,7 +11,6 @@ import {
 } from "@zodiacdao/zodiac";
 import { getModuleDataFromEtherscan } from "../../utils/contracts";
 import {
-  DaoModule,
   DataDecoded,
   DecodedTransaction,
   DelayModule,
@@ -22,6 +21,7 @@ import {
   ModuleType,
   MultiSendDataDecoded,
   PendingModule,
+  RealityModule,
   SafeTransaction,
 } from "./models";
 import { Contract } from "ethers";
@@ -33,8 +33,11 @@ export function isDelayModule(module: Module): module is DelayModule {
   return module.type === ModuleType.DELAY;
 }
 
-export function isDaoModule(module: Module): module is DaoModule {
-  return module.type === ModuleType.DAO;
+export function isRealityModule(module: Module): module is RealityModule {
+  return (
+    module.type === ModuleType.REALITY_ETH ||
+    module.type === ModuleType.REALITY_ERC20
+  );
 }
 
 export const sanitizeModule = async (
@@ -43,8 +46,7 @@ export const sanitizeModule = async (
   chainId: number,
   parentModule: string
 ): Promise<Module> => {
-  const module = await getModuleDataFromEtherscan(sdk, chainId, moduleAddress);
-  let name = module.name;
+  const module = await getModuleData(sdk, chainId, moduleAddress);
 
   if (module.type === ModuleType.DELAY) {
     return await fetchDelayModule(moduleAddress, sdk, chainId, parentModule);
@@ -60,10 +62,10 @@ export const sanitizeModule = async (
   const owner = await fetchModuleOwner(moduleAddress, module.abi);
 
   return {
-    name,
     owner,
     subModules,
     id: moduleAddress,
+    name: module.name,
     type: module.type,
     address: moduleAddress,
     parentModule: parentModule,

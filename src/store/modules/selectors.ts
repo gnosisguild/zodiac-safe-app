@@ -1,5 +1,5 @@
 import { RootState } from "../index";
-import { isDaoModule, isDelayModule } from "./helpers";
+import { isRealityModule, isDelayModule } from "./helpers";
 import { ModuleOperation } from "./models";
 
 export function getCurrentModule(state: RootState) {
@@ -22,8 +22,8 @@ export function getDelayModules(state: RootState) {
   return getModulesList(state).filter(isDelayModule);
 }
 
-export function getDaoModules(state: RootState) {
-  return getModulesList(state).filter(isDaoModule);
+export function getRealityModules(state: RootState) {
+  return getModulesList(state).filter(isRealityModule);
 }
 
 export function getOperation(state: RootState) {

@@ -4,8 +4,8 @@ import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as DaoModuleImage } from "../../../assets/images/dao-module.svg";
-import { deployDAOModule } from "../../../services";
+import { ReactComponent as RealityModuleImage } from "../../../assets/images/dao-module.svg";
+import { deployRealityModule } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
@@ -18,7 +18,7 @@ import { ModuleType } from "../../../store/modules/models";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
 
-interface DaoModuleModalProps {
+interface RealityModuleModalProps {
   open: boolean;
 
   onClose?(): void;
@@ -26,7 +26,7 @@ interface DaoModuleModalProps {
   onSubmit?(): void;
 }
 
-interface DaoModuleParams {
+interface RealityModuleParams {
   oracle: string;
   templateId: string;
   timeout: string;
@@ -54,18 +54,19 @@ function getDefaultOracle(chainId: number): string {
   return "";
 }
 
-export const DaoModuleModal = ({
+export const RealityModuleModal = ({
   open,
   onClose,
   onSubmit,
-}: DaoModuleModalProps) => {
+}: RealityModuleModalProps) => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
 
   const delayModules = useRootSelector(getDelayModules);
+  const [isERC20, setERC20] = useState(false);
   const [delayModule, setDelayModule] = useState<string>();
   const [bondToken, setBondToken] = useState("ETH");
-  const [params, setParams] = useState<DaoModuleParams>({
+  const [params, setParams] = useState<RealityModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
     templateId: "",
     timeout: "86400",
@@ -83,14 +84,20 @@ export const DaoModuleModal = ({
   useEffect(() => {
     if (params.oracle && isAddress(params.oracle)) {
       getArbitratorBondToken(params.oracle, safe.chainId)
-        .then((bondToken) => setBondToken(bondToken))
-        .catch(() => setBondToken("ETH"));
+        .then((response) => {
+          setBondToken(response.symbol);
+          setERC20(response.isERC20);
+        })
+        .catch(() => {
+          setBondToken("ETH");
+          setERC20(false);
+        });
     }
   }, [params.oracle, safe.chainId]);
 
-  const onParamChange = <Field extends keyof DaoModuleParams>(
+  const onParamChange = <Field extends keyof RealityModuleParams>(
     field: Field,
-    value: DaoModuleParams[Field],
+    value: RealityModuleParams[Field],
     valid?: boolean
   ) => {
     setParams({
@@ -104,14 +111,20 @@ export const DaoModuleModal = ({
       });
   };
 
-  const handleAddDaoModule = async () => {
+  const handleAddRealityModule = async () => {
     try {
       const minimumBond = parseUnits(params.bond);
-      const txs = deployDAOModule(safe.safeAddress, safe.chainId, {
+      const args = {
         ...params,
         executor: delayModule || safe.safeAddress,
         bond: minimumBond.toString(),
-      });
+      };
+      const txs = deployRealityModule(
+        safe.safeAddress,
+        safe.chainId,
+        args,
+        isERC20
+      );
 
       await sdk.txs.send({ txs });
       if (onSubmit) onSubmit();
@@ -168,9 +181,9 @@ export const DaoModuleModal = ({
       onClose={onClose}
       title="DAO Module"
       description="Allows Reality.eth questions to execute a transaction when resolved."
-      image={<DaoModuleImage />}
+      image={<RealityModuleImage />}
       tags={["Stackable", "From Gnosis"]}
-      onAdd={handleAddDaoModule}
+      onAdd={handleAddRealityModule}
       readMoreLink="https://github.com/gnosis/dao-module"
       ButtonProps={{ disabled: !isValid }}
     >
