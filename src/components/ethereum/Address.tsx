@@ -4,7 +4,6 @@ import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components";
 import { AddressExplorerButton } from "./AddressExplorerButton";
 import { shortAddress } from "../../utils/string";
 import classNames from "classnames";
-import { Row } from "../layout/Row";
 
 interface AddressProps {
   address: string;
@@ -22,11 +21,14 @@ interface AddressProps {
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    display: "grid",
+    gridGap: theme.spacing(0.5),
+    justifyContent: "start",
     alignItems: "center",
     minWidth: 0,
-  },
-  icon: {
-    marginLeft: theme.spacing(1),
+    "& > *": {
+      gridRow: 1,
+    },
   },
   gutterBottom: {
     marginBottom: theme.spacing(1),
@@ -54,7 +56,7 @@ export const Address = ({
   const classes = useStyles();
 
   return (
-    <Row
+    <div
       className={classNames(classes.root, container, {
         [classes.showOnHover]: showOnHover,
         [classes.gutterBottom]: gutterBottom,
@@ -66,15 +68,15 @@ export const Address = ({
       {hideCopyBtn ? null : (
         <CopyToClipboardBtn
           textToCopy={address}
-          className={classNames(classes.icon, icon, "btn")}
+          className={classNames(icon, "btn")}
         />
       )}
       {hideExplorerBtn ? null : (
         <AddressExplorerButton
           address={address}
-          className={classNames(classes.icon, icon, "btn")}
+          className={classNames(icon, "btn")}
         />
       )}
-    </Row>
+    </div>
   );
 };

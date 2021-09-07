@@ -10,7 +10,6 @@ import { Loader, theme as gnosisTheme } from "@gnosis.pm/safe-react-components";
 import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import GlobalStyle from "./GlobalStyle";
 import App from "./App";
-import { grey } from "@material-ui/core/colors";
 import MUIShadows from "@material-ui/core/styles/shadows";
 import createPalette from "@material-ui/core/styles/createPalette";
 import { Provider } from "react-redux";
@@ -18,16 +17,24 @@ import { REDUX_STORE } from "./store";
 import { Row } from "./components/layout/Row";
 
 const palette = createPalette({
-  type: "light",
-  primary: grey,
+  type: "dark",
   background: {
-    default: "#F8FAFB",
-    paper: "#FFFFFF",
+    default: "rgba(224, 197, 173, 0.1)",
+    paper: "rgba(255, 255, 255, 0.1)",
   },
 });
 
+// Black
+// #30312C
+
+// Green
+// #486A0F
+
+palette.primary = palette.augmentColor({
+  "500": "#30312C",
+});
 palette.secondary = palette.augmentColor({
-  "500": gnosisTheme.colors.primary,
+  "500": "#486A0F",
 });
 
 const shadows = MUIShadows;
@@ -39,7 +46,7 @@ const muiTheme = createTheme({
   palette,
   shadows,
   typography: {
-    fontFamily: gnosisTheme.fonts.fontFamily,
+    fontFamily: "Roboto",
     h4: {
       fontSize: 24,
       fontWeight: "bold",
@@ -64,6 +71,20 @@ const muiTheme = createTheme({
     borderRadius: 6,
   },
   overrides: {
+    MuiPaper: {
+      root: {
+        border: "1px solid",
+        borderColor: "rgba(255, 255, 255, 0.2)",
+      },
+    },
+    MuiCssBaseline: {
+      "@global": {
+        body: {
+          background:
+            "linear-gradient(108.86deg, #000000 6.24%, #020060 96.54%);",
+        },
+      },
+    },
     MuiTypography: {
       gutterBottom: { marginBottom: 8 },
     },

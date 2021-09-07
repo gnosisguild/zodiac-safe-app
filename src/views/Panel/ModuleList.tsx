@@ -12,7 +12,11 @@ import {
 } from "../../store/modules/selectors";
 import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg";
 import { Skeleton } from "@material-ui/lab";
-import { PANEL_ITEM_HEIGHT, PanelItem } from "./Items/PanelItem";
+import {
+  PANEL_ITEM_HEIGHT,
+  PANEL_ITEM_MARGIN,
+  PanelItem,
+} from "./Items/PanelItem";
 import { ModuleItem } from "./Items/ModuleItem";
 import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
@@ -25,9 +29,6 @@ interface ModuleListProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    overflowX: "hidden",
-  },
   subModules: {
     position: "relative",
     marginLeft: theme.spacing(10),
@@ -42,8 +43,8 @@ const useStyles = makeStyles((theme) => ({
     borderRightWidth: 0,
     borderBottomLeftRadius: 16,
     top: 0,
-    left: -40,
-    width: 40,
+    left: -46,
+    width: 46,
   },
   emptyModulesText: {
     maxWidth: 200,
@@ -109,9 +110,9 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
       const subModulesHeight = subModulesCount * PANEL_ITEM_HEIGHT;
 
       const height =
-        2 +
+        4 +
         subModulesHeight +
-        PANEL_ITEM_HEIGHT * (index + 1) -
+        (PANEL_ITEM_MARGIN + PANEL_ITEM_HEIGHT) * (index + 1) -
         PANEL_ITEM_HEIGHT / 2;
       return <div key={index} className={classes.line} style={{ height }} />;
     });
@@ -119,7 +120,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   }
 
   return (
-    <Column className={classes.root}>
+    <Column>
       <PendingModuleStates />
       {content}
     </Column>

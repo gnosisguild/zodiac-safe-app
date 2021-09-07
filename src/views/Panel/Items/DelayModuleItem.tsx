@@ -1,11 +1,9 @@
-import { HashInfo } from "../../../components/ethereum/HashInfo";
-import { Link, makeStyles, Typography } from "@material-ui/core";
-import { PanelItem, PanelItemProps } from "./PanelItem";
 import React from "react";
+import { Link, makeStyles, Typography } from "@material-ui/core";
+import { PanelItemProps } from "./PanelItem";
 import { DelayModule } from "../../../store/modules/models";
 import { Badge } from "../../../components/text/Badge";
 import { Address } from "../../../components/ethereum/Address";
-import { ModuleList } from "../ModuleList";
 import { formatDuration } from "../../../utils/string";
 import { useRootDispatch } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
@@ -18,15 +16,19 @@ interface DelayModuleItemProps extends PanelItemProps {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "grid",
+    gridGap: theme.spacing(0.5),
+    "& > *": {
+      gridColumn: 1,
+    },
+  },
   text: {
+    fontSize: 12,
     lineHeight: 1,
-    fontSize: "12px",
-    color: "rgb(93, 109, 116)",
-    letterSpacing: "1px",
+    letterSpacing: 1,
   },
-  moduleName: {
-    textTransform: "uppercase",
-  },
+  moduleName: {},
   link: {
     marginLeft: theme.spacing(1),
     lineHeight: 1,
@@ -34,10 +36,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const DelayModuleItem = ({
-  module,
-  ...panelItemProps
-}: DelayModuleItemProps) => {
+export const DelayModuleItem = ({ module }: DelayModuleItemProps) => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
 
@@ -55,51 +54,33 @@ export const DelayModuleItem = ({
   };
 
   return (
-    <>
-      <PanelItem
-        image={
-          <HashInfo
-            showAvatar
-            avatarSize="lg"
-            showHash={false}
-            hash={module.address}
-          />
-        }
-        {...panelItemProps}
+    <div className={classes.root}>
+      <Typography
+        variant="h6"
+        className={classNames(classes.text, classes.moduleName)}
       >
-        <Typography
-          variant="h6"
-          className={classNames(classes.text, classes.moduleName)}
-          gutterBottom
+        {module.name}
+      </Typography>
+      <Address
+        short
+        showOnHover
+        address={module.address}
+        TypographyProps={{
+          variant: "body2",
+          className: classes.text,
+        }}
+      />
+      <Row style={{ alignItems: "center" }}>
+        <Badge>{formatDuration(module.expiration)} delay</Badge>
+        <Link
+          color="textPrimary"
+          noWrap
+          className={classes.link}
+          onClick={handleClick}
         >
-          {module.name}
-        </Typography>
-        <Address
-          short
-          showOnHover
-          gutterBottom
-          address={module.address}
-          TypographyProps={{
-            variant: "body2",
-            className: classes.text,
-          }}
-        />
-        <Row style={{ alignItems: "center" }}>
-          <Badge>{formatDuration(module.expiration)} delay</Badge>
-          <Link
-            color="secondary"
-            noWrap
-            className={classes.link}
-            onClick={handleClick}
-          >
-            Change Delay
-          </Link>
-        </Row>
-      </PanelItem>
-
-      {module.subModules.length ? (
-        <ModuleList sub modules={module.subModules} />
-      ) : null}
-    </>
+          Change Delay
+        </Link>
+      </Row>
+    </div>
   );
 };

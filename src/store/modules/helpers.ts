@@ -9,7 +9,7 @@ import {
   getModuleInstance,
   KnownModules,
 } from "@zodiacdao/zodiac";
-import { getModuleDataFromEtherscan } from "../../utils/contracts";
+import { getModuleData } from "../../utils/contracts";
 import {
   DataDecoded,
   DecodedTransaction,

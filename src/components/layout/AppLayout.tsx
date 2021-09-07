@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Paper } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -10,9 +10,10 @@ const useStyles = makeStyles((theme) => ({
     display: "grid",
     height: "100%",
     gridTemplateColumns: "380px 1fr",
-    border: "1px solid #E8E7E6",
+    gridGap: theme.spacing(1.5),
     borderRadius: theme.spacing(1),
     overflow: "hidden",
+    padding: theme.spacing(1.5),
   },
   leftPanel: {
     overflowY: "auto",
@@ -22,9 +23,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   content: {
-    position: "relative",
-    overflowY: "auto",
-    background: "white",
+    overflow: "hidden",
   },
 }));
 
@@ -36,12 +35,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, left }) => {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <div className={classes.container}>
-        <div className={classes.leftPanel}>{left}</div>
-        <div id="app-content" className={classes.content}>
+      <Paper className={classes.container}>
+        <Paper className={classes.content}>{left}</Paper>
+        <Paper id="app-content" className={classes.content}>
           {children}
-        </div>
-      </div>
+        </Paper>
+      </Paper>
     </div>
   );
 };

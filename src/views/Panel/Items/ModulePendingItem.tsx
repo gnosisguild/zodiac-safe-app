@@ -14,15 +14,11 @@ const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: "bold",
     fontSize: 12,
-    color: "rgb(93, 109, 116)",
     letterSpacing: 1,
-    textTransform: "uppercase",
     marginBottom: theme.spacing(0.5),
   },
   link: {
     fontSize: 12,
-    textTransform: "uppercase",
-    color: "rgb(93, 109, 116)",
   },
 }));
 
