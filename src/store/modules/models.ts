@@ -1,5 +1,5 @@
 import { Fragment } from "@ethersproject/abi";
-import { KnownModules } from "@gnosis/zodiac";
+import { KnownModules } from "@zodiacdao/zodiac";
 
 export type ABI = string | string[] | Fragment[];
 

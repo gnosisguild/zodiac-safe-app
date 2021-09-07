@@ -1,5 +1,10 @@
 import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
-import { deployAndSetUpModule, getModuleInstance } from "@gnosis/zodiac";
+import {
+  calculateProxyAddress,
+  deployAndSetUpModule,
+  getFactoryAndMasterCopy,
+  getModuleInstance,
+} from "@zodiacdao/zodiac";
 import {
   AddressOne,
   buildTransaction,
@@ -11,7 +16,6 @@ import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
 import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
 import { InfuraProvider } from "@ethersproject/providers";
-import { calculateProxyAddress, getFactoryAndMasterCopy } from "@gnosis/zodiac";
 
 interface RealityModuleParams {
   executor: string;
