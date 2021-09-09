@@ -8,7 +8,7 @@ import {
   CONTRACT_ADDRESSES,
   getModuleInstance,
   KnownModules,
-} from "@zodiacdao/zodiac";
+} from "@gnosis.pm/zodiac";
 import { getModuleData } from "../../utils/contracts";
 import {
   DataDecoded,

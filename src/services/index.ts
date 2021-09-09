@@ -4,7 +4,7 @@ import {
   deployAndSetUpModule,
   getFactoryAndMasterCopy,
   getModuleInstance,
-} from "@zodiacdao/zodiac";
+} from "@gnosis.pm/zodiac";
 import {
   AddressOne,
   buildTransaction,
