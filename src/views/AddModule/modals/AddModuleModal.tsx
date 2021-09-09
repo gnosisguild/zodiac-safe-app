@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: {
     marginRight: theme.spacing(2),
+    "& img": {
+      width: "100%",
+    },
   },
   infoContainer: {
     flexGrow: 1,

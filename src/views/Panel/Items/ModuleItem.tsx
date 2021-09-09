@@ -1,6 +1,10 @@
 import { HashInfo } from "../../../components/ethereum/HashInfo";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
-import { PANEL_ITEM_MARGIN, PanelItem, PanelItemProps } from "./PanelItem";
+import { makeStyles, Typography } from "@material-ui/core";
+import {
+  PANEL_ITEM_CONTENT_HEIGHT,
+  PanelItem,
+  PanelItemProps,
+} from "./PanelItem";
 import React from "react";
 import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
@@ -20,17 +24,6 @@ interface ModuleItemProps extends PanelItemProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(1),
-  },
-  active: {
-    backgroundColor: "rgba(0, 0, 0, 0.54)",
-  },
-  spacing: {
-    "& + &, &.sub": {
-      marginTop: PANEL_ITEM_MARGIN,
-    },
-  },
   text: {
     lineHeight: 1,
     fontSize: 12,
@@ -41,6 +34,12 @@ const useStyles = makeStyles((theme) => ({
   },
   badge: {
     marginTop: theme.spacing(1),
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: PANEL_ITEM_CONTENT_HEIGHT,
   },
 }));
 
@@ -85,7 +84,13 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
 };
 
 export const ModuleItem = (props: ModuleItemProps) => {
-  const { module, remove = false, instant = false, ...panelItemProps } = props;
+  const {
+    module,
+    remove = false,
+    instant = false,
+    onClick,
+    ...panelItemProps
+  } = props;
 
   const classes = useStyles();
 
@@ -99,35 +104,25 @@ export const ModuleItem = (props: ModuleItemProps) => {
     );
   }
 
-  const panelItem = (
+  return (
     <PanelItem
       image={
-        <div>
-          <HashInfo
-            showAvatar
-            avatarSize="lg"
-            showHash={false}
-            hash={module.address}
-          />
-        </div>
+        <HashInfo
+          showAvatar
+          avatarSize="lg"
+          showHash={false}
+          hash={module.address}
+        />
       }
       {...panelItemProps}
     >
-      <ModuleItemContent classes={classes} {...props} />
-    </PanelItem>
-  );
+      <div onClick={onClick} className={classes.content}>
+        <ModuleItemContent classes={classes} {...props} />
+      </div>
 
-  return (
-    <Paper
-      className={classNames(classes.root, classes.spacing, {
-        sub: panelItemProps.sub,
-        [classes.active]: panelItemProps.active,
-      })}
-    >
-      {panelItem}
       {module.subModules.length ? (
         <ModuleList sub modules={module.subModules} />
       ) : null}
-    </Paper>
+    </PanelItem>
   );
 };

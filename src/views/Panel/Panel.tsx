@@ -1,6 +1,5 @@
 import React from "react";
-import { makeStyles, Typography } from "@material-ui/core";
-import { Button } from "@gnosis.pm/safe-react-components";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import { ModuleList } from "./ModuleList";
 import { Row } from "../../components/layout/Row";
 import { useRootDispatch, useRootSelector } from "../../store";
@@ -11,6 +10,7 @@ import {
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
 import { Grow } from "../../components/layout/Grow";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-icon.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,19 +26,13 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   header: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(0, 1, 2, 1),
     boxSizing: "content-box",
     minHeight: 40,
     alignItems: "center",
   },
   title: {
     fontSize: 20,
-  },
-  smallButton: {
-    minWidth: "auto !important",
-    height: "auto !important",
-    padding: "8px 12px 8px 12px !important",
-    borderRadius: "2px !important",
   },
   moduleList: {
     marginTop: theme.spacing(3),
@@ -65,12 +59,11 @@ export const Panel = () => {
         <Grow />
         {currentModule || currentPending ? (
           <Button
-            className={classes.smallButton}
-            variant="outlined"
-            size="md"
-            color="primary"
-            iconType="add"
+            size="small"
+            color="secondary"
+            variant="contained"
             onClick={handleAddModule}
+            startIcon={<AddIcon />}
           >
             Add
           </Button>

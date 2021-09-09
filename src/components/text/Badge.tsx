@@ -10,9 +10,12 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0.5),
     lineHeight: 1,
     whiteSpace: "nowrap",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   primary: {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: "rgba(224, 197, 173, 0.1)",
   },
   secondary: {
     backgroundColor: alpha(theme.palette.primary.light, 0.4),

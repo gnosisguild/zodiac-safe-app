@@ -22,6 +22,7 @@ import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
 import { Column } from "../../components/layout/Column";
 import { isPendingModule } from "../../store/modules/helpers";
+import { ReactComponent as ChevronIcon } from "../../assets/icons/chevron-down.svg";
 
 interface ModuleListProps {
   modules: Module[];
@@ -31,20 +32,28 @@ interface ModuleListProps {
 const useStyles = makeStyles((theme) => ({
   subModules: {
     position: "relative",
-    marginLeft: theme.spacing(10),
   },
   line: {
     position: "absolute",
-    borderColor: theme.palette.primary.light,
+    borderColor: "rgb(137, 137, 138)",
     borderStyle: "solid",
-    borderBottomWidth: 4,
-    borderLeftWidth: 4,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
     borderTopWidth: 0,
     borderRightWidth: 0,
     borderBottomLeftRadius: 16,
-    top: 0,
+    top: PANEL_ITEM_MARGIN,
     left: -46,
-    width: 46,
+    width: 32,
+  },
+  arrow: {
+    position: "absolute",
+    top: 9,
+    left: -54,
+    zIndex: 100,
+
+    fill: "rgb(137, 137, 138)",
+    transform: "rotate(180deg)",
   },
   emptyModulesText: {
     maxWidth: 200,
@@ -52,6 +61,19 @@ const useStyles = makeStyles((theme) => ({
     color: "rgba(0,20,40,0.5)",
   },
 }));
+
+function isSubModuleActive(
+  activeId: string | undefined,
+  subModules: Module[]
+): boolean {
+  if (!activeId) return false;
+  return subModules.some((subModule) => {
+    return (
+      subModule.id === activeId ||
+      isSubModuleActive(activeId, subModule.subModules)
+    );
+  });
+}
 
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles();
@@ -88,7 +110,9 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   }
 
   const content = modules.map((module) => {
-    const active = module.id === currentModule?.id;
+    const active =
+      module.id === currentModule?.id ||
+      isSubModuleActive(currentModule?.id, module.subModules);
     const remove = pendingRemoveTxs.some((tx) => isPendingModule(module, tx));
     return (
       <ModuleItem
@@ -110,13 +134,17 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
       const subModulesHeight = subModulesCount * PANEL_ITEM_HEIGHT;
 
       const height =
-        4 +
+        1 +
         subModulesHeight +
-        (PANEL_ITEM_MARGIN + PANEL_ITEM_HEIGHT) * (index + 1) -
+        PANEL_ITEM_HEIGHT * (index + 1) +
+        PANEL_ITEM_MARGIN * index -
         PANEL_ITEM_HEIGHT / 2;
       return <div key={index} className={classes.line} style={{ height }} />;
     });
-    return <div className={classes.subModules}>{[content, lines]}</div>;
+    const arrow = modules.length ? (
+      <ChevronIcon className={classes.arrow} />
+    ) : null;
+    return <div className={classes.subModules}>{[content, arrow, lines]}</div>;
   }
 
   return (

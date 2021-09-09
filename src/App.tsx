@@ -5,11 +5,21 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useRootDispatch } from "./store";
 import { Panel } from "./views/Panel/Panel";
 import { Views } from "./Views";
+import { Header } from "./views/Header/Header";
+import { makeStyles } from "@material-ui/core";
 import { TransactionBuilder } from "./views/TransactionBuilder/TransactionBuilder";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(3, 4, 4, 4),
+    height: "100%",
+  },
+}));
 
 const App: React.FC = () => {
   const dispatch = useRootDispatch();
   const { safe, sdk } = useSafeAppsSDK();
+  const classes = useStyles();
 
   useEffect(() => {
     dispatch(
@@ -22,10 +32,13 @@ const App: React.FC = () => {
   }, [sdk, dispatch, safe]);
 
   return (
-    <AppLayout left={<Panel />}>
-      <Views />
+    <div className={classes.root}>
+      <Header />
+      <AppLayout left={<Panel />}>
+        <Views />
+      </AppLayout>
       <TransactionBuilder />
-    </AppLayout>
+    </div>
   );
 };
 

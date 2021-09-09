@@ -3,13 +3,9 @@ import { makeStyles, Paper } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(4),
-    height: "100%",
-  },
-  container: {
     display: "grid",
     height: "100%",
-    gridTemplateColumns: "380px 1fr",
+    gridTemplateColumns: "390px 1fr",
     gridGap: theme.spacing(1.5),
     borderRadius: theme.spacing(1),
     overflow: "hidden",
@@ -34,13 +30,11 @@ interface AppLayoutProps {
 export const AppLayout: React.FC<AppLayoutProps> = ({ children, left }) => {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
-      <Paper className={classes.container}>
-        <Paper className={classes.content}>{left}</Paper>
-        <Paper id="app-content" className={classes.content}>
-          {children}
-        </Paper>
+    <Paper className={classes.root}>
+      <Paper className={classes.content}>{left}</Paper>
+      <Paper id="app-content" className={classes.content}>
+        {children}
       </Paper>
-    </div>
+    </Paper>
   );
 };

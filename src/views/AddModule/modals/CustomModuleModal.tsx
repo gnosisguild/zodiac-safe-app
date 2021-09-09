@@ -3,7 +3,7 @@ import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { Interface, ParamType } from "@ethersproject/abi";
 import { enableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { ReactComponent as CustomModuleImage } from "../../../assets/images/custom-module-logo.svg";
+import CustomModuleImage from "../../../assets/images/custom-module-logo.png";
 import { AddModuleModal } from "./AddModuleModal";
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
@@ -93,7 +93,7 @@ export const CustomModuleModal = ({
       open={open}
       onClose={onClose}
       title="Custom Module"
-      image={<CustomModuleImage />}
+      image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
       warning="Modules do not require multisig approval for transactions. Only add modules that you trust!"
     >
       <ParamInput

@@ -68,7 +68,6 @@ export const ModulePendingTransaction = () => {
     <div className={classes.root}>
       <div className={classes.header}>
         <Skeleton variant="circle" width={40} height={40} />
-        <Typography className={classes.addressText}>Address:</Typography>
         <Skeleton variant="rect" width={380} height={20} />
       </div>
 

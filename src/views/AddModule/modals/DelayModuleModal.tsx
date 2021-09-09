@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as DelayModuleImage } from "../../../assets/images/delay-module.svg";
+import DelayModuleImage from "../../../assets/images/delay-module-logo.png";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { deployDelayModule } from "services";
 
@@ -75,7 +75,7 @@ export const DelayModuleModal = ({
       onClose={onClose}
       title="Transaction Delay"
       description="Adds a settable delay time to any transaction originating from this module."
-      image={<DelayModuleImage />}
+      image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
       tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddDelayModule}
       readMoreLink="https://github.com/gnosis/SafeDelay"

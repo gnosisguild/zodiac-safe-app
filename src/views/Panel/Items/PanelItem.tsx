@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles, Paper } from "@material-ui/core";
 import classNames from "classnames";
 import { Column } from "../../../components/layout/Column";
 
@@ -11,35 +11,34 @@ export interface PanelItemProps {
   onClick?(): void;
 }
 
-export const PANEL_ITEM_HEIGHT = 56;
+export const PANEL_ITEM_CONTENT_HEIGHT = 56;
+export const PANEL_ITEM_PADDING = 8;
+export const PANEL_ITEM_HEIGHT =
+  PANEL_ITEM_CONTENT_HEIGHT + PANEL_ITEM_PADDING * 2 + 2;
 export const PANEL_ITEM_MARGIN = 12;
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: PANEL_ITEM_PADDING,
+  },
+  active: {
+    backgroundColor: "rgba(0, 0, 0, 0.54)",
+    borderColor: theme.palette.common.white,
+  },
+  spacing: {
+    "& + &, &.sub": {
+      marginTop: PANEL_ITEM_MARGIN,
+    },
+  },
+
   moduleItem: {
     display: "grid",
     gridTemplateColumns: "48px 1fr",
     gridGap: theme.spacing(2),
     cursor: "pointer",
 
-    height: PANEL_ITEM_HEIGHT,
-
-    // borderRadius: 0,
-    // borderWidth: 0,
-    // borderTopWidth: 1,
-    // borderBottomWidth: 1,
-    // borderColor: theme.palette.divider,
-    // borderStyle: "solid",
-
-    transition: theme.transitions.create("border", {
-      duration: 100,
-      easing: "ease",
-    }),
-
     backgroundColor: "transparent",
 
-    "& + &": {
-      borderTopWidth: 0,
-    },
     "&:hover": {
       // backgroundColor: theme.palette.background.default,
     },
@@ -75,16 +74,23 @@ export const PanelItem: React.FC<PanelItemProps> = ({
 }) => {
   const classes = useStyles();
   return (
-    <div
-      onClick={active ? undefined : onClick}
-      className={classNames(classes.moduleItem, {
-        active,
+    <Paper
+      className={classNames(classes.root, classes.spacing, {
         sub,
-        cursor: active || !onClick,
+        [classes.active]: active,
       })}
     >
-      {image}
-      <Column className={classes.content}>{children}</Column>
-    </div>
+      <div
+        onClick={active ? undefined : onClick}
+        className={classNames(classes.moduleItem, {
+          active,
+          sub,
+          cursor: active || !onClick,
+        })}
+      >
+        <div>{image}</div>
+        <Column className={classes.content}>{children}</Column>
+      </div>
+    </Paper>
   );
 };

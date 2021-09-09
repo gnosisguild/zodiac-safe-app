@@ -88,6 +88,19 @@ const muiTheme = createTheme({
     MuiTypography: {
       gutterBottom: { marginBottom: 8 },
     },
+    MuiButton: {
+      root: {
+        lineHeight: 1.5,
+        textTransform: "none",
+      },
+      contained: {
+        boxShadow: "none",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
+      },
+      containedSizeSmall: {
+        padding: "4px 8px",
+      },
+    },
   },
 });
 

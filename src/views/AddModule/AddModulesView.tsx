@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { ModuleButton } from "./ModuleButton";
-import { ReactComponent as RealityModuleImage } from "../../assets/images/dao-module.svg";
-import { ReactComponent as DelayModuleImage } from "../../assets/images/delay-module.svg";
-import { ReactComponent as CustomModuleImage } from "../../assets/images/custom-module-logo.svg";
+import RealityModuleImage from "../../assets/images/reality-module-logo.png";
+import DelayModuleImage from "../../assets/images/delay-module-logo.png";
+import CustomModuleImage from "../../assets/images/custom-module-logo.png";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getModulesList } from "../../store/modules/selectors";
 import { ModuleModals } from "./modals/ModuleModals";
 import { ModuleType } from "../../store/modules/models";
 import { fetchPendingModules, setModuleAdded } from "../../store/modules";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import classNames from "classnames";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,11 +17,8 @@ const useStyles = makeStyles((theme) => ({
   },
   gridContainer: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(284px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
     gap: theme.spacing(2),
-    "@media (max-width:930px)": {
-      gridTemplateColumns: "repeat(auto-fill, minmax(243px, 1fr))",
-    },
   },
   paper: {
     padding: theme.spacing(2.5, 2),
@@ -41,12 +37,8 @@ const useStyles = makeStyles((theme) => ({
   firstModule: {
     gridColumn: 1,
   },
-  modules: {
-    borderRadius: "6px",
-    border: "2px solid white",
-    "&:hover": {
-      borderColor: theme.palette.secondary.main,
-    },
+  link: {
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -82,6 +74,7 @@ export const AddModulesView = () => {
                 href="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
                 target="_blank"
                 rel="noopener noreferrer"
+                className={classes.link}
               >
                 this article
               </a>
@@ -89,46 +82,42 @@ export const AddModulesView = () => {
             </Typography>
           </Paper>
         </div>
-        <div className={classNames(classes.firstModule, classes.modules)}>
-          <ModuleButton
-            title="Transaction Delay"
-            description="Delay transactions so members can intervene"
-            image={<DelayModuleImage />}
-            onClick={() => setModule(ModuleType.DELAY)}
-          />
-        </div>
-        <div className={classes.modules}>
-          <ModuleButton
-            title="DAO Module"
-            description="Connect Reality.eth questions to your safe"
-            image={<RealityModuleImage />}
-            onClick={() => setModule(ModuleType.REALITY_ETH)}
-          />
-        </div>
-        <div className={classes.modules}>
-          <ModuleButton
-            title="AMB Module"
-            description="Execute transactions initiated on another chain"
-            image={<CustomModuleImage />}
-            onClick={() => setModule(ModuleType.AMB)}
-          />
-        </div>
-        <div className={classes.modules}>
-          <ModuleButton
-            title="Exit Module"
-            description="Connect Reality.eth questions to your safe"
-            image={<CustomModuleImage />}
-            onClick={() => setModule(ModuleType.EXIT)}
-          />
-        </div>
-        <div className={classes.modules}>
-          <ModuleButton
-            title="Custom Module"
-            description="Connect a pre-existing contract as a module"
-            image={<CustomModuleImage />}
-            onClick={() => setModule(ModuleType.UNKNOWN)}
-          />
-        </div>
+
+        <ModuleButton
+          title="Reality Module"
+          description="Connect Reality.eth questions to your safe"
+          image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
+          className={classes.firstModule}
+          onClick={() => setModule(ModuleType.REALITY_ETH)}
+        />
+
+        <ModuleButton
+          title="Transaction Delay"
+          description="Delay transactions so members can intervene"
+          image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
+          onClick={() => setModule(ModuleType.DELAY)}
+        />
+
+        <ModuleButton
+          title="AMB Module"
+          description="Execute transactions initiated on another chain"
+          image={<img src={CustomModuleImage} alt="AMB Module Logo" />}
+          onClick={() => setModule(ModuleType.AMB)}
+        />
+
+        <ModuleButton
+          title="Exit Module"
+          description="Connect Reality.eth questions to your safe"
+          image={<img src={CustomModuleImage} alt="Exit Module Logo" />}
+          onClick={() => setModule(ModuleType.EXIT)}
+        />
+
+        <ModuleButton
+          title="Custom Module"
+          description="Connect a pre-existing contract as a module"
+          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
+          onClick={() => setModule(ModuleType.UNKNOWN)}
+        />
       </div>
 
       <ModuleModals

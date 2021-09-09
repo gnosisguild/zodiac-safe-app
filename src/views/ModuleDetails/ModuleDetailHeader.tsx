@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
-import { Button, Text } from "@gnosis.pm/safe-react-components";
+import { Button } from "@gnosis.pm/safe-react-components";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
@@ -91,9 +91,6 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         avatarSize="lg"
         hash={module.address}
       />
-      <Text size="xl" strong className={classes.text}>
-        Address:
-      </Text>
       <Address
         address={module.address}
         classes={{

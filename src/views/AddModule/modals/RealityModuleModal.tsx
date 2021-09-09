@@ -4,7 +4,7 @@ import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as RealityModuleImage } from "../../../assets/images/dao-module.svg";
+import RealityModuleImage from "../../../assets/images/reality-module-logo.png";
 import { deployRealityModule } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
@@ -181,7 +181,7 @@ export const RealityModuleModal = ({
       onClose={onClose}
       title="DAO Module"
       description="Allows Reality.eth questions to execute a transaction when resolved."
-      image={<RealityModuleImage />}
+      image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
       tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddRealityModule}
       readMoreLink="https://github.com/gnosis/dao-module"
