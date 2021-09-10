@@ -12,14 +12,10 @@ const StyledTextField = withStyles((theme) => ({
       transform: "none",
       fontSize: theme.typography.fontSize,
       color: theme.palette.text.primary,
-      marginBottom: theme.spacing(0.5),
+      marginBottom: theme.spacing(1),
     },
     "& .MuiInputBase-root": {
-      backgroundColor: theme.palette.background.paper,
-      padding: theme.spacing(1, 0, 1, 1),
       marginTop: 0,
-      borderTopLeftRadius: theme.shape.borderRadius,
-      borderTopRightRadius: theme.shape.borderRadius,
     },
     "& .MuiSelect-select:focus": {
       backgroundColor: "transparent",
@@ -33,6 +29,7 @@ export interface TextFieldProps
 }
 
 export const TextField = ({
+  InputProps,
   InputLabelProps,
   label,
   ...props
@@ -42,7 +39,14 @@ export const TextField = ({
       focused={!props.disabled}
       label={label}
       placeholder={label}
-      InputLabelProps={{ shrink: true, ...InputLabelProps }}
+      InputProps={{
+        disableUnderline: true,
+        ...InputProps,
+      }}
+      InputLabelProps={{
+        shrink: true,
+        ...InputLabelProps,
+      }}
       {...props}
     />
   );

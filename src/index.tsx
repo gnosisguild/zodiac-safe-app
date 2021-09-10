@@ -22,13 +22,10 @@ const palette = createPalette({
     default: "rgba(224, 197, 173, 0.1)",
     paper: "rgba(255, 255, 255, 0.1)",
   },
+  text: {
+    secondary: "rgb(104, 166, 0)",
+  },
 });
-
-// Black
-// #30312C
-
-// Green
-// #486A0F
 
 palette.primary = palette.augmentColor({
   "500": "#30312C",
@@ -99,6 +96,16 @@ const muiTheme = createTheme({
       },
       containedSizeSmall: {
         padding: "4px 8px",
+      },
+    },
+    MuiInputBase: {
+      root: {
+        padding: "8px 0 8px 8px",
+        border: "1px solid rgb(255,255,255)",
+        borderRadius: 4,
+      },
+      input: {
+        padding: 0,
       },
     },
   },

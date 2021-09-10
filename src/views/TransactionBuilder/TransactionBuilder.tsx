@@ -7,7 +7,6 @@ import {
   Paper,
   Typography,
 } from "@material-ui/core";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { Interface } from "@ethersproject/abi";
 import { ActionButton } from "../../components/ActionButton";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
@@ -27,6 +26,7 @@ import { fetchPendingModules } from "../../store/modules";
 import { TransactionBuilderList } from "./components/TransactionBuilderList";
 import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
 import { Grow } from "../../components/layout/Grow";
+import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg";
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
@@ -185,10 +185,10 @@ export const TransactionBuilder = () => {
               color="secondary"
               disabled={!transactions.length}
               className={classes.queryButton}
-              startIcon={<Icon type="sent" size="md" color="white" />}
+              startIcon={<ArrowUpIcon />}
               onClick={handleSubmitTransaction}
             >
-              Submit Transaction Bundle
+              Submit Transactions
             </ActionButton>
           </div>
         </Paper>

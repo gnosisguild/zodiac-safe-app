@@ -4,6 +4,8 @@ import { ModuleButton } from "./ModuleButton";
 import RealityModuleImage from "../../assets/images/reality-module-logo.png";
 import DelayModuleImage from "../../assets/images/delay-module-logo.png";
 import CustomModuleImage from "../../assets/images/custom-module-logo.png";
+import AMBModuleImage from "../../assets/images/amb-module-logo.png";
+import ExitModuleImage from "../../assets/images/exit-module-logo.png";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getModulesList } from "../../store/modules/selectors";
 import { ModuleModals } from "./modals/ModuleModals";
@@ -92,6 +94,13 @@ export const AddModulesView = () => {
         />
 
         <ModuleButton
+          title="Custom Module"
+          description="Connect a pre-existing contract as a module"
+          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
+          onClick={() => setModule(ModuleType.UNKNOWN)}
+        />
+
+        <ModuleButton
           title="Transaction Delay"
           description="Delay transactions so members can intervene"
           image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
@@ -101,22 +110,15 @@ export const AddModulesView = () => {
         <ModuleButton
           title="AMB Module"
           description="Execute transactions initiated on another chain"
-          image={<img src={CustomModuleImage} alt="AMB Module Logo" />}
+          image={<img src={AMBModuleImage} alt="AMB Module Logo" />}
           onClick={() => setModule(ModuleType.AMB)}
         />
 
         <ModuleButton
           title="Exit Module"
           description="Connect Reality.eth questions to your safe"
-          image={<img src={CustomModuleImage} alt="Exit Module Logo" />}
+          image={<img src={ExitModuleImage} alt="Exit Module Logo" />}
           onClick={() => setModule(ModuleType.EXIT)}
-        />
-
-        <ModuleButton
-          title="Custom Module"
-          description="Connect a pre-existing contract as a module"
-          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
-          onClick={() => setModule(ModuleType.UNKNOWN)}
         />
       </div>
 

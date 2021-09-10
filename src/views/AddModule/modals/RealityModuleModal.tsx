@@ -197,7 +197,7 @@ export const RealityModuleModal = ({
             param={ParamType.from("address")}
             color="secondary"
             value={params.oracle}
-            label="Oracle (oracle)"
+            label="Oracle Address"
             onChange={(value, valid) => onParamChange("oracle", value, valid)}
           />
         </Grid>
@@ -206,7 +206,7 @@ export const RealityModuleModal = ({
             <Typography>TemplateId</Typography>
             <Grow />
             <Link
-              color="secondary"
+              color="textSecondary"
               href="https://reality.eth.link/app/template-generator/"
               target="_blank"
             >

@@ -7,7 +7,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
   },
   queryButton: {
-    borderRadius: 10,
     textTransform: "none",
     fontSize: 16,
     "&.MuiButton-contained.Mui-disabled": {
@@ -28,8 +27,8 @@ export const ActionButton = ({ classes, className, ...props }: ButtonProps) => {
   const _classes = useStyles();
   return (
     <Button
-      variant="outlined"
       color="secondary"
+      variant="contained"
       classes={{ disabled: _classes.buttonDisabled, ...classes }}
       className={classNames(_classes.queryButton, className)}
       {...props}

@@ -4,7 +4,7 @@ import { makeStyles, Paper } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "grid",
-    height: "100%",
+    height: "calc(100% - 70px)",
     gridTemplateColumns: "390px 1fr",
     gridGap: theme.spacing(1.5),
     borderRadius: theme.spacing(1),
