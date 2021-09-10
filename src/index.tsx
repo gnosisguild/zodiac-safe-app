@@ -101,8 +101,8 @@ const muiTheme = createTheme({
       root: {
         padding: "4px 8px",
         height: "auto",
-        backgroundColor: "rgba(224, 197, 173, 0.1)",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
+        backgroundColor: "rgba(217, 212, 173, 0.1)",
+        border: "1px solid rgba(217, 212, 173, 0.3)",
       },
       avatar: {
         display: "contents !important",
@@ -116,6 +116,18 @@ const muiTheme = createTheme({
       root: {
         lineHeight: 1.5,
         textTransform: "none",
+        position: "relative",
+        borderRadius: 0,
+        "&::before": {
+          content: '" "',
+          position: "absolute",
+          zIndex: 1,
+          top: "2px",
+          left: "2px",
+          right: "2px",
+          bottom: "2px",
+          border: "1px solid rgba(217, 212, 173, 0.3)",
+        },
       },
       contained: {
         boxShadow: "none",
