@@ -11,8 +11,6 @@ interface CollapsableProps extends PaperProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: theme.spacing(1.5, 2, 2, 2),
-    backgroundColor: "rgba(0, 0, 0, 0.54)",
-    border: "1px solid rgb(255, 255, 255)",
     "& + &": {
       marginTop: theme.spacing(2),
     },

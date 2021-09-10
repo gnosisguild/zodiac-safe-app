@@ -60,8 +60,8 @@ const muiTheme = createTheme({
       fontSize: 12,
     },
     subtitle1: {
-      fontSize: 16,
-      color: palette.primary.main,
+      fontSize: 12,
+      color: palette.common.white,
     },
   },
   shape: {
