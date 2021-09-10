@@ -23,10 +23,10 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(217, 212, 173, 0.1)",
   },
   leftHeader: {
-    borderRadius: "60px 0 0 60px"
+    borderRadius: "60px 0 0 60px",
   },
   rightHeader: {
-    borderRadius: "0 60px 60px 0"
+    borderRadius: "0 60px 60px 0",
   },
   header: {
     padding: theme.spacing(0.5, 2, 0.5, 0.5),
@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
       bottom: "-5px",
       borderRadius: "0 60px 60px 0",
       border: "1px solid rgba(217, 212, 173, 0.3)",
-    }
+    },
   },
   img: {
     display: "block",
@@ -114,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
     borderStyle: "solid",
     borderColor: "rgba(217, 212, 173, 0.3)",
     background: "rgba(217, 212, 173, 0.1)",
-    margin: theme.spacing(0,2),
+    margin: theme.spacing(0, 2),
     "&::before": {
       content: '" "',
       position: "absolute",
@@ -137,7 +137,13 @@ export const Header = () => {
 
   return (
     <Row className={classes.root}>
-      <div className={classNames(classes.container, classes.header, classes.leftHeader)}>
+      <div
+        className={classNames(
+          classes.container,
+          classes.header,
+          classes.leftHeader
+        )}
+      >
         <div className={classes.circleIconContainer}>
           <img
             src={ZodiacAppLogo}
@@ -152,17 +158,22 @@ export const Header = () => {
       <div className={classes.banner} />
       <div
         onClick={handleOpen}
-        className={classNames(classes.container, classes.txBuilder, classes.rightHeader)}
+        className={classNames(
+          classes.container,
+          classes.txBuilder,
+          classes.rightHeader
+        )}
       >
-        <Typography className={classes.txBuilderTitle}>Transaction Builder</Typography>
+        <Typography className={classes.txBuilderTitle}>
+          Transaction Builder
+        </Typography>
         <div className={classes.circleIconContainer}>
           <Badge
             showZero
             badgeContent={transaction.length}
             color={transaction.length ? "error" : "primary"}
             classes={{ badge: classes.badge, root: classes.badgeRoot }}
-          >
-          </Badge>
+          ></Badge>
         </div>
       </div>
     </Row>

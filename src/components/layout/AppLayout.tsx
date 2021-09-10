@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     background: "none",
     "&::before": {
       content: "none",
-    }
+    },
   },
   leftPanel: {
     overflowY: "auto",
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     background: "none",
     "&::before": {
       content: "none",
-    }
+    },
   },
 }));
 

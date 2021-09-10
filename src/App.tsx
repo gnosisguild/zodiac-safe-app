@@ -18,8 +18,9 @@ const useStyles = makeStyles((theme) => ({
   background: {
     height: "100vh",
     padding: theme.spacing(3, 4, 4, 4),
-    background: "linear-gradient(108.86deg, rgba(26, 33, 66, 0.85) 6.24%, rgba(12, 19, 8, 0.85) 53.08%, rgba(37, 6, 4, 0.85) 96.54%);"
-  }
+    background:
+      "linear-gradient(108.86deg, rgba(26, 33, 66, 0.85) 6.24%, rgba(12, 19, 8, 0.85) 53.08%, rgba(37, 6, 4, 0.85) 96.54%);",
+  },
 }));
 
 const App: React.FC = () => {
