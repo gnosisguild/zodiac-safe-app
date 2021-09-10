@@ -15,7 +15,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(3),
+    padding: theme.spacing(1.5),
   },
   gridContainer: {
     display: "grid",
@@ -24,7 +24,10 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2.5, 2),
-    background: theme.palette.background.default,
+    background: "none",
+    "&::before": {
+      content: "none",
+    }
   },
   title: {
     marginBottom: theme.spacing(2),

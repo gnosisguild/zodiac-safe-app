@@ -20,7 +20,7 @@ const palette = createPalette({
   type: "dark",
   background: {
     default: "rgba(224, 197, 173, 0.1)",
-    paper: "rgba(255, 255, 255, 0.1)",
+    paper: "rgba(217, 212, 173, 0.1)",
   },
   text: {
     secondary: "rgb(104, 166, 0)",
@@ -43,18 +43,18 @@ const muiTheme = createTheme({
   palette,
   shadows,
   typography: {
-    fontFamily: "Roboto",
+    fontFamily: "Spectral",
     h4: {
       fontSize: 24,
-      fontWeight: "bold",
+      fontWeight: "normal",
     },
     h5: {
       fontSize: 20,
-      fontWeight: "bold",
+      fontWeight: "normal",
     },
     h6: {
       fontSize: 14,
-      fontWeight: "bold",
+      fontWeight: "normal",
     },
     body2: {
       fontSize: 12,
@@ -70,8 +70,20 @@ const muiTheme = createTheme({
   overrides: {
     MuiPaper: {
       root: {
+        borderRadius: "0 !important",
         border: "1px solid",
-        borderColor: "rgba(255, 255, 255, 0.2)",
+        borderColor: "rgba(217, 212, 173, 0.3)",
+        position: "relative",
+        "&::before": {
+          content: '" "',
+          position: "absolute",
+          zIndex: 1,
+          top: "2px",
+          left: "2px",
+          right: "2px",
+          bottom: "2px",
+          border: "1px solid rgba(217, 212, 173, 0.3)",
+        },
       },
     },
     MuiCssBaseline: {
@@ -107,7 +119,7 @@ const muiTheme = createTheme({
       },
       contained: {
         boxShadow: "none",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
+        border: "1px solid rgba(217, 212, 173, 0.3);",
       },
       containedSizeSmall: {
         padding: "4px 8px",

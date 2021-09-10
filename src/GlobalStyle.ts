@@ -20,6 +20,9 @@ import Roboto900Woff from "./assets/fonts/Roboto/roboto-v27-latin-900.woff";
 import RobotoMonoRegularWoff from "./assets/fonts/RobotoMono/roboto-mono-v13-latin-regular.woff2";
 import RobotoMonoRegularWoff2 from "./assets/fonts/RobotoMono/roboto-mono-v13-latin-regular.woff";
 
+import SpectralRegularWoff from "./assets/fonts/Spectral/spectral-v7-latin-regular.woff";
+import SpectralRegularWoff2 from "./assets/fonts/Spectral/spectral-v7-latin-regular.woff2";
+
 const GlobalStyle = createGlobalStyle`
     html {
         height: 100%
@@ -115,6 +118,16 @@ const GlobalStyle = createGlobalStyle`
     @font-face {
         font-family: 'Monaco';
         src: local('Monaco'), url(${MonacoFont}) format('woff');
+    }
+
+    /* spectral-regular - latin */
+    @font-face {
+      font-family: 'Spectral';
+      font-style: normal;
+      font-weight: 400;
+      src: local(''),
+      url(${SpectralRegularWoff2}) format('woff2'),
+      url(${SpectralRegularWoff}) format('woff');
     }
 `;
 
