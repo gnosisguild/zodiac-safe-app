@@ -71,7 +71,7 @@ const muiTheme = createTheme({
     MuiPaper: {
       root: {
         border: "1px solid",
-        borderColor: "rgba(255, 255, 255, 0.2)",
+        borderColor: "rgba(217, 212, 173, 0.3);",
       },
     },
     MuiCssBaseline: {
@@ -107,7 +107,7 @@ const muiTheme = createTheme({
       },
       contained: {
         boxShadow: "none",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
+        border: "1px solid rgba(217, 212, 173, 0.3);",
       },
       containedSizeSmall: {
         padding: "4px 8px",
