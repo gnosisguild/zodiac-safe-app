@@ -6,20 +6,28 @@ const useStyles = makeStyles((theme) => ({
     display: "grid",
     height: "calc(100% - 70px)",
     gridTemplateColumns: "390px 1fr",
-    gridGap: theme.spacing(1.5),
-    borderRadius: theme.spacing(1),
+    gridGap: theme.spacing(0.5),
+    borderRadius: 0,
     overflow: "hidden",
-    padding: theme.spacing(1.5),
+    padding: theme.spacing(0.5),
+    background: "none",
+    "&::before": {
+      content: "none",
+    }
   },
   leftPanel: {
     overflowY: "auto",
     borderRightStyle: "solid",
     borderRightWidth: 1,
     borderRightColor: theme.palette.divider,
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: "none",
   },
   content: {
     overflow: "hidden",
+    background: "none",
+    "&::before": {
+      content: "none",
+    }
   },
 }));
 

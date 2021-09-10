@@ -1,14 +1,11 @@
 import React from "react";
 import { Row } from "../../components/layout/Row";
-import { Grow } from "../../components/layout/Grow";
 import { Badge, makeStyles, Typography } from "@material-ui/core";
 import ZodiacAppLogo from "../../assets/images/zodiac-app-logo.png";
 import classNames from "classnames";
-import { ReactComponent as BagIcon } from "../../assets/icons/bag-icon.svg";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
 import { openTransactionBuilder } from "../../store/transactionBuilder";
-import { relative } from "path";
 
 const useStyles = makeStyles((theme) => ({
   root: {
