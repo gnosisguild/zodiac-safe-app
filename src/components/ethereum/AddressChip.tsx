@@ -14,8 +14,8 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     "& img": {
-      width: 24,
-      height: 24,
+      width: 20,
+      height: 20,
     },
   },
 }));
@@ -35,7 +35,7 @@ export const AddressChip = ({ address, name, ...props }: AddressChipProps) => {
         <HashInfo
           showAvatar
           showHash={false}
-          avatarSize="md"
+          avatarSize="sm"
           hash={address}
           className={classes.avatar}
         />

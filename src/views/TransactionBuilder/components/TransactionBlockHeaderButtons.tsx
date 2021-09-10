@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     marginRight: theme.spacing(1),
+    color: theme.palette.text.secondary,
+  },
+  label: {
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -54,6 +58,7 @@ export const TransactionBlockHeaderButtons = ({
         <ActionButton
           onClick={onCancel}
           className={classes.button}
+          classes={{ label: classes.label }}
           size="small"
           variant="text"
           color="primary"

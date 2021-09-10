@@ -85,6 +85,21 @@ const muiTheme = createTheme({
     MuiTypography: {
       gutterBottom: { marginBottom: 8 },
     },
+    MuiChip: {
+      root: {
+        padding: "4px 8px",
+        height: "auto",
+        backgroundColor: "rgba(224, 197, 173, 0.1)",
+        border: "1px solid rgba(255, 255, 255, 0.2)",
+      },
+      avatar: {
+        display: "contents !important",
+      },
+      label: {
+        paddingLeft: 0,
+        paddingRight: 0,
+      },
+    },
     MuiButton: {
       root: {
         lineHeight: 1.5,

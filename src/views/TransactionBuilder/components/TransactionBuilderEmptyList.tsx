@@ -23,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
   text: {
     fontSize: 14,
-    color: "rgba(0,20,40,0.5)",
   },
   title: {
     fontWeight: "bold",
@@ -34,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(3),
   },
 }));
+
 export const TransactionBuilderEmptyList = () => {
   const classes = useStyles();
   return (

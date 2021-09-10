@@ -1,7 +1,7 @@
-import React, { HTMLProps } from "react";
-import { Row } from "../../components/layout/Row";
+import React from "react";
 import {
-  Button,
+  Badge,
+  Fade,
   makeStyles,
   Modal,
   Paper,
@@ -20,13 +20,13 @@ import {
   closeTransactionBuilder,
   resetTransactions,
 } from "../../store/transactionBuilder";
-import { ReactComponent as ChevronDown } from "../../assets/icons/chevron-down.svg";
-import { animated, useSpring } from "react-spring";
 import { fetchPendingModules } from "../../store/modules";
 import { TransactionBuilderList } from "./components/TransactionBuilderList";
 import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
-import { Grow } from "../../components/layout/Grow";
 import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg";
+import classNames from "classnames";
+import { ReactComponent as BagIcon } from "../../assets/icons/bag-icon.svg";
+import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
@@ -38,86 +38,62 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "0",
   },
   header: {
-    backgroundColor: theme.palette.secondary.main,
-    padding: theme.spacing(1, 2),
-    color: theme.palette.common.white,
+    display: "flex",
+    flexDirection: "row",
     alignItems: "center",
-  },
-  queryButton: {
-    padding: theme.spacing(1, 3),
-    borderRadius: 10,
-    boxShadow: "none",
-  },
-  minimizeButton: {
-    fontSize: 24,
-    textTransform: "none",
-    padding: theme.spacing(0, 2),
-    color: theme.palette.common.white,
-  },
-  downIcon: {
-    fill: theme.palette.common.white,
+    marginBottom: theme.spacing(2),
   },
   content: {
-    padding: theme.spacing(3, 2, 2, 2),
+    padding: theme.spacing(1, 2, 2, 2),
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
+    background: "rgba(78, 72, 87, 0.8)",
+
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "rgba(255,255,255,0.2)",
+  },
+  modal: {
+    width: "70%",
+    minWidth: 400,
+    maxWidth: 820,
+
+    height: "calc(100% - 48px) !important",
+    left: "auto !important",
+    right: "25px !important",
+    top: "25px !important",
+  },
+  backdrop: {
+    backdropFilter: "blur(4px)",
+    animationName: "$blur",
+    animationDuration: "500ms",
+    animationTimingFunction: "ease",
+  },
+  "@keyframes blur": {
+    "0%": {
+      backdropFilter: "blur(0px)",
+    },
+    "100%": {
+      backdropFilter: "blur(4px)",
+    },
+  },
+  bagIcon: {
+    marginLeft: theme.spacing(2),
+    stroke: "white",
+  },
+  badge: {
+    marginTop: 8,
+    marginRight: 8,
+    color: theme.palette.common.white,
   },
 }));
-
-interface FadeProps extends HTMLProps<HTMLDivElement> {
-  children?: React.ReactElement;
-  in: boolean;
-  onEnter?: () => {};
-  onExited?: () => {};
-}
-
-function getAppContainerDimensions(): { width: number; height: number } {
-  const appContainer = document.querySelector(
-    "#app-content"
-  ) as HTMLElement | null;
-  if (!appContainer)
-    return { width: window.innerWidth, height: window.innerHeight };
-  return { width: appContainer.offsetWidth, height: appContainer.offsetHeight };
-}
-
-const Slide = React.forwardRef<HTMLDivElement, FadeProps>((props, ref) => {
-  const { in: open, children, onExited, onEnter, ...other } = props;
-
-  const { width, height } = getAppContainerDimensions();
-  const x = width - 300 + "px";
-  const y = height + "px";
-
-  const style = useSpring({
-    from: { transform: `translate(${x}, ${y})`, opacity: 0 },
-    to: {
-      transform: open ? "translate(0px, 0px)" : `translate(${x}, ${y})`,
-      opacity: open ? 1 : 0,
-    },
-    onStart: () => {
-      if (open && onEnter) {
-        onEnter();
-      }
-    },
-    onRest: () => {
-      if (!open && onExited) {
-        onExited();
-      }
-    },
-  });
-
-  return (
-    <animated.div {...other} ref={ref} style={style}>
-      {children}
-    </animated.div>
-  );
-});
 
 export const TransactionBuilder = () => {
   const classes = useStyles();
   const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useRootDispatch();
-  const { width } = getAppContainerDimensions();
 
   const open = useRootSelector(getTransactionBuilderOpen);
   const transactions = useRootSelector(getTransactions);
@@ -153,46 +129,48 @@ export const TransactionBuilder = () => {
       keepMounted
       open={open}
       onClose={handleClose}
-      className={classes.fullWindow}
-      style={{ width, left: "auto" }}
-      BackdropProps={{ open: false }}
+      className={classes.modal}
+      BackdropProps={{
+        className: classes.backdrop,
+        invisible: true,
+      }}
     >
-      <Slide in={open} className={classes.fullWindow}>
-        <Paper className={classes.fullWindow} elevation={2}>
-          <Row className={classes.header}>
-            <Typography variant="h4">Transaction Builder</Typography>
-
+      <Fade in={open}>
+        <Paper
+          className={classNames(classes.fullWindow, classes.content)}
+          elevation={2}
+        >
+          <div className={classes.header}>
+            <Typography variant="h5">Transaction Builder</Typography>
             <Grow />
 
-            <Button
-              onClick={handleClose}
-              startIcon={<ChevronDown className={classes.downIcon} />}
-              className={classes.minimizeButton}
+            <Badge
+              showZero
+              badgeContent={transactions.length}
+              color={transactions.length ? "error" : "primary"}
+              classes={{ badge: classes.badge }}
             >
-              Minimize
-            </Button>
-          </Row>
-
-          <div className={classes.content}>
-            {transactions.length ? (
-              <TransactionBuilderList transactions={transactions} />
-            ) : (
-              <TransactionBuilderEmptyList />
-            )}
-            <ActionButton
-              fullWidth
-              variant="contained"
-              color="secondary"
-              disabled={!transactions.length}
-              className={classes.queryButton}
-              startIcon={<ArrowUpIcon />}
-              onClick={handleSubmitTransaction}
-            >
-              Submit Transactions
-            </ActionButton>
+              <BagIcon className={classes.bagIcon} />
+            </Badge>
           </div>
+
+          {transactions.length ? (
+            <TransactionBuilderList transactions={transactions} />
+          ) : (
+            <TransactionBuilderEmptyList />
+          )}
+          <ActionButton
+            fullWidth
+            variant="contained"
+            color="secondary"
+            disabled={!transactions.length}
+            startIcon={<ArrowUpIcon />}
+            onClick={handleSubmitTransaction}
+          >
+            Submit Transactions
+          </ActionButton>
         </Paper>
-      </Slide>
+      </Fade>
     </Modal>
   );
 };

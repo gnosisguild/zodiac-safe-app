@@ -10,12 +10,10 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "none",
     fontSize: 16,
     "&.MuiButton-contained.Mui-disabled": {
-      opacity: 0.5,
       backgroundColor: theme.palette.secondary.main,
       color: theme.palette.common.white,
     },
     "&.MuiButton-outlinedSecondary.Mui-disabled": {
-      opacity: 0.5,
       color: theme.palette.secondary.main + " !important",
       borderColor: theme.palette.secondary.main + " !important",
     },
