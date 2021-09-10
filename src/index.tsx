@@ -78,7 +78,7 @@ const muiTheme = createTheme({
         "&::before": {
           content: '" "',
           position: "absolute",
-          zIndex: 1,
+          zIndex: -1,
           top: "2px",
           left: "2px",
           right: "2px",
