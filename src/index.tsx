@@ -43,18 +43,18 @@ const muiTheme = createTheme({
   palette,
   shadows,
   typography: {
-    fontFamily: "Roboto",
+    fontFamily: "Spectral",
     h4: {
       fontSize: 24,
-      fontWeight: "bold",
+      fontWeight: "normal",
     },
     h5: {
       fontSize: 20,
-      fontWeight: "bold",
+      fontWeight: "normal",
     },
     h6: {
       fontSize: 14,
-      fontWeight: "bold",
+      fontWeight: "normal",
     },
     body2: {
       fontSize: 12,
