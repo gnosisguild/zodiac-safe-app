@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "none",
   },
   content: {
-    overflow: "hidden",
+    overflowY: "auto",
     background: "none",
     "&::before": {
       content: "none",
