@@ -7,7 +7,7 @@ import CustomModuleImage from "../../../assets/images/custom-module-logo.png";
 import { AddModuleModal } from "./AddModuleModal";
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
-import { ReactComponent as BagIcon } from "../../../assets/icons/bag-icon.svg";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { makeStyles } from "@material-ui/core";
 import { useRootDispatch } from "../../../store";
 import { addTransaction } from "../../../store/transactionBuilder";
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
   addTransactionButton: {
     marginTop: theme.spacing(1),
   },
-  bagIcon: {
-    stroke: theme.palette.secondary.main,
+  addIcon: {
+    stroke: theme.palette.common.white,
     width: 20,
     height: 20,
   },
@@ -119,8 +119,9 @@ export const CustomModuleModal = ({
         fullWidth
         className={classes.addTransactionButton}
         disabled={!isAddressValid}
-        startIcon={<BagIcon className={classes.bagIcon} />}
+        startIcon={<AddIcon />}
         onClick={addTransactionModule}
+        variant="outlined"
       >
         Add to Transaction Bundle
       </ActionButton>

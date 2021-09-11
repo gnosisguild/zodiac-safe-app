@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
-import { Button } from "@gnosis.pm/safe-react-components";
+import { ActionButton } from "../../components/ActionButton";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
@@ -17,6 +17,7 @@ import {
 } from "../../store/transactionBuilder/helpers";
 import { Transaction } from "../../store/transactionBuilder/models";
 import { SafeAbi } from "../../services/helpers";
+import { ReactComponent as RemoveIcon } from "../../assets/icons/delete-icon.svg";
 import { Interface } from "@ethersproject/abi";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
@@ -41,6 +42,9 @@ const useStyles = makeStyles((theme) => ({
   spacing: {
     marginLeft: theme.spacing(2),
   },
+  removeButton: {
+
+  }
 }));
 
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
@@ -100,16 +104,15 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
       />
 
       <Grow />
-
-      <Button
-        size="md"
-        iconType="delete"
+      <ActionButton
+        disableElevation
+        className={classes.removeButton}
         variant="outlined"
         onClick={removeModule}
-        disabled={disabledRemoveButton}
+        startIcon={<RemoveIcon />}
       >
         Remove
-      </Button>
+      </ActionButton>
     </div>
   );
 };

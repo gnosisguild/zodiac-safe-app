@@ -14,11 +14,20 @@ const useStyles = makeStyles((theme) => ({
       color: theme.palette.common.white,
     },
     "&.MuiButton-outlinedSecondary.Mui-disabled": {
-      color: theme.palette.secondary.main + " !important",
-      borderColor: theme.palette.secondary.main + " !important",
+      color: theme.palette.common.white,
+      borderColor: theme.palette.common.white,
     },
   },
-  buttonDisabled: {},
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  outlined: {
+    color: theme.palette.common.white,
+    borderColor: theme.palette.common.white,
+    "&::before": {
+      borderColor: theme.palette.common.white,
+    }
+  },
 }));
 
 export const ActionButton = ({ classes, className, ...props }: ButtonProps) => {
@@ -27,7 +36,7 @@ export const ActionButton = ({ classes, className, ...props }: ButtonProps) => {
     <Button
       color="secondary"
       variant="contained"
-      classes={{ disabled: _classes.buttonDisabled, ...classes }}
+      classes={{ disabled: _classes.buttonDisabled, outlined: _classes.outlined, ...classes }}
       className={classNames(_classes.queryButton, className)}
       {...props}
     />

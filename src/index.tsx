@@ -115,7 +115,7 @@ const muiTheme = createTheme({
     },
     MuiButton: {
       root: {
-        lineHeight: 1.5,
+        lineHeight: 1.4,
         textTransform: "none",
         position: "relative",
         borderRadius: 0,
