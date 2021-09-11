@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     background: "none",
     "&::before": {
       content: "none",
-    }
+    },
   },
   hide: {
     display: "none",

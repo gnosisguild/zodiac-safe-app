@@ -7,7 +7,7 @@ import { FunctionFragment } from "@ethersproject/abi";
 import { FunctionOutputs } from "../../../hooks/useContractQuery";
 import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components";
 import { formatValue } from "../../../utils/contracts";
-import classNames from 'classnames';
+import classNames from "classnames";
 
 interface ContractFunctionHeaderProps {
   date?: Date;
@@ -45,14 +45,22 @@ export const ContractFunctionHeader = ({
     const value = formatValue(baseType, result[0]);
 
     if (baseType === "address") {
-      return <Address address={value} TypographyProps={{classes: { root: classes.type }}} />;
+      return (
+        <Address
+          address={value}
+          TypographyProps={{ classes: { root: classes.type } }}
+        />
+      );
     }
     return (
       <>
         <Typography variant="subtitle1" className={classes.type}>
           ({type})
         </Typography>
-        <Typography noWrap className={classNames(classes.spaceLeft, classes.type)}>
+        <Typography
+          noWrap
+          className={classNames(classes.spaceLeft, classes.type)}
+        >
           {value}
         </Typography>
         <CopyToClipboardBtn textToCopy={value} className={classes.spaceLeft} />

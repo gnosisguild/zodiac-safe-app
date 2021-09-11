@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.palette.common.white,
     "&::before": {
       borderColor: theme.palette.common.white,
-    }
+    },
   },
 }));
 
@@ -36,7 +36,11 @@ export const ActionButton = ({ classes, className, ...props }: ButtonProps) => {
     <Button
       color="secondary"
       variant="contained"
-      classes={{ disabled: _classes.buttonDisabled, outlined: _classes.outlined, ...classes }}
+      classes={{
+        disabled: _classes.buttonDisabled,
+        outlined: _classes.outlined,
+        ...classes,
+      }}
       className={classNames(_classes.queryButton, className)}
       {...props}
     />

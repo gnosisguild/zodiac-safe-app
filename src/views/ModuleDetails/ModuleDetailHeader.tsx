@@ -42,9 +42,7 @@ const useStyles = makeStyles((theme) => ({
   spacing: {
     marginLeft: theme.spacing(2),
   },
-  removeButton: {
-
-  }
+  removeButton: {},
 }));
 
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {

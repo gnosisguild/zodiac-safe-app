@@ -55,9 +55,7 @@ const TransactionFields = ({
         fullWidth
         disabled
         className={classes.addButton}
-        startIcon={
-          <AddIcon className={classes.icon} />
-        }
+        startIcon={<AddIcon className={classes.icon} />}
       >
         Add this transaction
       </ActionButton>
@@ -89,12 +87,10 @@ const TransactionFields = ({
             onClick={() => handleAdd(getParams())}
             disabled={!areParamsValid}
             className={classes.addButton}
-            startIcon={
-          <AddIcon className={classes.icon} />
-        }
-      >
-        Add this transaction
-      </ActionButton>
+            startIcon={<AddIcon className={classes.icon} />}
+          >
+            Add this transaction
+          </ActionButton>
         </>
       )}
     </ContractQueryForm>
