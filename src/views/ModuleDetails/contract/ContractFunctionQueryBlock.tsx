@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
   },
   icon: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.common.white,
   },
   queryButton: {
     marginTop: theme.spacing(2),

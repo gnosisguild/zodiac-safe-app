@@ -13,11 +13,13 @@ interface ContractFunctionResultProps {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.primary.light,
-    color: theme.palette.common.black,
-    fontFamily: "Monaco",
+    color: theme.palette.common.white,
+    fontFamily: "Roboto Mono",
     fontSize: 12,
     padding: theme.spacing(2),
+    "&::before": {
+      content: "none",
+    },
   },
   item: {
     "& + &": {
@@ -25,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   label: {
-    color: "rgba(0, 20, 40, 0.5)",
+    color: "rgba(217, 212, 173, 0.9)",
   },
   value: {
     overflowWrap: "break-word",
