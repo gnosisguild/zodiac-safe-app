@@ -6,7 +6,6 @@ import { ContractQueryForm } from "../../../components/ethereum/ContractQueryFor
 import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { Transaction } from "../../../store/transactionBuilder/models";
 import { ActionButton } from "../../../components/ActionButton";
 import { useRootDispatch, useRootSelector } from "../../../store";
