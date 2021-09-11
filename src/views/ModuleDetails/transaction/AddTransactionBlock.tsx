@@ -15,6 +15,7 @@ import { resetNewTransaction } from "../../../store/transactionBuilder";
 import { getCurrentModule } from "../../../store/modules/selectors";
 import { ABI } from "../../../store/modules/models";
 import { TransactionField } from "./TransactionField";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 
 interface AddTransactionBlockProps {
   abi: ABI;
@@ -29,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   icon: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.common.white,
   },
   addButton: {
     marginTop: theme.spacing(2),
@@ -56,7 +57,7 @@ const TransactionFields = ({
         disabled
         className={classes.addButton}
         startIcon={
-          <Icon className={classes.icon} type="add" size="md" color="primary" />
+          <AddIcon className={classes.icon} />
         }
       >
         Add this transaction
@@ -90,16 +91,11 @@ const TransactionFields = ({
             disabled={!areParamsValid}
             className={classes.addButton}
             startIcon={
-              <Icon
-                className={classes.icon}
-                type="add"
-                size="md"
-                color="primary"
-              />
-            }
-          >
-            Add this transaction
-          </ActionButton>
+          <AddIcon className={classes.icon} />
+        }
+      >
+        Add this transaction
+      </ActionButton>
         </>
       )}
     </ContractQueryForm>
