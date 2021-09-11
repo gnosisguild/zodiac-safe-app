@@ -93,7 +93,6 @@ const useStyles = makeStyles((theme) => ({
   },
   warningText: {
     color: "#E0B325",
-    lineHeight: 1,
   },
   "@keyframes blur": {
     "0%": {

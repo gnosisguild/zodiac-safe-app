@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
-import AMBModuleImage from "../../../assets/images/amb-module-logo.png";
+import AMBModuleImage from "../../../assets/images/bridge-module-logo.png";
 import { AMBModuleParams, deployAMBModule } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";

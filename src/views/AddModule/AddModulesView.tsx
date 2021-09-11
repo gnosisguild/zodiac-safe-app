@@ -4,7 +4,7 @@ import { ModuleButton } from "./ModuleButton";
 import RealityModuleImage from "../../assets/images/reality-module-logo.png";
 import DelayModuleImage from "../../assets/images/delay-module-logo.png";
 import CustomModuleImage from "../../assets/images/custom-module-logo.png";
-import AMBModuleImage from "../../assets/images/amb-module-logo.png";
+import AMBModuleImage from "../../assets/images/bridge-module-logo.png";
 import ExitModuleImage from "../../assets/images/exit-module-logo.png";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getModulesList } from "../../store/modules/selectors";

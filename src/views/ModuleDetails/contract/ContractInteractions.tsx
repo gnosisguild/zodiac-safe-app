@@ -22,9 +22,12 @@ interface ContractInteractionsProps {
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    padding: theme.spacing(2.5),
+    padding: theme.spacing(2),
     marginTop: theme.spacing(3),
-    background: theme.palette.background.default,
+    background: "none",
+    "&::before": {
+      content: "none",
+    },
   },
   hide: {
     display: "none",

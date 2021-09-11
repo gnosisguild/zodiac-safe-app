@@ -60,8 +60,8 @@ const muiTheme = createTheme({
       fontSize: 12,
     },
     subtitle1: {
-      fontSize: 16,
-      color: palette.primary.main,
+      fontSize: 12,
+      color: palette.common.white,
     },
   },
   shape: {
@@ -74,10 +74,11 @@ const muiTheme = createTheme({
         border: "1px solid",
         borderColor: "rgba(217, 212, 173, 0.3)",
         position: "relative",
+        zIndex: 3,
         "&::before": {
           content: '" "',
           position: "absolute",
-          zIndex: 1,
+          zIndex: -1,
           top: "2px",
           left: "2px",
           right: "2px",
@@ -101,8 +102,8 @@ const muiTheme = createTheme({
       root: {
         padding: "4px 8px",
         height: "auto",
-        backgroundColor: "rgba(224, 197, 173, 0.1)",
-        border: "1px solid rgba(255, 255, 255, 0.2)",
+        backgroundColor: "rgba(217, 212, 173, 0.1)",
+        border: "1px solid rgba(217, 212, 173, 0.3)",
       },
       avatar: {
         display: "contents !important",
@@ -114,8 +115,20 @@ const muiTheme = createTheme({
     },
     MuiButton: {
       root: {
-        lineHeight: 1.5,
+        lineHeight: 1.4,
         textTransform: "none",
+        position: "relative",
+        borderRadius: 0,
+        "&::before": {
+          content: '" "',
+          position: "absolute",
+          zIndex: 1,
+          top: "2px",
+          left: "2px",
+          right: "2px",
+          bottom: "2px",
+          border: "1px solid rgba(217, 212, 173, 0.3)",
+        },
       },
       contained: {
         boxShadow: "none",

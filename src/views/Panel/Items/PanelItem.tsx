@@ -22,8 +22,11 @@ const useStyles = makeStyles((theme) => ({
     padding: PANEL_ITEM_PADDING,
   },
   active: {
-    backgroundColor: "rgba(0, 0, 0, 0.54)",
     borderColor: theme.palette.common.white,
+    background: "none",
+    "&::before": {
+      borderColor: theme.palette.common.white,
+    },
   },
   spacing: {
     "& + &, &.sub": {
@@ -50,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
       zIndex: 2,
     },
     "&.cursor": {
-      cursor: "auto",
+      cursor: "pointer",
     },
     "&.active": {
       // backgroundColor: theme.palette.background.default,

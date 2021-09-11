@@ -34,6 +34,26 @@ const GlobalStyle = createGlobalStyle`
        padding: 0px;
     }
 
+    /* Works on Firefox*/
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(217, 212, 173, 0.6) rgba(217, 212, 173, 0.1);
+    }
+
+    /* Works on Chrome, Edge, and Safari */
+    *::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: none;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background-color: rgba(217, 212, 173, 0.3);
+      border-radius: 0px;
+    }
+
     #root {
         height: 100%;
     }

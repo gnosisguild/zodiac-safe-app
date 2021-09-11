@@ -6,7 +6,6 @@ import { ContractQueryForm } from "../../../components/ethereum/ContractQueryFor
 import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { Transaction } from "../../../store/transactionBuilder/models";
 import { ActionButton } from "../../../components/ActionButton";
 import { useRootDispatch, useRootSelector } from "../../../store";
@@ -15,6 +14,7 @@ import { resetNewTransaction } from "../../../store/transactionBuilder";
 import { getCurrentModule } from "../../../store/modules/selectors";
 import { ABI } from "../../../store/modules/models";
 import { TransactionField } from "./TransactionField";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 
 interface AddTransactionBlockProps {
   abi: ABI;
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   icon: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.common.white,
   },
   addButton: {
     marginTop: theme.spacing(2),
@@ -55,9 +55,7 @@ const TransactionFields = ({
         fullWidth
         disabled
         className={classes.addButton}
-        startIcon={
-          <Icon className={classes.icon} type="add" size="md" color="primary" />
-        }
+        startIcon={<AddIcon className={classes.icon} />}
       >
         Add this transaction
       </ActionButton>
@@ -89,14 +87,7 @@ const TransactionFields = ({
             onClick={() => handleAdd(getParams())}
             disabled={!areParamsValid}
             className={classes.addButton}
-            startIcon={
-              <Icon
-                className={classes.icon}
-                type="add"
-                size="md"
-                color="primary"
-              />
-            }
+            startIcon={<AddIcon className={classes.icon} />}
           >
             Add this transaction
           </ActionButton>
