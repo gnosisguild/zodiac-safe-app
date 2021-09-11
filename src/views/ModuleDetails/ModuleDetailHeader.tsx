@@ -109,6 +109,7 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         className={classes.removeButton}
         variant="outlined"
         onClick={removeModule}
+        disabled={disabledRemoveButton}
         startIcon={<RemoveIcon />}
       >
         Remove
