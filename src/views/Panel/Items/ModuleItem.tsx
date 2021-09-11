@@ -99,6 +99,7 @@ export const ModuleItem = (props: ModuleItemProps) => {
       <ModulePendingRemoval
         module={module}
         instant={instant}
+        onClick={onClick}
         {...panelItemProps}
       />
     );
