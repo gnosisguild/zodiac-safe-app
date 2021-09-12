@@ -3,7 +3,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
 import AMBModuleImage from "../../../assets/images/bridge-module-logo.png";
-import { AMBModuleParams, deployAMBModule } from "../../../services";
+import { AMBModuleParams, deployBridgeModule } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
 
@@ -62,7 +62,7 @@ export const AMBModuleModal = ({
 
   const handleAddAMBModule = async () => {
     try {
-      const txs = deployAMBModule(safe.safeAddress, safe.chainId, {
+      const txs = deployBridgeModule(safe.safeAddress, safe.chainId, {
         ...params,
         executor: safe.safeAddress,
       });

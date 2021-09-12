@@ -172,7 +172,7 @@ export function deployDelayModule(
   ];
 }
 
-export function deployAMBModule(
+export function deployBridgeModule(
   safeAddress: string,
   chainId: number,
   args: AMBModuleParams
@@ -181,7 +181,7 @@ export function deployAMBModule(
   const { executor, controller, amb, chainId: ambChainId } = args;
 
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
-    "amb",
+    "bridge",
     {
       types: ["address", "address", "address", "address", "bytes32"],
       values: [
