@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
     backgroundColor: "#0d0b217a",
     border: "1px solid rgba(217, 212, 173, 0.3)",
+    overflowY: "auto",
   },
 }));
 
