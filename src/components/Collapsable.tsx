@@ -10,7 +10,7 @@ interface CollapsableProps extends PaperProps {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    padding: theme.spacing(1.5, 2, 2, 2),
+    padding: theme.spacing(2, 2, 2, 2),
     "& + &": {
       marginTop: theme.spacing(2),
     },
@@ -32,7 +32,7 @@ export const Collapsable: React.FC<CollapsableProps> = ({
   ...props
 }) => {
   const classes = useStyles();
-
+  console.log(className);
   return (
     <Paper {...props} className={classNames(classes.root, className)}>
       {children}
