@@ -114,7 +114,7 @@ export const AddModulesView = () => {
           title="AMB Module"
           description="Execute transactions initiated on another chain"
           image={<img src={AMBModuleImage} alt="AMB Module Logo" />}
-          onClick={() => setModule(ModuleType.AMB)}
+          onClick={() => setModule(ModuleType.BRIDGE)}
         />
 
         <ModuleButton
