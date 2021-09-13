@@ -48,8 +48,8 @@ export const TransactionBuilderEmptyList = () => {
             No Transactions Added
           </Typography>
           <Typography variant="body1" className={classes.text}>
-            Add transactions via the Write tab on any module, and view them here
-            before submitting them as a bundle.
+            Add transactions using the Write tab on any mod, and view these
+            transactions here before submitting them as a bundle.
           </Typography>
         </Column>
       </div>

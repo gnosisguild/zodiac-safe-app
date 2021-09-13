@@ -185,10 +185,10 @@ export const RealityModuleModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="DAO Module"
+      title="Reality Module"
       description="Allows Reality.eth questions to execute a transaction when resolved."
       image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
-      tags={["Stackable", "From Gnosis"]}
+      tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRealityModule}
       readMoreLink="https://github.com/gnosis/dao-module"
       ButtonProps={{ disabled: !isValid }}
