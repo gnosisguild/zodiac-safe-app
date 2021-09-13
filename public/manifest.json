@@ -1,16 +1,16 @@
 {
-  "short_name": "Zodiac Module Manager",
-  "name": "Zodiac Module Manager",
-  "description": "Deploy and manage Zodiac modules for your Gnosis Safe",
-  "iconPath": "gnosis-safe-logo.png",
+  "short_name": "Zodiac",
+  "name": "Zodiac",
+  "description": "The expansion pack for DAOs",
+  "iconPath": "zodiac-app-logo.png",
   "icons": [
     {
-      "src": "gnosis-safe-logo.png",
+      "src": "zodiac-app-logo.png",
       "sizes": "64x64 32x32 24x24 16x16 ",
       "type": "image/png"
     },
     {
-      "src": "gnosis-safe-logo.png",
+      "src": "zodiac-app-logo.png",
       "type": "image/png",
       "sizes": "256x256"
     }
