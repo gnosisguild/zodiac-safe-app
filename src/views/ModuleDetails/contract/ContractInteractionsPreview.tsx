@@ -1,7 +1,6 @@
 import React from "react";
 import { makeStyles, Paper } from "@material-ui/core";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
-import { Row } from "../../../components/layout/Row";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
 import { ABI } from "../../../store/modules/models";
 
@@ -25,9 +24,7 @@ export const ContractInteractionsPreview = ({
 
   return (
     <>
-      <Row style={{ alignItems: "end" }}>
-        <ContractOperationToggleButtons value="read" disabled />
-      </Row>
+      <ContractOperationToggleButtons value="read" disabled />
 
       <Paper className={classes.content}>
         <ContractReadFunctionsList preview address={address} abi={abi} />

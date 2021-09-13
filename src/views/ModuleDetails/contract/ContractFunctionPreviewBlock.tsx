@@ -49,9 +49,7 @@ export const ContractFunctionPreviewBlock = ({
   return (
     <Collapsable className={classes.root}>
       <Row style={{ alignItems: "center" }}>
-        <Typography variant="h6" className={classes.title}>
-          {func.name}
-        </Typography>
+        <Typography className={classes.title}>{func.name}</Typography>
         <Grow />
         <ContractFunctionHeader
           func={func}

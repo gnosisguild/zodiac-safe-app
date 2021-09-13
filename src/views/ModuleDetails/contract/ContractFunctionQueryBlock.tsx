@@ -131,9 +131,7 @@ export const ContractFunctionQueryBlock = ({
         className={classNames({ [classes.clickable]: collapsable })}
         onClick={() => setOpen(!open)}
       >
-        <Typography variant="h6" className={classes.title}>
-          {func.name}
-        </Typography>
+        <Typography className={classes.title}>{func.name}</Typography>
         <Grow />
         <ContractFunctionHeader
           func={func}

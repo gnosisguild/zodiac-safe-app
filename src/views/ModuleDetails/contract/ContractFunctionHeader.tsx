@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   type: {
-    fontSize: 12,
     fontFamily: "Roboto Mono",
   },
 }));
@@ -70,11 +69,11 @@ export const ContractFunctionHeader = ({
 
   if (date) {
     return (
-      <Typography variant="subtitle1">
+      <Typography>
         Queried <TimeAgo datetime={date} />
       </Typography>
     );
   }
 
-  return <Typography variant="subtitle1">Query</Typography>;
+  return <Typography>Query</Typography>;
 };

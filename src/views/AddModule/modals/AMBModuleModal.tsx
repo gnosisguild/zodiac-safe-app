@@ -84,12 +84,10 @@ export const AMBModuleModal = ({
       image={<img src={AMBModuleImage} alt="Custom Module Logo" />}
       tags={["From Gnosis Guild"]}
       onAdd={handleAddAMBModule}
-      readMoreLink="https://github.com/gnosis/SafeBridge"
+      readMoreLink="https://github.com/gnosis/zodiac-module-bridge"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>

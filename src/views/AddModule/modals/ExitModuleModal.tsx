@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
 import ExitModuleImage from "../../../assets/images/exit-module-logo.png";
 import { deployExitModule, ExitModuleParams } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
-import { Row } from "../../../components/layout/Row";
-import { Grow } from "../../../components/layout/Grow";
 
 interface ExitModuleModalProps {
   open: boolean;
@@ -26,9 +24,6 @@ const useStyles = makeStyles((theme) => ({
   loadMessage: {
     textAlign: "center",
   },
-  text: {
-    fontSize: 14,
-  },
   textLink: {
     cursor: "pointer",
   },
@@ -46,18 +41,12 @@ export const ExitModuleModal = ({
     Record<keyof ExitModuleParamsInput, boolean>
   >({
     tokenContract: false,
-    circulatingSupply: false,
-    circulatingSupplyAddress: false,
   });
   const [params, setParams] = useState<ExitModuleParamsInput>({
     tokenContract: "",
-    circulatingSupply: "",
   });
-  const [enterAddress, setEnterAddress] = useState(false);
 
-  const isValid =
-    errors.tokenContract &&
-    (enterAddress ? errors.circulatingSupplyAddress : errors.circulatingSupply);
+  const isValid = Object.values(errors).every((field) => field);
 
   const onParamChange = <Field extends keyof ExitModuleParamsInput>(
     field: Field,
@@ -73,17 +62,8 @@ export const ExitModuleModal = ({
 
   const handleAddExitModule = async () => {
     try {
-      const args = enterAddress
-        ? {
-            tokenContract: params.tokenContract,
-            circulatingSupplyAddress: params.circulatingSupplyAddress,
-          }
-        : {
-            tokenContract: params.tokenContract,
-            circulatingSupply: params.circulatingSupply,
-          };
       const txs = deployExitModule(safe.safeAddress, safe.chainId, {
-        ...args,
+        ...params,
         executor: safe.safeAddress,
       });
 
@@ -107,9 +87,7 @@ export const ExitModuleModal = ({
       readMoreLink="https://github.com/gnosis/zodiac-module-exit"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
@@ -122,48 +100,6 @@ export const ExitModuleModal = ({
               onParamChange("tokenContract", value, valid)
             }
           />
-        </Grid>
-        <Grid item xs={12}>
-          <Row style={{ alignItems: "center" }}>
-            <Typography className={classes.text}>
-              Circulating Supply {enterAddress ? "Address" : "Amount"}
-            </Typography>
-            <Grow />
-            <Link
-              color="secondary"
-              target="_blank"
-              onClick={() => setEnterAddress(!enterAddress)}
-              className={classes.textLink}
-            >
-              {enterAddress ? "Deploy a New Contract" : "Use Existing Contract"}
-            </Link>
-          </Row>
-
-          {enterAddress ? (
-            <ParamInput
-              key="circulatingSupplyAddress"
-              param={ParamType.from("address")}
-              color="secondary"
-              value={params.circulatingSupplyAddress}
-              onChange={(value, valid) =>
-                onParamChange("circulatingSupplyAddress", value, valid)
-              }
-              label={undefined}
-              placeholder="0x325a2e0F3CCA2ddbaeBB4DfC38Df8D19ca165b47"
-            />
-          ) : (
-            <ParamInput
-              key="circulatingSupply"
-              param={ParamType.from("uint256")}
-              color="secondary"
-              value={params.circulatingSupply}
-              onChange={(value, valid) =>
-                onParamChange("circulatingSupply", value, valid)
-              }
-              label={undefined}
-              placeholder="16579517055253348798759097"
-            />
-          )}
         </Grid>
       </Grid>
     </AddModuleModal>

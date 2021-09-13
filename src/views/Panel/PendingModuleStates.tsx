@@ -63,7 +63,7 @@ export const PendingModuleStates = () => {
   const image = isInstantExecution ? (
     <LoadingIcon icon={<AddIcon />} />
   ) : (
-    <ModulePendingImg />
+    <ModulePendingImg style={{ marginLeft: -4 }} />
   );
   const linkText = isInstantExecution
     ? "Transaction confirming..."

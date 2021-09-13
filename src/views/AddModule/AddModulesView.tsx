@@ -31,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     marginBottom: theme.spacing(2),
-    fontSize: "20px",
   },
   introBox: {
     gridColumn: "1/3",
@@ -68,7 +67,7 @@ export const AddModulesView = () => {
       <div className={classes.gridContainer}>
         <div className={classes.introBox}>
           <Paper className={classes.paper}>
-            <Typography variant="h4" className={classes.title}>
+            <Typography variant="h5" className={classes.title}>
               {title}
             </Typography>
             <Typography variant="body2">
@@ -115,7 +114,7 @@ export const AddModulesView = () => {
           title="Bridge Module"
           description="Enables an address on one chain to control an avatar on another chain using an Arbitrary Message Bridge (AMB)"
           image={<img src={AMBModuleImage} alt="AMB Module Logo" />}
-          onClick={() => setModule(ModuleType.AMB)}
+          onClick={() => setModule(ModuleType.BRIDGE)}
         />
 
         <ModuleButton

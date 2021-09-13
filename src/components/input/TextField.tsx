@@ -10,7 +10,6 @@ const StyledTextField = withStyles((theme) => ({
     "& label.Mui-focused": {
       position: "relative",
       transform: "none",
-      fontSize: theme.typography.fontSize,
       color: theme.palette.text.primary,
       marginBottom: theme.spacing(1),
     },

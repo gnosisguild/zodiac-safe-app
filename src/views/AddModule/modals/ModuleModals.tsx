@@ -32,9 +32,9 @@ export const ModuleModals = ({
         onSubmit={() => onSubmit && onSubmit(ModuleType.DELAY)}
       />
       <AMBModuleModal
-        open={selected === ModuleType.AMB}
+        open={selected === ModuleType.BRIDGE}
         onClose={onClose}
-        onSubmit={() => onSubmit && onSubmit(ModuleType.AMB)}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.BRIDGE)}
       />
       <ExitModuleModal
         open={selected === ModuleType.EXIT}

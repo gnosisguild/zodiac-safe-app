@@ -31,9 +31,6 @@ const useStyles = makeStyles((theme) => ({
     minHeight: 40,
     alignItems: "center",
   },
-  title: {
-    fontSize: 20,
-  },
   moduleList: {
     marginTop: theme.spacing(3),
   },
@@ -53,9 +50,7 @@ export const Panel = () => {
   return (
     <div className={classes.root}>
       <Row className={classes.header}>
-        <Typography variant="h4" className={classes.title}>
-          Modules and Modifiers
-        </Typography>
+        <Typography variant="h5">Modules and Modifiers</Typography>
         <Grow />
         {currentModule || currentPending ? (
           <Button

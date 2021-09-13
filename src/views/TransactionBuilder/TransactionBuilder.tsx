@@ -25,7 +25,6 @@ import { TransactionBuilderList } from "./components/TransactionBuilderList";
 import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
 import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg";
 import classNames from "classnames";
-import { ReactComponent as BagIcon } from "../../assets/icons/bag-icon.svg";
 import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,16 +34,20 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100%",
     outline: "none",
-    borderRadius: "0",
+    borderRadius: 0,
   },
   header: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     marginBottom: theme.spacing(2),
+    padding: theme.spacing(0.5, 0.5, 0.5, 1.5),
+    border: "1px solid rgba(217, 212, 173, 0.3)",
+    borderRadius: "0 60px 60px 0",
+    background: "rgba(217, 212, 173, 0.1)",
   },
   content: {
-    padding: theme.spacing(1, 2, 2, 2),
+    padding: theme.spacing(1.5, 1.5, 1.5, 1.5),
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
@@ -60,10 +63,10 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 400,
     maxWidth: 820,
 
-    height: "calc(100% - 48px) !important",
+    height: "calc(100% - 22px) !important",
     left: "auto !important",
-    right: "25px !important",
-    top: "25px !important",
+    right: "19px !important",
+    top: "11px !important",
   },
   backdrop: {
     backdropFilter: "blur(4px)",
@@ -84,9 +87,32 @@ const useStyles = makeStyles((theme) => ({
     stroke: "white",
   },
   badge: {
-    marginTop: 8,
-    marginRight: 8,
     color: theme.palette.common.white,
+    display: "flex",
+    position: "relative",
+    transform: "none",
+    textAlign: "center",
+    background: "none",
+    fontSize: 16,
+  },
+  badgeRoot: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 36,
+    width: 36,
+    borderRadius: 60,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "rgba(217, 212, 173, 0.3)",
+    padding: theme.spacing(0.5),
+  },
+  circleIconContainer: {
+    borderRadius: 60,
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "rgba(217, 212, 173, 0.3)",
+    padding: theme.spacing(0.5),
   },
 }));
 
@@ -144,14 +170,14 @@ export const TransactionBuilder = () => {
             <Typography variant="h5">Transaction Builder</Typography>
             <Grow />
 
-            <Badge
-              showZero
-              badgeContent={transactions.length}
-              color={transactions.length ? "error" : "primary"}
-              classes={{ badge: classes.badge }}
-            >
-              <BagIcon className={classes.bagIcon} />
-            </Badge>
+            <div className={classes.circleIconContainer}>
+              <Badge
+                showZero
+                badgeContent={transactions.length}
+                color={transactions.length ? "error" : "primary"}
+                classes={{ badge: classes.badge, root: classes.badgeRoot }}
+              />
+            </div>
           </div>
 
           {transactions.length ? (

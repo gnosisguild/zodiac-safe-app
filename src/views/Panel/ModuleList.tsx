@@ -57,8 +57,11 @@ const useStyles = makeStyles((theme) => ({
   },
   emptyModulesText: {
     maxWidth: 200,
-    fontSize: 16,
-    color: "rgba(0,20,40,0.5)",
+  },
+  emptyImage: {
+    border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: "50%",
+    padding: theme.spacing(0.5),
   },
 }));
 
@@ -92,7 +95,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (modulesLoading) {
     return (
-      <PanelItem image={<Skeleton variant="circle" width={40} height={40} />}>
+      <PanelItem image={<Skeleton variant="circle" width={50} height={50} />}>
         <Skeleton width={160} height={20} />
         <Skeleton width={100} height={20} />
       </PanelItem>
@@ -101,7 +104,15 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (!modules.length && !pendingModules.length) {
     return (
-      <PanelItem image={<AvatarEmptyIcon />}>
+      <PanelItem
+        image={
+          <AvatarEmptyIcon
+            className={classes.emptyImage}
+            height={50}
+            width={50}
+          />
+        }
+      >
         <Typography className={classes.emptyModulesText}>
           Modules will appear here once added
         </Typography>

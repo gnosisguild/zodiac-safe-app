@@ -20,12 +20,10 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginBottom: theme.spacing(2),
   },
-  text: {
-    color: "rgba(0, 20, 40, 0.5)",
-  },
   header: {
-    display: "flex",
-    flexDirection: "row",
+    display: "grid",
+    gridTemplateColumns: "50px auto",
+    gridGap: theme.spacing(2),
     alignItems: "center",
     marginBottom: theme.spacing(3),
   },
@@ -67,7 +65,7 @@ export const ModulePendingTransaction = () => {
   return (
     <div className={classes.root}>
       <div className={classes.header}>
-        <Skeleton variant="circle" width={40} height={40} />
+        <Skeleton variant="circle" width={50} height={50} />
         <Skeleton variant="rect" width={380} height={20} />
       </div>
 
@@ -76,7 +74,7 @@ export const ModulePendingTransaction = () => {
           <Typography variant="h5" className={classes.title}>
             Waiting on module approval
           </Typography>
-          <Typography className={classes.text}>
+          <Typography>
             Once this module transaction has been approved by the other signers,
             you will be able to read and write to it.
           </Typography>

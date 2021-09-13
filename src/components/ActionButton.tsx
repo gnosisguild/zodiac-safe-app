@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
   },
   outlined: {
     color: theme.palette.common.white,
-    borderColor: theme.palette.common.white,
+    borderColor: "rgba(217, 212, 173, 0.3)",
     "&::before": {
-      borderColor: theme.palette.common.white,
+      borderColor: "rgba(217, 212, 173, 0.3)",
     },
   },
 }));

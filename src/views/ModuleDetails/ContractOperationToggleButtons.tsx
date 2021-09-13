@@ -6,16 +6,39 @@ import {
 } from "@material-ui/lab";
 import { withStyles } from "@material-ui/core";
 
+const StyledToggleButtonGroup = withStyles(() => ({
+  root: {
+    display: "flex",
+    borderRadius: 0,
+    position: "relative",
+    margin: 2,
+    border: "1px solid rgba(217, 212, 173, 0.3)",
+
+    "&::before": {
+      content: '" "',
+      position: "absolute",
+      zIndex: -1,
+      top: -3,
+      left: -3,
+      right: -3,
+      bottom: -3,
+      border: "1px solid rgba(217, 212, 173, 0.3)",
+      backgroundColor: "rgba(217, 212, 173, 0.1)",
+    },
+  },
+}))(ToggleButtonGroup);
+
 const StyledToggleButton = withStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.common.white + " !important",
-    borderColor: theme.palette.secondary.main,
+    width: "50%",
+    border: 0,
+    borderRadius: 0,
     padding: theme.spacing(1, 2.5),
+    backgroundColor: "rgba(217, 212, 173, 0.1)",
     "& span": {
-      fontFamily: theme.typography.fontFamily,
       fontSize: 16,
       textTransform: "none",
-      color: theme.palette.secondary.main + " !important",
+      color: theme.palette.text.primary + " !important",
     },
     "&.Mui-disabled": {
       opacity: 0.5,
@@ -23,9 +46,6 @@ const StyledToggleButton = withStyles((theme) => ({
   },
   selected: {
     backgroundColor: theme.palette.secondary.main + " !important",
-    "& span": {
-      color: theme.palette.common.white + " !important",
-    },
   },
 }))(ToggleButton);
 
@@ -38,13 +58,13 @@ export const ContractOperationToggleButtons = ({
   ...props
 }: ContractOperationToggleButtonsProps) => {
   return (
-    <ToggleButtonGroup exclusive size="small" {...props}>
+    <StyledToggleButtonGroup exclusive size="small" {...props}>
       <StyledToggleButton disabled={disabled} value="read" disableRipple>
         Read Contract
       </StyledToggleButton>
       <StyledToggleButton disabled={disabled} value="write" disableRipple>
         Write Contract
       </StyledToggleButton>
-    </ToggleButtonGroup>
+    </StyledToggleButtonGroup>
   );
 };

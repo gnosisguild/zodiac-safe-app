@@ -23,11 +23,10 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexGrow: 1,
     outline: "none",
-    borderRadius: 8,
     padding: theme.spacing(1.5),
     marginBottom: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
-    border: "1px solid rgba(255, 255, 255, 0.2)",
+    backgroundColor: "#0d0b217a",
+    border: "1px solid rgba(217, 212, 173, 0.3)",
   },
 }));
 
