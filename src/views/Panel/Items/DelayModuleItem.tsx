@@ -18,7 +18,7 @@ interface DelayModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "grid",
-    gridGap: theme.spacing(0.5),
+    gridGap: theme.spacing(0.25),
     "& > *": {
       gridColumn: 1,
     },
@@ -28,7 +28,9 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: 1,
     letterSpacing: 1,
   },
-  moduleName: {},
+  moduleName: {
+    textTransform: "uppercase",
+  },
   link: {
     marginLeft: theme.spacing(1),
     lineHeight: 1,

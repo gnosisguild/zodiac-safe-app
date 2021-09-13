@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
   label: {
     color: theme.palette.text.primary,
-    fontSize: 14,
     marginBottom: theme.spacing(1),
   },
   inputContainer: {

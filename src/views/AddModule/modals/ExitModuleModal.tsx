@@ -107,9 +107,7 @@ export const ExitModuleModal = ({
       readMoreLink="https://github.com/gnosis/zodiac-module-exit"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
@@ -130,7 +128,7 @@ export const ExitModuleModal = ({
             </Typography>
             <Grow />
             <Link
-              color="secondary"
+              color="textSecondary"
               target="_blank"
               onClick={() => setEnterAddress(!enterAddress)}
               className={classes.textLink}
@@ -149,7 +147,7 @@ export const ExitModuleModal = ({
                 onParamChange("circulatingSupplyAddress", value, valid)
               }
               label={undefined}
-              placeholder="0x325a2e0F3CCA2ddbaeBB4DfC38Df8D19ca165b47"
+              placeholder="0xd7a85e7D0813F8440602E243Acb67df3CCeb5a60"
             />
           ) : (
             <ParamInput

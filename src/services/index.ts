@@ -77,7 +77,7 @@ export function deployRealityModule(
   const { timeout, cooldown, expiration, bond, templateId, oracle, executor } =
     args;
   const provider = getProvider(chainId);
-  const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
+  const oracleAddress = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
   const {
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,
@@ -85,6 +85,7 @@ export function deployRealityModule(
     type,
     {
       types: [
+        "address",
         "address",
         "address",
         "address",
@@ -96,8 +97,9 @@ export function deployRealityModule(
       ],
       values: [
         safeAddress,
+        safeAddress,
         executor,
-        ORACLE_ADDRESS,
+        oracleAddress,
         timeout,
         cooldown,
         expiration,

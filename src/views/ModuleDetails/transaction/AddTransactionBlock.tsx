@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, makeStyles, MenuItem, Typography } from "@material-ui/core";
-import { Collapsable } from "../../../components/Collapsable";
+import { makeStyles, MenuItem, Paper, Typography } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
@@ -33,6 +32,24 @@ const useStyles = makeStyles((theme) => ({
   },
   addButton: {
     marginTop: theme.spacing(2),
+  },
+  header: {
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(1.5),
+    maxWidth: 366,
+    "&::before": {
+      content: "none",
+    },
+  },
+  content: {
+    padding: theme.spacing(1.5),
+
+    "&::before": {
+      content: "none",
+    },
+  },
+  field: {
+    marginTop: theme.spacing(2.5),
   },
 }));
 
@@ -78,9 +95,9 @@ const TransactionFields = ({
       {({ paramInputProps, areParamsValid, getParams }) => (
         <>
           {paramInputProps.map((props, index) => (
-            <Box marginTop={2} key={index}>
+            <div className={classes.field} key={index}>
               <TransactionField func={func} param={props} />
-            </Box>
+            </div>
           ))}
           <ActionButton
             fullWidth
@@ -139,35 +156,43 @@ export const AddTransactionBlock = ({
     dispatch(resetNewTransaction());
   };
 
-  const content = (
-    <>
-      <TextField
-        select
-        value={funcIndex}
-        onChange={handleFuncChange}
-        className={classNames({ [classes.greyText]: funcIndex === undefined })}
-        color="secondary"
-        label="Function"
-      >
-        <MenuItem value={-1}>Select function</MenuItem>
-        {writeFunctions.map((func, index) => (
-          <MenuItem key={func.format("full")} value={index}>
-            {func.name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TransactionFields
-        key={`${funcIndex}_${selectedFunc}`}
-        defaultParams={defaultParams}
-        func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
-        onAdd={handleAdd}
-      />
-    </>
-  );
-
   return (
-    <Collapsable open content={content}>
-      <Typography variant="h6">Add new transaction</Typography>
-    </Collapsable>
+    <>
+      <Paper className={classes.header}>
+        <Typography variant="h5" gutterBottom>
+          Add Transaction
+        </Typography>
+        <Typography variant="body2">
+          Add multiple transactions here, and we will bundle them together into
+          a single transaction, to save you gas.
+        </Typography>
+      </Paper>
+
+      <Paper className={classes.content}>
+        <TextField
+          select
+          value={funcIndex}
+          onChange={handleFuncChange}
+          className={classNames({
+            [classes.greyText]: funcIndex === undefined,
+          })}
+          color="secondary"
+          label="Function"
+        >
+          <MenuItem value={-1}>Select function</MenuItem>
+          {writeFunctions.map((func, index) => (
+            <MenuItem key={func.format("full")} value={index}>
+              {func.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TransactionFields
+          key={`${funcIndex}_${selectedFunc}`}
+          defaultParams={defaultParams}
+          func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
+          onAdd={handleAdd}
+        />
+      </Paper>
+    </>
   );
 };

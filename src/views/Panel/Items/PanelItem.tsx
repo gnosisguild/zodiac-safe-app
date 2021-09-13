@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
       marginTop: PANEL_ITEM_MARGIN,
     },
   },
-
   moduleItem: {
     display: "grid",
     gridTemplateColumns: "48px 1fr",
@@ -42,29 +41,19 @@ const useStyles = makeStyles((theme) => ({
 
     backgroundColor: "transparent",
 
-    "&:hover": {
-      // backgroundColor: theme.palette.background.default,
-    },
     "&.sub": {
-      // borderLeftStyle: "solid",
-      // borderTopWidth: 0,
-      // borderLeftWidth: 1,
-      // borderLeftColor: theme.palette.divider,
       zIndex: 2,
     },
     "&.cursor": {
       cursor: "pointer",
     },
-    "&.active": {
-      // backgroundColor: theme.palette.background.default,
-      // borderLeftStyle: "solid",
-      // borderLeftWidth: 3,
-      // borderLeftColor: theme.palette.secondary.main,
-    },
   },
   content: {
     width: "100%",
     justifyContent: "center",
+  },
+  image: {
+    paddingTop: 2,
   },
 }));
 
@@ -91,7 +80,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
           cursor: active || !onClick,
         })}
       >
-        <div>{image}</div>
+        <div className={classes.image}>{image}</div>
         <Column className={classes.content}>{children}</Column>
       </div>
     </Paper>

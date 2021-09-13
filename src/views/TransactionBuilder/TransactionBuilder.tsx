@@ -25,7 +25,6 @@ import { TransactionBuilderList } from "./components/TransactionBuilderList";
 import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
 import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg";
 import classNames from "classnames";
-import { ReactComponent as BagIcon } from "../../assets/icons/bag-icon.svg";
 import { Grow } from "../../components/layout/Grow";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "100%",
     outline: "none",
-    borderRadius: "0",
+    borderRadius: 0,
   },
   header: {
     display: "flex",
@@ -64,10 +63,10 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 400,
     maxWidth: 820,
 
-    height: "calc(100% - 48px) !important",
+    height: "calc(100% - 22px) !important",
     left: "auto !important",
-    right: "25px !important",
-    top: "25px !important",
+    right: "19px !important",
+    top: "11px !important",
   },
   backdrop: {
     backdropFilter: "blur(4px)",
@@ -177,7 +176,7 @@ export const TransactionBuilder = () => {
                 badgeContent={transactions.length}
                 color={transactions.length ? "error" : "primary"}
                 classes={{ badge: classes.badge, root: classes.badgeRoot }}
-              ></Badge>
+              />
             </div>
           </div>
 

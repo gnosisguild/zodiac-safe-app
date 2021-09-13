@@ -80,9 +80,7 @@ export const DelayModuleModal = ({
       onAdd={handleAddDelayModule}
       readMoreLink="https://github.com/gnosis/SafeDelay"
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={6}>

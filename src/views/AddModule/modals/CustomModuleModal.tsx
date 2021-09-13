@@ -6,13 +6,13 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import CustomModuleImage from "../../../assets/images/custom-module-logo.png";
 import { AddModuleModal } from "./AddModuleModal";
 import { ActionButton } from "../../../components/ActionButton";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { makeStyles } from "@material-ui/core";
 import { useRootDispatch } from "../../../store";
 import { addTransaction } from "../../../store/transactionBuilder";
 import { SafeAbi } from "../../../services/helpers";
 import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
+import { ReactComponent as ArrowUpIcon } from "../../../assets/icons/arrow-up-icon.svg";
 
 interface AddCustomModuleProps {
   open: boolean;
@@ -109,7 +109,7 @@ export const CustomModuleModal = ({
         className={classes.addButton}
         variant="contained"
         disabled={!isAddressValid}
-        startIcon={<Icon type="sent" size="md" color="white" />}
+        startIcon={<ArrowUpIcon />}
         onClick={addModule}
       >
         Add Module

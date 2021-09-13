@@ -31,7 +31,7 @@ palette.primary = palette.augmentColor({
   "500": "#30312C",
 });
 palette.secondary = palette.augmentColor({
-  "500": "#486A0F",
+  "500": "rgb(34, 50, 101)",
 });
 
 const shadows = MUIShadows;
@@ -65,7 +65,7 @@ const muiTheme = createTheme({
     },
   },
   shape: {
-    borderRadius: 6,
+    borderRadius: 0,
   },
   overrides: {
     MuiPaper: {
@@ -122,11 +122,11 @@ const muiTheme = createTheme({
         "&::before": {
           content: '" "',
           position: "absolute",
-          zIndex: 1,
-          top: "2px",
-          left: "2px",
-          right: "2px",
-          bottom: "2px",
+          zIndex: -1,
+          top: -3,
+          left: -3,
+          right: -3,
+          bottom: -3,
           border: "1px solid rgba(217, 212, 173, 0.3)",
         },
       },
@@ -142,10 +142,20 @@ const muiTheme = createTheme({
       root: {
         padding: "8px 0 8px 8px",
         border: "1px solid rgb(255,255,255)",
-        borderRadius: 4,
+        borderRadius: 0,
       },
       input: {
         padding: 0,
+      },
+    },
+    MuiPopover: {
+      paper: {
+        backgroundColor: "rgb(16, 16, 16)",
+      },
+    },
+    MuiInputLabel: {
+      root: {
+        fontSize: 16,
       },
     },
   },

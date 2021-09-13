@@ -87,9 +87,7 @@ export const AMBModuleModal = ({
       readMoreLink="https://github.com/gnosis/SafeBridge"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>

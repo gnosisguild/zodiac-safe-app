@@ -16,9 +16,23 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     letterSpacing: 1,
     marginBottom: theme.spacing(0.5),
+    textTransform: "uppercase",
   },
   link: {
     fontSize: 12,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    display: "inline-flex !important",
+    padding: theme.spacing(0.5),
+    alignItems: "center",
+    justifyContent: "center",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: "50%",
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    background: "rgba(224, 197, 173, 0.1)",
   },
 }));
 
@@ -40,7 +54,7 @@ export const ModulePendingItem = ({
     : "";
 
   return (
-    <PanelItem image={image} {...props}>
+    <PanelItem image={<div className={classes.image}>{image}</div>} {...props}>
       <Typography className={classes.title}>{title}</Typography>
       <div>
         <Link target="_parent" href={link} className={classes.link}>

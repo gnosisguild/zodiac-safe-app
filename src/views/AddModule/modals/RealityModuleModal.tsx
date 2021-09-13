@@ -193,9 +193,7 @@ export const RealityModuleModal = ({
       readMoreLink="https://github.com/gnosis/dao-module"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>

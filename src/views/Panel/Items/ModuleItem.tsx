@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     letterSpacing: "1px",
   },
+  name: {
+    textTransform: "uppercase",
+  },
   address: {
     fontFamily: "Roboto Mono",
   },
@@ -65,7 +68,11 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
   return (
     <>
       {module.name ? (
-        <Typography variant="h6" className={classes.text} gutterBottom>
+        <Typography
+          variant="h6"
+          className={classNames(classes.text, classes.name)}
+          gutterBottom
+        >
           {module.name}
         </Typography>
       ) : null}
