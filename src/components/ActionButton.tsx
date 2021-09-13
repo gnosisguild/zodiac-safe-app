@@ -24,7 +24,12 @@ const useStyles = makeStyles((theme) => ({
   outlined: {
     color: theme.palette.common.white,
     borderColor: "rgba(217, 212, 173, 0.3)",
+    transition: "0.2s ease all",
     "&::before": {
+      borderColor: "rgba(217, 212, 173, 0.3)",
+    },
+    "&:hover": {
+      background: "rgba(217, 212, 173, 0.15)",
       borderColor: "rgba(217, 212, 173, 0.3)",
     },
   },
@@ -41,6 +46,7 @@ export const ActionButton = ({ classes, className, ...props }: ButtonProps) => {
         outlined: _classes.outlined,
         ...classes,
       }}
+      disableRipple
       className={classNames(_classes.queryButton, className)}
       {...props}
     />

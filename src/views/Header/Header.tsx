@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0.5, 0.5, 0.5, 2),
     position: "relative",
     cursor: "pointer",
+    transition: "0.2s ease all",
     "&::before": {
       content: '" "',
       position: "absolute",
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
       bottom: "-5px",
       borderRadius: "0 60px 60px 0",
       border: "1px solid rgba(217, 212, 173, 0.3)",
+    },
+    "&:hover": {
+      background: "rgba(217, 212, 173, 0.15)",
     },
   },
   img: {

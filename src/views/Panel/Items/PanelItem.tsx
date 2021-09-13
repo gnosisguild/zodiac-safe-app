@@ -20,12 +20,21 @@ export const PANEL_ITEM_MARGIN = 12;
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: PANEL_ITEM_PADDING,
+    transition: "0.2s ease all",
+    cursor: "pointer",
+    "&:hover": {
+      background: "rgba(217, 212, 173, 0.15)",
+    },
   },
   active: {
     borderColor: theme.palette.common.white,
     background: "none",
+    cursor: "initial",
     "&::before": {
       borderColor: theme.palette.common.white,
+    },
+    "&:hover": {
+      background: "none",
     },
   },
   spacing: {
@@ -37,15 +46,11 @@ const useStyles = makeStyles((theme) => ({
     display: "grid",
     gridTemplateColumns: "48px 1fr",
     gridGap: theme.spacing(2),
-    cursor: "pointer",
 
     backgroundColor: "transparent",
 
     "&.sub": {
       zIndex: 2,
-    },
-    "&.cursor": {
-      cursor: "pointer",
     },
   },
   content: {
@@ -77,7 +82,6 @@ export const PanelItem: React.FC<PanelItemProps> = ({
         className={classNames(classes.moduleItem, {
           active,
           sub,
-          cursor: active || !onClick,
         })}
       >
         <div className={classes.image}>{image}</div>

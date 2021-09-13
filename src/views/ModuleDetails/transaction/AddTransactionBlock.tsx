@@ -36,10 +36,12 @@ const useStyles = makeStyles((theme) => ({
   header: {
     padding: theme.spacing(1),
     marginBottom: theme.spacing(1.5),
-    maxWidth: 366,
     "&::before": {
       content: "none",
     },
+  },
+  text: {
+    maxWidth: 366,
   },
   content: {
     padding: theme.spacing(1.5),
@@ -162,7 +164,7 @@ export const AddTransactionBlock = ({
         <Typography variant="h5" gutterBottom>
           Add Transaction
         </Typography>
-        <Typography variant="body2">
+        <Typography variant="body2" className={classes.text}>
           Add multiple transactions here, and we will bundle them together into
           a single transaction, to save you gas.
         </Typography>
