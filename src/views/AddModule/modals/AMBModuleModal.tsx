@@ -79,10 +79,10 @@ export const AMBModuleModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="AMB Module"
+      title="Bridge Module"
       description="This module allows for execution of transactions initiated by a designated address on the other side of a designated arbitrary message bridge (AMB)."
       image={<img src={AMBModuleImage} alt="Custom Module Logo" />}
-      tags={["From Gnosis"]}
+      tags={["From Gnosis Guild"]}
       onAdd={handleAddAMBModule}
       readMoreLink="https://github.com/gnosis/zodiac-module-bridge"
       ButtonProps={{ disabled: !isValid }}

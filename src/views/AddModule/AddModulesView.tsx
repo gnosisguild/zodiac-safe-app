@@ -60,7 +60,7 @@ export const AddModulesView = () => {
     dispatch(setModuleAdded(true));
   };
 
-  const title = hasModules ? "Add another module" : "Start by adding a module";
+  const title = hasModules ? "Add another mod" : "Start by adding a mod";
 
   return (
     <div className={classes.root}>
@@ -71,9 +71,10 @@ export const AddModulesView = () => {
               {title}
             </Typography>
             <Typography variant="body2">
-              Gnosis Safe Modules enable additional access-control logic for
-              your Gnosis Safe account. Read more about what they are and how
-              they can be used in{" "}
+              Built according to an open standard, the Zodiac collection of
+              tools are mods that support, expand, and transform how
+              organizations operate. Learn more about Zodiac in this article and
+              about Gnosis Safe modules more generally in
               <a
                 href="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
                 target="_blank"
@@ -89,7 +90,7 @@ export const AddModulesView = () => {
 
         <ModuleButton
           title="Reality Module"
-          description="Connect Reality.eth questions to your safe"
+          description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
           image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
           className={classes.firstModule}
           onClick={() => setModule(ModuleType.REALITY_ETH)}
@@ -97,28 +98,28 @@ export const AddModulesView = () => {
 
         <ModuleButton
           title="Custom Module"
-          description="Connect a pre-existing contract as a module"
+          description="Enable a custom contract as a module"
           image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
           onClick={() => setModule(ModuleType.UNKNOWN)}
         />
 
         <ModuleButton
-          title="Transaction Delay"
-          description="Delay transactions so members can intervene"
+          title="Delay Modifier"
+          description="Enables a time delay between when a module initiates a transaction and when it can be executed"
           image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
           onClick={() => setModule(ModuleType.DELAY)}
         />
 
         <ModuleButton
-          title="AMB Module"
-          description="Execute transactions initiated on another chain"
+          title="Bridge Module"
+          description="Enables an address on one chain to control an avatar on another chain using an Arbitrary Message Bridge (AMB)"
           image={<img src={AMBModuleImage} alt="AMB Module Logo" />}
           onClick={() => setModule(ModuleType.BRIDGE)}
         />
 
         <ModuleButton
           title="Exit Module"
-          description="Connect Reality.eth questions to your safe"
+          description="Enables participants to redeem a designated token for a proportional share of this account’digital assets"
           image={<img src={ExitModuleImage} alt="Exit Module Logo" />}
           onClick={() => setModule(ModuleType.EXIT)}
         />

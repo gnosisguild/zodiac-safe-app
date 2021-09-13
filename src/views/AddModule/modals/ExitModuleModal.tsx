@@ -82,7 +82,7 @@ export const ExitModuleModal = ({
       title="Exit Module"
       description="This module allows any holders of a designated ERC20, at any time, to redeem their designated ERC20 tokens in exchange for a proportional share of the Safe’s ERC20 compatible assets."
       image={<img src={ExitModuleImage} alt="Custom Module Logo" />}
-      tags={["From Gnosis"]}
+      tags={["From Gnosis Guild"]}
       onAdd={handleAddExitModule}
       readMoreLink="https://github.com/gnosis/zodiac-module-exit"
       ButtonProps={{ disabled: !isValid }}
