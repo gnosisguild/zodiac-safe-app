@@ -97,13 +97,6 @@ export const AddModulesView = () => {
         />
 
         <ModuleButton
-          title="Custom Module"
-          description="Enable a custom contract as a module"
-          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
-          onClick={() => setModule(ModuleType.UNKNOWN)}
-        />
-
-        <ModuleButton
           title="Delay Modifier"
           description="Enables a time delay between when a module initiates a transaction and when it can be executed"
           image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
@@ -122,6 +115,13 @@ export const AddModulesView = () => {
           description="Enables participants to redeem a designated token for a proportional share of this account’digital assets"
           image={<img src={ExitModuleImage} alt="Exit Module Logo" />}
           onClick={() => setModule(ModuleType.EXIT)}
+        />
+
+        <ModuleButton
+          title="Custom Module"
+          description="Enable a custom contract as a module"
+          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
+          onClick={() => setModule(ModuleType.UNKNOWN)}
         />
       </div>
 
