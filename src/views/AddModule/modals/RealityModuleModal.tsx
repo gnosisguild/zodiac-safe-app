@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import RealityModuleImage from "../../../assets/images/reality-module-logo.png";
-import { deployRealityModule } from "../../../services";
+import { deployRealityModule, getDefaultOracle } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
@@ -43,22 +43,6 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
   },
 }));
-
-function getDefaultOracle(chainId: number): string {
-  switch (chainId) {
-    case 1:
-      return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
-    case 4:
-      return "0x3D00D77ee771405628a4bA4913175EcC095538da";
-    case 56:
-      return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9";
-    case 100:
-      return "0xE78996A233895bE74a66F451f1019cA9734205cc";
-    case 137:
-      return "0x60573B8DcE539aE5bF9aD7932310668997ef0428";
-  }
-  return "";
-}
 
 export const RealityModuleModal = ({
   open,
