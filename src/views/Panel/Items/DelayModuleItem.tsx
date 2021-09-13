@@ -9,7 +9,6 @@ import { useRootDispatch } from "../../../store";
 import { setNewTransaction } from "../../../store/transactionBuilder";
 import { setCurrentModule, setOperation } from "../../../store/modules";
 import { Row } from "../../../components/layout/Row";
-import classNames from "classnames";
 
 interface DelayModuleItemProps extends PanelItemProps {
   module: DelayModule;
@@ -24,7 +23,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   text: {
-    fontSize: 12,
     lineHeight: 1,
     letterSpacing: 1,
   },
@@ -57,10 +55,7 @@ export const DelayModuleItem = ({ module }: DelayModuleItemProps) => {
 
   return (
     <div className={classes.root}>
-      <Typography
-        variant="h6"
-        className={classNames(classes.text, classes.moduleName)}
-      >
+      <Typography variant="body2" className={classes.moduleName}>
         {module.name}
       </Typography>
       <Address
@@ -69,7 +64,6 @@ export const DelayModuleItem = ({ module }: DelayModuleItemProps) => {
         address={module.address}
         TypographyProps={{
           variant: "body2",
-          className: classes.text,
         }}
       />
       <Row style={{ alignItems: "center" }}>

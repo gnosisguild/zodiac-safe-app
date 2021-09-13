@@ -2,7 +2,6 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import { Column } from "../../../components/layout/Column";
 import { ReactComponent as AvatarEmptyIcon } from "../../../assets/icons/avatar-empty.svg";
-import classNames from "classnames";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,9 +20,6 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateColumns: "40px 1fr",
     maxWidth: 324,
   },
-  text: {
-    fontSize: 14,
-  },
   title: {
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
@@ -41,13 +37,10 @@ export const TransactionBuilderEmptyList = () => {
       <div className={classes.content}>
         <AvatarEmptyIcon />
         <Column className={classes.details}>
-          <Typography
-            variant="body1"
-            className={classNames(classes.text, classes.title)}
-          >
+          <Typography variant="body1" className={classes.title}>
             No Transactions Added
           </Typography>
-          <Typography variant="body1" className={classes.text}>
+          <Typography variant="body1">
             Add transactions via the Write tab on any module, and view them here
             before submitting them as a bundle.
           </Typography>

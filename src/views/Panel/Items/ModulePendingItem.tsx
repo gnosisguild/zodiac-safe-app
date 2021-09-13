@@ -12,9 +12,6 @@ interface ModulePendingItemProps extends PanelItemProps {
 
 const useStyles = makeStyles((theme) => ({
   title: {
-    fontWeight: "bold",
-    fontSize: 12,
-    letterSpacing: 1,
     marginBottom: theme.spacing(0.5),
     textTransform: "uppercase",
   },
@@ -55,7 +52,9 @@ export const ModulePendingItem = ({
 
   return (
     <PanelItem image={<div className={classes.image}>{image}</div>} {...props}>
-      <Typography className={classes.title}>{title}</Typography>
+      <Typography variant="body2" className={classes.title}>
+        {title}
+      </Typography>
       <div>
         <Link target="_parent" href={link} className={classes.link}>
           {linkText}

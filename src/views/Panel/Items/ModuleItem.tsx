@@ -15,7 +15,6 @@ import { ModulePendingRemoval } from "./ModulePendingRemovalItem";
 import { Badge } from "../../../components/text/Badge";
 import { shortAddress } from "../../../utils/string";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import classNames from "classnames";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -26,7 +25,6 @@ interface ModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
-    fontSize: 12,
     letterSpacing: "1px",
   },
   name: {
@@ -68,11 +66,7 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
   return (
     <>
       {module.name ? (
-        <Typography
-          variant="h6"
-          className={classNames(classes.text, classes.name)}
-          gutterBottom
-        >
+        <Typography variant="body2" className={classes.name} gutterBottom>
           {module.name}
         </Typography>
       ) : null}
@@ -82,7 +76,7 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
         address={module.address}
         TypographyProps={{
           variant: "body2",
-          className: classNames(classes.text, classes.address),
+          className: classes.address,
         }}
       />
       {ownerBadge}

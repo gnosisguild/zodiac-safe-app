@@ -190,7 +190,7 @@ export const RealityModuleModal = ({
       image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
       tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddRealityModule}
-      readMoreLink="https://github.com/gnosis/dao-module"
+      readMoreLink="https://github.com/gnosis/zodiac-module-reality"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>

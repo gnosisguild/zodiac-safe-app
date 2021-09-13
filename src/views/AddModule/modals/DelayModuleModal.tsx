@@ -78,7 +78,7 @@ export const DelayModuleModal = ({
       image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
       tags={["Stackable", "From Gnosis"]}
       onAdd={handleAddDelayModule}
-      readMoreLink="https://github.com/gnosis/SafeDelay"
+      readMoreLink="https://github.com/gnosis/zodiac-modifier-delay"
     >
       <Typography gutterBottom>Parameters</Typography>
 

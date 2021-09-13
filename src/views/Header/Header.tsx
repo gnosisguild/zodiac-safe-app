@@ -67,11 +67,6 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginLeft: theme.spacing(1),
   },
-  subtitle: {
-    color: "rgb(201, 182, 133)",
-    marginLeft: theme.spacing(3),
-    fontSize: 12,
-  },
   bagIcon: {
     marginLeft: theme.spacing(2),
     stroke: "white",
@@ -173,7 +168,7 @@ export const Header = () => {
             badgeContent={transaction.length}
             color={transaction.length ? "error" : "primary"}
             classes={{ badge: classes.badge, root: classes.badgeRoot }}
-          ></Badge>
+          />
         </div>
       </div>
     </Row>

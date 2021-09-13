@@ -84,7 +84,7 @@ export const AMBModuleModal = ({
       image={<img src={AMBModuleImage} alt="Custom Module Logo" />}
       tags={["From Gnosis"]}
       onAdd={handleAddAMBModule}
-      readMoreLink="https://github.com/gnosis/SafeBridge"
+      readMoreLink="https://github.com/gnosis/zodiac-module-bridge"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
