@@ -11,6 +11,7 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
     backgroundColor: "transparent !important",
+    borderRadius: 0,
   },
 }));
 

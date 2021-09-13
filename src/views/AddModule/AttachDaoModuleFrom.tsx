@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Row } from "../../components/layout/Row";
 import { Checkbox } from "../../components/input/Checkbox";
-import { makeStyles, Radio, Typography } from "@material-ui/core";
+import { Radio } from "../../components/input/Radio";
+import { makeStyles, Typography } from "@material-ui/core";
 import { Badge } from "../../components/text/Badge";
 import { Address } from "../../components/ethereum/Address";
 import classNames from "classnames";

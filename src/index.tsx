@@ -23,7 +23,7 @@ const palette = createPalette({
     paper: "rgba(217, 212, 173, 0.1)",
   },
   text: {
-    secondary: "rgb(104, 166, 0)",
+    secondary: "rgba(217, 212, 173, 1)",
   },
 });
 
