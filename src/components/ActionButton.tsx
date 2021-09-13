@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
   outlined: {
     color: theme.palette.common.white,
+    padding: theme.spacing(0.75, 2),
     borderColor: "rgba(217, 212, 173, 0.3)",
     transition: "0.2s ease all",
     "&::before": {
