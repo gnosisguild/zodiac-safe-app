@@ -167,7 +167,7 @@ export const TransactionBuilder = () => {
           elevation={2}
         >
           <div className={classes.header}>
-            <Typography variant="h5">Transaction Builder</Typography>
+            <Typography variant="h5">Bundle Transactions</Typography>
             <Grow />
 
             <div className={classes.circleIconContainer}>

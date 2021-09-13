@@ -91,7 +91,7 @@ const muiTheme = createTheme({
       "@global": {
         body: {
           background:
-            "linear-gradient(108.86deg, #000000 6.24%, #020060 96.54%);",
+            "linear-gradient(108.86deg, rgba(26, 33, 66, 1) 6.24%, rgba(12, 19, 8, 1) 53.08%, rgba(37, 6, 4, 1) 96.54%);",
         },
       },
     },

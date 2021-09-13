@@ -164,7 +164,7 @@ export const Header = () => {
         )}
       >
         <Typography className={classes.txBuilderTitle}>
-          Transaction Builder
+          Bundle Transactions
         </Typography>
         <div className={classes.circleIconContainer}>
           <Badge
