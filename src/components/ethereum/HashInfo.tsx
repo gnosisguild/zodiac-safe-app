@@ -6,6 +6,8 @@ const useStyles = makeStyles((theme) => {
   return {
     hashInfo: {
       display: "inline-flex !important",
+      width: 50,
+      height: 50,
       padding: theme.spacing(0.5),
       borderStyle: "solid",
       borderWidth: 1,
