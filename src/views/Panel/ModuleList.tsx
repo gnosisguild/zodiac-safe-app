@@ -63,19 +63,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function isSubModuleActive(
-  activeId: string | undefined,
-  subModules: Module[]
-): boolean {
-  if (!activeId) return false;
-  return subModules.some((subModule) => {
-    return (
-      subModule.id === activeId ||
-      isSubModuleActive(activeId, subModule.subModules)
-    );
-  });
-}
-
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles();
 
@@ -119,9 +106,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   }
 
   const content = modules.map((module) => {
-    const active =
-      module.id === currentModule?.id ||
-      isSubModuleActive(currentModule?.id, module.subModules);
+    const active = module.id === currentModule?.id;
     const remove = pendingRemoveTxs.some((tx) => isPendingModule(module, tx));
     return (
       <ModuleItem
