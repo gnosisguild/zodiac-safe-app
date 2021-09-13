@@ -12,9 +12,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     outline: "none",
-    borderRadius: 8,
+    border: "1px solid rgba(217, 212, 173, 0.3)",
     marginBottom: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: "#0d0b217a",
   },
   content: {
     display: "grid",
