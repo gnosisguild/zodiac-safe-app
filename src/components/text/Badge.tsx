@@ -7,7 +7,7 @@ import { Row } from "../layout/Row";
 const useStyles = makeStyles((theme) => ({
   badge: {
     display: "inline-block",
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.25, 0.5),
     lineHeight: 1,
     whiteSpace: "nowrap",
     borderWidth: 1,
@@ -19,14 +19,6 @@ const useStyles = makeStyles((theme) => ({
   },
   secondary: {
     backgroundColor: alpha(theme.palette.primary.light, 0.4),
-  },
-  borderLeft: {
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-  },
-  borderRight: {
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
   },
 }));
 
@@ -46,23 +38,13 @@ export const Badge: React.FC<BadgeProps> = ({
     return (
       <Row style={{ alignItems: "center" }}>
         <div
-          className={classNames(
-            classes.badge,
-            classes.primary,
-            classes.borderLeft,
-            className
-          )}
+          className={classNames(classes.badge, classes.primary, className)}
           {...props}
         >
           {children}
         </div>
         <div
-          className={classNames(
-            classes.badge,
-            classes.secondary,
-            classes.borderRight,
-            className
-          )}
+          className={classNames(classes.badge, classes.secondary, className)}
           {...props}
         >
           {secondary}
@@ -73,13 +55,7 @@ export const Badge: React.FC<BadgeProps> = ({
 
   return (
     <div
-      className={classNames(
-        classes.badge,
-        classes.primary,
-        classes.borderLeft,
-        classes.borderRight,
-        className
-      )}
+      className={classNames(classes.badge, classes.primary, className)}
       {...props}
     >
       {children}

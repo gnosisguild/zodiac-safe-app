@@ -55,6 +55,7 @@ export const Panel = () => {
         {currentModule || currentPending ? (
           <Button
             size="small"
+            disableRipple
             color="secondary"
             variant="contained"
             onClick={handleAddModule}

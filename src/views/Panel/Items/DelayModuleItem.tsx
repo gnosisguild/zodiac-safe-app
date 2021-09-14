@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
   moduleName: {
     textTransform: "uppercase",
   },
+  address: {
+    fontFamily: "Roboto Mono",
+  },
   link: {
     marginLeft: theme.spacing(1),
     lineHeight: 1,
@@ -64,6 +67,7 @@ export const DelayModuleItem = ({ module }: DelayModuleItemProps) => {
         address={module.address}
         TypographyProps={{
           variant: "body2",
+          className: classes.address,
         }}
       />
       <Row style={{ alignItems: "center" }}>

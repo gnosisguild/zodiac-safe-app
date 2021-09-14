@@ -39,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "16px !important",
     color: theme.palette.text.primary + " !important",
   },
+  addressType: {
+    fontSize: ".75rem",
+    fontFamily: "Roboto Mono",
+  },
   spacing: {
     marginLeft: theme.spacing(2),
   },
@@ -94,11 +98,13 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         hash={module.address}
       />
       <Address
+        short
         address={module.address}
         classes={{
           container: classes.spacing,
           icon: classes.spacing,
         }}
+        TypographyProps={{ classes: { root: classes.addressType } }}
       />
 
       <Grow />

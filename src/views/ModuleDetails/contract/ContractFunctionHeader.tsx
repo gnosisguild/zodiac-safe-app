@@ -23,6 +23,10 @@ const useStyles = makeStyles((theme) => ({
   },
   type: {
     fontFamily: "Roboto Mono",
+    fontSize: ".75rem",
+  },
+  queryType: {
+    fontSize: ".75rem",
   },
 }));
 
@@ -69,11 +73,11 @@ export const ContractFunctionHeader = ({
 
   if (date) {
     return (
-      <Typography>
+      <Typography className={classes.queryType}>
         Queried <TimeAgo datetime={date} />
       </Typography>
     );
   }
 
-  return <Typography>Query</Typography>;
+  return <Typography className={classes.queryType}>Query</Typography>;
 };

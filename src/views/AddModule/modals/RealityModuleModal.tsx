@@ -54,7 +54,9 @@ export const RealityModuleModal = ({
 
   const delayModules = useRootSelector(getDelayModules);
   const [isERC20, setERC20] = useState(false);
-  const [delayModule, setDelayModule] = useState<string>();
+  const [delayModule, setDelayModule] = useState<string>(
+    delayModules.length === 1 ? delayModules[0].address : ""
+  );
   const [bondToken, setBondToken] = useState("ETH");
   const [params, setParams] = useState<RealityModuleParams>({
     oracle: getDefaultOracle(safe.chainId),

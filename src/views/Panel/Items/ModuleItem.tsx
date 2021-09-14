@@ -66,7 +66,7 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
   return (
     <>
       {module.name ? (
-        <Typography variant="body2" className={classes.name} gutterBottom>
+        <Typography variant="body2" className={classes.name}>
           {module.name}
         </Typography>
       ) : null}

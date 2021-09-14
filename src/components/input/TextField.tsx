@@ -15,9 +15,11 @@ const StyledTextField = withStyles((theme) => ({
     },
     "& .MuiInputBase-root": {
       marginTop: 0,
+      minHeight: "37px",
     },
     "& .MuiInputBase-root input": {
       fontFamily: "Roboto Mono",
+      fontSize: ".75rem",
     },
     "& .MuiSelect-select:focus": {
       backgroundColor: "transparent",
