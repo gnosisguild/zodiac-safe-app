@@ -25,7 +25,11 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   button: {
-    marginRight: theme.spacing(1),
+    marginRight: theme.spacing(1.5),
+    color: theme.palette.text.secondary,
+  },
+  label: {
+    color: theme.palette.text.primary,
   },
 }));
 
@@ -45,8 +49,6 @@ export const TransactionBlockHeaderButtons = ({
         <ActionButton
           disabled={disabled}
           className={classes.button}
-          size="small"
-          variant="text"
           onClick={onSave}
         >
           Save Changes
@@ -54,9 +56,8 @@ export const TransactionBlockHeaderButtons = ({
         <ActionButton
           onClick={onCancel}
           className={classes.button}
-          size="small"
-          variant="text"
-          color="primary"
+          classes={{ label: classes.label }}
+          variant="outlined"
         >
           Cancel
         </ActionButton>

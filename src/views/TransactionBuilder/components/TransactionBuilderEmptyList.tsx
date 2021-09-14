@@ -2,7 +2,6 @@ import React from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import { Column } from "../../../components/layout/Column";
 import { ReactComponent as AvatarEmptyIcon } from "../../../assets/icons/avatar-empty.svg";
-import classNames from "classnames";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,18 +11,14 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "center",
     outline: "none",
-    borderRadius: 8,
+    border: "1px solid rgba(217, 212, 173, 0.3)",
     marginBottom: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: "#0d0b217a",
   },
   content: {
     display: "grid",
     gridTemplateColumns: "40px 1fr",
     maxWidth: 324,
-  },
-  text: {
-    fontSize: 14,
-    color: "rgba(0,20,40,0.5)",
   },
   title: {
     fontWeight: "bold",
@@ -34,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(3),
   },
 }));
+
 export const TransactionBuilderEmptyList = () => {
   const classes = useStyles();
   return (
@@ -41,15 +37,12 @@ export const TransactionBuilderEmptyList = () => {
       <div className={classes.content}>
         <AvatarEmptyIcon />
         <Column className={classes.details}>
-          <Typography
-            variant="body1"
-            className={classNames(classes.text, classes.title)}
-          >
+          <Typography variant="body1" className={classes.title}>
             No Transactions Added
           </Typography>
-          <Typography variant="body1" className={classes.text}>
-            Add transactions via the Write tab on any module, and view them here
-            before submitting them as a bundle.
+          <Typography variant="body1">
+            Add transactions using the Write tab on any mod, and view these
+            transactions here before submitting them as a bundle.
           </Typography>
         </Column>
       </div>

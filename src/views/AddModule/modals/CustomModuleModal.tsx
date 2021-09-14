@@ -3,16 +3,16 @@ import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { Interface, ParamType } from "@ethersproject/abi";
 import { enableModule } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { ReactComponent as CustomModuleImage } from "../../../assets/images/custom-module-logo.svg";
+import CustomModuleImage from "../../../assets/images/custom-module-logo.png";
 import { AddModuleModal } from "./AddModuleModal";
 import { ActionButton } from "../../../components/ActionButton";
-import { Icon } from "@gnosis.pm/safe-react-components";
-import { ReactComponent as BagIcon } from "../../../assets/icons/bag-icon.svg";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { makeStyles } from "@material-ui/core";
 import { useRootDispatch } from "../../../store";
 import { addTransaction } from "../../../store/transactionBuilder";
 import { SafeAbi } from "../../../services/helpers";
 import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
+import { ReactComponent as ArrowUpIcon } from "../../../assets/icons/arrow-up-icon.svg";
 
 interface AddCustomModuleProps {
   open: boolean;
@@ -29,8 +29,8 @@ const useStyles = makeStyles((theme) => ({
   addTransactionButton: {
     marginTop: theme.spacing(1),
   },
-  bagIcon: {
-    stroke: theme.palette.secondary.main,
+  addIcon: {
+    stroke: theme.palette.common.white,
     width: 20,
     height: 20,
   },
@@ -93,7 +93,7 @@ export const CustomModuleModal = ({
       open={open}
       onClose={onClose}
       title="Custom Module"
-      image={<CustomModuleImage />}
+      image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
       warning="Modules do not require multisig approval for transactions. Only add modules that you trust!"
     >
       <ParamInput
@@ -109,7 +109,7 @@ export const CustomModuleModal = ({
         className={classes.addButton}
         variant="contained"
         disabled={!isAddressValid}
-        startIcon={<Icon type="sent" size="md" color="white" />}
+        startIcon={<ArrowUpIcon />}
         onClick={addModule}
       >
         Add Module
@@ -119,8 +119,9 @@ export const CustomModuleModal = ({
         fullWidth
         className={classes.addTransactionButton}
         disabled={!isAddressValid}
-        startIcon={<BagIcon className={classes.bagIcon} />}
+        startIcon={<AddIcon />}
         onClick={addTransactionModule}
+        variant="outlined"
       >
         Add to Transaction Bundle
       </ActionButton>

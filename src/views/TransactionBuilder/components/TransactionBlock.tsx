@@ -20,7 +20,7 @@ interface ContractFunctionBlockProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
-    paddingBottom: theme.spacing(3.5),
+    paddingBottom: theme.spacing(2.5),
   },
   placeholder: {
     position: "absolute",
@@ -30,10 +30,10 @@ const useStyles = makeStyles((theme) => ({
     borderWidth: 0,
     borderBottomWidth: theme.spacing(0.5),
     "&.place-after": {
-      bottom: theme.spacing(1.5),
+      bottom: theme.spacing(1),
     },
     "&.place-before": {
-      top: theme.spacing(-2),
+      top: theme.spacing(-1),
     },
   },
 }));

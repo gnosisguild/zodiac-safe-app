@@ -1,10 +1,8 @@
 import React from "react";
-import { IconButton, makeStyles, Paper } from "@material-ui/core";
+import { makeStyles, Paper } from "@material-ui/core";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
-import { Row } from "../../../components/layout/Row";
-import { ReactComponent as ReloadIcon } from "../../../assets/icons/reload-icon.svg";
 import { Transaction } from "../../../store/transactionBuilder/models";
-import { increaseReloadCount, setOperation } from "../../../store/modules";
+import { setOperation } from "../../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import classNames from "classnames";
 import { ABI, Operation } from "../../../store/modules/models";
@@ -13,7 +11,6 @@ import { AddTransactionBlock } from "../transaction/AddTransactionBlock";
 import { addTransaction } from "../../../store/transactionBuilder";
 import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
-import { Grow } from "../../../components/layout/Grow";
 
 interface ContractInteractionsProps {
   address: string;
@@ -22,9 +19,12 @@ interface ContractInteractionsProps {
 
 const useStyles = makeStyles((theme) => ({
   content: {
-    padding: theme.spacing(2.5),
+    padding: theme.spacing(2),
     marginTop: theme.spacing(3),
-    background: theme.palette.background.default,
+    background: "rgba(217, 212, 173, 0.1)",
+    "&::before": {
+      content: "none",
+    },
   },
   hide: {
     display: "none",
@@ -47,24 +47,12 @@ export const ContractInteractions = ({
     dispatch(addTransaction(serializeTransaction(transaction)));
   };
 
-  const handleReload = () => dispatch(increaseReloadCount());
-
   return (
     <>
-      <Row style={{ alignItems: "end" }}>
-        <ContractOperationToggleButtons
-          value={operation}
-          onChange={(evt, value) => handleOperationChange(value)}
-        />
-
-        <Grow />
-
-        {operation === "read" ? (
-          <IconButton onClick={handleReload}>
-            <ReloadIcon />
-          </IconButton>
-        ) : null}
-      </Row>
+      <ContractOperationToggleButtons
+        value={operation}
+        onChange={(evt, value) => handleOperationChange(value)}
+      />
 
       <Paper className={classes.content}>
         <div className={classNames({ [classes.hide]: operation !== "read" })}>

@@ -7,6 +7,7 @@ import { FunctionFragment } from "@ethersproject/abi";
 import { FunctionOutputs } from "../../../hooks/useContractQuery";
 import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components";
 import { formatValue } from "../../../utils/contracts";
+import classNames from "classnames";
 
 interface ContractFunctionHeaderProps {
   date?: Date;
@@ -21,7 +22,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   type: {
-    fontSize: 12,
+    fontFamily: "Roboto Mono",
+    fontSize: ".75rem",
+  },
+  queryType: {
+    fontSize: ".75rem",
   },
 }));
 
@@ -43,14 +48,22 @@ export const ContractFunctionHeader = ({
     const value = formatValue(baseType, result[0]);
 
     if (baseType === "address") {
-      return <Address address={value} />;
+      return (
+        <Address
+          address={value}
+          TypographyProps={{ classes: { root: classes.type } }}
+        />
+      );
     }
     return (
       <>
         <Typography variant="subtitle1" className={classes.type}>
           ({type})
         </Typography>
-        <Typography noWrap className={classes.spaceLeft}>
+        <Typography
+          noWrap
+          className={classNames(classes.spaceLeft, classes.type)}
+        >
           {value}
         </Typography>
         <CopyToClipboardBtn textToCopy={value} className={classes.spaceLeft} />
@@ -60,11 +73,11 @@ export const ContractFunctionHeader = ({
 
   if (date) {
     return (
-      <Typography variant="subtitle1">
+      <Typography className={classes.queryType}>
         Queried <TimeAgo datetime={date} />
       </Typography>
     );
   }
 
-  return <Typography variant="subtitle1">Query</Typography>;
+  return <Typography className={classes.queryType}>Query</Typography>;
 };

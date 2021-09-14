@@ -1,5 +1,5 @@
 import { Fragment } from "@ethersproject/abi";
-import { KnownModules } from "@zodiacdao/zodiac";
+import { KnownModules } from "@gnosis.pm/zodiac";
 
 export type ABI = string | string[] | Fragment[];
 
@@ -7,7 +7,7 @@ export enum ModuleType {
   REALITY_ETH = "realityETH",
   REALITY_ERC20 = "realityERC20",
   DELAY = "delay",
-  AMB = "amb",
+  BRIDGE = "bridge",
   EXIT = "exit",
   UNKNOWN = "unknown",
 }
@@ -16,9 +16,10 @@ export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
   realityETH: ModuleType.REALITY_ETH,
   realityERC20: ModuleType.REALITY_ERC20,
   delay: ModuleType.DELAY,
-  amb: ModuleType.AMB,
+  bridge: ModuleType.BRIDGE,
   exit: ModuleType.EXIT,
   scopeGuard: ModuleType.UNKNOWN,
+  circulatingSupply: ModuleType.UNKNOWN,
 };
 
 export enum ModuleOperation {

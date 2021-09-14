@@ -14,7 +14,7 @@ import {
 } from "../../store/modules";
 import { ModulePendingItem } from "./Items/ModulePendingItem";
 import { LoadingIcon } from "../../components/icons/LoadingIcon";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-icon.svg";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-circle-icon.svg";
 import { ReactComponent as ModulePendingImg } from "../../assets/images/dao-module-pending.svg";
 import { getModuleContractMetadata } from "../../utils/modulesValidation";
 
@@ -63,7 +63,7 @@ export const PendingModuleStates = () => {
   const image = isInstantExecution ? (
     <LoadingIcon icon={<AddIcon />} />
   ) : (
-    <ModulePendingImg />
+    <ModulePendingImg style={{ marginLeft: -4 }} />
   );
   const linkText = isInstantExecution
     ? "Transaction confirming..."

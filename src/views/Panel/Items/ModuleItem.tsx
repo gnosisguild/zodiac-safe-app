@@ -1,6 +1,10 @@
 import { HashInfo } from "../../../components/ethereum/HashInfo";
 import { makeStyles, Typography } from "@material-ui/core";
-import { PanelItem, PanelItemProps } from "./PanelItem";
+import {
+  PANEL_ITEM_CONTENT_HEIGHT,
+  PanelItem,
+  PanelItemProps,
+} from "./PanelItem";
 import React from "react";
 import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
@@ -21,34 +25,32 @@ interface ModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
-    fontSize: "12px",
-    textTransform: "uppercase",
-    color: "rgb(93, 109, 116)",
     letterSpacing: "1px",
   },
-  spacing: {
+  name: {
+    textTransform: "uppercase",
+  },
+  address: {
+    fontFamily: "Roboto Mono",
+  },
+  badge: {
     marginTop: theme.spacing(1),
+  },
+  content: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: PANEL_ITEM_CONTENT_HEIGHT,
   },
 }));
 
-export const ModuleItem = ({
-  module,
-  remove = false,
-  instant = false,
-  ...panelItemProps
-}: ModuleItemProps) => {
-  const classes = useStyles();
-  const { safe } = useSafeAppsSDK();
+interface ModuleItemContentProps extends ModuleItemProps {
+  classes: Record<string, string>;
+}
 
-  if (remove) {
-    return (
-      <ModulePendingRemoval
-        module={module}
-        instant={instant}
-        {...panelItemProps}
-      />
-    );
-  }
+export const ModuleItemContent = (props: ModuleItemContentProps) => {
+  const { module, classes, ...panelItemProps } = props;
+  const { safe } = useSafeAppsSDK();
 
   if (isDelayModule(module)) {
     return <DelayModuleItem module={module} {...panelItemProps} />;
@@ -56,44 +58,73 @@ export const ModuleItem = ({
 
   const ownerBadge =
     module.owner && module.owner !== safe.safeAddress ? (
-      <Badge secondary={shortAddress(module.owner)} className={classes.spacing}>
+      <Badge secondary={shortAddress(module.owner)} className={classes.badge}>
         External Owner
       </Badge>
     ) : null;
 
   return (
     <>
-      <PanelItem
-        image={
-          <HashInfo
-            showAvatar
-            avatarSize="lg"
-            showHash={false}
-            hash={module.address}
-          />
-        }
+      {module.name ? (
+        <Typography variant="body2" className={classes.name}>
+          {module.name}
+        </Typography>
+      ) : null}
+      <Address
+        short
+        showOnHover
+        address={module.address}
+        TypographyProps={{
+          variant: "body2",
+          className: classes.address,
+        }}
+      />
+      {ownerBadge}
+    </>
+  );
+};
+
+export const ModuleItem = (props: ModuleItemProps) => {
+  const {
+    module,
+    remove = false,
+    instant = false,
+    onClick,
+    ...panelItemProps
+  } = props;
+
+  const classes = useStyles();
+
+  if (remove) {
+    return (
+      <ModulePendingRemoval
+        module={module}
+        instant={instant}
+        onClick={onClick}
         {...panelItemProps}
-      >
-        {module.name ? (
-          <Typography variant="h6" className={classes.text} gutterBottom>
-            {module.name}
-          </Typography>
-        ) : null}
-        <Address
-          short
-          showOnHover
-          address={module.address}
-          TypographyProps={{
-            variant: "body2",
-            className: classes.text,
-          }}
+      />
+    );
+  }
+
+  return (
+    <PanelItem
+      image={
+        <HashInfo
+          showAvatar
+          avatarSize="lg"
+          showHash={false}
+          hash={module.address}
         />
-        {ownerBadge}
-      </PanelItem>
+      }
+      {...panelItemProps}
+    >
+      <div onClick={onClick} className={classes.content}>
+        <ModuleItemContent classes={classes} {...props} />
+      </div>
 
       {module.subModules.length ? (
         <ModuleList sub modules={module.subModules} />
       ) : null}
-    </>
+    </PanelItem>
   );
 };

@@ -31,33 +31,19 @@ interface TimeSelectProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
-    backgroundColor: theme.palette.common.white,
-    borderRadius: theme.shape.borderRadius,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
     flexWrap: "nowrap",
     justifyContent: "flex-end",
-    "&::after": {
-      content: "''",
-      position: "absolute",
-      left: 0,
-      bottom: 0,
-      width: "100%",
-      borderBottomWidth: 2,
-      borderBottomStyle: "solid",
-      borderBottomColor: theme.palette.secondary.main,
-    },
   },
   label: {
     color: theme.palette.text.primary,
-    fontSize: 14,
-    marginBottom: theme.spacing(0.5),
+    marginBottom: theme.spacing(1),
   },
   inputContainer: {
-    padding: theme.spacing(1, 0, 1, 1),
     flexGrow: 1,
   },
   input: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
     "& input": {
       borderRightWidth: 1,
       borderRightStyle: "solid",
@@ -67,11 +53,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   select: {
+    borderLeft: 0,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
     textIndent: theme.spacing(1),
-    "& .MuiSelect-select": {
-      paddingTop: theme.spacing(1.75),
-      paddingBottom: theme.spacing(1.75),
-    },
   },
   itemList: {
     padding: 0,

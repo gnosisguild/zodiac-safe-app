@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
   },
   icon: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.common.white,
   },
   queryButton: {
     marginTop: theme.spacing(2),
@@ -131,9 +131,7 @@ export const ContractFunctionQueryBlock = ({
         className={classNames({ [classes.clickable]: collapsable })}
         onClick={() => setOpen(!open)}
       >
-        <Typography variant="h6" className={classes.title}>
-          {func.name}
-        </Typography>
+        <Typography className={classes.title}>{func.name}</Typography>
         <Grow />
         <ContractFunctionHeader
           func={func}

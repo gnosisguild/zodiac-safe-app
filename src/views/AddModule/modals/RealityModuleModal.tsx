@@ -4,8 +4,8 @@ import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as RealityModuleImage } from "../../../assets/images/dao-module.svg";
-import { deployRealityModule } from "../../../services";
+import RealityModuleImage from "../../../assets/images/reality-module-logo.png";
+import { deployRealityModule, getDefaultOracle } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
@@ -44,16 +44,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function getDefaultOracle(chainId: number): string {
-  switch (chainId) {
-    case 1:
-      return "0x325a2e0f3cca2ddbaebb4dfc38df8d19ca165b47";
-    case 4:
-      return "0x3D00D77ee771405628a4bA4913175EcC095538da";
-  }
-  return "";
-}
-
 export const RealityModuleModal = ({
   open,
   onClose,
@@ -64,7 +54,9 @@ export const RealityModuleModal = ({
 
   const delayModules = useRootSelector(getDelayModules);
   const [isERC20, setERC20] = useState(false);
-  const [delayModule, setDelayModule] = useState<string>();
+  const [delayModule, setDelayModule] = useState<string>(
+    delayModules.length === 1 ? delayModules[0].address : ""
+  );
   const [bondToken, setBondToken] = useState("ETH");
   const [params, setParams] = useState<RealityModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
@@ -179,17 +171,15 @@ export const RealityModuleModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="DAO Module"
+      title="Reality Module"
       description="Allows Reality.eth questions to execute a transaction when resolved."
-      image={<RealityModuleImage />}
-      tags={["Stackable", "From Gnosis"]}
+      image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
+      tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRealityModule}
-      readMoreLink="https://github.com/gnosis/dao-module"
+      readMoreLink="https://github.com/gnosis/zodiac-module-reality"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
@@ -197,7 +187,7 @@ export const RealityModuleModal = ({
             param={ParamType.from("address")}
             color="secondary"
             value={params.oracle}
-            label="Oracle (oracle)"
+            label="Oracle Address"
             onChange={(value, valid) => onParamChange("oracle", value, valid)}
           />
         </Grid>
@@ -206,7 +196,7 @@ export const RealityModuleModal = ({
             <Typography>TemplateId</Typography>
             <Grow />
             <Link
-              color="secondary"
+              color="textSecondary"
               href="https://reality.eth.link/app/template-generator/"
               target="_blank"
             >

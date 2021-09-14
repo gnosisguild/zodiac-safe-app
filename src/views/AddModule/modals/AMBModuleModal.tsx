@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
-import { ReactComponent as CustomModuleImage } from "../../../assets/images/custom-module-logo.svg";
-import { AMBModuleParams, deployAMBModule } from "../../../services";
+import AMBModuleImage from "../../../assets/images/bridge-module-logo.png";
+import { AMBModuleParams, deployBridgeModule } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
 
@@ -62,7 +62,7 @@ export const AMBModuleModal = ({
 
   const handleAddAMBModule = async () => {
     try {
-      const txs = deployAMBModule(safe.safeAddress, safe.chainId, {
+      const txs = deployBridgeModule(safe.safeAddress, safe.chainId, {
         ...params,
         executor: safe.safeAddress,
       });
@@ -79,17 +79,15 @@ export const AMBModuleModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="AMB Module"
+      title="Bridge Module"
       description="This module allows for execution of transactions initiated by a designated address on the other side of a designated arbitrary message bridge (AMB)."
-      image={<CustomModuleImage />}
-      tags={["From Gnosis"]}
+      image={<img src={AMBModuleImage} alt="Custom Module Logo" />}
+      tags={["From Gnosis Guild"]}
       onAdd={handleAddAMBModule}
-      readMoreLink="https://github.com/gnosis/SafeBridge"
+      readMoreLink="https://github.com/gnosis/zodiac-module-bridge"
       ButtonProps={{ disabled: !isValid }}
     >
-      <Typography variant="h6" gutterBottom>
-        Parameters
-      </Typography>
+      <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>

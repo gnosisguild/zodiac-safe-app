@@ -8,8 +8,8 @@ import {
   CONTRACT_ADDRESSES,
   getModuleInstance,
   KnownModules,
-} from "@zodiacdao/zodiac";
-import { getModuleDataFromEtherscan } from "../../utils/contracts";
+} from "@gnosis.pm/zodiac";
+import { getModuleData } from "../../utils/contracts";
 import {
   DataDecoded,
   DecodedTransaction,

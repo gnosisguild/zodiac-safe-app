@@ -10,9 +10,8 @@ import { ReactComponent as CheckMarkUncheckedIcon } from "../../assets/icons/che
 const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
-    "&:hover": {
-      backgroundColor: "transparent !important",
-    },
+    backgroundColor: "transparent !important",
+    borderRadius: 0,
   },
 }));
 

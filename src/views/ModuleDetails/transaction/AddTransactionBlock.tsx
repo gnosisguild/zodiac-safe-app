@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { Box, makeStyles, MenuItem, Typography } from "@material-ui/core";
-import { Collapsable } from "../../../components/Collapsable";
+import { makeStyles, MenuItem, Paper, Typography } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
-import { Icon } from "@gnosis.pm/safe-react-components";
 import { Transaction } from "../../../store/transactionBuilder/models";
 import { ActionButton } from "../../../components/ActionButton";
 import { useRootDispatch, useRootSelector } from "../../../store";
@@ -15,6 +13,7 @@ import { resetNewTransaction } from "../../../store/transactionBuilder";
 import { getCurrentModule } from "../../../store/modules/selectors";
 import { ABI } from "../../../store/modules/models";
 import { TransactionField } from "./TransactionField";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 
 interface AddTransactionBlockProps {
   abi: ABI;
@@ -29,10 +28,30 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   icon: {
-    color: theme.palette.secondary.main,
+    color: theme.palette.common.white,
   },
   addButton: {
     marginTop: theme.spacing(2),
+  },
+  header: {
+    padding: theme.spacing(1),
+    marginBottom: theme.spacing(1.5),
+    "&::before": {
+      content: "none",
+    },
+  },
+  text: {
+    maxWidth: 366,
+  },
+  content: {
+    padding: theme.spacing(1.5),
+
+    "&::before": {
+      content: "none",
+    },
+  },
+  field: {
+    marginTop: theme.spacing(2.5),
   },
 }));
 
@@ -55,9 +74,7 @@ const TransactionFields = ({
         fullWidth
         disabled
         className={classes.addButton}
-        startIcon={
-          <Icon className={classes.icon} type="add" size="md" color="primary" />
-        }
+        startIcon={<AddIcon className={classes.icon} />}
       >
         Add this transaction
       </ActionButton>
@@ -80,23 +97,16 @@ const TransactionFields = ({
       {({ paramInputProps, areParamsValid, getParams }) => (
         <>
           {paramInputProps.map((props, index) => (
-            <Box marginTop={2} key={index}>
+            <div className={classes.field} key={index}>
               <TransactionField func={func} param={props} />
-            </Box>
+            </div>
           ))}
           <ActionButton
             fullWidth
             onClick={() => handleAdd(getParams())}
             disabled={!areParamsValid}
             className={classes.addButton}
-            startIcon={
-              <Icon
-                className={classes.icon}
-                type="add"
-                size="md"
-                color="primary"
-              />
-            }
+            startIcon={<AddIcon className={classes.icon} />}
           >
             Add this transaction
           </ActionButton>
@@ -148,35 +158,43 @@ export const AddTransactionBlock = ({
     dispatch(resetNewTransaction());
   };
 
-  const content = (
-    <>
-      <TextField
-        select
-        value={funcIndex}
-        onChange={handleFuncChange}
-        className={classNames({ [classes.greyText]: funcIndex === undefined })}
-        color="secondary"
-        label="Function"
-      >
-        <MenuItem value={-1}>Select function</MenuItem>
-        {writeFunctions.map((func, index) => (
-          <MenuItem key={func.format("full")} value={index}>
-            {func.name}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TransactionFields
-        key={`${funcIndex}_${selectedFunc}`}
-        defaultParams={defaultParams}
-        func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
-        onAdd={handleAdd}
-      />
-    </>
-  );
-
   return (
-    <Collapsable open content={content}>
-      <Typography variant="h6">Add new transaction</Typography>
-    </Collapsable>
+    <>
+      <Paper className={classes.header}>
+        <Typography variant="h5" gutterBottom>
+          Add Transaction
+        </Typography>
+        <Typography variant="body2" className={classes.text}>
+          Add multiple transactions here, and we will bundle them together into
+          a single transaction, to save you gas.
+        </Typography>
+      </Paper>
+
+      <Paper className={classes.content}>
+        <TextField
+          select
+          value={funcIndex}
+          onChange={handleFuncChange}
+          className={classNames({
+            [classes.greyText]: funcIndex === undefined,
+          })}
+          color="secondary"
+          label="Function"
+        >
+          <MenuItem value={-1}>Select function</MenuItem>
+          {writeFunctions.map((func, index) => (
+            <MenuItem key={func.format("full")} value={index}>
+              {func.name}
+            </MenuItem>
+          ))}
+        </TextField>
+        <TransactionFields
+          key={`${funcIndex}_${selectedFunc}`}
+          defaultParams={defaultParams}
+          func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
+          onAdd={handleAdd}
+        />
+      </Paper>
+    </>
   );
 };

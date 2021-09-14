@@ -18,11 +18,11 @@ export const ModuleDetails = ({ module }: ModuleDetailsProps) => {
   const classes = useStyles();
 
   return (
-    <div>
+    <>
       <ModuleDetailHeader module={module} />
       <div className={classes.content}>
         <ModuleInteractions key={module.address} module={module} />
       </div>
-    </div>
+    </>
   );
 };

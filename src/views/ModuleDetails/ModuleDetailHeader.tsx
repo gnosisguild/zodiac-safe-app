@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core";
 import { HashInfo } from "../../components/ethereum/HashInfo";
-import { Button, Text } from "@gnosis.pm/safe-react-components";
+import { ActionButton } from "../../components/ActionButton";
 import { Address } from "../../components/ethereum/Address";
 import { Module } from "../../store/modules/models";
 import { disableModule } from "services";
@@ -17,6 +17,7 @@ import {
 } from "../../store/transactionBuilder/helpers";
 import { Transaction } from "../../store/transactionBuilder/models";
 import { SafeAbi } from "../../services/helpers";
+import { ReactComponent as RemoveIcon } from "../../assets/icons/delete-icon.svg";
 import { Interface } from "@ethersproject/abi";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
@@ -38,9 +39,14 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "16px !important",
     color: theme.palette.text.primary + " !important",
   },
+  addressType: {
+    fontSize: ".75rem",
+    fontFamily: "Roboto Mono",
+  },
   spacing: {
     marginLeft: theme.spacing(2),
   },
+  removeButton: {},
 }));
 
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
@@ -91,28 +97,27 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         avatarSize="lg"
         hash={module.address}
       />
-      <Text size="xl" strong className={classes.text}>
-        Address:
-      </Text>
       <Address
+        short
         address={module.address}
         classes={{
           container: classes.spacing,
           icon: classes.spacing,
         }}
+        TypographyProps={{ classes: { root: classes.addressType } }}
       />
 
       <Grow />
-
-      <Button
-        size="md"
-        iconType="delete"
+      <ActionButton
+        disableElevation
+        className={classes.removeButton}
         variant="outlined"
         onClick={removeModule}
         disabled={disabledRemoveButton}
+        startIcon={<RemoveIcon />}
       >
         Remove
-      </Button>
+      </ActionButton>
     </div>
   );
 };

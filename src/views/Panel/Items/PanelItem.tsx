@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, Paper, PaperProps } from "@material-ui/core";
+import { makeStyles, Paper } from "@material-ui/core";
 import classNames from "classnames";
 import { Column } from "../../../components/layout/Column";
 
@@ -7,64 +7,58 @@ export interface PanelItemProps {
   active?: boolean;
   sub?: boolean;
   image?: React.ReactElement | null;
-  PaperProps?: PaperProps;
 
   onClick?(): void;
 }
 
-export const PANEL_ITEM_HEIGHT = 90;
+export const PANEL_ITEM_CONTENT_HEIGHT = 56;
+export const PANEL_ITEM_PADDING = 8;
+export const PANEL_ITEM_HEIGHT =
+  PANEL_ITEM_CONTENT_HEIGHT + PANEL_ITEM_PADDING * 2 + 2;
+export const PANEL_ITEM_MARGIN = 12;
 
 const useStyles = makeStyles((theme) => ({
-  moduleItem: {
-    display: "grid",
-    gridTemplateColumns: "40px 1fr",
-    alignItems: "center",
-    padding: theme.spacing(0, 2),
+  root: {
+    padding: PANEL_ITEM_PADDING,
+    transition: "0.2s ease all",
     cursor: "pointer",
-
-    height: PANEL_ITEM_HEIGHT,
-
-    borderRadius: 0,
-    borderWidth: 0,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: theme.palette.divider,
-    borderStyle: "solid",
-
-    transition: theme.transitions.create("border", {
-      duration: 100,
-      easing: "ease",
-    }),
-
-    backgroundColor: theme.palette.background.paper,
-
-    "& + &": {
-      borderTopWidth: 0,
+    "&:hover": {
+      background: "rgba(217, 212, 173, 0.15)",
+    },
+  },
+  active: {
+    borderColor: theme.palette.common.white,
+    background: "none",
+    cursor: "initial",
+    "&::before": {
+      borderColor: theme.palette.common.white,
     },
     "&:hover": {
-      backgroundColor: theme.palette.background.default,
+      background: "none",
     },
+  },
+  spacing: {
+    "& + &, &.sub": {
+      marginTop: PANEL_ITEM_MARGIN,
+    },
+  },
+  moduleItem: {
+    display: "grid",
+    gridTemplateColumns: "48px 1fr",
+    gridGap: theme.spacing(2),
+
+    backgroundColor: "transparent",
+
     "&.sub": {
-      borderLeftStyle: "solid",
-      borderTopWidth: 0,
-      borderLeftWidth: 1,
-      borderLeftColor: theme.palette.divider,
       zIndex: 2,
-    },
-    "&.cursor": {
-      cursor: "auto",
-    },
-    "&.active": {
-      backgroundColor: theme.palette.background.default,
-      borderLeftStyle: "solid",
-      borderLeftWidth: 3,
-      borderLeftColor: theme.palette.secondary.main,
     },
   },
   content: {
-    marginLeft: theme.spacing(2),
     width: "100%",
     justifyContent: "center",
+  },
+  image: {
+    paddingTop: 2,
   },
 }));
 
@@ -73,23 +67,26 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   sub,
   image = null,
   children,
-  PaperProps,
   onClick,
 }) => {
   const classes = useStyles();
   return (
     <Paper
-      elevation={0}
-      onClick={active ? undefined : onClick}
-      {...PaperProps}
-      className={classNames(
-        classes.moduleItem,
-        { active, sub, cursor: active || !onClick },
-        PaperProps?.className
-      )}
+      className={classNames(classes.root, classes.spacing, {
+        sub,
+        [classes.active]: active,
+      })}
     >
-      {image}
-      <Column className={classes.content}>{children}</Column>
+      <div
+        onClick={active ? undefined : onClick}
+        className={classNames(classes.moduleItem, {
+          active,
+          sub,
+        })}
+      >
+        <div className={classes.image}>{image}</div>
+        <Column className={classes.content}>{children}</Column>
+      </div>
     </Paper>
   );
 };

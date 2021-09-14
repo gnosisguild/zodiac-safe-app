@@ -1,40 +1,39 @@
 import React from "react";
-import { Box, makeStyles } from "@material-ui/core";
-import { Button, Title } from "@gnosis.pm/safe-react-components";
+import { Button, makeStyles, Typography } from "@material-ui/core";
 import { ModuleList } from "./ModuleList";
 import { Row } from "../../components/layout/Row";
 import { useRootDispatch, useRootSelector } from "../../store";
 import {
   getCurrentModule,
   getCurrentPendingModule,
-  getModulesList
+  getModulesList,
 } from "../../store/modules/selectors";
 import { unsetCurrentModule } from "../../store/modules";
 import { Grow } from "../../components/layout/Grow";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-icon.svg";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
+  root: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    padding: theme.spacing(1.5),
+    overflowY: "auto",
+  },
   hashInfo: {
     "& p": {
-      color: theme.palette.text.primary + " !important"
-    }
+      color: theme.palette.text.primary + " !important",
+    },
   },
-  title: {
-    fontSize: 20
-  },
-  content: {
-    padding: theme.spacing(2, 2.5),
+  header: {
+    padding: theme.spacing(0, 1, 2, 1),
     boxSizing: "content-box",
-    minHeight: 40
-  },
-  smallButton: {
-    minWidth: "auto !important",
-    height: "auto !important",
-    padding: "8px 12px 8px 12px !important",
-    borderRadius: "2px !important"
+    minHeight: 40,
+    alignItems: "center",
   },
   moduleList: {
-    marginTop: theme.spacing(3)
-  }
+    marginTop: theme.spacing(3),
+  },
 }));
 
 export const Panel = () => {
@@ -49,20 +48,18 @@ export const Panel = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" minHeight="100%">
-      <Row style={{ alignItems: "center" }} className={classes.content}>
-        <Title size="sm" strong withoutMargin>
-          <span className={classes.title}>Zodiac</span>
-        </Title>
+    <div className={classes.root}>
+      <Row className={classes.header}>
+        <Typography variant="h5">Modules and Modifiers</Typography>
         <Grow />
         {currentModule || currentPending ? (
           <Button
-            className={classes.smallButton}
-            variant="outlined"
-            size="md"
-            color="primary"
-            iconType="add"
+            size="small"
+            disableRipple
+            color="secondary"
+            variant="contained"
             onClick={handleAddModule}
+            startIcon={<AddIcon />}
           >
             Add
           </Button>
@@ -70,6 +67,6 @@ export const Panel = () => {
       </Row>
 
       <ModuleList modules={modulesList} />
-    </Box>
+    </div>
   );
 };

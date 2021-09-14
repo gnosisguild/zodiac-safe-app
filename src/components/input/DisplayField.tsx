@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
   field: {
     padding: theme.spacing(1, 0, 1, 1),
   },
-  value: { fontSize: 16 },
 }));
 
 export const DisplayField = ({ label, value }: DisplayFieldProps) => {
@@ -28,9 +27,7 @@ export const DisplayField = ({ label, value }: DisplayFieldProps) => {
         {label}
       </Typography>
       <Paper className={classes.field} elevation={0}>
-        <Typography noWrap className={classes.value}>
-          {value}
-        </Typography>
+        <Typography noWrap>{value}</Typography>
       </Paper>
     </div>
   );

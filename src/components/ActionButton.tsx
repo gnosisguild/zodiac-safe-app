@@ -7,30 +7,47 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.secondary.main,
   },
   queryButton: {
-    borderRadius: 10,
     textTransform: "none",
     fontSize: 16,
     "&.MuiButton-contained.Mui-disabled": {
-      opacity: 0.5,
       backgroundColor: theme.palette.secondary.main,
       color: theme.palette.common.white,
     },
     "&.MuiButton-outlinedSecondary.Mui-disabled": {
-      opacity: 0.5,
-      color: theme.palette.secondary.main + " !important",
-      borderColor: theme.palette.secondary.main + " !important",
+      color: theme.palette.common.white,
+      borderColor: theme.palette.common.white,
     },
   },
-  buttonDisabled: {},
+  buttonDisabled: {
+    opacity: 0.5,
+  },
+  outlined: {
+    color: theme.palette.common.white,
+    padding: theme.spacing(0.75, 2),
+    borderColor: "rgba(217, 212, 173, 0.3)",
+    transition: "0.2s ease all",
+    "&::before": {
+      borderColor: "rgba(217, 212, 173, 0.3)",
+    },
+    "&:hover": {
+      background: "rgba(217, 212, 173, 0.15)",
+      borderColor: "rgba(217, 212, 173, 0.3)",
+    },
+  },
 }));
 
 export const ActionButton = ({ classes, className, ...props }: ButtonProps) => {
   const _classes = useStyles();
   return (
     <Button
-      variant="outlined"
       color="secondary"
-      classes={{ disabled: _classes.buttonDisabled, ...classes }}
+      variant="contained"
+      classes={{
+        disabled: _classes.buttonDisabled,
+        outlined: _classes.outlined,
+        ...classes,
+      }}
+      disableRipple
       className={classNames(_classes.queryButton, className)}
       {...props}
     />

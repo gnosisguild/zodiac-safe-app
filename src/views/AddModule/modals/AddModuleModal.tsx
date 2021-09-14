@@ -13,6 +13,7 @@ import classNames from "classnames";
 import { Link } from "../../../components/text/Link";
 import { TagList } from "../../../components/list/TagList";
 import { Row } from "../../../components/layout/Row";
+import { ReactComponent as ArrowUpIcon } from "../../../assets/icons/arrow-up-icon.svg";
 
 interface AddModuleModalProps {
   open: boolean;
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 380,
     margin: theme.spacing(14, 1, 1, 1),
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: "rgba(78, 72, 87, 0.8)",
   },
   modal: {
     position: "absolute !important" as "absolute",
@@ -66,6 +67,12 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: {
     marginRight: theme.spacing(2),
+    "& img": {
+      width: 68,
+      padding: theme.spacing(0.5),
+      border: "1px solid rgba(255,255,255,0.2)",
+      borderRadius: "50%",
+    },
   },
   infoContainer: {
     flexGrow: 1,
@@ -86,7 +93,6 @@ const useStyles = makeStyles((theme) => ({
   },
   warningText: {
     color: "#E0B325",
-    lineHeight: 1,
   },
   "@keyframes blur": {
     "0%": {
@@ -177,7 +183,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
           {hideButton ? null : (
             <ActionButton
               fullWidth
-              startIcon={<Icon type="sent" size="md" color="primary" />}
+              startIcon={<ArrowUpIcon />}
               onClick={onAdd}
               {...ButtonProps}
             >

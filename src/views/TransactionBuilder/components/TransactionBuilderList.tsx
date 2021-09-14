@@ -11,14 +11,30 @@ import { serializeTransaction } from "../../../store/transactionBuilder/helpers"
 import { setTransactions } from "../../../store/transactionBuilder";
 import { useRootDispatch } from "../../../store";
 import { Transaction } from "../../../store/transactionBuilder/models";
+import { makeStyles } from "@material-ui/core";
 
 interface TransactionBuilderListProps {
   transactions: Transaction[];
 }
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+    display: "flex",
+    flexGrow: 1,
+    outline: "none",
+    padding: theme.spacing(1.5),
+    marginBottom: theme.spacing(2),
+    backgroundColor: "#0d0b217a",
+    border: "1px solid rgba(217, 212, 173, 0.3)",
+    overflowY: "auto",
+  },
+}));
+
 export const TransactionBuilderList = ({
   transactions,
 }: TransactionBuilderListProps) => {
+  const classes = useStyles();
   const dispatch = useRootDispatch();
 
   const [overIndex, setOverIndex] = useState<number>();
@@ -76,28 +92,34 @@ export const TransactionBuilderList = ({
   );
 
   return (
-    <DragDropContext
-      onDragStart={handleDragStart}
-      onDragUpdate={handleDragUpdate}
-      onDragEnd={handleDragEnd}
-    >
-      <Droppable droppableId="transactions">
-        {(provider) => (
-          <div ref={provider.innerRef} {...provider.droppableProps}>
-            {transactions.map((transaction, index) => (
-              <TransactionBlock
-                index={index}
-                key={transaction.id}
-                transaction={transaction}
-                isOver={index === overIndex}
-                isOverBefore={sourceIndex ? index < sourceIndex : false}
-                onUpdate={handleTransactionUpdate}
-                onDelete={handleTransactionDelete}
-              />
-            ))}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <div className={classes.root}>
+      <DragDropContext
+        onDragStart={handleDragStart}
+        onDragUpdate={handleDragUpdate}
+        onDragEnd={handleDragEnd}
+      >
+        <Droppable droppableId="transactions">
+          {(provider) => (
+            <div
+              ref={provider.innerRef}
+              style={{ width: "100%" }}
+              {...provider.droppableProps}
+            >
+              {transactions.map((transaction, index) => (
+                <TransactionBlock
+                  index={index}
+                  key={transaction.id}
+                  transaction={transaction}
+                  isOver={index === overIndex}
+                  isOverBefore={sourceIndex ? index < sourceIndex : false}
+                  onUpdate={handleTransactionUpdate}
+                  onDelete={handleTransactionDelete}
+                />
+              ))}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
   );
 };

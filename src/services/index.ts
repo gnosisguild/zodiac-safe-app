@@ -1,16 +1,11 @@
-import { BigNumber, BigNumberish, Contract, ethers } from "ethers";
+import { BigNumber, Contract, ethers } from "ethers";
 import {
   calculateProxyAddress,
   deployAndSetUpModule,
   getFactoryAndMasterCopy,
   getModuleInstance,
-} from "@zodiacdao/zodiac";
-import {
-  AddressOne,
-  buildTransaction,
-  DEFAULT_ORACLE_ADDRESSES,
-  SafeAbi,
-} from "./helpers";
+} from "@gnosis.pm/zodiac";
+import { AddressOne, buildTransaction, SafeAbi } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
@@ -43,28 +38,26 @@ export interface AMBModuleParams {
 export interface ExitModuleParams {
   executor: string;
   tokenContract: string;
-  circulatingSupply?: string;
-  circulatingSupplyAddress?: string;
 }
-
-export const CIRCULATING_SUPPLY_CONTRACT_ABI = [
-  "constructor(uint256 _circulatingSupply)",
-  "event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)",
-  "function circulatingSupply() view returns (uint256)",
-  "function get() view returns (uint256)",
-  "function initialized() view returns (bool)",
-  "function owner() view returns (address)",
-  "function renounceOwnership()",
-  "function set(uint256 _circulatingSupply)",
-  "function setUp(bytes initializeParams)",
-  "function transferOwnership(address newOwner)",
-];
-
-export const CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS =
-  "0xEe0452776f5A724Fb20038216F50b6cF6288f246";
 
 export function getProvider(chainId: number) {
   return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
+}
+
+export function getDefaultOracle(chainId: number): string {
+  switch (chainId) {
+    case 1:
+      return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
+    case 4:
+      return "0xDf33060F476F8cff7511F806C72719394da1Ad64";
+    case 56:
+      return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9";
+    case 100:
+      return "0xE78996A233895bE74a66F451f1019cA9734205cc";
+    case 137:
+      return "0x60573B8DcE539aE5bF9aD7932310668997ef0428";
+  }
+  return "";
 }
 
 export function deployRealityModule(
@@ -77,7 +70,7 @@ export function deployRealityModule(
   const { timeout, cooldown, expiration, bond, templateId, oracle, executor } =
     args;
   const provider = getProvider(chainId);
-  const ORACLE_ADDRESS = oracle || DEFAULT_ORACLE_ADDRESSES[chainId];
+  const oracleAddress = oracle || getDefaultOracle(chainId);
   const {
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,
@@ -85,6 +78,7 @@ export function deployRealityModule(
     type,
     {
       types: [
+        "address",
         "address",
         "address",
         "address",
@@ -96,8 +90,9 @@ export function deployRealityModule(
       ],
       values: [
         safeAddress,
+        safeAddress,
         executor,
-        ORACLE_ADDRESS,
+        oracleAddress,
         timeout,
         cooldown,
         expiration,
@@ -150,8 +145,8 @@ export function deployDelayModule(
   } = deployAndSetUpModule(
     "delay",
     {
-      types: ["address", "address", "uint256", "uint256"],
-      values: [safeAddress, executor, cooldown, expiration],
+      types: ["address", "address", "address", "uint256", "uint256"],
+      values: [safeAddress, safeAddress, executor, cooldown, expiration],
     },
     provider,
     chainId,
@@ -172,7 +167,7 @@ export function deployDelayModule(
   ];
 }
 
-export function deployAMBModule(
+export function deployBridgeModule(
   safeAddress: string,
   chainId: number,
   args: AMBModuleParams
@@ -181,10 +176,11 @@ export function deployAMBModule(
   const { executor, controller, amb, chainId: ambChainId } = args;
 
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
-    "amb",
+    "bridge",
     {
-      types: ["address", "address", "address", "address", "bytes32"],
+      types: ["address", "address", "address", "address", "address", "bytes32"],
       values: [
+        safeAddress,
         safeAddress,
         executor,
         amb,
@@ -213,20 +209,18 @@ export function deployAMBModule(
 }
 
 export function deployCirculatingSupplyContract(
+  safeAddress: string,
   chainId: number,
-  circulatingSupply: BigNumberish,
+  token: string,
   saltNonce: string
 ) {
   const provider = getProvider(chainId);
-  const circulatingSupplyContract = new ethers.Contract(
-    CIRCULATING_SUPPLY_MASTER_COPY_ADDRESS,
-    CIRCULATING_SUPPLY_CONTRACT_ABI
-  );
-  const { factory } = getFactoryAndMasterCopy("exit", provider, chainId);
+  const { factory, module: circulatingSupplyContract } =
+    getFactoryAndMasterCopy("circulatingSupply", provider, chainId);
 
   const encodedInitParams = new ethers.utils.AbiCoder().encode(
-    ["uint256"],
-    [circulatingSupply]
+    ["address", "address", "address[]"],
+    [safeAddress, token, []]
   );
   const moduleSetupData =
     circulatingSupplyContract.interface.encodeFunctionData("setUp", [
@@ -264,28 +258,31 @@ export function deployExitModule(
 ) {
   const provider = getProvider(chainId);
   const txs: Transaction[] = [];
-  const { executor, tokenContract, circulatingSupply } = args;
-  let { circulatingSupplyAddress } = args;
+  const { executor, tokenContract } = args;
 
-  if (!circulatingSupplyAddress) {
-    if (!circulatingSupply) throw new Error("Invalid circulating supply");
+  const {
+    transaction: deployCirculationSupplyTx,
+    expectedAddress: circulatingSupplyAddress,
+  } = deployCirculatingSupplyContract(
+    safeAddress,
+    chainId,
+    tokenContract,
+    Date.now().toString()
+  );
 
-    const { transaction: deployCirculationSupplyTx, expectedAddress } =
-      deployCirculatingSupplyContract(
-        chainId,
-        circulatingSupply,
-        Date.now().toString()
-      );
-
-    txs.push(deployCirculationSupplyTx);
-    circulatingSupplyAddress = expectedAddress;
-  }
+  txs.push(deployCirculationSupplyTx);
 
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
     "exit",
     {
-      types: ["address", "address", "address", "address"],
-      values: [safeAddress, executor, tokenContract, circulatingSupplyAddress],
+      types: ["address", "address", "address", "address", "address"],
+      values: [
+        safeAddress,
+        safeAddress,
+        executor,
+        tokenContract,
+        circulatingSupplyAddress,
+      ],
     },
     provider,
     chainId,

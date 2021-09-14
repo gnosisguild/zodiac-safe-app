@@ -12,12 +12,17 @@ import {
 } from "../../store/modules/selectors";
 import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg";
 import { Skeleton } from "@material-ui/lab";
-import { PANEL_ITEM_HEIGHT, PanelItem } from "./Items/PanelItem";
+import {
+  PANEL_ITEM_HEIGHT,
+  PANEL_ITEM_MARGIN,
+  PanelItem,
+} from "./Items/PanelItem";
 import { ModuleItem } from "./Items/ModuleItem";
 import { resetNewTransaction } from "../../store/transactionBuilder";
 import { PendingModuleStates } from "./PendingModuleStates";
 import { Column } from "../../components/layout/Column";
 import { isPendingModule } from "../../store/modules/helpers";
+import { ReactComponent as ModuleStackIcon } from "../../assets/icons/module-inherit.svg";
 
 interface ModuleListProps {
   modules: Module[];
@@ -25,30 +30,36 @@ interface ModuleListProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    overflowX: "hidden",
-  },
   subModules: {
     position: "relative",
-    marginLeft: theme.spacing(10),
   },
   line: {
     position: "absolute",
-    borderColor: theme.palette.primary.light,
+    borderColor: "#6d6b5a",
     borderStyle: "solid",
-    borderBottomWidth: 4,
-    borderLeftWidth: 4,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
     borderTopWidth: 0,
     borderRightWidth: 0,
     borderBottomLeftRadius: 16,
-    top: 0,
+    top: PANEL_ITEM_MARGIN - 6,
     left: -40,
-    width: 40,
+    width: 32,
+  },
+  moduleStackIcon: {
+    position: "absolute",
+    top: 0,
+    left: -54,
+    zIndex: 100,
+    stroke: "#6d6b5a",
   },
   emptyModulesText: {
     maxWidth: 200,
-    fontSize: 16,
-    color: "rgba(0,20,40,0.5)",
+  },
+  emptyImage: {
+    border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: "50%",
+    padding: theme.spacing(0.5),
   },
 }));
 
@@ -69,7 +80,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (modulesLoading) {
     return (
-      <PanelItem image={<Skeleton variant="circle" width={40} height={40} />}>
+      <PanelItem image={<Skeleton variant="circle" width={50} height={50} />}>
         <Skeleton width={160} height={20} />
         <Skeleton width={100} height={20} />
       </PanelItem>
@@ -78,7 +89,15 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (!modules.length && !pendingModules.length) {
     return (
-      <PanelItem image={<AvatarEmptyIcon />}>
+      <PanelItem
+        image={
+          <AvatarEmptyIcon
+            className={classes.emptyImage}
+            height={50}
+            width={50}
+          />
+        }
+      >
         <Typography className={classes.emptyModulesText}>
           Modules will appear here once added
         </Typography>
@@ -109,17 +128,22 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
       const subModulesHeight = subModulesCount * PANEL_ITEM_HEIGHT;
 
       const height =
-        2 +
+        1 +
         subModulesHeight +
-        PANEL_ITEM_HEIGHT * (index + 1) -
-        PANEL_ITEM_HEIGHT / 2;
+        PANEL_ITEM_HEIGHT * (index + 1) +
+        PANEL_ITEM_MARGIN * index -
+        PANEL_ITEM_HEIGHT / 2 +
+        6;
       return <div key={index} className={classes.line} style={{ height }} />;
     });
-    return <div className={classes.subModules}>{[content, lines]}</div>;
+    const arrow = modules.length ? (
+      <ModuleStackIcon className={classes.moduleStackIcon} />
+    ) : null;
+    return <div className={classes.subModules}>{[content, arrow, lines]}</div>;
   }
 
   return (
-    <Column className={classes.root}>
+    <Column>
       <PendingModuleStates />
       {content}
     </Column>
