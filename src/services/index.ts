@@ -49,7 +49,7 @@ export function getDefaultOracle(chainId: number): string {
     case 1:
       return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
     case 4:
-      return "0x3D00D77ee771405628a4bA4913175EcC095538da";
+      return "0xDf33060F476F8cff7511F806C72719394da1Ad64";
     case 56:
       return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9";
     case 100:
