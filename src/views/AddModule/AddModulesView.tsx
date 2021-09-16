@@ -73,8 +73,16 @@ export const AddModulesView = () => {
             <Typography variant="body2">
               Built according to an open standard, the Zodiac collection of
               tools are mods that support, expand, and transform how
-              organizations operate. Learn more about Zodiac in this article and
-              about Gnosis Safe modules more generally in{" "}
+              organizations operate. Learn more about Zodiac in{" "}
+              <a
+                href="https://gnosisguild.mirror.xyz/OuhG5s2X5uSVBx1EK4tKPhnUc91Wh9YM0fwSnC8UNcg"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.link}
+              >
+                this article
+              </a>{" "}
+              and about Gnosis Safe modules more generally in{" "}
               <a
                 href="https://help.gnosis-safe.io/en/articles/4934378-what-is-a-module"
                 target="_blank"
