@@ -1755,10 +1755,10 @@
     classnames "^2.2.6"
     react-media "^1.10.0"
 
-"@gnosis.pm/zodiac@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/zodiac/-/zodiac-1.0.1.tgz#36d3df705319909661429af72fc4cea295b21ddf"
-  integrity sha512-MBfTXmE9LO8xcByrMxaH9RhwHObzn1ZNrd3g00ly0836wmRq/PJOvVbHJ51McD3VoVveaFFC8S5OVwomRZNFpw==
+"@gnosis.pm/zodiac@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/zodiac/-/zodiac-1.0.2.tgz#a8e92f160776264387d3bfd6f5a52dc033630f0b"
+  integrity sha512-rOy877TzV30J1KWSW3/BwwLyXOaQ1jezExnYSaO0GJJ8k2M8QHIcunh8yKNwjQa2ubbR/iRiBTivITIZcfb9tQ==
   dependencies:
     "@gnosis.pm/mock-contract" "^4.0.0"
     "@gnosis.pm/safe-contracts" "1.3.0"
