@@ -3,7 +3,6 @@ import {
   Provider as MultiCallProvider,
 } from "ethcall";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import { InfuraProvider } from "@ethersproject/providers";
 import {
   CONTRACT_ADDRESSES,
   getModuleInstance,
@@ -24,8 +23,9 @@ import {
   RealityModule,
   SafeTransaction,
 } from "./models";
-import { Contract } from "ethers";
+import { Contract, ethers } from "ethers";
 import { defaultProvider } from "../../services/helpers";
+import { getProvider } from "../../services";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
@@ -78,7 +78,7 @@ export async function fetchDelayModule(
   chainId: number,
   parentModule: string
 ): Promise<DelayModule | Module> {
-  const provider = new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
+  const provider = getProvider(chainId);
   const delayModule = await getModuleInstance("delay", address, provider);
   const abi = delayModule.interface.fragments.map((frag) => frag);
 
@@ -132,7 +132,7 @@ export async function fetchDelayModule(
       cooldown: cooldown.toString(),
     };
   } catch (error) {
-    console.log("Error fetching delay module", error);
+    console.warn("Error fetching delay module", error);
     return {
       address,
       parentModule,
@@ -233,21 +233,45 @@ export function getAddModuleTransactionModuleType(
   const factoryAddress = CONTRACT_ADDRESSES[chainId]?.factory || "";
   const transactions = getTransactionsFromSafeTransaction(safeTransaction);
 
-  const deploysModule = transactions.find(
-    (transaction) =>
-      transaction.to.toLowerCase() === factoryAddress.toLowerCase() &&
-      transaction.dataDecoded &&
-      transaction.dataDecoded.method === "deployModule"
-  );
-  if (!deploysModule) return;
+  const masterCopyAddress = transactions
+    .map((transaction): string | undefined => {
+      if (transaction.to.toLowerCase() === factoryAddress.toLowerCase()) {
+        if (!transaction.dataDecoded) {
+          // Decode Proxy Factory data locally
+          try {
+            const result = decodeProxyFactoryTransaction(transaction.data);
+            return result[0]; // return first parameter (masterCopy)
+          } catch (err) {
+            console.warn(
+              "failed to decode proxy factory transaction: ",
+              transaction.data
+            );
+            return undefined;
+          }
+        }
 
-  const masterCopyParam = deploysModule.dataDecoded.parameters?.find(
-    (param) => param.name === "masterCopy"
-  );
-  if (!masterCopyParam) return;
+        if (transaction.dataDecoded.method === "deployModule") {
+          const param = transaction.dataDecoded.parameters?.find(
+            (param) => param.name === "masterCopy"
+          );
+          if (param) return param.value;
+        }
+      }
+      return undefined;
+    })
+    .find((x) => x);
 
-  const masterCopyAddress = masterCopyParam.value || "";
-  return getContractsModuleType(chainId, masterCopyAddress);
+  return getContractsModuleType(chainId, masterCopyAddress || "");
+}
+
+const MODULE_PROXY_FACTORY_ABI = [
+  "function deployModule(address masterCopy, bytes initializer, uint256 saltNonce) returns (address proxy)",
+];
+
+function decodeProxyFactoryTransaction(data: string) {
+  return new ethers.utils.Interface(
+    MODULE_PROXY_FACTORY_ABI
+  ).decodeFunctionData("deployModule", data);
 }
 
 export function isSafeEnableModuleTransactionPending(
@@ -266,7 +290,10 @@ export function isSafeEnableModuleTransactionPending(
 export function isRemoveModuleTransactionPending(
   transaction: DecodedTransaction
 ): boolean {
-  return transaction.dataDecoded.method === "disableModule";
+  return (
+    transaction.dataDecoded &&
+    transaction.dataDecoded.method === "disableModule"
+  );
 }
 
 export function getModulesToBeRemoved(

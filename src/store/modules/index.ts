@@ -48,7 +48,7 @@ export const fetchModulesList = createAsyncThunk(
           safeAddress
         );
       } catch (error) {
-        console.log("error sanitizing module", moduleAddress);
+        console.warn("error sanitizing module", moduleAddress, error);
       }
     });
     requests.reverse();

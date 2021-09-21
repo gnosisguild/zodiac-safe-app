@@ -8,9 +8,8 @@ import {
 import { AddressOne, buildTransaction, SafeAbi } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
-import { getNetworkExplorerInfo } from "../utils/explorers";
+import { ETHEREUM_NETWORK, getNetworkExplorerInfo } from "../utils/explorers";
 import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
-import { InfuraProvider } from "@ethersproject/providers";
 
 interface RealityModuleParams {
   executor: string;
@@ -40,21 +39,37 @@ export interface ExitModuleParams {
   tokenContract: string;
 }
 
-export function getProvider(chainId: number) {
-  return new InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID);
+export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
+  if (chainId === ETHEREUM_NETWORK.XDAI) {
+    return new ethers.providers.JsonRpcProvider(
+      "https://rpc.xdaichain.com",
+      ETHEREUM_NETWORK.XDAI
+    );
+  }
+  if (chainId === ETHEREUM_NETWORK.POLYGON) {
+    return new ethers.providers.JsonRpcProvider(
+      "https://rpc-mainnet.maticvigil.com/",
+      ETHEREUM_NETWORK.POLYGON
+    );
+  }
+
+  return new ethers.providers.InfuraProvider(
+    chainId,
+    process.env.REACT_APP_INFURA_ID
+  );
 }
 
 export function getDefaultOracle(chainId: number): string {
   switch (chainId) {
-    case 1:
+    case ETHEREUM_NETWORK.MAINNET:
       return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
-    case 4:
+    case ETHEREUM_NETWORK.RINKEBY:
       return "0xDf33060F476F8cff7511F806C72719394da1Ad64";
     case 56:
       return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9";
-    case 100:
+    case ETHEREUM_NETWORK.XDAI:
       return "0xE78996A233895bE74a66F451f1019cA9734205cc";
-    case 137:
+    case ETHEREUM_NETWORK.POLYGON:
       return "0x60573B8DcE539aE5bF9aD7932310668997ef0428";
   }
   return "";
