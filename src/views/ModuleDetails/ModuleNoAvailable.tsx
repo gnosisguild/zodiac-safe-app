@@ -1,6 +1,8 @@
 import React from "react";
 import { makeStyles, Paper, Typography } from "@material-ui/core";
 import { Link } from "../../components/text/Link";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { getNetworkExplorerInfo } from "../../utils/explorers";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -9,28 +11,23 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginBottom: theme.spacing(2),
   },
-  text: {
-    color: "rgba(0, 20, 40, 0.5)",
-  },
 }));
 
 export const ModuleNoAvailable = () => {
   const classes = useStyles();
+  const { safe } = useSafeAppsSDK();
+  const { verifyUrl } = getNetworkExplorerInfo(safe.chainId) || {};
 
   return (
     <Paper className={classes.root}>
       <Typography variant="h5" className={classes.title}>
         No Read or Write functions available
       </Typography>
-      <Typography className={classes.text}>
-        We couldn’t find an ABI and didn’t recognize the bytecode for this
+      <Typography>
+        We couldn't find an ABI and didn't recognize the bytecode for this
         module’s contract.
       </Typography>
-      <Link
-        className={classes.text}
-        target="_blank"
-        href="https://etherscan.io/verifyContract"
-      >
+      <Link target="_blank" href={verifyUrl}>
         Verify this contract on Etherscan to fix this.
       </Link>
     </Paper>
