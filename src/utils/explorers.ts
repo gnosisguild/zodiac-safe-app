@@ -2,12 +2,9 @@ const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY;
 
 export enum ETHEREUM_NETWORK {
   MAINNET = 1,
-  ROPSTEN = 3,
   RINKEBY = 4,
   XDAI = 100,
-  ENERGY_WEB_CHAIN = 246,
-  LOCAL = 4447,
-  VOLTA = 73799,
+  POLYGON = 137,
 }
 
 interface ExplorerData {
@@ -17,6 +14,7 @@ interface ExplorerData {
   safeTransactionApi: string;
   safeUrl: string;
   explorerApiKey?: string;
+  verifyContractUrl: string;
 }
 
 export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
@@ -26,6 +24,7 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
     networkExplorerApiUrl: "https://api.etherscan.io/api",
     safeTransactionApi: "https://safe-transaction.gnosis.io/",
     safeUrl: "https://gnosis-safe.io/",
+    verifyContractUrl: "https://etherscan.io/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [ETHEREUM_NETWORK.RINKEBY]: {
@@ -34,44 +33,26 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
     networkExplorerApiUrl: "https://api-rinkeby.etherscan.io/api",
     safeTransactionApi: "https://safe-transaction.rinkeby.gnosis.io/",
     safeUrl: "https://rinkeby.gnosis-safe.io/",
+    verifyContractUrl: "https://rinkeby.etherscan.io/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
-  },
-  [ETHEREUM_NETWORK.ROPSTEN]: {
-    networkExplorerName: "Etherscan",
-    networkExplorerUrl: "https://ropsten.etherscan.io/",
-    networkExplorerApiUrl: "https://api-ropsten.etherscan.io/api",
-    safeTransactionApi: "https://safe-transaction.rinkeby.gnosis.io/",
-    safeUrl: "https://rinkeby.gnosis-safe.io/",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
-  },
-  [ETHEREUM_NETWORK.LOCAL]: {
-    networkExplorerName: "Etherscan",
-    networkExplorerUrl: "https://rinkeby.etherscan.io",
-    networkExplorerApiUrl: "https://api-rinkeby.etherscan.io/api",
-    safeTransactionApi: "https://safe-transaction.rinkeby.gnosis.io/",
-    safeUrl: "https://rinkeby.gnosis-safe.io/",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
-  },
-  [ETHEREUM_NETWORK.ENERGY_WEB_CHAIN]: {
-    networkExplorerName: "Energy web explorer",
-    networkExplorerUrl: "https://explorer.energyweb.org",
-    networkExplorerApiUrl: "https://explorer.energyweb.org/api",
-    safeUrl: "https://rinkeby.gnosis-safe.io/",
-    safeTransactionApi: "https://safe-transaction.rinkeby.gnosis.io/",
-  },
-  [ETHEREUM_NETWORK.VOLTA]: {
-    networkExplorerName: "Volta explorer",
-    networkExplorerUrl: "https://volta-explorer.energyweb.org",
-    networkExplorerApiUrl: "https://volta-explorer.energyweb.org/api",
-    safeUrl: "https://volta.gnosis-safe.io/",
-    safeTransactionApi: "https://safe-transaction.rinkeby.gnosis.io/",
   },
   [ETHEREUM_NETWORK.XDAI]: {
     networkExplorerName: "Blockscout",
     networkExplorerUrl: "https://blockscout.com/poa/xdai",
-    networkExplorerApiUrl: "https://blockscout.com/poa/xdai/api",
+    networkExplorerApiUrl: "https://blockscout.com/xdai/mainnet/api",
     safeUrl: "https://xdai.gnosis-safe.io/",
-    safeTransactionApi: "https://safe-transaction.gnosis.io/",
+    safeTransactionApi: "https://safe-transaction.xdai.gnosis.io/",
+    verifyContractUrl:
+      "https://docs.blockscout.com/for-users/smart-contract-interaction/verifying-a-smart-contract",
+  },
+  [ETHEREUM_NETWORK.POLYGON]: {
+    networkExplorerName: "Polygonscan",
+    networkExplorerUrl: "https://polygonscan.com",
+    networkExplorerApiUrl: "https://api.polygonscan.com/api",
+    safeUrl: "https://polygon.gnosis-safe.io/",
+    safeTransactionApi: "https://safe-transaction.polygon.gnosis.io/",
+    verifyContractUrl: "https://polygonscan.com/verifyContract",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
 };
 
@@ -85,6 +66,7 @@ export const getNetworkExplorerInfo = (chainId: number) => {
     apiKey: networkBaseConfig.explorerApiKey,
     safeTransactionApi: networkBaseConfig.safeTransactionApi,
     safeUrl: networkBaseConfig.safeUrl,
+    verifyUrl: networkBaseConfig.verifyContractUrl,
   };
 };
 
