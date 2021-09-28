@@ -25,6 +25,7 @@ interface RealityModuleParams {
   timeout: string;
   cooldown: string;
   expiration: string;
+  arbitrator: string;
 }
 
 interface DelayModuleParams {
@@ -115,7 +116,7 @@ export function deployRealityModule(
   isERC20?: boolean
 ) {
   const type = isERC20 ? ModuleType.REALITY_ERC20 : ModuleType.REALITY_ETH;
-  const { timeout, cooldown, expiration, bond, templateId, oracle, executor } =
+  const { timeout, cooldown, expiration, bond, templateId, oracle, executor, arbitrator } =
     args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getDefaultOracle(chainId);
@@ -135,6 +136,7 @@ export function deployRealityModule(
         "uint32",
         "uint256",
         "uint256",
+        "address",
       ],
       values: [
         safeAddress,
@@ -146,6 +148,7 @@ export function deployRealityModule(
         expiration,
         bond,
         templateId,
+        arbitrator,
       ],
     },
     provider,

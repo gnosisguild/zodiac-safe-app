@@ -14,8 +14,8 @@ import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services";
 
 
 const arbitratorOptions = {
-  NO_ARBITRATOR: "No arbitrator (highest bond wins)",
-  KLEROS: "Kleros arbitrator",
+  NO_ARBITRATOR: "No arbitration (highest bond wins)",
+  KLEROS: "Kleros",
   OTHER: "Other (custom address)",
 };
 
