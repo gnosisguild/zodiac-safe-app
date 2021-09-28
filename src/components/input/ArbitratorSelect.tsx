@@ -13,7 +13,7 @@ import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.sv
 import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services";
 
 
-const arbitratorOptions = {
+export const arbitratorOptions = {
   NO_ARBITRATOR: "No arbitration (highest bond wins)",
   KLEROS: "Kleros",
   OTHER: "Other (custom address)",
@@ -26,7 +26,7 @@ type Option = keyof typeof arbitratorOptions;
 
 interface ArbitratorSelectProps {
   defaultAddress?: string;
-  defaultOption?: Option;
+  defaultOption?: string;
   label: string;
   chainId: number;
 
@@ -101,13 +101,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const ArbitratorSelect = ({
   onChange,
-  defaultOption = "NO_ARBITRATOR",
+  defaultOption = arbitratorOptions.NO_ARBITRATOR,
   defaultAddress = "",
   label,
   chainId,
 }: ArbitratorSelectProps) => {
   const classes = useStyles();
-  const [option, setOption] = useState<Option>(defaultOption);
+  const [option, setOption] = useState<string>(defaultOption);
   const [arbitratorAddress, setArbitratorAddress] = useState(
     defaultAddress
   );
@@ -130,14 +130,17 @@ export const ArbitratorSelect = ({
     }
   };
 
-  const handleArbitratorOptionChange = (newOption: Option) => {
+  const handleArbitratorOptionChange = (newOption: string) => {
     handleClose();
+    const newOptionKey = Object
+      .keys(arbitratorOptions)
+      .find(k => arbitratorOptions[`${k}` as Option] === newOption) as Option;
     setOption(newOption);
-    if (newOption === "OTHER") {
+    if (newOptionKey === "OTHER") {
       setArbitratorAddress("");
       onChange("");
     } else {
-      const newArbitrator = getArbitrator(chainId, ARBITRATOR_OPTIONS[newOption]);
+      const newArbitrator = getArbitrator(chainId, ARBITRATOR_OPTIONS[newOptionKey]);
       setArbitratorAddress(newArbitrator);
       onChange(newArbitrator);
     }
@@ -151,8 +154,6 @@ export const ArbitratorSelect = ({
     }
   }, [selectRef]);
 
-  const optionText = arbitratorOptions[`${option}` as keyof typeof arbitratorOptions];
-
   return (
     <div>
       <InputLabel className={classes.label}>{label}</InputLabel>
@@ -161,7 +162,7 @@ export const ArbitratorSelect = ({
           <Select
             disableUnderline
             open={open}
-            value={optionText}
+            value={option}
             ref={selectRef}
             onOpen={handleOpen}
             onClose={handleClose}
@@ -183,16 +184,15 @@ export const ArbitratorSelect = ({
               },
             }}
             renderValue={(value) => value as string}
-            onChange={(evt) => handleArbitratorOptionChange(evt.target.value as Option)}
+            onChange={(evt) => handleArbitratorOptionChange(evt.target.value as string)}
           >
-            {Object.keys(arbitratorOptions).map((option: string) => {
-              const optionText = arbitratorOptions[`${option}` as keyof typeof arbitratorOptions];
-              if (!klerosAvailability.includes(chainId) && option === "KLEROS") {
+            {Object.keys(arbitratorOptions).map((optionKey) => {
+              if (!klerosAvailability.includes(chainId) && optionKey === "KLEROS") {
                 return null;
               }
               return (
-                <MenuItem key={option} value={option} className={classes.item}>
-                  {optionText}
+                <MenuItem key={optionKey} value={arbitratorOptions[`${optionKey}` as Option]} className={classes.item}>
+                  {arbitratorOptions[`${optionKey}` as Option]}
                   <Box className="show-if-selected" flexGrow={1} />
                   <CheckmarkIcon className="show-if-selected" />
                 </MenuItem>
@@ -201,7 +201,7 @@ export const ArbitratorSelect = ({
           </Select>
         </Grid>
       </Grid>
-      {(option === "OTHER") && <Grid container className={classes.root}>
+      {(option === arbitratorOptions.OTHER) && <Grid container className={classes.root}>
         <Grid item xs={12}>
           <ParamInput
             param={ParamType.from("address")}

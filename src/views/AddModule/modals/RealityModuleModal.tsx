@@ -12,7 +12,7 @@ import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { ArbitratorSelect } from "../../../components/input/ArbitratorSelect";
+import { ArbitratorSelect, arbitratorOptions } from "../../../components/input/ArbitratorSelect";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
 import { Grow } from "../../../components/layout/Grow";
 import { ModuleType } from "../../../store/modules/models";
@@ -122,7 +122,10 @@ export const RealityModuleModal = ({
       );
 
       await sdk.txs.send({ txs });
-      if (onSubmit) onSubmit();
+      if (onSubmit) {
+        console.log(params);
+        onSubmit();
+      }
       if (onClose) onClose();
     } catch (error) {
       console.log("Error deploying module: ", error);
@@ -253,7 +256,7 @@ export const RealityModuleModal = ({
           <ArbitratorSelect
             label="Arbitrator"
             defaultAddress={params.arbitrator}
-            defaultOption="NO_ARBITRATOR"
+            defaultOption={arbitratorOptions.NO_ARBITRATOR}
             onChange={(value) => onParamChange("arbitrator", value)}
             chainId={safe.chainId}
           />
