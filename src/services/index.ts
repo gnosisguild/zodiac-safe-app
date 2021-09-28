@@ -126,7 +126,6 @@ export function deployRealityModule(
     args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getDefaultOracle(chainId);
-  console.log(arbitrator);
   const {
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,

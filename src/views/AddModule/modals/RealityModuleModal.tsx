@@ -122,10 +122,7 @@ export const RealityModuleModal = ({
       );
 
       await sdk.txs.send({ txs });
-      if (onSubmit) {
-        console.log(params);
-        onSubmit();
-      }
+      if (onSubmit) onSubmit();
       if (onClose) onClose();
     } catch (error) {
       console.log("Error deploying module: ", error);
