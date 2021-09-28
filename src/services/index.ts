@@ -11,6 +11,12 @@ import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { ETHEREUM_NETWORK, getNetworkExplorerInfo } from "../utils/explorers";
 import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
 
+export enum ARBITRATOR_OPTIONS {
+  NO_ARBITRATOR,
+  KLEROS,
+  OTHER,
+}
+
 interface RealityModuleParams {
   executor: string;
   oracle?: string;
@@ -71,6 +77,33 @@ export function getDefaultOracle(chainId: number): string {
       return "0xE78996A233895bE74a66F451f1019cA9734205cc";
     case ETHEREUM_NETWORK.POLYGON:
       return "0x60573B8DcE539aE5bF9aD7932310668997ef0428";
+  }
+  return "";
+}
+
+export function getArbitrator(
+  chainId: number,
+  arbitratorOption: number
+): string {
+  switch (arbitratorOption) {
+    case ARBITRATOR_OPTIONS.NO_ARBITRATOR:
+      // Setting the oracle as the arbitrator is equivalent to setting a null arbitrator.
+      return getDefaultOracle(chainId);
+    case ARBITRATOR_OPTIONS.KLEROS:
+      switch (chainId) {
+        case ETHEREUM_NETWORK.MAINNET:
+          return "0xc713E11091C74151020ee49e650C3847C7028e32";
+        case ETHEREUM_NETWORK.RINKEBY:
+          return "0xc713E11091C74151020ee49e650C3847C7028e32";
+        case 56:
+          return "";
+        case ETHEREUM_NETWORK.XDAI:
+          return "0xc713E11091C74151020ee49e650C3847C7028e32";
+        case ETHEREUM_NETWORK.POLYGON:
+          return "";
+      }
+    case ARBITRATOR_OPTIONS.OTHER:
+      return "";
   }
   return "";
 }

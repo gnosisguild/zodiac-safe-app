@@ -5,13 +5,14 @@ import { ethers } from "ethers";
 import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import RealityModuleImage from "../../../assets/images/reality-module-logo.png";
-import { deployRealityModule, getDefaultOracle } from "../../../services";
+import { deployRealityModule, getDefaultOracle, getArbitrator, ARBITRATOR_OPTIONS } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
+import { ArbitratorSelect } from "../../../components/input/ArbitratorSelect";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
 import { Grow } from "../../../components/layout/Grow";
 import { ModuleType } from "../../../store/modules/models";
@@ -33,6 +34,7 @@ interface RealityModuleParams {
   cooldown: string;
   expiration: string;
   bond: string;
+  arbitrator: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -65,6 +67,7 @@ export const RealityModuleModal = ({
     cooldown: "86400",
     expiration: "604800",
     bond: "0.1",
+    arbitrator: getArbitrator(safe.chainId, ARBITRATOR_OPTIONS.NO_ARBITRATOR),
   });
   const [validFields, setValidFields] = useState({
     oracle: !!params.oracle,
@@ -244,6 +247,15 @@ export const RealityModuleModal = ({
             value={params.bond + " " + bondToken}
             label="Bond"
             onChange={handleBondChange}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <ArbitratorSelect
+            label="Arbitrator"
+            defaultAddress={params.arbitrator}
+            defaultOption="NO_ARBITRATOR"
+            onChange={(value) => onParamChange("arbitrator", value)}
+            chainId={safe.chainId}
           />
         </Grid>
       </Grid>
