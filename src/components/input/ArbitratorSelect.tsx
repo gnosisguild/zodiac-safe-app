@@ -19,6 +19,9 @@ const arbitratorOptions = {
   OTHER: "Other (custom address)",
 };
 
+// List of chain IDs where Kleros is available.
+const klerosAvailability:number[] = [];
+
 type Option = keyof typeof arbitratorOptions;
 
 interface ArbitratorSelectProps {
@@ -55,9 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   select: {
-    borderLeft: 0,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
+    marginBottom: -1,
     textIndent: theme.spacing(1),
   },
   itemList: {
@@ -132,7 +133,7 @@ export const ArbitratorSelect = ({
   const handleArbitratorOptionChange = (newOption: Option) => {
     handleClose();
     setOption(newOption);
-    if (newOption == "OTHER") {
+    if (newOption === "OTHER") {
       setArbitratorAddress("");
       onChange("");
     } else {
@@ -186,18 +187,21 @@ export const ArbitratorSelect = ({
           >
             {Object.keys(arbitratorOptions).map((option: string) => {
               const optionText = arbitratorOptions[`${option}` as keyof typeof arbitratorOptions];
+              if (!klerosAvailability.includes(chainId) && option === "KLEROS") {
+                return null;
+              }
               return (
                 <MenuItem key={option} value={option} className={classes.item}>
                   {optionText}
                   <Box className="show-if-selected" flexGrow={1} />
                   <CheckmarkIcon className="show-if-selected" />
                 </MenuItem>
-              )
+              );
             })}
           </Select>
         </Grid>
       </Grid>
-      {(option == "OTHER") && <Grid container className={classes.root}>
+      {(option === "OTHER") && <Grid container className={classes.root}>
         <Grid item xs={12}>
           <ParamInput
             param={ParamType.from("address")}

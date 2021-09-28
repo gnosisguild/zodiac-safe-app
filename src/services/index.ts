@@ -82,6 +82,23 @@ export function getDefaultOracle(chainId: number): string {
   return "";
 }
 
+function getKlerosAddress(chainId: number): string {
+  // TODO: Add addresses when Kleros becomes available.
+  switch (chainId) {
+    case ETHEREUM_NETWORK.MAINNET:
+      return "";
+    case ETHEREUM_NETWORK.RINKEBY:
+      return "";
+    case 56:
+      return "";
+    case ETHEREUM_NETWORK.XDAI:
+      return "";
+    case ETHEREUM_NETWORK.POLYGON:
+      return "";
+  }
+  return "";
+}
+
 export function getArbitrator(
   chainId: number,
   arbitratorOption: number
@@ -91,18 +108,7 @@ export function getArbitrator(
       // Setting the oracle as the arbitrator is equivalent to setting a null arbitrator.
       return getDefaultOracle(chainId);
     case ARBITRATOR_OPTIONS.KLEROS:
-      switch (chainId) {
-        case ETHEREUM_NETWORK.MAINNET:
-          return "0xc713E11091C74151020ee49e650C3847C7028e32";
-        case ETHEREUM_NETWORK.RINKEBY:
-          return "0xc713E11091C74151020ee49e650C3847C7028e32";
-        case 56:
-          return "";
-        case ETHEREUM_NETWORK.XDAI:
-          return "0xc713E11091C74151020ee49e650C3847C7028e32";
-        case ETHEREUM_NETWORK.POLYGON:
-          return "";
-      }
+      return getKlerosAddress(chainId);
     case ARBITRATOR_OPTIONS.OTHER:
       return "";
   }
