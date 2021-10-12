@@ -11,6 +11,12 @@ import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { ETHEREUM_NETWORK, getNetworkExplorerInfo } from "../utils/explorers";
 import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
 
+export enum ARBITRATOR_OPTIONS {
+  NO_ARBITRATOR,
+  KLEROS,
+  OTHER,
+}
+
 interface RealityModuleParams {
   executor: string;
   oracle?: string;
@@ -19,6 +25,7 @@ interface RealityModuleParams {
   timeout: string;
   cooldown: string;
   expiration: string;
+  arbitrator: string;
 }
 
 interface DelayModuleParams {
@@ -75,6 +82,39 @@ export function getDefaultOracle(chainId: number): string {
   return "";
 }
 
+function getKlerosAddress(chainId: number): string {
+  // TODO: Add addresses when Kleros becomes available.
+  switch (chainId) {
+    case ETHEREUM_NETWORK.MAINNET:
+      return "";
+    case ETHEREUM_NETWORK.RINKEBY:
+      return "";
+    case 56:
+      return "";
+    case ETHEREUM_NETWORK.XDAI:
+      return "";
+    case ETHEREUM_NETWORK.POLYGON:
+      return "";
+  }
+  return "";
+}
+
+export function getArbitrator(
+  chainId: number,
+  arbitratorOption: number
+): string {
+  switch (arbitratorOption) {
+    case ARBITRATOR_OPTIONS.NO_ARBITRATOR:
+      // Setting the oracle as the arbitrator is equivalent to setting a null arbitrator.
+      return getDefaultOracle(chainId);
+    case ARBITRATOR_OPTIONS.KLEROS:
+      return getKlerosAddress(chainId);
+    case ARBITRATOR_OPTIONS.OTHER:
+      return "";
+  }
+  return "";
+}
+
 export function deployRealityModule(
   safeAddress: string,
   chainId: number,
@@ -82,7 +122,7 @@ export function deployRealityModule(
   isERC20?: boolean
 ) {
   const type = isERC20 ? ModuleType.REALITY_ERC20 : ModuleType.REALITY_ETH;
-  const { timeout, cooldown, expiration, bond, templateId, oracle, executor } =
+  const { timeout, cooldown, expiration, bond, templateId, oracle, executor, arbitrator } =
     args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getDefaultOracle(chainId);
@@ -102,6 +142,7 @@ export function deployRealityModule(
         "uint32",
         "uint256",
         "uint256",
+        "address",
       ],
       values: [
         safeAddress,
@@ -113,6 +154,7 @@ export function deployRealityModule(
         expiration,
         bond,
         templateId,
+        arbitrator,
       ],
     },
     provider,

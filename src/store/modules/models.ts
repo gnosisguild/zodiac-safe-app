@@ -60,6 +60,7 @@ export interface RealityModule extends Module {
   bond: string;
   templateId: string;
   cooldown: number;
+  arbitrator: string;
 }
 
 export interface ModulesState {
