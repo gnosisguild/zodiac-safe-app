@@ -86,7 +86,7 @@ function getKlerosAddress(chainId: number): string {
   // TODO: Add addresses when Kleros becomes available.
   switch (chainId) {
     case ETHEREUM_NETWORK.MAINNET:
-      return "0x728cba71a3723caab33ea416cb46e2cc9215a596";
+      return "0xf72cfd1b34a91a64f9a98537fe63fbab7530adca";
     case ETHEREUM_NETWORK.RINKEBY:
       return "0xe27768bdb76a9b742b7ddcfe1539fadaf3b89bc7";
     case 56:
