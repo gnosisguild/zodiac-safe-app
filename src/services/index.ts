@@ -8,8 +8,9 @@ import {
 import { AddressOne, buildTransaction, SafeAbi } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
-import { ETHEREUM_NETWORK, getNetworkExplorerInfo } from "../utils/explorers";
+import { getNetworkExplorerInfo } from "../utils/explorers";
 import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
+import {NETWORK} from "../utils/networks";
 
 export enum ARBITRATOR_OPTIONS {
   NO_ARBITRATOR,
@@ -47,16 +48,16 @@ export interface ExitModuleParams {
 }
 
 export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
-  if (chainId === ETHEREUM_NETWORK.XDAI) {
+  if (chainId === NETWORK.XDAI) {
     return new ethers.providers.JsonRpcProvider(
       "https://rpc.xdaichain.com",
-      ETHEREUM_NETWORK.XDAI
+      NETWORK.XDAI
     );
   }
-  if (chainId === ETHEREUM_NETWORK.POLYGON) {
+  if (chainId === NETWORK.POLYGON) {
     return new ethers.providers.JsonRpcProvider(
       "https://rpc-mainnet.maticvigil.com/",
-      ETHEREUM_NETWORK.POLYGON
+      NETWORK.POLYGON
     );
   }
 
@@ -68,15 +69,15 @@ export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
 
 export function getDefaultOracle(chainId: number): string {
   switch (chainId) {
-    case ETHEREUM_NETWORK.MAINNET:
+    case NETWORK.MAINNET:
       return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
-    case ETHEREUM_NETWORK.RINKEBY:
+    case NETWORK.RINKEBY:
       return "0xDf33060F476F8cff7511F806C72719394da1Ad64";
     case 56:
       return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9";
-    case ETHEREUM_NETWORK.XDAI:
+    case NETWORK.XDAI:
       return "0xE78996A233895bE74a66F451f1019cA9734205cc";
-    case ETHEREUM_NETWORK.POLYGON:
+    case NETWORK.POLYGON:
       return "0x60573B8DcE539aE5bF9aD7932310668997ef0428";
   }
   return "";
@@ -85,15 +86,15 @@ export function getDefaultOracle(chainId: number): string {
 function getKlerosAddress(chainId: number): string {
   // TODO: Add addresses when Kleros becomes available.
   switch (chainId) {
-    case ETHEREUM_NETWORK.MAINNET:
+    case NETWORK.MAINNET:
       return "0xf72cfd1b34a91a64f9a98537fe63fbab7530adca";
-    case ETHEREUM_NETWORK.RINKEBY:
+    case NETWORK.RINKEBY:
       return "0xe27768bdb76a9b742b7ddcfe1539fadaf3b89bc7";
     case 56:
       return "";
-    case ETHEREUM_NETWORK.XDAI:
+    case NETWORK.XDAI:
       return "";
-    case ETHEREUM_NETWORK.POLYGON:
+    case NETWORK.POLYGON:
       return "";
   }
   return "";

@@ -1,11 +1,6 @@
-const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY;
+import {NETWORK} from "./networks";
 
-export enum ETHEREUM_NETWORK {
-  MAINNET = 1,
-  RINKEBY = 4,
-  XDAI = 100,
-  POLYGON = 137,
-}
+const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY;
 
 interface ExplorerData {
   networkExplorerName: string;
@@ -17,8 +12,8 @@ interface ExplorerData {
   verifyContractUrl: string;
 }
 
-export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
-  [ETHEREUM_NETWORK.MAINNET]: {
+export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
+  [NETWORK.MAINNET]: {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://etherscan.io",
     networkExplorerApiUrl: "https://api.etherscan.io/api",
@@ -27,7 +22,7 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
     verifyContractUrl: "https://etherscan.io/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
-  [ETHEREUM_NETWORK.RINKEBY]: {
+  [NETWORK.RINKEBY]: {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://rinkeby.etherscan.io",
     networkExplorerApiUrl: "https://api-rinkeby.etherscan.io/api",
@@ -36,7 +31,7 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
     verifyContractUrl: "https://rinkeby.etherscan.io/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
-  [ETHEREUM_NETWORK.XDAI]: {
+  [NETWORK.XDAI]: {
     networkExplorerName: "Blockscout",
     networkExplorerUrl: "https://blockscout.com/poa/xdai",
     networkExplorerApiUrl: "https://blockscout.com/xdai/mainnet/api",
@@ -45,7 +40,7 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
     verifyContractUrl:
       "https://docs.blockscout.com/for-users/smart-contract-interaction/verifying-a-smart-contract",
   },
-  [ETHEREUM_NETWORK.POLYGON]: {
+  [NETWORK.POLYGON]: {
     networkExplorerName: "Polygonscan",
     networkExplorerUrl: "https://polygonscan.com",
     networkExplorerApiUrl: "https://api.polygonscan.com/api",
@@ -57,7 +52,7 @@ export const EXPLORERS_CONFIG: Record<ETHEREUM_NETWORK, ExplorerData> = {
 };
 
 export const getNetworkExplorerInfo = (chainId: number) => {
-  const networkBaseConfig = EXPLORERS_CONFIG[chainId as ETHEREUM_NETWORK];
+  const networkBaseConfig = EXPLORERS_CONFIG[chainId as NETWORK];
   if (!networkBaseConfig) return;
   return {
     name: networkBaseConfig.networkExplorerName,

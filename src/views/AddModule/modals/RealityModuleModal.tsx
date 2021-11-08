@@ -2,22 +2,30 @@ import React, { useEffect, useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
-import { isAddress, parseUnits } from "ethers/lib/utils";
 import { AddModuleModal } from "./AddModuleModal";
 import RealityModuleImage from "../../../assets/images/reality-module-logo.png";
-import { deployRealityModule, getDefaultOracle, getArbitrator, ARBITRATOR_OPTIONS } from "../../../services";
+import {
+  ARBITRATOR_OPTIONS,
+  deployRealityModule,
+  getArbitrator,
+  getDefaultOracle,
+} from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
 import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { ArbitratorSelect, arbitratorOptions } from "../../../components/input/ArbitratorSelect";
+import {
+  arbitratorOptions,
+  ArbitratorSelect,
+} from "../../../components/input/ArbitratorSelect";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
 import { Grow } from "../../../components/layout/Grow";
 import { ModuleType } from "../../../store/modules/models";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
+import { getNetworkNativeAsset } from "../../../utils/networks";
 
 interface RealityModuleModalProps {
   open: boolean;
@@ -59,7 +67,9 @@ export const RealityModuleModal = ({
   const [delayModule, setDelayModule] = useState<string>(
     delayModules.length === 1 ? delayModules[0].address : ""
   );
-  const [bondToken, setBondToken] = useState("ETH");
+  const [bondToken, setBondToken] = useState(
+    getNetworkNativeAsset(safe.chainId)
+  );
   const [params, setParams] = useState<RealityModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
     templateId: "",
@@ -77,14 +87,14 @@ export const RealityModuleModal = ({
   const isValid = Object.values(validFields).every((field) => field);
 
   useEffect(() => {
-    if (params.oracle && isAddress(params.oracle)) {
+    if (params.oracle && ethers.utils.isAddress(params.oracle)) {
       getArbitratorBondToken(params.oracle, safe.chainId)
         .then((response) => {
-          setBondToken(response.symbol);
+          setBondToken(response.coin);
           setERC20(response.isERC20);
         })
         .catch(() => {
-          setBondToken("ETH");
+          setBondToken(getNetworkNativeAsset(safe.chainId));
           setERC20(false);
         });
     }
@@ -108,7 +118,7 @@ export const RealityModuleModal = ({
 
   const handleAddRealityModule = async () => {
     try {
-      const minimumBond = parseUnits(params.bond);
+      const minimumBond = ethers.utils.parseUnits(params.bond, bondToken.decimals);
       const args = {
         ...params,
         executor: delayModule || safe.safeAddress,
@@ -132,9 +142,10 @@ export const RealityModuleModal = ({
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Logic to ignore the TOKEN text at the end of the input
     const input = event.target.value;
+    event.preventDefault();
     let bondText = input.replace(/[^(0-9|.)]/g, "");
     if (
-      !input.includes(" " + bondToken) &&
+      !input.includes(" " + bondToken.symbol) &&
       bondText.length === params.bond.length
     ) {
       bondText = bondText.substr(0, bondText.length - 1);
@@ -150,12 +161,13 @@ export const RealityModuleModal = ({
 
     try {
       bondText = bondText || "0";
-      const eths = ethers.utils.parseEther(bondText);
-      let formattedBond = ethers.utils.formatEther(eths);
-      formattedBond = formattedBond.endsWith(".0")
-        ? formattedBond.substr(0, formattedBond.length - 2)
-        : formattedBond;
-      onParamChange("bond", formattedBond);
+      if (/\d+(.\d+)*/.test(bondText)) {
+        if (/^0(\d+(.\d+)*)/.test(bondText)) {
+          bondText = bondText.substr(1);
+        }
+        ethers.utils.parseUnits(bondText, bondToken.decimals);
+        onParamChange("bond", bondText);
+      }
     } catch (error) {
       console.warn("invalid bond", bondText, error);
     }
@@ -244,7 +256,7 @@ export const RealityModuleModal = ({
         <Grid item xs={6}>
           <TextField
             color="secondary"
-            value={params.bond + " " + bondToken}
+            value={params.bond + " " + bondToken.symbol}
             label="Bond"
             onChange={handleBondChange}
           />
