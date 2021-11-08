@@ -11,7 +11,7 @@ import { ParamInput } from "../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
 import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services";
-import { ETHEREUM_NETWORK } from "../../utils/explorers";
+import {NETWORK} from "../../utils/networks";
 
 
 export const arbitratorOptions = {
@@ -22,8 +22,8 @@ export const arbitratorOptions = {
 
 // List of chain IDs where Kleros is available.
 const klerosAvailability:number[] = [
-  ETHEREUM_NETWORK.MAINNET, 
-  ETHEREUM_NETWORK.RINKEBY
+  NETWORK.MAINNET,
+  NETWORK.RINKEBY
 ];
 
 type Option = keyof typeof arbitratorOptions;
