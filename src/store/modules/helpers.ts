@@ -211,13 +211,13 @@ export function getTransactionsFromSafeTransaction(
 
 export function getContractsModuleType(
   chainId: number,
-  contractAddress: string
+  masterCopyAddress: string
 ): ModuleType {
-  const contractAddresses = CONTRACT_ADDRESSES[chainId];
-  if (!contractAddresses) return ModuleType.UNKNOWN;
-  const entry = Object.entries(contractAddresses).find(
-    ([, contract]) => contract === contractAddress
-  );
+  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId];
+  if (!masterCopyAddresses) return ModuleType.UNKNOWN;
+  const entry = Object.entries(masterCopyAddresses).find(([, address]) => {
+    return address.toLowerCase() === masterCopyAddress.toLowerCase();
+  });
   if (!entry) return ModuleType.UNKNOWN;
   return MODULE_TYPES[entry[0] as keyof KnownModules] || ModuleType.UNKNOWN;
 }

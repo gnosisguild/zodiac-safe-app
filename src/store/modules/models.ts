@@ -20,6 +20,15 @@ export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
   circulatingSupply: ModuleType.UNKNOWN,
 };
 
+export const MODULE_NAMES: Record<ModuleType, string> = {
+  [ModuleType.REALITY_ERC20]: "Reality Module",
+  [ModuleType.REALITY_ETH]: "Reality Module",
+  [ModuleType.UNKNOWN]: "Unknown Module",
+  [ModuleType.BRIDGE]: "Bridge Module",
+  [ModuleType.DELAY]: "Delay Modifier",
+  [ModuleType.EXIT]: "Exit Module",
+};
+
 export enum ModuleOperation {
   CREATE,
   REMOVE,
@@ -93,15 +102,6 @@ export interface MultiSendDataDecoded extends DataDecoded {
     type: "bytes";
     value: string;
     valueDecoded: DecodedTransaction[];
-  }[];
-}
-
-export interface DisableModuleDataDecoded extends DataDecoded {
-  method: "disableModule";
-  parameters: {
-    name: string;
-    type: "address";
-    value: string;
   }[];
 }
 
