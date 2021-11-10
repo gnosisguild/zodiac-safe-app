@@ -48,7 +48,6 @@ export const PendingModuleStates = () => {
             safeSDK: sdk,
             chainId: safe.chainId,
             safeAddress: safe.safeAddress,
-            retry: true,
           })
         );
       };
