@@ -17,6 +17,7 @@ import { LoadingIcon } from "../../components/icons/LoadingIcon";
 import { ReactComponent as AddIcon } from "../../assets/icons/add-circle-icon.svg";
 import { ReactComponent as ModulePendingImg } from "../../assets/images/dao-module-pending.svg";
 import { getModuleContractMetadata } from "../../utils/modulesValidation";
+import { getModuleName } from "../../store/modules/helpers";
 
 export const PendingModuleStates = () => {
   const { sdk, safe } = useSafeAppsSDK();
@@ -79,7 +80,7 @@ export const PendingModuleStates = () => {
           active: currentPending?.address === pendingModule.address,
         };
         const metadata = getModuleContractMetadata(pendingModule.module);
-        const name = metadata?.name || "Unknown Module";
+        const name = getModuleName(metadata?.type);
         return (
           <ModulePendingItem
             title={name}

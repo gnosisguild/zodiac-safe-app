@@ -11,12 +11,12 @@ import { useRootDispatch, useRootSelector } from "../../../store";
 import { getAddTransaction } from "../../../store/transactionBuilder/selectors";
 import { resetNewTransaction } from "../../../store/transactionBuilder";
 import { getCurrentModule } from "../../../store/modules/selectors";
-import { ABI } from "../../../store/modules/models";
 import { TransactionField } from "./TransactionField";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
+import { ContractInterface } from "@ethersproject/contracts";
 
 interface AddTransactionBlockProps {
-  abi: ABI;
+  abi: ContractInterface;
 
   onAdd(transaction: Transaction): void;
 }

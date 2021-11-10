@@ -14,8 +14,10 @@ import {
   DecodedTransaction,
   DelayModule,
   Module,
+  MODULE_NAMES,
   MODULE_TYPES,
-  ModuleMetadata,
+  ModuleContract,
+  ModuleContractMetadata,
   ModuleOperation,
   ModuleType,
   MultiSendDataDecoded,
@@ -146,7 +148,7 @@ export async function fetchDelayModule(
 
 export async function fetchSubModules(
   moduleAddress: string,
-  abi: ModuleMetadata["abi"],
+  abi: ModuleContract["abi"],
   sdk: SafeAppsSDK,
   chainId: number
 ): Promise<Module[]> {
@@ -177,7 +179,7 @@ export async function fetchSubModules(
 
 export async function fetchModuleOwner(
   moduleAddress: string,
-  abi: ModuleMetadata["abi"]
+  abi: ModuleContract["abi"]
 ): Promise<string | undefined> {
   try {
     if (!abi) return undefined;
@@ -392,4 +394,8 @@ export function isPendingModule(module: Module, pendingModule: PendingModule) {
     pendingModule.address === module.address &&
     pendingModule.executor === module.parentModule
   );
+}
+
+export function getModuleName(type?: ModuleType): string {
+  return MODULE_NAMES[type || ModuleType.UNKNOWN];
 }

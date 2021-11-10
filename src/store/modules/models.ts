@@ -1,7 +1,5 @@
-import { Fragment } from "@ethersproject/abi";
 import { KnownModules } from "@gnosis.pm/zodiac";
-
-export type ABI = string | string[] | Fragment[];
+import { ContractInterface } from "@ethersproject/contracts";
 
 export enum ModuleType {
   REALITY_ETH = "realityETH",
@@ -37,13 +35,19 @@ export interface Module {
   parentModule: string;
 }
 
-export interface ModuleMetadata {
+export interface ModuleContract {
   address: string;
   implAddress: string;
   type: ModuleType;
   name?: string;
-  abi?: ABI;
+  abi?: ContractInterface;
   bytecode?: string;
+}
+
+export interface ModuleContractMetadata {
+  type: ModuleType;
+  abi: ContractInterface;
+  bytecode: string;
 }
 
 export interface DelayModule extends Module {

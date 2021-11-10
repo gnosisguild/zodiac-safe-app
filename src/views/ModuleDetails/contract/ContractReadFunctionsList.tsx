@@ -3,11 +3,11 @@ import { FunctionFragment } from "@ethersproject/abi";
 import { ContractFunctionQueryBlock } from "./ContractFunctionQueryBlock";
 import { getReadFunction } from "../../../utils/contracts";
 import { ContractFunctionPreviewBlock } from "./ContractFunctionPreviewBlock";
-import { ABI } from "../../../store/modules/models";
+import { ContractInterface } from "@ethersproject/contracts";
 
 type ModuleListFunctionsProps = {
   address: string;
-  abi: ABI;
+  abi: ContractInterface;
   preview?: boolean;
 };
 
