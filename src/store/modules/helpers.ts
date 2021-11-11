@@ -17,7 +17,6 @@ import {
   MODULE_NAMES,
   MODULE_TYPES,
   ModuleContract,
-  ModuleContractMetadata,
   ModuleOperation,
   ModuleType,
   MultiSendDataDecoded,
@@ -325,7 +324,7 @@ export function getModulesToBeRemoved(
 function getModuleTypeForAddTransactions(
   transactions: SafeTransaction[],
   chainId: number
-): Record<string, ModuleType> {
+): Record<string, ModuleType | undefined> {
   return transactions
     .map((safeTransaction) => {
       const enableModuleTx = getTransactionsFromSafeTransaction(safeTransaction)
@@ -342,7 +341,7 @@ function getModuleTypeForAddTransactions(
       if (!type || !moduleExpectedAddress) return undefined;
       return { address: moduleExpectedAddress, type };
     })
-    .reduce((obj, value) => {
+    .reduce((obj, value): Record<string, ModuleType | undefined> => {
       if (value)
         return {
           ...obj,
