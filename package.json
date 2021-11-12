@@ -43,8 +43,8 @@
     "react-scripts": "3.4.0",
     "typescript": "~4.1.3",
     "@zodiac-module/reality": "github:gnosis/zodiac-module-reality#main",
-    "@zodiac-module/exit": "github:gnosis/zodiac-module-exit#carlos/packages",
-    "@zodiac-module/delay": "github:gnosis/zodiac-modifier-delay#carlos/ethers-version",
+    "@zodiac-module/exit": "github:gnosis/zodiac-module-exit#master",
+    "@zodiac-module/delay": "github:gnosis/zodiac-modifier-delay#main",
     "@zodiac-module/bridge": "github:gnosis/zodiac-module-bridge#main"
   },
   "scripts": {

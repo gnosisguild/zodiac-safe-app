@@ -3037,9 +3037,9 @@
     solc "0.8.1"
     yargs "^16.1.1"
 
-"@zodiac-module/delay@github:gnosis/zodiac-modifier-delay#carlos/ethers-version":
+"@zodiac-module/delay@github:gnosis/zodiac-modifier-delay#main":
   version "1.0.0"
-  resolved "https://codeload.github.com/gnosis/zodiac-modifier-delay/tar.gz/7e491ad848d788f71b1ab930f0c648a4360f1859"
+  resolved "https://codeload.github.com/gnosis/zodiac-modifier-delay/tar.gz/171235daafa0e9f4f73c5a0ca98b238050beefe1"
   dependencies:
     "@gnosis.pm/mock-contract" "^4.0.0"
     "@gnosis.pm/safe-contracts" "1.3.0"
@@ -3050,9 +3050,9 @@
     solc "0.8.1"
     yargs "^16.1.1"
 
-"@zodiac-module/exit@github:gnosis/zodiac-module-exit#carlos/packages":
+"@zodiac-module/exit@github:gnosis/zodiac-module-exit#master":
   version "1.0.0"
-  resolved "https://codeload.github.com/gnosis/zodiac-module-exit/tar.gz/de13794c52647649b61ca76f9ee074da698a60b6"
+  resolved "https://codeload.github.com/gnosis/zodiac-module-exit/tar.gz/141edcef9275aa6177f1b14182c2355742f644ec"
 
 "@zodiac-module/reality@github:gnosis/zodiac-module-reality#main":
   version "1.0.0"
