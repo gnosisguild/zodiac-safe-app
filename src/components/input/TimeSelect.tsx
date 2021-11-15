@@ -1,15 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  InputBase,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
+import { Box, makeStyles, MenuItem, Select } from "@material-ui/core";
 import { BigNumber, BigNumberish } from "ethers";
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
+import { TextField } from "./TextField";
 
 const unitConversion = {
   seconds: 1,
@@ -29,33 +22,9 @@ interface TimeSelectProps {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    position: "relative",
-    flexWrap: "nowrap",
-    justifyContent: "flex-end",
-  },
-  label: {
-    color: theme.palette.text.primary,
-    marginBottom: theme.spacing(1),
-  },
-  inputContainer: {
-    flexGrow: 1,
-  },
-  input: {
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-    "& input": {
-      borderRightWidth: 1,
-      borderRightStyle: "solid",
-      borderRightColor: theme.palette.secondary.main,
-      paddingRight: theme.spacing(1),
-      textAlign: "right",
-    },
-  },
   select: {
-    borderLeft: 0,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
+    padding: 0,
+    border: 0,
     textIndent: theme.spacing(1),
   },
   itemList: {
@@ -144,55 +113,53 @@ export const TimeSelect = ({
   }, [selectRef]);
 
   return (
-    <div>
-      <InputLabel className={classes.label}>{label}</InputLabel>
-      <Grid container className={classes.root}>
-        <Grid item className={classes.inputContainer}>
-          <InputBase
-            className={classes.input}
-            value={amount}
-            placeholder="24"
-            onChange={(evt) => handleAmountChange(evt.target.value)}
-          />
-        </Grid>
-        <Grid item xs={8} className={classes.dropdownContainer}>
-          <Select
-            disableUnderline
-            open={open}
-            value={unit}
-            ref={selectRef}
-            onOpen={handleOpen}
-            onClose={handleClose}
-            className={classes.select}
-            MenuProps={{
-              anchorOrigin: {
-                vertical: "bottom",
-                horizontal: "left",
-              },
-              anchorPosition: {
-                top: 0,
-                left: 0,
-              },
-              getContentAnchorEl: null,
-              elevation: 0,
-              classes: {
-                paper: classes.dropdown,
-                list: classes.itemList,
-              },
-            }}
-            renderValue={(value) => value as string}
-            onChange={(evt) => handleUnitChange(evt.target.value as Unit)}
-          >
-            {Object.keys(unitConversion).map((unit) => (
-              <MenuItem key={unit} value={unit} className={classes.item}>
-                {unit}
-                <Box className="show-if-selected" flexGrow={1} />
-                <CheckmarkIcon className="show-if-selected" />
-              </MenuItem>
-            ))}
-          </Select>
-        </Grid>
-      </Grid>
-    </div>
+    <TextField
+      label={label}
+      InputProps={{
+        value: amount,
+        placeholder: "24",
+        onChange: (evt) => handleAmountChange(evt.target.value),
+      }}
+      AppendProps={{
+        className: classes.dropdownContainer,
+      }}
+      append={
+        <Select
+          disableUnderline
+          open={open}
+          value={unit}
+          ref={selectRef}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          className={classes.select}
+          MenuProps={{
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "left",
+            },
+            anchorPosition: {
+              top: 0,
+              left: 0,
+            },
+            getContentAnchorEl: null,
+            elevation: 0,
+            classes: {
+              paper: classes.dropdown,
+              list: classes.itemList,
+            },
+          }}
+          renderValue={(value) => value as string}
+          onChange={(evt) => handleUnitChange(evt.target.value as Unit)}
+        >
+          {Object.keys(unitConversion).map((unit) => (
+            <MenuItem key={unit} value={unit} className={classes.item}>
+              {unit}
+              <Box className="show-if-selected" flexGrow={1} />
+              <CheckmarkIcon className="show-if-selected" />
+            </MenuItem>
+          ))}
+        </Select>
+      }
+    />
   );
 };
