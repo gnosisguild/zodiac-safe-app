@@ -10,7 +10,6 @@ import {
   withStyles,
 } from "@material-ui/core";
 import classNames from "classnames";
-import App from "../../App";
 
 const StyledTextField = withStyles((theme) => ({
   root: {
