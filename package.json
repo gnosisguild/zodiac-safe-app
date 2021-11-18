@@ -37,8 +37,11 @@
     "@types/react-beautiful-dnd": "^13.1.0",
     "@types/react-dom": "^17.0.0",
     "@types/styled-components": "^5.1.2",
+    "@zodiac-module/bridge": "github:gnosis/zodiac-module-bridge#main",
+    "@zodiac-module/delay": "github:gnosis/zodiac-modifier-delay#main",
+    "@zodiac-module/exit": "github:gnosis/zodiac-module-exit#master",
+    "@zodiac-module/reality": "github:gnosis/zodiac-module-reality#main",
     "ganache-core": "2.12.1",
-    "husky": "^7.0.2",
     "prettier": "^2.3.1",
     "react-app-rewired": "^2.1.6",
     "react-scripts": "3.4.0",
@@ -48,7 +51,13 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-scripts test --watchAll=false",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:modules": "yarn build:module:delay && yarn build:module:reality && yarn build:module:exit && yarn build:module:bridge",
+    "build:module:reality": "cd scripts && ./build-zodiac-reality-module.sh",
+    "build:module:exit": "cd scripts && ./build-zodiac-exit-module.sh",
+    "build:module:delay": "cd scripts && ./build-zodiac-delay-modifier.sh",
+    "build:module:bridge": "cd scripts && ./build-zodiac-bridge-module.sh",
+    "postinstall": "yarn build:modules"
   },
   "eslintConfig": {
     "extends": [

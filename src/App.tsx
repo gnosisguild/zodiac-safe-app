@@ -29,13 +29,19 @@ const App: React.FC = () => {
   const classes = useStyles();
 
   useEffect(() => {
-    dispatch(
-      fetchModulesList({
-        safeSDK: sdk,
-        chainId: safe.chainId,
-        safeAddress: safe.safeAddress,
-      })
-    );
+    const exec = () => {
+      dispatch(
+        fetchModulesList({
+          safeSDK: sdk,
+          chainId: safe.chainId,
+          safeAddress: safe.safeAddress,
+        })
+      );
+    };
+    setInterval(() => {
+      exec();
+    }, 5000);
+    exec();
   }, [sdk, dispatch, safe]);
 
   return (

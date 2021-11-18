@@ -118,7 +118,10 @@ export const RealityModuleModal = ({
 
   const handleAddRealityModule = async () => {
     try {
-      const minimumBond = ethers.utils.parseUnits(params.bond, bondToken.decimals);
+      const minimumBond = ethers.utils.parseUnits(
+        params.bond,
+        bondToken.decimals
+      );
       const args = {
         ...params,
         executor: delayModule || safe.safeAddress,
@@ -140,36 +143,16 @@ export const RealityModuleModal = ({
   };
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Logic to ignore the TOKEN text at the end of the input
-    const input = event.target.value;
-    event.preventDefault();
-    let bondText = input.replace(/[^(0-9|.)]/g, "");
-    if (
-      !input.includes(" " + bondToken.symbol) &&
-      bondText.length === params.bond.length
-    ) {
-      bondText = bondText.substr(0, bondText.length - 1);
-    }
-
-    if (
-      bondText.endsWith(".") &&
-      bondText.indexOf(".") === bondText.length - 1
-    ) {
-      onParamChange("bond", bondText);
-      return;
-    }
+    const value = event.target.value || "0";
+    const leftZero = value.startsWith("0") && value.length > 1;
+    let bond = leftZero ? value.substr(1) : value;
+    bond = bond.startsWith(".") ? "0" + bond : bond;
 
     try {
-      bondText = bondText || "0";
-      if (/\d+(.\d+)*/.test(bondText)) {
-        if (/^0(\d+(.\d+)*)/.test(bondText)) {
-          bondText = bondText.substr(1);
-        }
-        ethers.utils.parseUnits(bondText, bondToken.decimals);
-        onParamChange("bond", bondText);
-      }
+      ethers.utils.parseUnits(bond, bondToken.decimals);
+      onParamChange("bond", bond);
     } catch (error) {
-      console.warn("invalid bond", bondText, error);
+      console.warn("invalid bond", value, error);
     }
   };
 
@@ -255,9 +238,10 @@ export const RealityModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <TextField
-            color="secondary"
-            value={params.bond + " " + bondToken.symbol}
             label="Bond"
+            color="secondary"
+            value={params.bond}
+            append={bondToken.symbol}
             onChange={handleBondChange}
           />
         </Grid>

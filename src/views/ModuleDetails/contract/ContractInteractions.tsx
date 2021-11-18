@@ -5,16 +5,17 @@ import { Transaction } from "../../../store/transactionBuilder/models";
 import { setOperation } from "../../../store/modules";
 import { useRootDispatch, useRootSelector } from "../../../store";
 import classNames from "classnames";
-import { ABI, Operation } from "../../../store/modules/models";
+import { Operation } from "../../../store/modules/models";
 import { getOperation } from "../../../store/modules/selectors";
 import { AddTransactionBlock } from "../transaction/AddTransactionBlock";
 import { addTransaction } from "../../../store/transactionBuilder";
 import { serializeTransaction } from "../../../store/transactionBuilder/helpers";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
+import { ContractInterface } from "@ethersproject/contracts";
 
 interface ContractInteractionsProps {
   address: string;
-  abi: ABI;
+  abi: ContractInterface;
 }
 
 const useStyles = makeStyles((theme) => ({

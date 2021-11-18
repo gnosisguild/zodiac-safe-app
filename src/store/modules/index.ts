@@ -32,11 +32,10 @@ export const fetchModulesList = createAsyncThunk(
       safeSDK: SafeAppsSDK;
       chainId: number;
       safeAddress: string;
-      retry?: boolean;
     },
     store
   ): Promise<Module[]> => {
-    const { safeSDK, safeAddress, chainId, retry } = params;
+    const { safeSDK, safeAddress, chainId } = params;
     const moduleAddresses = await fetchSafeModulesAddress(safeAddress, chainId);
 
     const requests = moduleAddresses.map(async (moduleAddress) => {
@@ -53,13 +52,6 @@ export const fetchModulesList = createAsyncThunk(
     });
     requests.reverse();
     const responses = await Promise.all(requests);
-
-    if (retry) {
-      setTimeout(() => {
-        const action = fetchModulesList({ ...params, retry: false });
-        store.dispatch(action);
-      }, 4000);
-    }
 
     return responses.filter((module): module is Module => module !== undefined);
   }

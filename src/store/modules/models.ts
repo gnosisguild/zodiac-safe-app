@@ -1,7 +1,5 @@
-import { Fragment } from "@ethersproject/abi";
 import { KnownModules } from "@gnosis.pm/zodiac";
-
-export type ABI = string | string[] | Fragment[];
+import { ContractInterface } from "@ethersproject/contracts";
 
 export enum ModuleType {
   REALITY_ETH = "realityETH",
@@ -22,6 +20,15 @@ export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
   circulatingSupply: ModuleType.UNKNOWN,
 };
 
+export const MODULE_NAMES: Record<ModuleType, string> = {
+  [ModuleType.REALITY_ERC20]: "Reality Module",
+  [ModuleType.REALITY_ETH]: "Reality Module",
+  [ModuleType.UNKNOWN]: "Unknown Module",
+  [ModuleType.BRIDGE]: "Bridge Module",
+  [ModuleType.DELAY]: "Delay Modifier",
+  [ModuleType.EXIT]: "Exit Module",
+};
+
 export enum ModuleOperation {
   CREATE,
   REMOVE,
@@ -37,13 +44,19 @@ export interface Module {
   parentModule: string;
 }
 
-export interface ModuleMetadata {
+export interface ModuleContract {
   address: string;
   implAddress: string;
   type: ModuleType;
   name?: string;
-  abi?: ABI;
+  abi?: ContractInterface;
   bytecode?: string;
+}
+
+export interface ModuleContractMetadata {
+  type: ModuleType;
+  abi: ContractInterface;
+  bytecode: string;
 }
 
 export interface DelayModule extends Module {
@@ -89,15 +102,6 @@ export interface MultiSendDataDecoded extends DataDecoded {
     type: "bytes";
     value: string;
     valueDecoded: DecodedTransaction[];
-  }[];
-}
-
-export interface DisableModuleDataDecoded extends DataDecoded {
-  method: "disableModule";
-  parameters: {
-    name: string;
-    type: "address";
-    value: string;
   }[];
 }
 

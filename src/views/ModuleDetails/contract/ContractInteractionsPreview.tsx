@@ -2,11 +2,11 @@ import React from "react";
 import { makeStyles, Paper } from "@material-ui/core";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
-import { ABI } from "../../../store/modules/models";
+import { ContractInterface } from "@ethersproject/contracts";
 
 interface ContractInteractionsPreviewProps {
   address: string;
-  abi: ABI;
+  abi: ContractInterface;
 }
 
 const useStyles = makeStyles((theme) => ({

@@ -14,8 +14,9 @@ import {
   DecodedTransaction,
   DelayModule,
   Module,
+  MODULE_NAMES,
   MODULE_TYPES,
-  ModuleMetadata,
+  ModuleContract,
   ModuleOperation,
   ModuleType,
   MultiSendDataDecoded,
@@ -146,7 +147,7 @@ export async function fetchDelayModule(
 
 export async function fetchSubModules(
   moduleAddress: string,
-  abi: ModuleMetadata["abi"],
+  abi: ModuleContract["abi"],
   sdk: SafeAppsSDK,
   chainId: number
 ): Promise<Module[]> {
@@ -177,7 +178,7 @@ export async function fetchSubModules(
 
 export async function fetchModuleOwner(
   moduleAddress: string,
-  abi: ModuleMetadata["abi"]
+  abi: ModuleContract["abi"]
 ): Promise<string | undefined> {
   try {
     if (!abi) return undefined;
@@ -209,13 +210,13 @@ export function getTransactionsFromSafeTransaction(
 
 export function getContractsModuleType(
   chainId: number,
-  contractAddress: string
+  masterCopyAddress: string
 ): ModuleType {
-  const contractAddresses = CONTRACT_ADDRESSES[chainId];
-  if (!contractAddresses) return ModuleType.UNKNOWN;
-  const entry = Object.entries(contractAddresses).find(
-    ([, contract]) => contract === contractAddress
-  );
+  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId];
+  if (!masterCopyAddresses) return ModuleType.UNKNOWN;
+  const entry = Object.entries(masterCopyAddresses).find(([, address]) => {
+    return address.toLowerCase() === masterCopyAddress.toLowerCase();
+  });
   if (!entry) return ModuleType.UNKNOWN;
   return MODULE_TYPES[entry[0] as keyof KnownModules] || ModuleType.UNKNOWN;
 }
@@ -323,7 +324,7 @@ export function getModulesToBeRemoved(
 function getModuleTypeForAddTransactions(
   transactions: SafeTransaction[],
   chainId: number
-): Record<string, ModuleType> {
+): Record<string, ModuleType | undefined> {
   return transactions
     .map((safeTransaction) => {
       const enableModuleTx = getTransactionsFromSafeTransaction(safeTransaction)
@@ -340,7 +341,7 @@ function getModuleTypeForAddTransactions(
       if (!type || !moduleExpectedAddress) return undefined;
       return { address: moduleExpectedAddress, type };
     })
-    .reduce((obj, value) => {
+    .reduce((obj, value): Record<string, ModuleType | undefined> => {
       if (value)
         return {
           ...obj,
@@ -392,4 +393,8 @@ export function isPendingModule(module: Module, pendingModule: PendingModule) {
     pendingModule.address === module.address &&
     pendingModule.executor === module.parentModule
   );
+}
+
+export function getModuleName(type?: ModuleType): string {
+  return MODULE_NAMES[type || ModuleType.UNKNOWN];
 }

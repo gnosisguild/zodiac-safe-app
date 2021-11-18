@@ -9,14 +9,20 @@ import { getNetworkExplorerInfo } from "./explorers";
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import {
   getGenericProxyMaster,
+  getModuleContractMetadata,
   getModuleContractMetadataByBytecode,
   getProxyMaster,
   isGenericProxy,
   isGnosisGenericProxy,
 } from "./modulesValidation";
-import { ABI, ModuleMetadata, ModuleType } from "../store/modules/models";
+import { ModuleContract, ModuleType } from "../store/modules/models";
 import retry from "async-retry";
 import { BigNumber } from "ethers";
+import { ContractInterface } from "@ethersproject/contracts";
+import {
+  getContractsModuleType,
+  getModuleName,
+} from "../store/modules/helpers";
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true;
@@ -27,15 +33,17 @@ export function isReadFunction(method: FunctionFragment) {
   return !isWriteFunction(method);
 }
 
-export function getReadFunction(abi: ABI) {
-  return new Interface(abi).fragments
+export function getReadFunction(abi: ContractInterface) {
+  const inter = abi instanceof Interface ? abi : new Interface(abi);
+  return inter.fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)
     .filter(isReadFunction);
 }
 
-export function getWriteFunction(abi: ABI) {
-  return new Interface(abi).fragments
+export function getWriteFunction(abi: ContractInterface) {
+  const inter = abi instanceof Interface ? abi : new Interface(abi);
+  return inter.fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)
     .filter(isWriteFunction);
@@ -162,23 +170,41 @@ export const getModuleData = memoize(
     safeSDK: SafeAppsSDK,
     chainId: number,
     address: string
-  ): Promise<ModuleMetadata> => {
+  ): Promise<ModuleContract> => {
     const bytecode = await safeSDK.eth.getCode([address]);
 
     if (isGenericProxy(bytecode)) {
       const masterAddress = getGenericProxyMaster(bytecode);
-      const module = await getModuleData(safeSDK, chainId, masterAddress);
+      const module: ModuleContract = await getModuleData(
+        safeSDK,
+        chainId,
+        masterAddress
+      );
       return { ...module, address };
     }
 
     if (isGnosisGenericProxy(bytecode)) {
       const masterAddress = await getProxyMaster(address);
-      const module = await getModuleData(safeSDK, chainId, masterAddress);
+      const module: ModuleContract = await getModuleData(
+        safeSDK,
+        chainId,
+        masterAddress
+      );
       return { ...module, address };
     }
 
-    const standardContract = getModuleContractMetadataByBytecode(bytecode);
+    const type = getContractsModuleType(chainId, address);
+    if (type !== ModuleType.UNKNOWN) {
+      return {
+        type,
+        address,
+        implAddress: address,
+        name: getModuleName(type),
+        ...getModuleContractMetadata(type),
+      };
+    }
 
+    const standardContract = getModuleContractMetadataByBytecode(bytecode);
     if (standardContract) {
       return {
         address,
