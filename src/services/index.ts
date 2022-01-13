@@ -10,7 +10,7 @@ import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
 import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
-import {NETWORK} from "../utils/networks";
+import { NETWORK } from "../utils/networks";
 
 export enum ARBITRATOR_OPTIONS {
   NO_ARBITRATOR,
@@ -47,20 +47,13 @@ export interface ExitModuleParams {
   tokenContract: string;
 }
 
-export function getProvider(chainId: number): ethers.providers.JsonRpcProvider {
-  if (chainId === NETWORK.XDAI) {
-    return new ethers.providers.JsonRpcProvider(
-      "https://rpc.xdaichain.com",
-      NETWORK.XDAI
-    );
+export function getProvider(
+  chainId: NETWORK
+): ethers.providers.JsonRpcProvider {
+  const network = getNetworkExplorerInfo(chainId);
+  if (network) {
+    return new ethers.providers.JsonRpcProvider(network.rpcUrl, chainId);
   }
-  if (chainId === NETWORK.POLYGON) {
-    return new ethers.providers.JsonRpcProvider(
-      "https://rpc-mainnet.maticvigil.com/",
-      NETWORK.POLYGON
-    );
-  }
-
   return new ethers.providers.InfuraProvider(
     chainId,
     process.env.REACT_APP_INFURA_ID
@@ -123,8 +116,16 @@ export function deployRealityModule(
   isERC20?: boolean
 ) {
   const type = isERC20 ? ModuleType.REALITY_ERC20 : ModuleType.REALITY_ETH;
-  const { timeout, cooldown, expiration, bond, templateId, oracle, executor, arbitrator } =
-    args;
+  const {
+    timeout,
+    cooldown,
+    expiration,
+    bond,
+    templateId,
+    oracle,
+    executor,
+    arbitrator,
+  } = args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getDefaultOracle(chainId);
   const {

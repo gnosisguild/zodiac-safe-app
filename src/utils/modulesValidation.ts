@@ -1,11 +1,12 @@
 import { Contract } from "ethers";
-import { defaultProvider } from "../services/helpers";
 import { ModuleContractMetadata, ModuleType } from "../store/modules/models";
 import DELAY_MODIFIER_METADATA from "../contracts/Delay.json";
 import REALITY_ERC20_MODULE_METADATA from "../contracts/RealityModuleERC20.json";
 import REALITY_ETH_MODULE_METADATA from "../contracts/RealityModuleETH.json";
 import BRIDGE_MODULE_METADATA from "../contracts/AMBModule.json";
 import EXIT_MODULE_METADATA from "../contracts/Exit.json";
+import { NETWORK } from "./networks";
+import { getProvider } from "../services";
 
 const MODULES_METADATA = {
   [ModuleType.REALITY_ETH]: REALITY_ETH_MODULE_METADATA,
@@ -64,11 +65,12 @@ export function getGenericProxyMaster(bytecode: string) {
   return "0x" + bytecode.substr(22, 40);
 }
 
-export async function getProxyMaster(address: string) {
+export async function getProxyMaster(address: string, chainId: NETWORK) {
+  const provider = getProvider(chainId);
   const contract = new Contract(
     address,
     GNOSIS_GENERIC_PROXY_CONTRACT_ABI,
-    defaultProvider
+    provider
   );
 
   const [masterAddress] = await contract.functions.masterCopy();
