@@ -184,7 +184,7 @@ export const getModuleData = memoize(
     }
 
     if (isGnosisGenericProxy(bytecode)) {
-      const masterAddress = await getProxyMaster(address);
+      const masterAddress = await getProxyMaster(address, chainId);
       const module: ModuleContract = await getModuleData(
         safeSDK,
         chainId,

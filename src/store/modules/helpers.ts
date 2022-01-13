@@ -25,8 +25,8 @@ import {
   SafeTransaction,
 } from "./models";
 import { Contract, ethers } from "ethers";
-import { defaultProvider } from "../../services/helpers";
 import { getProvider } from "../../services";
+import { NETWORK } from "../../utils/networks";
 
 export const AddressOne = "0x0000000000000000000000000000000000000001";
 
@@ -60,7 +60,7 @@ export const sanitizeModule = async (
     chainId
   );
 
-  const owner = await fetchModuleOwner(moduleAddress, module.abi);
+  const owner = await fetchModuleOwner(moduleAddress, module.abi, chainId);
 
   return {
     owner,
@@ -76,7 +76,7 @@ export const sanitizeModule = async (
 export async function fetchDelayModule(
   address: string,
   sdk: SafeAppsSDK,
-  chainId: number,
+  chainId: NETWORK,
   parentModule: string
 ): Promise<DelayModule | Module> {
   const provider = getProvider(chainId);
@@ -119,7 +119,7 @@ export async function fetchDelayModule(
       subModules = await Promise.all(requests);
     }
 
-    const owner = await fetchModuleOwner(address, abi);
+    const owner = await fetchModuleOwner(address, abi, chainId);
 
     return {
       owner,
@@ -153,7 +153,8 @@ export async function fetchSubModules(
 ): Promise<Module[]> {
   try {
     if (!abi) return [];
-    const contract = new Contract(moduleAddress, abi, defaultProvider);
+    const provider = getProvider(chainId);
+    const contract = new Contract(moduleAddress, abi, provider);
     contract.interface.getFunction("getModulesPaginated(address,uint256)");
     const [subModules] = await contract.getModulesPaginated(AddressOne, 50);
     return await Promise.all(
@@ -178,11 +179,13 @@ export async function fetchSubModules(
 
 export async function fetchModuleOwner(
   moduleAddress: string,
-  abi: ModuleContract["abi"]
+  abi: ModuleContract["abi"],
+  chainId: NETWORK
 ): Promise<string | undefined> {
   try {
     if (!abi) return undefined;
-    const contract = new Contract(moduleAddress, abi, defaultProvider);
+    const provider = getProvider(chainId);
+    const contract = new Contract(moduleAddress, abi, provider);
     contract.interface.getFunction("owner()");
     return await contract.owner();
   } catch (e) {
