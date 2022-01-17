@@ -126,6 +126,13 @@ export const AddModulesView = () => {
         />
 
         <ModuleButton
+          title="Roles Modifier"
+          description="Allows avatars to enforce granular, role-based, permissions for attached modules"
+          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
+          onClick={() => setModule(ModuleType.ROLES)}
+        />
+
+        <ModuleButton
           title="Custom Module"
           description="Enable a custom contract as a module"
           image={<img src={CustomModuleImage} alt="Custom Module Logo" />}

@@ -7,6 +7,7 @@ export enum ModuleType {
   DELAY = "delay",
   BRIDGE = "bridge",
   EXIT = "exit",
+  ROLES = "roles",
   UNKNOWN = "unknown",
 }
 
@@ -18,6 +19,7 @@ export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
   exit: ModuleType.EXIT,
   scopeGuard: ModuleType.UNKNOWN,
   circulatingSupply: ModuleType.UNKNOWN,
+  roles: ModuleType.ROLES,
 };
 
 export const MODULE_NAMES: Record<ModuleType, string> = {
@@ -26,6 +28,7 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.UNKNOWN]: "Unknown Module",
   [ModuleType.BRIDGE]: "Bridge Module",
   [ModuleType.DELAY]: "Delay Modifier",
+  [ModuleType.ROLES]: "Roles Modifier",
   [ModuleType.EXIT]: "Exit Module",
 };
 

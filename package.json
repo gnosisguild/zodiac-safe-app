@@ -7,7 +7,7 @@
     "@gnosis.pm/safe-apps-react-sdk": "3.0.0",
     "@gnosis.pm/safe-deployments": "^1.0.0",
     "@gnosis.pm/safe-react-components": "^0.6.0",
-    "@gnosis.pm/zodiac": "^1.0.3",
+    "@gnosis.pm/zodiac": "https://github.com/carlosfebres/zodiac#carlos/roles-mod",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
@@ -56,8 +56,7 @@
     "build:module:reality": "cd scripts && ./build-zodiac-reality-module.sh",
     "build:module:exit": "cd scripts && ./build-zodiac-exit-module.sh",
     "build:module:delay": "cd scripts && ./build-zodiac-delay-modifier.sh",
-    "build:module:bridge": "cd scripts && ./build-zodiac-bridge-module.sh",
-    "postinstall": "yarn build:modules"
+    "build:module:bridge": "cd scripts && ./build-zodiac-bridge-module.sh"
   },
   "eslintConfig": {
     "extends": [
