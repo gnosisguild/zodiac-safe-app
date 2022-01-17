@@ -56,7 +56,8 @@
     "build:module:reality": "cd scripts && ./build-zodiac-reality-module.sh",
     "build:module:exit": "cd scripts && ./build-zodiac-exit-module.sh",
     "build:module:delay": "cd scripts && ./build-zodiac-delay-modifier.sh",
-    "build:module:bridge": "cd scripts && ./build-zodiac-bridge-module.sh"
+    "build:module:bridge": "cd scripts && ./build-zodiac-bridge-module.sh",
+    "build:zodiac": "cd node_modules/@gnosis.pm/zodiac && yarn build:factory"
   },
   "eslintConfig": {
     "extends": [
