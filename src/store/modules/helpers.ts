@@ -45,7 +45,8 @@ export const sanitizeModule = async (
   moduleAddress: string,
   sdk: SafeAppsSDK,
   chainId: number,
-  parentModule: string
+  parentModule: string,
+  parentModulesList: string[] = [moduleAddress]
 ): Promise<Module> => {
   const module = await getModuleData(sdk, chainId, moduleAddress);
 
@@ -57,7 +58,8 @@ export const sanitizeModule = async (
     moduleAddress,
     module.abi,
     sdk,
-    chainId
+    chainId,
+    parentModulesList
   );
 
   const owner = await fetchModuleOwner(moduleAddress, module.abi, chainId);
@@ -149,7 +151,8 @@ export async function fetchSubModules(
   moduleAddress: string,
   abi: ModuleContract["abi"],
   sdk: SafeAppsSDK,
-  chainId: number
+  chainId: number,
+  parentModulesList: string[] = []
 ): Promise<Module[]> {
   try {
     if (!abi) return [];
@@ -157,20 +160,24 @@ export async function fetchSubModules(
     const contract = new Contract(moduleAddress, abi, provider);
     contract.interface.getFunction("getModulesPaginated(address,uint256)");
     const [subModules] = await contract.getModulesPaginated(AddressOne, 50);
+    const modulesList = [...parentModulesList, ...subModules];
     return await Promise.all(
-      subModules.map(async (subModuleAddress: string, index: number) => {
-        const subModule = await sanitizeModule(
-          subModuleAddress,
-          sdk,
-          chainId,
-          moduleAddress
-        );
-        return {
-          ...subModule,
-          id: `${moduleAddress}_${subModuleAddress}_${index}`,
-          parentModule: moduleAddress,
-        };
-      })
+      subModules
+        .filter((module: string) => !parentModulesList.includes(module))
+        .map(async (subModuleAddress: string, index: number) => {
+          const subModule = await sanitizeModule(
+            subModuleAddress,
+            sdk,
+            chainId,
+            moduleAddress,
+            modulesList
+          );
+          return {
+            ...subModule,
+            id: `${moduleAddress}_${subModuleAddress}_${index}`,
+            parentModule: moduleAddress,
+          };
+        })
     );
   } catch (e) {
     return [];
