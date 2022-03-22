@@ -44,10 +44,7 @@ export const ModulePendingItem = ({
 
   const network = getNetworkExplorerInfo(safe.chainId);
   const link = network
-    ? new URL(
-        `/app/#/safes/${safe.safeAddress}/transactions`,
-        network.safeUrl
-      ).toString()
+    ? `${network.safeUrl}${safe.safeAddress}/transactions`
     : "";
 
   return (

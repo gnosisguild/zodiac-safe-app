@@ -1,4 +1,3 @@
-import { KnownModules } from "@gnosis.pm/zodiac";
 import { ContractInterface } from "@ethersproject/contracts";
 
 export enum ModuleType {
@@ -10,7 +9,7 @@ export enum ModuleType {
   UNKNOWN = "unknown",
 }
 
-export const MODULE_TYPES: Record<keyof KnownModules, ModuleType> = {
+export const MODULE_TYPES: Record<string, ModuleType> = {
   realityETH: ModuleType.REALITY_ETH,
   realityERC20: ModuleType.REALITY_ERC20,
   delay: ModuleType.DELAY,

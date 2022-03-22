@@ -12,6 +12,10 @@ const ERC20_CONTRACT_ABI = [
   "function decimals() public view returns (uint8)",
 ];
 
+export const ERC721_CONTRACT_ABI = [
+  "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
+];
+
 export async function getArbitratorBondToken(
   address: string,
   chainId: number
