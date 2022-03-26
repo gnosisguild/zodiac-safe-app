@@ -6,7 +6,7 @@ import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
 import {
   CONTRACT_ADDRESSES,
   getModuleInstance,
-  KnownModules,
+  KnownContracts,
 } from "@gnosis.pm/zodiac";
 import { getModuleData } from "../../utils/contracts";
 import {
@@ -82,7 +82,11 @@ export async function fetchDelayModule(
   parentModule: string
 ): Promise<DelayModule | Module> {
   const provider = getProvider(chainId);
-  const delayModule = await getModuleInstance("delay", address, provider);
+  const delayModule = await getModuleInstance(
+    KnownContracts.DELAY,
+    address,
+    provider
+  );
   const abi = delayModule.interface.fragments.map((frag) => frag);
 
   try {
@@ -228,7 +232,7 @@ export function getContractsModuleType(
     return address.toLowerCase() === masterCopyAddress.toLowerCase();
   });
   if (!entry) return ModuleType.UNKNOWN;
-  return MODULE_TYPES[entry[0] as keyof KnownModules] || ModuleType.UNKNOWN;
+  return MODULE_TYPES[entry[0]] || ModuleType.UNKNOWN;
 }
 
 /**
