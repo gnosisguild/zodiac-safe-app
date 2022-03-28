@@ -4,13 +4,15 @@ import {
   deployAndSetUpModule,
   getFactoryAndMasterCopy,
   getModuleInstance,
+  KnownContracts,
 } from "@gnosis.pm/zodiac";
 import { AddressOne, buildTransaction, SafeAbi } from "./helpers";
 import { ContractInterface } from "@ethersproject/contracts";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { getNetworkExplorerInfo } from "../utils/explorers";
-import { ModuleType, SafeInfo, SafeTransaction } from "../store/modules/models";
+import { SafeInfo, SafeTransaction } from "../store/modules/models";
 import { NETWORK } from "../utils/networks";
+import { ERC721_CONTRACT_ABI } from "../utils/reality-eth";
 
 export enum ARBITRATOR_OPTIONS {
   NO_ARBITRATOR,
@@ -70,7 +72,7 @@ export function getDefaultOracle(chainId: number): string {
       return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
     case NETWORK.RINKEBY:
       return "0xDf33060F476F8cff7511F806C72719394da1Ad64";
-    case 56:
+    case NETWORK.BSC:
       return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9";
     case NETWORK.XDAI:
       return "0xE78996A233895bE74a66F451f1019cA9734205cc";
@@ -87,7 +89,7 @@ function getKlerosAddress(chainId: number): string {
       return "0xf72cfd1b34a91a64f9a98537fe63fbab7530adca";
     case NETWORK.RINKEBY:
       return "0xe27768bdb76a9b742b7ddcfe1539fadaf3b89bc7";
-    case 56:
+    case NETWORK.BSC:
       return "";
     case NETWORK.XDAI:
       return "";
@@ -119,7 +121,9 @@ export function deployRealityModule(
   args: RealityModuleParams,
   isERC20?: boolean
 ) {
-  const type = isERC20 ? ModuleType.REALITY_ERC20 : ModuleType.REALITY_ETH;
+  const type: KnownContracts = isERC20
+    ? KnownContracts.REALITY_ERC20
+    : KnownContracts.REALITY_ETH;
   const {
     timeout,
     cooldown,
@@ -176,7 +180,11 @@ export function deployRealityModule(
   ];
 
   if (executor !== safeAddress) {
-    const delayModule = getModuleInstance("delay", executor, provider);
+    const delayModule = getModuleInstance(
+      KnownContracts.DELAY,
+      executor,
+      provider
+    );
     const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
       daoModuleExpectedAddress,
     ]);
@@ -206,7 +214,7 @@ export function deployDelayModule(
     transaction: delayModuleDeploymentTx,
     expectedModuleAddress: delayModuleExpectedAddress,
   } = deployAndSetUpModule(
-    "delay",
+    KnownContracts.DELAY,
     {
       types: ["address", "address", "address", "uint256", "uint256"],
       values: [safeAddress, safeAddress, executor, cooldown, expiration],
@@ -239,7 +247,7 @@ export function deployBridgeModule(
   const { executor, controller, amb, chainId: ambChainId } = args;
 
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
-    "bridge",
+    KnownContracts.BRIDGE,
     {
       types: ["address", "address", "address", "address", "address", "bytes32"],
       values: [
@@ -275,15 +283,20 @@ export function deployCirculatingSupplyContract(
   safeAddress: string,
   chainId: number,
   token: string,
-  saltNonce: string
+  saltNonce: string,
+  isERC721?: boolean
 ) {
+  const type: KnownContracts = isERC721
+    ? KnownContracts.CIRCULATING_SUPPLY_ERC721
+    : KnownContracts.CIRCULATING_SUPPLY_ERC20;
+
   const provider = getProvider(chainId);
   const { factory, module: circulatingSupplyContract } =
-    getFactoryAndMasterCopy("circulatingSupply", provider, chainId);
+    getFactoryAndMasterCopy(type, provider, chainId);
 
   const encodedInitParams = new ethers.utils.AbiCoder().encode(
     ["address", "address", "address[]"],
-    [safeAddress, token, []]
+    [safeAddress, token, [safeAddress]]
   );
   const moduleSetupData =
     circulatingSupplyContract.interface.encodeFunctionData("setUp", [
@@ -314,7 +327,7 @@ export function deployCirculatingSupplyContract(
   };
 }
 
-export function deployExitModule(
+export async function deployExitModule(
   safeAddress: string,
   chainId: number,
   args: ExitModuleParams
@@ -323,6 +336,18 @@ export function deployExitModule(
   const txs: Transaction[] = [];
   const { executor, tokenContract } = args;
 
+  let isERC721 = false;
+  try {
+    const ERC721Contract = new Contract(
+      tokenContract,
+      ERC721_CONTRACT_ABI,
+      provider
+    );
+    isERC721 = await ERC721Contract.supportsInterface("0x80ac58cd");
+  } catch (err) {
+    console.warn("deployExitModule: error determining token type");
+  }
+
   const {
     transaction: deployCirculationSupplyTx,
     expectedAddress: circulatingSupplyAddress,
@@ -330,13 +355,18 @@ export function deployExitModule(
     safeAddress,
     chainId,
     tokenContract,
-    Date.now().toString()
+    Date.now().toString(),
+    isERC721
   );
 
   txs.push(deployCirculationSupplyTx);
 
+  const type = isERC721
+    ? KnownContracts.EXIT_ERC721
+    : KnownContracts.EXIT_ERC20;
+
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
-    "exit",
+    type,
     {
       types: ["address", "address", "address", "address", "address"],
       values: [

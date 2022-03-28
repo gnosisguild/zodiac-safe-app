@@ -62,7 +62,7 @@ export const ExitModuleModal = ({
 
   const handleAddExitModule = async () => {
     try {
-      const txs = deployExitModule(safe.safeAddress, safe.chainId, {
+      const txs = await deployExitModule(safe.safeAddress, safe.chainId, {
         ...params,
         executor: safe.safeAddress,
       });
