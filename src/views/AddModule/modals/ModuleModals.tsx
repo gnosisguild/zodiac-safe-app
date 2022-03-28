@@ -5,6 +5,7 @@ import { ModuleType } from "../../../store/modules/models";
 import { CustomModuleModal } from "./CustomModuleModal";
 import { AMBModuleModal } from "./AMBModuleModal";
 import { ExitModuleModal } from "./ExitModuleModal";
+import { RolesModifierModal } from "./RolesModifierModal";
 
 interface ModuleModalsProps {
   selected?: ModuleType;
@@ -40,6 +41,11 @@ export const ModuleModals = ({
         open={selected === ModuleType.EXIT}
         onClose={onClose}
         onSubmit={() => onSubmit && onSubmit(ModuleType.EXIT)}
+      />
+      <RolesModifierModal
+        open={selected === ModuleType.ROLES}
+        onClose={onClose}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.DELAY)}
       />
       <CustomModuleModal
         open={selected === ModuleType.UNKNOWN}

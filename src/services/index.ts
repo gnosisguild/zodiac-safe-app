@@ -37,6 +37,10 @@ interface DelayModuleParams {
   expiration: string;
 }
 
+export interface RolesModifierParams {
+  target: string;
+}
+
 export interface AMBModuleParams {
   amb: string;
   controller: string;
@@ -481,4 +485,39 @@ export async function fetchSafeInfo(chainId: number, safeAddress: string) {
   const request = await fetch(url.toString());
   const response = await request.json();
   return response as SafeInfo;
+}
+
+export function deployRolesModifier(
+  safeAddress: string,
+  chainId: number,
+  args: RolesModifierParams
+) {
+  const provider = getProvider(chainId);
+  const { target } = args;
+  const {
+    transaction: rolesModifierDeploymentTx,
+    expectedModuleAddress: rolesModifierExpectedAddress,
+  } = deployAndSetUpModule(
+    KnownContracts.ROLES,
+    {
+      types: ["address", "address", "address"],
+      values: [safeAddress, safeAddress, target],
+    },
+    provider,
+    chainId,
+    Date.now().toString()
+  );
+  const enableRolesModifierTransaction = enableModule(
+    safeAddress,
+    chainId,
+    rolesModifierExpectedAddress
+  );
+
+  return [
+    {
+      ...rolesModifierDeploymentTx,
+      value: rolesModifierDeploymentTx.value.toString(),
+    },
+    enableRolesModifierTransaction,
+  ];
 }
