@@ -498,7 +498,7 @@ export function deployRolesModifier(
     transaction: rolesModifierDeploymentTx,
     expectedModuleAddress: rolesModifierExpectedAddress,
   } = deployAndSetUpModule(
-    "roles",
+    KnownContracts.ROLES,
     {
       types: ["address", "address", "address"],
       values: [safeAddress, safeAddress, target],
