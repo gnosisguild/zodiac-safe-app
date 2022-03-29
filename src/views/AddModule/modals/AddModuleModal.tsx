@@ -48,9 +48,6 @@ const useStyles = makeStyles((theme) => ({
   },
   backdrop: {
     backdropFilter: "blur(4px)",
-    animationName: "$blur",
-    animationDuration: "500ms",
-    animationTimingFunction: "ease",
   },
   description: {
     marginTop: theme.spacing(1),
@@ -94,14 +91,6 @@ const useStyles = makeStyles((theme) => ({
   warningText: {
     color: "#E0B325",
   },
-  "@keyframes blur": {
-    "0%": {
-      backdropFilter: "blur(0px)",
-    },
-    "100%": {
-      backdropFilter: "blur(4px)",
-    },
-  },
 }));
 
 export const AddModuleModal: React.FC<AddModuleModalProps> = ({
@@ -127,7 +116,6 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
       className={classNames(classes.modal, classes.row, classes.center)}
       BackdropProps={{
         className: classes.backdrop,
-        invisible: true,
       }}
     >
       <Fade in={open}>
