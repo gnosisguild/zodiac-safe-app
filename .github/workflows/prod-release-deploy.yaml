@@ -3,7 +3,10 @@ name: Prod Release Deployment
 on:
   release:
     types: created
-
+    
+env:
+  REACT_APP_ETHERSCAN_KEY: ${{ secrets.REACT_APP_ETHERSCAN_KEY }}
+  REACT_APP_INFURA_ID: ${{ secrets.REACT_APP_INFURA_ID }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
