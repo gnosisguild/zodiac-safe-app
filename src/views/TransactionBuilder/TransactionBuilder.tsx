@@ -70,17 +70,6 @@ const useStyles = makeStyles((theme) => ({
   },
   backdrop: {
     backdropFilter: "blur(4px)",
-    animationName: "$blur",
-    animationDuration: "500ms",
-    animationTimingFunction: "ease",
-  },
-  "@keyframes blur": {
-    "0%": {
-      backdropFilter: "blur(0px)",
-    },
-    "100%": {
-      backdropFilter: "blur(4px)",
-    },
   },
   bagIcon: {
     marginLeft: theme.spacing(2),
@@ -158,7 +147,6 @@ export const TransactionBuilder = () => {
       className={classes.modal}
       BackdropProps={{
         className: classes.backdrop,
-        invisible: true,
       }}
     >
       <Fade in={open}>
