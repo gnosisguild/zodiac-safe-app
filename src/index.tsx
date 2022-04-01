@@ -11,7 +11,11 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { REDUX_STORE } from "./store";
 import { Row } from "./components/layout/Row";
-import { zodiacTheme, gnosisStyledComponentsTheme } from "zodiac-ui-components";
+import {
+  zodiacTheme,
+  gnosisStyledComponentsTheme,
+  ZodiacPaper,
+} from "zodiac-ui-components";
 
 const Main = () => {
   return (
@@ -32,6 +36,7 @@ const Main = () => {
           }
         >
           <Provider store={REDUX_STORE}>
+            <ZodiacPaper>This is paper!</ZodiacPaper>
             <App />
           </Provider>
         </SafeProvider>
