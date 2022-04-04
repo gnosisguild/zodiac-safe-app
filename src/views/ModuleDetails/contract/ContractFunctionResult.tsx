@@ -41,7 +41,7 @@ export const ContractFunctionResult = ({
   if (loading) return <Skeleton variant="rect" height={50} />;
   if (!result) return null;
   return (
-    <ZodiacPaper borderStyle="single" className={classes.root}>
+    <ZodiacPaper className={classes.root}>
       {func.outputs?.map((param, index) => (
         <div key={index} className={classes.item}>
           <span className={classes.label}>

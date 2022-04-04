@@ -26,9 +26,9 @@ interface AppLayoutProps {
 export const AppLayout: React.FC<AppLayoutProps> = ({ children, left }) => {
   const classes = useStyles();
   return (
-    <ZodiacPaper borderStyle="single" variant="outlined" className={classes.root}>
-      <ZodiacPaper borderStyle="single" variant="outlined" className={classes.content}>{left}</ZodiacPaper>
-      <ZodiacPaper borderStyle="single" variant="outlined" id="app-content" className={classes.content}>
+    <ZodiacPaper variant="outlined" className={classes.root}>
+      <ZodiacPaper variant="outlined" className={classes.content}>{left}</ZodiacPaper>
+      <ZodiacPaper variant="outlined" id="app-content" className={classes.content}>
         {children}
       </ZodiacPaper>
     </ZodiacPaper>

@@ -53,7 +53,7 @@ export const ContractInteractions = ({
         onChange={(evt, value) => handleOperationChange(value)}
       />
 
-      <ZodiacPaper borderStyle="single" className={classes.content}>
+      <ZodiacPaper className={classes.content}>
         <div className={classNames({ [classes.hide]: operation !== "read" })}>
           <ContractReadFunctionsList address={address} abi={abi} />
         </div>

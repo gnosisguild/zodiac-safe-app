@@ -73,7 +73,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
   const classes = useStyles();
   return (
     <ZodiacPaper
-      borderStyle="single"
+      borderStyle="double"
       className={classNames(classes.root, classes.spacing, {
         sub,
         [classes.active]: active,

@@ -38,7 +38,7 @@ export const Collapsable: React.FC<CollapsableProps> = ({
 }) => {
   const classes = useStyles();
   return (
-    <ZodiacPaper borderStyle="single" {...props} className={classNames(classes.root, className)}>
+    <ZodiacPaper {...props} className={classNames(classes.root, className)}>
       {children}
       {content ? (
         <div
