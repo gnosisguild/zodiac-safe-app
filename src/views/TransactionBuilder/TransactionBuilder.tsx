@@ -26,6 +26,7 @@ import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmpt
 import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg";
 import classNames from "classnames";
 import { Grow } from "../../components/layout/Grow";
+import { colors, ZodiacPaper } from "zodiac-ui-components";
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
@@ -42,9 +43,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginBottom: theme.spacing(2),
     padding: theme.spacing(0.5, 0.5, 0.5, 1.5),
-    border: "1px solid rgba(217, 212, 173, 0.3)",
-    borderRadius: "0 60px 60px 0",
-    background: "rgba(217, 212, 173, 0.1)",
   },
   content: {
     padding: theme.spacing(1.5, 1.5, 1.5, 1.5),
@@ -52,10 +50,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     flexGrow: 1,
     background: "rgba(78, 72, 87, 0.8)",
-
-    borderRadius: 8,
     borderWidth: 1,
-    borderStyle: "solid",
     borderColor: "rgba(255,255,255,0.2)",
   },
   modal: {
@@ -93,14 +88,11 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 60,
     borderWidth: 1,
     borderStyle: "solid",
-    borderColor: "rgba(217, 212, 173, 0.3)",
+    borderColor: colors.tan[300],
     padding: theme.spacing(0.5),
   },
   circleIconContainer: {
-    borderRadius: 60,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "rgba(217, 212, 173, 0.3)",
+    borderColor: colors.tan[300],
     padding: theme.spacing(0.5),
   },
 }));
@@ -150,23 +142,28 @@ export const TransactionBuilder = () => {
       }}
     >
       <Fade in={open}>
-        <Paper
+        <ZodiacPaper
+          borderStyle="double"
           className={classNames(classes.fullWindow, classes.content)}
           elevation={2}
         >
-          <div className={classes.header}>
+          <ZodiacPaper rounded="right" className={classes.header}>
             <Typography variant="h5">Bundle Transactions</Typography>
             <Grow />
 
-            <div className={classes.circleIconContainer}>
+            <ZodiacPaper 
+              rounded="full"
+              variant="outlined"
+              className={classes.circleIconContainer}
+            >
               <Badge
                 showZero
                 badgeContent={transactions.length}
                 color={transactions.length ? "error" : "primary"}
                 classes={{ badge: classes.badge, root: classes.badgeRoot }}
               />
-            </div>
-          </div>
+            </ZodiacPaper>
+          </ZodiacPaper>
 
           {transactions.length ? (
             <TransactionBuilderList transactions={transactions} />
@@ -183,7 +180,7 @@ export const TransactionBuilder = () => {
           >
             Submit Transactions
           </ActionButton>
-        </Paper>
+        </ZodiacPaper>
       </Fade>
     </Modal>
   );
