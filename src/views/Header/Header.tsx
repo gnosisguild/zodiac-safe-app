@@ -1,8 +1,7 @@
 import React from "react";
 import { Row } from "../../components/layout/Row";
 import { Badge, makeStyles, Typography } from "@material-ui/core";
-import { colors, doubleBorder, ZodiacPaper } from "zodiac-ui-components";
-import ZodiacAppLogo from "../../assets/images/zodiac-app-logo.png";
+import { BadgeIcon, colors, doubleBorder, ZodiacPaper } from "zodiac-ui-components";
 import classNames from "classnames";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getTransactions } from "../../store/transactionBuilder/selectors";
@@ -97,6 +96,7 @@ export const Header = () => {
   return (
     <Row className={classes.root}>
       <ZodiacPaper
+        elevation={0}
         borderStyle="double"
         rounded="left"
         variant="elevation"
@@ -105,21 +105,16 @@ export const Header = () => {
           classes.header,
         )}
       >
-        <div className={classes.circleIconContainer}>
-          <img
-            src={ZodiacAppLogo}
-            alt="Zodiac App Logo"
-            className={classes.img}
-          />
-        </div>
+        <BadgeIcon icon="zodiac"/>
         <Typography variant="h5" className={classes.title}>
           Zodiac
         </Typography>
       </ZodiacPaper>
-      <ZodiacPaper variant="elevation" className={classes.banner} />
+      <ZodiacPaper elevation={0} className={classes.banner} />
       <ZodiacPaper
         borderStyle="double"
         onClick={handleOpen}
+        elevation={0}
         rounded="right"
         className={classNames(
           classes.container,
@@ -132,7 +127,6 @@ export const Header = () => {
         <ZodiacPaper
           rounded="full"
           variant="outlined"
-          borderStyle="single"
           className={classes.circleIconContainer}
         >
           <Badge

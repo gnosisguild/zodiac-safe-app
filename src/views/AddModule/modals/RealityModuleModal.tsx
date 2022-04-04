@@ -3,7 +3,6 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { ethers } from "ethers";
 import { AddModuleModal } from "./AddModuleModal";
-import RealityModuleImage from "../../../assets/images/reality-module-logo.png";
 import {
   ARBITRATOR_OPTIONS,
   deployRealityModule,
@@ -171,7 +170,7 @@ export const RealityModuleModal = ({
       onClose={onClose}
       title="Reality Module"
       description="Allows Reality.eth questions to execute a transaction when resolved."
-      image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
+      icon="reality"
       tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRealityModule}
       readMoreLink="https://github.com/gnosis/zodiac-module-reality"
