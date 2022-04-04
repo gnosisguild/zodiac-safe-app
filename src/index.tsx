@@ -14,7 +14,6 @@ import { Row } from "./components/layout/Row";
 import {
   zodiacMuiTheme,
   gnosisStyledComponentsTheme,
-  ZodiacPaper,
 } from "zodiac-ui-components";
 
 const Main = () => {
@@ -36,7 +35,6 @@ const Main = () => {
           }
         >
           <Provider store={REDUX_STORE}>
-            <ZodiacPaper>This is paper!</ZodiacPaper>
             <App />
           </Provider>
         </SafeProvider>

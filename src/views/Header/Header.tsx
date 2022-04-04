@@ -1,6 +1,7 @@
 import React from "react";
 import { Row } from "../../components/layout/Row";
 import { Badge, makeStyles, Typography } from "@material-ui/core";
+import { colors, doubleBorder, ZodiacPaper } from "zodiac-ui-components";
 import ZodiacAppLogo from "../../assets/images/zodiac-app-logo.png";
 import classNames from "classnames";
 import { useRootDispatch, useRootSelector } from "../../store";
@@ -12,55 +13,28 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   container: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    padding: theme.spacing(1, 2, 1, 1),
-    borderRadius: 60,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "rgba(217, 212, 173, 0.3)",
-    background: "rgba(217, 212, 173, 0.1)",
-  },
-  leftHeader: {
-    borderRadius: "60px 0 0 60px",
-  },
-  rightHeader: {
-    borderRadius: "0 60px 60px 0",
+    "&.MuiPaper-root": {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      "&::before": doubleBorder(-5, colors.tan[300])
+    },
   },
   header: {
-    padding: theme.spacing(0.5, 2, 0.5, 0.5),
-    position: "relative",
-    "&::before": {
-      content: '" "',
-      position: "absolute",
-      zIndex: 1,
-      top: "-5px",
-      left: "-5px",
-      right: "-5px",
-      bottom: "-5px",
-      borderRadius: "60px 0 0 60px",
-      border: "1px solid rgba(217, 212, 173, 0.3)",
+    "&.MuiPaper-root": {
+      padding: theme.spacing(0.5, 2, 0.5, 0.5),
+      "&::before": doubleBorder(-5, colors.tan[300])
     },
   },
   txBuilder: {
-    padding: theme.spacing(0.5, 0.5, 0.5, 2),
-    position: "relative",
-    cursor: "pointer",
-    transition: "0.2s ease all",
-    "&::before": {
-      content: '" "',
-      position: "absolute",
-      zIndex: 1,
-      top: "-5px",
-      left: "-5px",
-      right: "-5px",
-      bottom: "-5px",
-      borderRadius: "0 60px 60px 0",
-      border: "1px solid rgba(217, 212, 173, 0.3)",
-    },
-    "&:hover": {
-      background: "rgba(217, 212, 173, 0.15)",
+    "&.MuiPaper-root": {
+      padding: theme.spacing(0.5, 0.5, 0.5, 2),
+      cursor: "pointer",
+      transition: "0.2s ease all",
+      "&::before": doubleBorder(-5, colors.tan[300]),
+      "&:hover": {
+        background: "rgba(217, 212, 173, 0.15)",
+      },
     },
   },
   img: {
@@ -91,39 +65,25 @@ const useStyles = makeStyles((theme) => ({
     height: 36,
     width: 36,
     borderRadius: 60,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "rgba(217, 212, 173, 0.3)",
+    border: `1px solid ${colors.tan[300]}`,
     padding: theme.spacing(0.5),
   },
   txBuilderTitle: {
     marginRight: theme.spacing(3),
   },
   circleIconContainer: {
-    borderRadius: 60,
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "rgba(217, 212, 173, 0.3)",
     padding: theme.spacing(0.5),
   },
   banner: {
-    flexGrow: 1,
-    position: "relative",
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "rgba(217, 212, 173, 0.3)",
-    background: "rgba(217, 212, 173, 0.1)",
-    margin: theme.spacing(0, 2),
-    "&::before": {
-      content: '" "',
-      position: "absolute",
-      zIndex: 1,
-      top: "-5px",
-      left: "-5px",
-      right: "-5px",
-      bottom: "-5px",
-      border: "1px solid rgba(217, 212, 173, 0.3)",
-    },
+    "&.MuiPaper-root": {
+      flexGrow: 1,
+      position: "relative",
+      borderWidth: 1,
+      borderColor: colors.tan[300],
+      backgroundColor: colors.tan[100],
+      margin: theme.spacing(0, 2),
+      "&::before": doubleBorder(-5, colors.tan[300])
+    }
   },
 }));
 
@@ -136,11 +96,13 @@ export const Header = () => {
 
   return (
     <Row className={classes.root}>
-      <div
+      <ZodiacPaper
+        borderStyle="double"
+        rounded="left"
+        variant="elevation"
         className={classNames(
           classes.container,
           classes.header,
-          classes.leftHeader
         )}
       >
         <div className={classes.circleIconContainer}>
@@ -153,28 +115,34 @@ export const Header = () => {
         <Typography variant="h5" className={classes.title}>
           Zodiac
         </Typography>
-      </div>
-      <div className={classes.banner} />
-      <div
+      </ZodiacPaper>
+      <ZodiacPaper variant="elevation" className={classes.banner} />
+      <ZodiacPaper
+        borderStyle="double"
         onClick={handleOpen}
+        rounded="right"
         className={classNames(
           classes.container,
           classes.txBuilder,
-          classes.rightHeader
         )}
       >
         <Typography className={classes.txBuilderTitle}>
           Bundle Transactions
         </Typography>
-        <div className={classes.circleIconContainer}>
+        <ZodiacPaper
+          rounded="full"
+          variant="outlined"
+          borderStyle="single"
+          className={classes.circleIconContainer}
+        >
           <Badge
             showZero
             badgeContent={transaction.length}
             color={transaction.length ? "error" : "primary"}
             classes={{ badge: classes.badge, root: classes.badgeRoot }}
           />
-        </div>
-      </div>
+        </ZodiacPaper>
+      </ZodiacPaper>
     </Row>
   );
 };

@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import { Link } from "../../components/text/Link";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { getNetworkExplorerInfo } from "../../utils/explorers";
@@ -19,7 +20,7 @@ export const ModuleNoAvailable = () => {
   const { verifyUrl } = getNetworkExplorerInfo(safe.chainId) || {};
 
   return (
-    <Paper className={classes.root}>
+    <ZodiacPaper borderStyle="double" className={classes.root}>
       <Typography variant="h5" className={classes.title}>
         No Read or Write functions available
       </Typography>
@@ -30,6 +31,6 @@ export const ModuleNoAvailable = () => {
       <Link target="_blank" href={verifyUrl}>
         Verify this contract on Etherscan to fix this.
       </Link>
-    </Paper>
+    </ZodiacPaper>
   );
 };

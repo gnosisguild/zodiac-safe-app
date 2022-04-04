@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
+import { colors, ZodiacPaper } from "zodiac-ui-components";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { Transaction } from "../../../store/transactionBuilder/models";
 import { setOperation } from "../../../store/modules";
@@ -22,10 +23,7 @@ const useStyles = makeStyles((theme) => ({
   content: {
     padding: theme.spacing(2),
     marginTop: theme.spacing(3),
-    background: "rgba(217, 212, 173, 0.1)",
-    "&::before": {
-      content: "none",
-    },
+    background: colors.tan[100],
   },
   hide: {
     display: "none",
@@ -55,14 +53,14 @@ export const ContractInteractions = ({
         onChange={(evt, value) => handleOperationChange(value)}
       />
 
-      <Paper className={classes.content}>
+      <ZodiacPaper borderStyle="single" className={classes.content}>
         <div className={classNames({ [classes.hide]: operation !== "read" })}>
           <ContractReadFunctionsList address={address} abi={abi} />
         </div>
         <div className={classNames({ [classes.hide]: operation !== "write" })}>
           <AddTransactionBlock abi={abi} onAdd={handleAddTransaction} />
         </div>
-      </Paper>
+      </ZodiacPaper>
     </>
   );
 };

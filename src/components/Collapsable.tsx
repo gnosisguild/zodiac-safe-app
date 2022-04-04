@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper, PaperProps } from "@material-ui/core";
+import { makeStyles, PaperProps } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import classNames from "classnames";
 
 interface CollapsableProps extends PaperProps {
@@ -37,7 +38,7 @@ export const Collapsable: React.FC<CollapsableProps> = ({
 }) => {
   const classes = useStyles();
   return (
-    <Paper {...props} className={classNames(classes.root, className)}>
+    <ZodiacPaper borderStyle="single" {...props} className={classNames(classes.root, className)}>
       {children}
       {content ? (
         <div
@@ -48,6 +49,6 @@ export const Collapsable: React.FC<CollapsableProps> = ({
           {content}
         </div>
       ) : null}
-    </Paper>
+    </ZodiacPaper>
   );
 };

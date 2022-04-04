@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { makeStyles, MenuItem, Paper, Typography } from "@material-ui/core";
+import { makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
 import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
@@ -14,6 +14,7 @@ import { getCurrentModule } from "../../../store/modules/selectors";
 import { TransactionField } from "./TransactionField";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { ContractInterface } from "@ethersproject/contracts";
+import { ZodiacPaper } from "zodiac-ui-components";
 
 interface AddTransactionBlockProps {
   abi: ContractInterface;
@@ -36,19 +37,12 @@ const useStyles = makeStyles((theme) => ({
   header: {
     padding: theme.spacing(1),
     marginBottom: theme.spacing(1.5),
-    "&::before": {
-      content: "none",
-    },
   },
   text: {
     maxWidth: 366,
   },
   content: {
     padding: theme.spacing(1.5),
-
-    "&::before": {
-      content: "none",
-    },
   },
   field: {
     marginTop: theme.spacing(2.5),
@@ -160,7 +154,7 @@ export const AddTransactionBlock = ({
 
   return (
     <>
-      <Paper className={classes.header}>
+      <ZodiacPaper borderStyle="double" className={classes.header}>
         <Typography variant="h5" gutterBottom>
           Add Transaction
         </Typography>
@@ -168,9 +162,9 @@ export const AddTransactionBlock = ({
           Add multiple transactions here, and we will bundle them together into
           a single transaction, to save you gas.
         </Typography>
-      </Paper>
+      </ZodiacPaper>
 
-      <Paper className={classes.content}>
+      <ZodiacPaper borderStyle="double" className={classes.content}>
         <TextField
           select
           value={funcIndex}
@@ -194,7 +188,7 @@ export const AddTransactionBlock = ({
           func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
           onAdd={handleAdd}
         />
-      </Paper>
+      </ZodiacPaper>
     </>
   );
 };

@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import { Skeleton } from "@material-ui/lab";
 import { useRootSelector } from "../../store";
 import {
@@ -70,7 +71,7 @@ export const ModulePendingTransaction = () => {
       </div>
 
       {!isInstantExecution ? (
-        <Paper className={classes.paper}>
+        <ZodiacPaper borderStyle="double" className={classes.paper}>
           <Typography variant="h5" className={classes.title}>
             Waiting on module approval
           </Typography>
@@ -78,7 +79,7 @@ export const ModulePendingTransaction = () => {
             Once this module transaction has been approved by the other signers,
             you will be able to read and write to it.
           </Typography>
-        </Paper>
+        </ZodiacPaper>
       ) : (
         <ModulePendingInstantTx />
       )}

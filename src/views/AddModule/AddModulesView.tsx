@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import { ModuleButton } from "./ModuleButton";
 import RealityModuleImage from "../../assets/images/reality-module-logo.png";
 import DelayModuleImage from "../../assets/images/delay-module-logo.png";
@@ -24,10 +25,6 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2.5, 2),
-    background: "none",
-    "&::before": {
-      content: "none",
-    },
   },
   title: {
     marginBottom: theme.spacing(2),
@@ -66,7 +63,7 @@ export const AddModulesView = () => {
     <div className={classes.root}>
       <div className={classes.gridContainer}>
         <div className={classes.introBox}>
-          <Paper className={classes.paper}>
+          <ZodiacPaper variant="outlined" borderStyle="single" className={classes.paper}>
             <Typography variant="h5" className={classes.title}>
               {title}
             </Typography>
@@ -93,7 +90,7 @@ export const AddModulesView = () => {
               </a>
               .
             </Typography>
-          </Paper>
+          </ZodiacPaper>
         </div>
 
         <ModuleButton

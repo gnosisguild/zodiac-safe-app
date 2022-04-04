@@ -4,9 +4,9 @@ import {
   Fade,
   makeStyles,
   Modal,
-  Paper,
   Typography,
 } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components"
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import classNames from "classnames";
@@ -119,7 +119,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
       }}
     >
       <Fade in={open}>
-        <Paper className={classes.root} elevation={3}>
+        <ZodiacPaper borderStyle="double" className={classes.root} elevation={3}>
           <div className={classNames(classes.row, classes.gutterBottom)}>
             <div className={classes.imageContainer}>{image}</div>
             <div className={classes.infoContainer}>
@@ -178,7 +178,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
               Add Module
             </ActionButton>
           )}
-        </Paper>
+        </ZodiacPaper>
       </Fade>
     </Modal>
   );

@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import classNames from "classnames";
 
 interface ModuleButtonProps {
@@ -19,9 +20,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     userSelect: "none",
     padding: theme.spacing(2),
-    backgroundColor: theme.palette.background.default,
     transition: "0.2s ease all",
-
     "&:hover": {
       background: "rgba(217, 212, 173, 0.15)",
     },
@@ -55,7 +54,7 @@ export const ModuleButton = ({
 }: ModuleButtonProps) => {
   const classes = useStyles();
   return (
-    <Paper className={classNames(classes.root, className)} onClick={onClick}>
+    <ZodiacPaper borderStyle="single" className={classNames(classes.root, className)} onClick={onClick}>
       <div className={classes.image}>{image}</div>
       <Typography variant="h6" className={classes.title}>
         {title}
@@ -63,6 +62,6 @@ export const ModuleButton = ({
       <Typography variant="body2" align="center">
         {description}
       </Typography>
-    </Paper>
+    </ZodiacPaper>
   );
 };
