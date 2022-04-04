@@ -12,14 +12,14 @@ import { Provider } from "react-redux";
 import { REDUX_STORE } from "./store";
 import { Row } from "./components/layout/Row";
 import {
-  zodiacTheme,
+  zodiacMuiTheme,
   gnosisStyledComponentsTheme,
   ZodiacPaper,
 } from "zodiac-ui-components";
 
 const Main = () => {
   return (
-    <MUIThemeProvider theme={zodiacTheme}>
+    <MUIThemeProvider theme={zodiacMuiTheme}>
       <ThemeProvider theme={gnosisStyledComponentsTheme}>
         <CssBaseline />
         <SafeProvider
