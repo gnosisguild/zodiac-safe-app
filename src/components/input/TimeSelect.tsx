@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, makeStyles, MenuItem, Select } from "@material-ui/core";
 import { BigNumber, BigNumberish } from "ethers";
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
-import { ZodiacTextField } from "zodiac-ui-components";
+import { TextField } from "./TextField"
 
 const unitConversion = {
   seconds: 1,
@@ -113,7 +113,7 @@ export const TimeSelect = ({
   }, [selectRef]);
 
   return (
-    <ZodiacTextField
+    <TextField
       label={label}
       InputProps={{
         value: amount,
