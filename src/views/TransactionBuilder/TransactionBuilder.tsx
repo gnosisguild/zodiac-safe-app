@@ -4,7 +4,6 @@ import {
   Fade,
   makeStyles,
   Modal,
-  Paper,
   Typography,
 } from "@material-ui/core";
 import { Interface } from "@ethersproject/abi";

@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
-import { TextField } from "../../../components/input/TextField";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Transaction } from "../../../store/transactionBuilder/models";
@@ -14,7 +13,7 @@ import { getCurrentModule } from "../../../store/modules/selectors";
 import { TransactionField } from "./TransactionField";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { ContractInterface } from "@ethersproject/contracts";
-import { ZodiacPaper } from "zodiac-ui-components";
+import { ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
 interface AddTransactionBlockProps {
   abi: ContractInterface;
@@ -165,7 +164,7 @@ export const AddTransactionBlock = ({
       </ZodiacPaper>
 
       <ZodiacPaper borderStyle="double" className={classes.content}>
-        <TextField
+        <ZodiacTextField
           select
           value={funcIndex}
           onChange={handleFuncChange}
@@ -181,7 +180,7 @@ export const AddTransactionBlock = ({
               {func.name}
             </MenuItem>
           ))}
-        </TextField>
+        </ZodiacTextField>
         <TransactionFields
           key={`${funcIndex}_${selectedFunc}`}
           defaultParams={defaultParams}

@@ -12,13 +12,13 @@ import {
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
-import { TextField } from "../../../components/input/TextField";
 import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import {
   arbitratorOptions,
   ArbitratorSelect,
 } from "../../../components/input/ArbitratorSelect";
+import { ZodiacTextField } from "zodiac-ui-components";
 import { getArbitratorBondToken } from "../../../utils/reality-eth";
 import { Grow } from "../../../components/layout/Grow";
 import { ModuleType } from "../../../store/modules/models";
@@ -236,7 +236,7 @@ export const RealityModuleModal = ({
           />
         </Grid>
         <Grid item xs={6}>
-          <TextField
+          <ZodiacTextField
             label="Bond"
             color="secondary"
             value={params.bond}
