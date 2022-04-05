@@ -1,11 +1,7 @@
 import React, { useState } from "react";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import { ModuleButton } from "./ModuleButton";
-import RealityModuleImage from "../../assets/images/reality-module-logo.png";
-import DelayModuleImage from "../../assets/images/delay-module-logo.png";
-import CustomModuleImage from "../../assets/images/custom-module-logo.png";
-import AMBModuleImage from "../../assets/images/bridge-module-logo.png";
-import ExitModuleImage from "../../assets/images/exit-module-logo.png";
 import { useRootDispatch, useRootSelector } from "../../store";
 import { getModulesList } from "../../store/modules/selectors";
 import { ModuleModals } from "./modals/ModuleModals";
@@ -24,10 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2.5, 2),
-    background: "none",
-    "&::before": {
-      content: "none",
-    },
   },
   title: {
     marginBottom: theme.spacing(2),
@@ -66,7 +58,7 @@ export const AddModulesView = () => {
     <div className={classes.root}>
       <div className={classes.gridContainer}>
         <div className={classes.introBox}>
-          <Paper className={classes.paper}>
+          <ZodiacPaper variant="outlined" className={classes.paper}>
             <Typography variant="h5" className={classes.title}>
               {title}
             </Typography>
@@ -93,13 +85,13 @@ export const AddModulesView = () => {
               </a>
               .
             </Typography>
-          </Paper>
+          </ZodiacPaper>
         </div>
 
         <ModuleButton
           title="Reality Module"
           description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
-          image={<img src={RealityModuleImage} alt="Reality Module Logo" />}
+          icon="reality"
           className={classes.firstModule}
           onClick={() => setModule(ModuleType.REALITY_ETH)}
         />
@@ -107,35 +99,35 @@ export const AddModulesView = () => {
         <ModuleButton
           title="Delay Modifier"
           description="Enables a time delay between when a module initiates a transaction and when it can be executed"
-          image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
+          icon="delay"
           onClick={() => setModule(ModuleType.DELAY)}
         />
 
         <ModuleButton
           title="Bridge Module"
           description="Enables an address on one chain to control an avatar on another chain using an Arbitrary Message Bridge (AMB)"
-          image={<img src={AMBModuleImage} alt="AMB Module Logo" />}
+          icon="bridge"
           onClick={() => setModule(ModuleType.BRIDGE)}
         />
 
         <ModuleButton
           title="Exit Module"
           description="Enables participants to redeem a designated token for a proportional share of this account’digital assets"
-          image={<img src={ExitModuleImage} alt="Exit Module Logo" />}
+          icon="exit"
           onClick={() => setModule(ModuleType.EXIT)}
         />
 
         <ModuleButton
           title="Roles Modifier"
           description="Allows avatars to enforce granular, role-based, permissions for attached modules"
-          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
+          icon="roles"
           onClick={() => setModule(ModuleType.ROLES)}
         />
 
         <ModuleButton
           title="Custom Module"
           description="Enable a custom contract as a module"
-          image={<img src={CustomModuleImage} alt="Custom Module Logo" />}
+          icon="custom"
           onClick={() => setModule(ModuleType.UNKNOWN)}
         />
       </div>

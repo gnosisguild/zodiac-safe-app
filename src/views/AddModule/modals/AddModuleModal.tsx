@@ -4,9 +4,10 @@ import {
   Fade,
   makeStyles,
   Modal,
-  Paper,
   Typography,
 } from "@material-ui/core";
+import { BadgeIcon, ZodiacPaper } from "zodiac-ui-components"
+import { BadgeIconProps } from "zodiac-ui-components/lib/components/Icons/BadgeIcon/BadgeIcon";
 import { ActionButton } from "../../../components/ActionButton";
 import { Icon } from "@gnosis.pm/safe-react-components";
 import classNames from "classnames";
@@ -15,11 +16,10 @@ import { TagList } from "../../../components/list/TagList";
 import { Row } from "../../../components/layout/Row";
 import { ReactComponent as ArrowUpIcon } from "../../../assets/icons/arrow-up-icon.svg";
 
-interface AddModuleModalProps {
+interface AddModuleModalProps extends BadgeIconProps {
   open: boolean;
   title: string;
   description?: string;
-  image: React.ReactElement;
   tags?: string[];
   readMoreLink?: string;
   ButtonProps?: MuiButtonProps;
@@ -64,12 +64,7 @@ const useStyles = makeStyles((theme) => ({
   },
   imageContainer: {
     marginRight: theme.spacing(2),
-    "& img": {
-      width: 68,
-      padding: theme.spacing(0.5),
-      border: "1px solid rgba(255,255,255,0.2)",
-      borderRadius: "50%",
-    },
+    minWidth: 68,
   },
   infoContainer: {
     flexGrow: 1,
@@ -97,9 +92,9 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
   open,
   title,
   description,
-  image,
   onAdd,
   tags = [],
+  icon,
   readMoreLink,
   onClose,
   children,
@@ -119,9 +114,9 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
       }}
     >
       <Fade in={open}>
-        <Paper className={classes.root} elevation={3}>
+        <ZodiacPaper borderStyle="double" className={classes.root} elevation={3}>
           <div className={classNames(classes.row, classes.gutterBottom)}>
-            <div className={classes.imageContainer}>{image}</div>
+            <BadgeIcon icon={icon} size={68} className={classes.imageContainer}/>
             <div className={classes.infoContainer}>
               <Typography variant="h5" gutterBottom>
                 {title}
@@ -178,7 +173,7 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
               Add Module
             </ActionButton>
           )}
-        </Paper>
+        </ZodiacPaper>
       </Fade>
     </Modal>
   );

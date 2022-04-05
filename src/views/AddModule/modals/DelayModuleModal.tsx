@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { AddModuleModal } from "./AddModuleModal";
-import DelayModuleImage from "../../../assets/images/delay-module-logo.png";
 import { TimeSelect } from "../../../components/input/TimeSelect";
 import { deployDelayModule } from "services";
 
@@ -75,7 +74,7 @@ export const DelayModuleModal = ({
       onClose={onClose}
       title="Delay Modifier"
       description="Adds a settable delay time to any transaction originating from this module."
-      image={<img src={DelayModuleImage} alt="Delay Module Logo" />}
+      icon="delay"
       tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddDelayModule}
       readMoreLink="https://github.com/gnosis/zodiac-modifier-delay"

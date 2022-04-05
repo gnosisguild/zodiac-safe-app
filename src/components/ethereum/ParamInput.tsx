@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ParamType } from "@ethersproject/abi";
-import { TextField, TextFieldProps } from "../input/TextField";
+import { ZodiacTextField } from "zodiac-ui-components";
+import { TextFieldProps } from "../input/TextField";
 import { formatParamValue } from "../../utils/contracts";
 import { MenuItem } from "@material-ui/core";
 import { BigNumber } from "ethers";
@@ -70,7 +71,7 @@ export const ParamInput = ({
 
   if (param.baseType === "boolean") {
     return (
-      <TextField
+      <ZodiacTextField
         select
         color="secondary"
         label={getLabel(param)}
@@ -80,12 +81,12 @@ export const ParamInput = ({
       >
         <MenuItem value="true">True</MenuItem>
         <MenuItem value="false">True</MenuItem>
-      </TextField>
+      </ZodiacTextField>
     );
   }
 
   return (
-    <TextField
+    <ZodiacTextField
       color="secondary"
       label={getLabel(param)}
       value={value}
