@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
+import { ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Transaction } from "../../../store/transactionBuilder/models";
@@ -13,7 +14,6 @@ import { getCurrentModule } from "../../../store/modules/selectors";
 import { TransactionField } from "./TransactionField";
 import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
 import { ContractInterface } from "@ethersproject/contracts";
-import { ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
 interface AddTransactionBlockProps {
   abi: ContractInterface;
@@ -153,7 +153,7 @@ export const AddTransactionBlock = ({
 
   return (
     <>
-      <ZodiacPaper borderStyle="double" className={classes.header}>
+      <ZodiacPaper className={classes.header} elevation={0}>
         <Typography variant="h5" gutterBottom>
           Add Transaction
         </Typography>
@@ -163,7 +163,7 @@ export const AddTransactionBlock = ({
         </Typography>
       </ZodiacPaper>
 
-      <ZodiacPaper borderStyle="double" className={classes.content}>
+      <ZodiacPaper className={classes.content} elevation={0}>
         <ZodiacTextField
           select
           value={funcIndex}
