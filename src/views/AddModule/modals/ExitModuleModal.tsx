@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
-import ExitModuleImage from "../../../assets/images/exit-module-logo.png";
 import { deployExitModule, ExitModuleParams } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
@@ -81,7 +80,7 @@ export const ExitModuleModal = ({
       onClose={onClose}
       title="Exit Module"
       description="This module allows any holders of a designated ERC20, at any time, to redeem their designated ERC20 tokens in exchange for a proportional share of the Safe’s ERC20 compatible assets."
-      image={<img src={ExitModuleImage} alt="Custom Module Logo" />}
+      icon="exit"
       tags={["From Gnosis Guild"]}
       onAdd={handleAddExitModule}
       readMoreLink="https://github.com/gnosis/zodiac-module-exit"

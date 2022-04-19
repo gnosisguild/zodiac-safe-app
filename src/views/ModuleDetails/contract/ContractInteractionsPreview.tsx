@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import { ContractReadFunctionsList } from "./ContractReadFunctionsList";
 import { ContractOperationToggleButtons } from "../ContractOperationToggleButtons";
 import { ContractInterface } from "@ethersproject/contracts";
@@ -26,9 +27,9 @@ export const ContractInteractionsPreview = ({
     <>
       <ContractOperationToggleButtons value="read" disabled />
 
-      <Paper className={classes.content}>
+      <ZodiacPaper borderStyle="double" className={classes.content}>
         <ContractReadFunctionsList preview address={address} abi={abi} />
-      </Paper>
+      </ZodiacPaper>
     </>
   );
 };

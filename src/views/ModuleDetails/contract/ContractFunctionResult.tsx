@@ -1,6 +1,7 @@
 import React from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { makeStyles, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import { FunctionOutputs } from "../../../hooks/useContractQuery";
 import { Skeleton } from "@material-ui/lab";
 import { formatValue } from "../../../utils/contracts";
@@ -17,9 +18,6 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Roboto Mono",
     fontSize: 12,
     padding: theme.spacing(2),
-    "&::before": {
-      content: "none",
-    },
   },
   item: {
     "& + &": {
@@ -43,7 +41,7 @@ export const ContractFunctionResult = ({
   if (loading) return <Skeleton variant="rect" height={50} />;
   if (!result) return null;
   return (
-    <Paper className={classes.root} elevation={0}>
+    <ZodiacPaper className={classes.root}>
       {func.outputs?.map((param, index) => (
         <div key={index} className={classes.item}>
           <span className={classes.label}>
@@ -54,6 +52,6 @@ export const ContractFunctionResult = ({
           </span>
         </div>
       ))}
-    </Paper>
+    </ZodiacPaper>
   );
 };

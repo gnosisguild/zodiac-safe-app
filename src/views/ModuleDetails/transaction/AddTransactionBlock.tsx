@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { FunctionFragment } from "@ethersproject/abi";
-import { makeStyles, MenuItem, Paper, Typography } from "@material-ui/core";
+import { makeStyles, MenuItem, Typography } from "@material-ui/core";
 import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
-import { TextField } from "../../../components/input/TextField";
+import { ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 import { getWriteFunction } from "../../../utils/contracts";
 import classNames from "classnames";
 import { Transaction } from "../../../store/transactionBuilder/models";
@@ -36,19 +36,12 @@ const useStyles = makeStyles((theme) => ({
   header: {
     padding: theme.spacing(1),
     marginBottom: theme.spacing(1.5),
-    "&::before": {
-      content: "none",
-    },
   },
   text: {
     maxWidth: 366,
   },
   content: {
     padding: theme.spacing(1.5),
-
-    "&::before": {
-      content: "none",
-    },
   },
   field: {
     marginTop: theme.spacing(2.5),
@@ -160,7 +153,7 @@ export const AddTransactionBlock = ({
 
   return (
     <>
-      <Paper className={classes.header}>
+      <ZodiacPaper className={classes.header} elevation={0}>
         <Typography variant="h5" gutterBottom>
           Add Transaction
         </Typography>
@@ -168,10 +161,10 @@ export const AddTransactionBlock = ({
           Add multiple transactions here, and we will bundle them together into
           a single transaction, to save you gas.
         </Typography>
-      </Paper>
+      </ZodiacPaper>
 
-      <Paper className={classes.content}>
-        <TextField
+      <ZodiacPaper className={classes.content} elevation={0}>
+        <ZodiacTextField
           select
           value={funcIndex}
           onChange={handleFuncChange}
@@ -187,14 +180,14 @@ export const AddTransactionBlock = ({
               {func.name}
             </MenuItem>
           ))}
-        </TextField>
+        </ZodiacTextField>
         <TransactionFields
           key={`${funcIndex}_${selectedFunc}`}
           defaultParams={defaultParams}
           func={funcIndex !== undefined ? writeFunctions[funcIndex] : undefined}
           onAdd={handleAdd}
         />
-      </Paper>
+      </ZodiacPaper>
     </>
   );
 };

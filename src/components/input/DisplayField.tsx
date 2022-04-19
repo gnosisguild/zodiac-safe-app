@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 
 interface DisplayFieldProps {
   label: string;
@@ -26,9 +27,9 @@ export const DisplayField = ({ label, value }: DisplayFieldProps) => {
       <Typography noWrap className={classes.label}>
         {label}
       </Typography>
-      <Paper className={classes.field} elevation={0}>
+      <ZodiacPaper borderStyle="double" className={classes.field}>
         <Typography noWrap>{value}</Typography>
-      </Paper>
+      </ZodiacPaper>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React from "react";
-import { makeStyles, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
+import { ZodiacPaper } from "zodiac-ui-components";
 import classNames from "classnames";
 import { Column } from "../../../components/layout/Column";
 
@@ -71,7 +72,8 @@ export const PanelItem: React.FC<PanelItemProps> = ({
 }) => {
   const classes = useStyles();
   return (
-    <Paper
+    <ZodiacPaper
+      borderStyle="double"
       className={classNames(classes.root, classes.spacing, {
         sub,
         [classes.active]: active,
@@ -87,6 +89,6 @@ export const PanelItem: React.FC<PanelItemProps> = ({
         <div className={classes.image}>{image}</div>
         <Column className={classes.content}>{children}</Column>
       </div>
-    </Paper>
+    </ZodiacPaper>
   );
 };

@@ -23,10 +23,6 @@ const StyledTextField = withStyles((theme) => ({
       marginTop: 0,
       minHeight: "37px",
     },
-    "& .MuiInputBase-root input": {
-      fontFamily: "Roboto Mono",
-      fontSize: ".75rem",
-    },
     "& .MuiSelect-select:focus": {
       backgroundColor: "transparent",
     },
@@ -41,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   label: {
     color: theme.palette.text.primary,
-    marginBottom: theme.spacing(1),
+    marginBottom: "4px",
   },
   inputContainer: {
     flexGrow: 1,
@@ -50,10 +46,6 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     "& input": {
-      borderRightWidth: 1,
-      borderRightStyle: "solid",
-      borderRightColor: theme.palette.secondary.main,
-      paddingRight: theme.spacing(1),
       textAlign: "right",
     },
   },

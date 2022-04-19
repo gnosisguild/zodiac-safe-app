@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
-import AMBModuleImage from "../../../assets/images/bridge-module-logo.png";
 import { AMBModuleParams, deployBridgeModule } from "../../../services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
@@ -81,7 +80,7 @@ export const AMBModuleModal = ({
       onClose={onClose}
       title="Bridge Module"
       description="This module allows for execution of transactions initiated by a designated address on the other side of a designated arbitrary message bridge (AMB)."
-      image={<img src={AMBModuleImage} alt="Custom Module Logo" />}
+      icon="bridge"
       tags={["From Gnosis Guild"]}
       onAdd={handleAddAMBModule}
       readMoreLink="https://github.com/gnosis/zodiac-module-bridge"

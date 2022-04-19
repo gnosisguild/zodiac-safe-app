@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { AddModuleModal } from "./AddModuleModal";
-import RolesModifierImage from "../../../assets/images/custom-module-logo.png";
 import { deployRolesModifier, RolesModifierParams } from "services";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
@@ -75,7 +74,7 @@ export const RolesModifierModal = ({
       onClose={onClose}
       title="Roles Modifier"
       description="Allows avatars to enforce granular, role-based, permissions for attached modules"
-      image={<img src={RolesModifierImage} alt="Roles Modifier Logo" />}
+      icon="roles"
       tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRolesModifier}
       readMoreLink="https://github.com/gnosis/zodiac-modifier-roles"

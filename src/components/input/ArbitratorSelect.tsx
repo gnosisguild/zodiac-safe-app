@@ -54,10 +54,6 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     "& input": {
-      borderRightWidth: 1,
-      borderRightStyle: "solid",
-      borderRightColor: theme.palette.secondary.main,
-      paddingRight: theme.spacing(1),
       textAlign: "right",
     },
   },
