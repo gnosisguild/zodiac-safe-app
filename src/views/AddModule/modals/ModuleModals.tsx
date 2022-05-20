@@ -1,4 +1,5 @@
 import React from "react";
+import {TellorModuleModal} from "./TellorModuleModal";
 import { RealityModuleModal } from "./RealityModuleModal";
 import { DelayModuleModal } from "./DelayModuleModal";
 import { ModuleType } from "../../../store/modules/models";
@@ -22,6 +23,11 @@ export const ModuleModals = ({
 }: ModuleModalsProps) => {
   return (
     <>
+      <TellorModuleModal
+         open={selected === ModuleType.TELLOR}
+         onClose={onClose}
+         onSubmit={() => onSubmit && onSubmit(ModuleType.TELLOR)}
+       />
       <RealityModuleModal
         open={selected === ModuleType.REALITY_ETH}
         onClose={onClose}

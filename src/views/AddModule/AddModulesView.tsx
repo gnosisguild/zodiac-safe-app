@@ -89,12 +89,20 @@ export const AddModulesView = () => {
         </div>
 
         <ModuleButton
+          title="Tellor Module"
+          description="Enables on-chain execution from Snapshot results reported by the Tellor oracle"
+          icon="reality"
+          className={classes.firstModule}
+          onClick={() => setModule(ModuleType.TELLOR)}
+        />
+
+        <ModuleButton
           title="Reality Module"
           description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
           icon="reality"
-          className={classes.firstModule}
           onClick={() => setModule(ModuleType.REALITY_ETH)}
         />
+    
 
         <ModuleButton
           title="Delay Modifier"
