@@ -1,6 +1,7 @@
 import { ContractInterface } from "@ethersproject/contracts";
 
 export enum ModuleType {
+  TELLOR = "tellor",
   REALITY_ETH = "realityETH",
   REALITY_ERC20 = "realityERC20",
   DELAY = "delay",
@@ -11,6 +12,7 @@ export enum ModuleType {
 }
 
 export const MODULE_TYPES: Record<string, ModuleType> = {
+  tellor: ModuleType.TELLOR,
   realityETH: ModuleType.REALITY_ETH,
   realityERC20: ModuleType.REALITY_ERC20,
   delay: ModuleType.DELAY,
@@ -22,6 +24,7 @@ export const MODULE_TYPES: Record<string, ModuleType> = {
 };
 
 export const MODULE_NAMES: Record<ModuleType, string> = {
+  [ModuleType.TELLOR]: "Tellor Module",
   [ModuleType.REALITY_ERC20]: "Reality Module",
   [ModuleType.REALITY_ETH]: "Reality Module",
   [ModuleType.UNKNOWN]: "Unknown Module",
@@ -63,6 +66,14 @@ export interface ModuleContractMetadata {
 
 export interface DelayModule extends Module {
   type: ModuleType.DELAY;
+  expiration: number;
+  cooldown: number;
+}
+
+export interface TellorModule extends Module {
+  type: ModuleType.TELLOR;
+  executor: string;
+  oracle: string;
   expiration: number;
   cooldown: number;
 }

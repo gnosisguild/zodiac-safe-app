@@ -31,6 +31,13 @@ interface RealityModuleParams {
   arbitrator: string;
 }
 
+interface TellorModuleParams {
+  executor: string;
+  oracle?: string;
+  cooldown: string;
+  expiration: string;
+}
+
 interface DelayModuleParams {
   executor: string;
   cooldown: string;
@@ -64,6 +71,18 @@ export function getProvider(
     chainId,
     process.env.REACT_APP_INFURA_ID
   );
+}
+
+export function getTellorOracle(chainId: number): string {
+  switch (chainId) {
+    case NETWORK.MAINNET:
+      return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
+    case NETWORK.RINKEBY:
+      return "0x0f2B0a8fa0f60459f51E452273C879eb32555e91";
+    case NETWORK.POLYGON:
+      return "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537";
+  }
+  return "";
 }
 
 export function getDefaultOracle(chainId: number): string {
@@ -113,6 +132,78 @@ export function getArbitrator(
       return "";
   }
   return "";
+}
+
+export function deployTellorModule(
+  safeAddress: string,
+  chainId: number,
+  args: TellorModuleParams,
+) {
+  const type = KnownContracts.TELLOR
+  const {
+    cooldown,
+    expiration,
+    oracle,
+    executor,
+  } = args;
+  const provider = getProvider(chainId);
+  const oracleAddress = oracle || getTellorOracle(chainId);
+  const {
+    transaction: daoModuleDeploymentTx,
+    expectedModuleAddress: daoModuleExpectedAddress,
+  } = deployAndSetUpModule(
+    type,
+    {
+      types: [
+        "address",
+        "address",
+        "address",
+        "address",
+        "uint32",
+        "uint32",
+      ],
+      values: [
+        safeAddress,
+        safeAddress,
+        executor,
+        oracleAddress,
+        cooldown,
+        expiration,
+      ],
+    },
+    provider,
+    chainId,
+    Date.now().toString()
+  );
+
+  const daoModuleTransactions: Transaction[] = [
+    {
+      ...daoModuleDeploymentTx,
+      value: daoModuleDeploymentTx.value.toString(),
+    },
+  ];
+
+  if (executor !== safeAddress) {
+    const delayModule = getModuleInstance(
+      KnownContracts.DELAY,
+      executor,
+      provider
+    );
+    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
+      daoModuleExpectedAddress,
+    ]);
+
+    daoModuleTransactions.push(addModuleTransaction);
+  } else {
+    const enableDaoModuleTransaction = enableModule(
+      safeAddress,
+      chainId,
+      daoModuleExpectedAddress
+    );
+    daoModuleTransactions.push(enableDaoModuleTransaction);
+  }
+
+  return daoModuleTransactions;
 }
 
 export function deployRealityModule(
