@@ -90,7 +90,7 @@ export const AddModulesView = () => {
 
         <ModuleButton
           title="Tellor Module"
-          description="Enables on-chain execution from Snapshot results reported by the Tellor oracle"
+          description="Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle"
           icon="reality"
           className={classes.firstModule}
           onClick={() => setModule(ModuleType.TELLOR)}

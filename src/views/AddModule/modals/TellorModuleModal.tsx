@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
-import { ethers } from "ethers";
+import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
 import {
   deployTellorModule,
-  getDefaultOracle,
   getTellorOracle,
 } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
-import { Row } from "../../../components/layout/Row";
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { ZodiacTextField } from "zodiac-ui-components";
-import { Grow } from "../../../components/layout/Grow";
 import { ModuleType } from "../../../store/modules/models";
 import { ParamInput } from "../../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
-import { getNetworkNativeAsset } from "../../../utils/networks";
 
 interface TellorModuleModalProps {
   open: boolean;
@@ -64,20 +58,6 @@ export const TellorModuleModal = ({
     oracle: !!params.oracle,
   });
   const isValid = Object.values(validFields).every((field) => field);
-
-  useEffect(() => {
-    // if (params.oracle && ethers.utils.isAddress(params.oracle)) {
-    //   getArbitratorBondToken(params.oracle, safe.chainId)
-    //     .then((response) => {
-    //       setBondToken(response.coin);
-    //       setERC20(response.isERC20);
-    //     })
-    //     .catch(() => {
-    //       setBondToken(getNetworkNativeAsset(safe.chainId));
-    //       setERC20(false);
-    //     });
-    // }
-  }, [params.oracle, safe.chainId]);
 
   const onParamChange = <Field extends keyof TellorModuleParams>(
     field: Field,
@@ -129,7 +109,8 @@ export const TellorModuleModal = ({
       open={open}
       onClose={onClose}
       title="Tellor Module"
-      description="Allows Tellor to execute transactions when Snapshot proposals are resolved."
+      description="Allows successful Snapshot proposals to 
+      execute transactions using the Tellor oracle."
       icon="reality"
       tags={["From Tellor"]}
       onAdd={handleAddTellorModule}
