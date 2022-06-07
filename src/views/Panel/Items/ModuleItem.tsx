@@ -8,13 +8,14 @@ import {
 import React from "react";
 import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
-import { isDelayModule } from "../../../store/modules/helpers";
+import { isDelayModule, isExitModule } from "../../../store/modules/helpers";
 import { ModuleList } from "../ModuleList";
 import { Address } from "../../../components/ethereum/Address";
 import { ModulePendingRemoval } from "./ModulePendingRemovalItem";
 import { Badge } from "../../../components/text/Badge";
 import { shortAddress } from "../../../utils/string";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { ExitModuleItem } from "./ExitModuleItem";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -51,9 +52,12 @@ interface ModuleItemContentProps extends ModuleItemProps {
 export const ModuleItemContent = (props: ModuleItemContentProps) => {
   const { module, classes, ...panelItemProps } = props;
   const { safe } = useSafeAppsSDK();
-
   if (isDelayModule(module)) {
     return <DelayModuleItem module={module} {...panelItemProps} />;
+  }
+
+  if (isExitModule(module)) {
+    return <ExitModuleItem module={module} {...panelItemProps}/>
   }
 
   const ownerBadge =
@@ -63,6 +67,8 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
       </Badge>
     ) : null;
 
+
+    
   return (
     <>
       {module.name ? (
