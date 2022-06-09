@@ -8,7 +8,7 @@ import { SUPPORTED_SAFE_CHAIN } from "store/modules/constants";
 import { Module } from "store/modules/models";
 import { PanelItemProps } from "./PanelItem";
 
-interface ExitModuleItemProps extends PanelItemProps {
+interface RoleModuleItemProps extends PanelItemProps {
   module: Module;
 }
 const useStyles = makeStyles((theme) => ({
@@ -33,10 +33,13 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     lineHeight: 1,
     cursor: "pointer",
+    "&:hover": {
+      opacity: 0.5,
+    },
   },
 }));
 
-export const ExitModuleItem: React.FC<ExitModuleItemProps> = ({ module }) => {
+export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles();
   const { safe } = useSafeAppsSDK();
 
@@ -63,7 +66,7 @@ export const ExitModuleItem: React.FC<ExitModuleItemProps> = ({ module }) => {
         {module.name}
       </Typography>
 
-      <Row style={{ alignItems: "space-between" }}>
+      <Row style={{ justifyContent: "space-between" }}>
         <Address
           short
           showOnHover
@@ -73,7 +76,7 @@ export const ExitModuleItem: React.FC<ExitModuleItemProps> = ({ module }) => {
             className: classes.address,
           }}
         />
-        <Link color='textPrimary' noWrap className={classes.link} onClick={handleClick}>
+        <Link color='textPrimary' noWrap className={classes.link} onClick={handleClick} underline='always'>
           Open Roles App
         </Link>
       </Row>

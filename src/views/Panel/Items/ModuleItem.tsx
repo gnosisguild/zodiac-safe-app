@@ -1,21 +1,17 @@
 import { HashInfo } from "../../../components/ethereum/HashInfo";
 import { makeStyles, Typography } from "@material-ui/core";
-import {
-  PANEL_ITEM_CONTENT_HEIGHT,
-  PanelItem,
-  PanelItemProps,
-} from "./PanelItem";
+import { PANEL_ITEM_CONTENT_HEIGHT, PanelItem, PanelItemProps } from "./PanelItem";
 import React from "react";
 import { Module } from "../../../store/modules/models";
 import { DelayModuleItem } from "./DelayModuleItem";
-import { isDelayModule, isExitModule } from "../../../store/modules/helpers";
+import { isDelayModule, isRolesModule } from "../../../store/modules/helpers";
 import { ModuleList } from "../ModuleList";
 import { Address } from "../../../components/ethereum/Address";
 import { ModulePendingRemoval } from "./ModulePendingRemovalItem";
 import { Badge } from "../../../components/text/Badge";
 import { shortAddress } from "../../../utils/string";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { ExitModuleItem } from "./ExitModuleItem";
+import { RoleModuleItem } from "./RoleModuleItem";
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean;
@@ -56,8 +52,8 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
     return <DelayModuleItem module={module} {...panelItemProps} />;
   }
 
-  if (isExitModule(module)) {
-    return <ExitModuleItem module={module} {...panelItemProps}/>
+  if (isRolesModule(module)) {
+    return <RoleModuleItem module={module} {...panelItemProps} />;
   }
 
   const ownerBadge =
@@ -67,12 +63,10 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
       </Badge>
     ) : null;
 
-
-    
   return (
     <>
       {module.name ? (
-        <Typography variant="body2" className={classes.name}>
+        <Typography variant='body2' className={classes.name}>
           {module.name}
         </Typography>
       ) : null}
@@ -91,46 +85,23 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
 };
 
 export const ModuleItem = (props: ModuleItemProps) => {
-  const {
-    module,
-    remove = false,
-    instant = false,
-    onClick,
-    ...panelItemProps
-  } = props;
+  const { module, remove = false, instant = false, onClick, ...panelItemProps } = props;
 
   const classes = useStyles();
 
   if (remove) {
-    return (
-      <ModulePendingRemoval
-        module={module}
-        instant={instant}
-        onClick={onClick}
-        {...panelItemProps}
-      />
-    );
+    return <ModulePendingRemoval module={module} instant={instant} onClick={onClick} {...panelItemProps} />;
   }
 
   return (
     <PanelItem
-      image={
-        <HashInfo
-          showAvatar
-          avatarSize="lg"
-          showHash={false}
-          hash={module.address}
-        />
-      }
-      {...panelItemProps}
-    >
+      image={<HashInfo showAvatar avatarSize='lg' showHash={false} hash={module.address} />}
+      {...panelItemProps}>
       <div onClick={onClick} className={classes.content}>
         <ModuleItemContent classes={classes} {...props} />
       </div>
 
-      {module.subModules.length ? (
-        <ModuleList sub modules={module.subModules} />
-      ) : null}
+      {module.subModules.length ? <ModuleList sub modules={module.subModules} /> : null}
     </PanelItem>
   );
 };

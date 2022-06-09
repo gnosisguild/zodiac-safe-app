@@ -34,8 +34,8 @@ export function isDelayModule(module: Module): module is DelayModule {
   return module.type === ModuleType.DELAY;
 }
 
-export function isExitModule(module: Module): module is DelayModule {
-  return module.type === ModuleType.EXIT;
+export function isRolesModule(module: Module): module is DelayModule {
+  return module.type === ModuleType.ROLES;
 }
 
 export function isRealityModule(module: Module): module is RealityModule {
