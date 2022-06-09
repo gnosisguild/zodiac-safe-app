@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     lineHeight: 1,
     cursor: "pointer",
+    textUnderlineOffset: "2px",
     "&:hover": {
       opacity: 0.5,
     },
