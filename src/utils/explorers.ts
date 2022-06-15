@@ -43,7 +43,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction.xdai.gnosis.io/",
     verifyContractUrl:
       "https://docs.blockscout.com/for-users/smart-contract-interaction/verifying-a-smart-contract",
-    rpcUrl: "https://rpc.xdaichain.com/",
+    rpcUrl: "https://rpc.gnosischain.com/",
   },
   [NETWORK.POLYGON]: {
     networkExplorerName: "Polygonscan",
