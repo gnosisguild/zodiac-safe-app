@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { AddModuleModal } from "./AddModuleModal";
-import {
-  deployTellorModule,
-  getTellorOracle,
-} from "../../../services";
+import { deployTellorModule, getTellorOracle } from "../../../services";
 import { useRootSelector } from "../../../store";
 import { AttachModuleForm } from "../AttachModuleForm";
 import { getDelayModules } from "../../../store/modules/selectors";
@@ -52,7 +49,7 @@ export const TellorModuleModal = ({
   const [params, setParams] = useState<TellorModuleParams>({
     oracle: getTellorOracle(safe.chainId),
     cooldown: "86400",
-    expiration: "604800"
+    expiration: "604800",
   });
   const [validFields, setValidFields] = useState({
     oracle: !!params.oracle,
@@ -79,13 +76,9 @@ export const TellorModuleModal = ({
     try {
       const args = {
         ...params,
-        executor: delayModule || safe.safeAddress
+        executor: delayModule || safe.safeAddress,
       };
-      const txs = deployTellorModule(
-        safe.safeAddress,
-        safe.chainId,
-        args
-      );
+      const txs = deployTellorModule(safe.safeAddress, safe.chainId, args);
 
       await sdk.txs.send({ txs });
       if (onSubmit) onSubmit();
@@ -111,7 +104,7 @@ export const TellorModuleModal = ({
       title="Tellor Module"
       description="Allows successful Snapshot proposals to 
       execute transactions using the Tellor oracle."
-      icon="reality"
+      icon="tellor"
       tags={["From Tellor"]}
       onAdd={handleAddTellorModule}
       readMoreLink="https://github.com/tellor-io/snapshot-zodiac-module"
