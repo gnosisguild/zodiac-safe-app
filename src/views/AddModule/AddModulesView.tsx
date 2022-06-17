@@ -89,33 +89,18 @@ export const AddModulesView = () => {
         </div>
 
         <ModuleButton
-          title="Tellor Module"
-          description="Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle"
-          icon="reality"
+          title="Bridge Module"
+          description="Enables an address on one chain to control an avatar on another chain using an Arbitrary Message Bridge (AMB)"
+          icon="bridge"
+          onClick={() => setModule(ModuleType.BRIDGE)}
           className={classes.firstModule}
-          onClick={() => setModule(ModuleType.TELLOR)}
         />
-
-        <ModuleButton
-          title="Reality Module"
-          description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
-          icon="reality"
-          onClick={() => setModule(ModuleType.REALITY_ETH)}
-        />
-    
 
         <ModuleButton
           title="Delay Modifier"
           description="Enables a time delay between when a module initiates a transaction and when it can be executed"
           icon="delay"
           onClick={() => setModule(ModuleType.DELAY)}
-        />
-
-        <ModuleButton
-          title="Bridge Module"
-          description="Enables an address on one chain to control an avatar on another chain using an Arbitrary Message Bridge (AMB)"
-          icon="bridge"
-          onClick={() => setModule(ModuleType.BRIDGE)}
         />
 
         <ModuleButton
@@ -130,6 +115,20 @@ export const AddModulesView = () => {
           description="Allows avatars to enforce granular, role-based, permissions for attached modules"
           icon="roles"
           onClick={() => setModule(ModuleType.ROLES)}
+        />
+
+        <ModuleButton
+          title="Reality Module"
+          description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
+          icon="reality"
+          onClick={() => setModule(ModuleType.REALITY_ETH)}
+        />
+
+        <ModuleButton
+          title="Tellor Module"
+          description="Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle"
+          icon="tellor"
+          onClick={() => setModule(ModuleType.TELLOR)}
         />
 
         <ModuleButton
