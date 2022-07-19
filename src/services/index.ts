@@ -73,12 +73,24 @@ export function getProvider(
   );
 }
 
+function getTellorMasterCopy(chainId: number): KnownContracts {
+  switch (chainId) {
+    case NETWORK.MAINNET:
+      return KnownContracts.TELLOR_MAINNET;
+    case NETWORK.RINKEBY:
+      return KnownContracts.TELLOR_RINKEBY;
+    case NETWORK.POLYGON:
+      return KnownContracts.TELLOR_POLYGON;
+  }
+  return KnownContracts.TELLOR_MAINNET;
+}
+
 export function getTellorOracle(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
-      return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c";
+      return "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0";
     case NETWORK.RINKEBY:
-      return "0x0f2B0a8fa0f60459f51E452273C879eb32555e91";
+      return "0x18431fd88adF138e8b979A7246eb58EA7126ea16";
     case NETWORK.POLYGON:
       return "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537";
   }
@@ -137,39 +149,21 @@ export function getArbitrator(
 export function deployTellorModule(
   safeAddress: string,
   chainId: number,
-  args: TellorModuleParams,
+  args: TellorModuleParams
 ) {
-  const type = KnownContracts.TELLOR
-  const {
-    cooldown,
-    expiration,
-    oracle,
-    executor,
-  } = args;
+  const type = getTellorMasterCopy(chainId);
+  const { oracle, cooldown, expiration, executor } = args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getTellorOracle(chainId);
+
   const {
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,
   } = deployAndSetUpModule(
     type,
     {
-      types: [
-        "address",
-        "address",
-        "address",
-        "address",
-        "uint32",
-        "uint32",
-      ],
-      values: [
-        safeAddress,
-        safeAddress,
-        executor,
-        oracleAddress,
-        cooldown,
-        expiration,
-      ],
+      types: ["address", "address", "address", "uint32", "uint32"],
+      values: [safeAddress, executor, oracleAddress, cooldown, expiration],
     },
     provider,
     chainId,
