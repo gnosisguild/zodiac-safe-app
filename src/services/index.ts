@@ -73,18 +73,6 @@ export function getProvider(
   );
 }
 
-function getTellorMasterCopy(chainId: number): KnownContracts {
-  switch (chainId) {
-    case NETWORK.MAINNET:
-      return KnownContracts.TELLOR_MAINNET;
-    case NETWORK.RINKEBY:
-      return KnownContracts.TELLOR_RINKEBY;
-    case NETWORK.POLYGON:
-      return KnownContracts.TELLOR_POLYGON;
-  }
-  return KnownContracts.TELLOR_MAINNET;
-}
-
 export function getTellorOracle(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
@@ -151,7 +139,7 @@ export function deployTellorModule(
   chainId: number,
   args: TellorModuleParams
 ) {
-  const type = getTellorMasterCopy(chainId);
+  const type = KnownContracts.TELLOR
   const { oracle, cooldown, expiration, executor } = args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getTellorOracle(chainId);
