@@ -108,7 +108,6 @@ export const OptimisticGovernorModuleModal = ({
         safe.chainId,
         args
       );
-      console.log(txs);
       await sdk.txs.send({ txs });
       if (onSubmit) onSubmit();
       if (onClose) onClose();
