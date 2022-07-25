@@ -21,6 +21,10 @@ const useStyles = makeStyles((theme) => ({
     background: "rgba(0, 0, 0, 0.2)",
     border: 0,
     borderRadius: 4,
+    display: "inline-block",
+    "& .MuiTypography-root": {
+      fontFamily: "Roboto Mono",
+    }
   },
 }));
 
@@ -35,16 +39,16 @@ export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
               <ErrorOutline />
             </Grid>
             <Grid item>
-              <Typography variant='h5' color='inherit'>
+              <Typography color='inherit'>
                 Security Risk Detected:
               </Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
-          <Grid container spacing={1}>
+          <Grid container spacing={1} direction="column">
             <Grid item>
-              <Typography>
+              <Typography variant="body2">
                 The ENS that you’ve entered is not owned by a safe. This gives unilateral control to the individual with
                 this address:
               </Typography>
@@ -52,12 +56,12 @@ export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
             {address && (
               <Grid item>
                 <ZodiacPaper borderStyle='single' className={classes.addressPaperContainer}>
-                  <Typography>{address}</Typography>
+                  <Typography variant="body2">{address}</Typography>
                 </ZodiacPaper>
               </Grid>
             )}
             <Grid item>
-              <Typography>We recommend transferring the ENS to a multisig safe before continuing.</Typography>
+              <Typography variant="body2">We recommend transferring the ENS to a multisig safe before continuing.</Typography>
             </Grid>
           </Grid>
         </Grid>

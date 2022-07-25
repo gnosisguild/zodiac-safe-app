@@ -1,7 +1,7 @@
 import React from "react";
 import { useRootDispatch } from "store";
 import { setRealityModuleScreen } from "../../store/modules";
-import { BadgeIcon, ZodiacPaper } from "zodiac-ui-components";
+import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components";
 import {
   Button,
   Divider,
@@ -19,6 +19,7 @@ import { MonitoringSection } from "./sections/MonitoringSection";
 import { OracleSection } from "./sections/OracleSection";
 import { ProposalSection } from "./sections/ProposalSection";
 import { ReviewSection } from "./sections/ReviewSection";
+import classnames from "classnames"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,21 +42,39 @@ const useStyles = makeStyles((theme) => ({
   paperTitle: {
     margin: 0,
   },
+  step: {
+    "& text": {
+      fontFamily: "Roboto Mono",
+    },
+    "& .step-label": {
+      display: "inline",
+      fontFamily: "Roboto Mono",
+      "&.clickable": {
+        cursor: "pointer",
+        "&:hover": {
+          textDecoration: "underline",
+        }
+      },
+    }
+  },
   stepperRoot: {
+    backgroundColor: "transparent",
+    border: "none",
+    padding: theme.spacing(0),
     "& .MuiStepIcon-active": {
       color: theme.palette.secondary.main,
-      border: "1px solid rgba(217, 212, 173, 0.3)",
+      border: `1px solid ${colors.tan[300]}`,
       borderRadius: "100%",
     },
     "& .MuiStepIcon-completed": {
-      background: "rgba(217, 212, 173, 0.3)",
-      color: theme.palette.secondary.main,
-      border: "1px solid rgba(217, 212, 173, 0.3)",
+      background: theme.palette.text.primary,
+      border: `1px solid ${colors.tan[300]}`,
       borderRadius: "100%",
+      color: theme.palette.secondary.main,
     },
     "& .Mui-disabled .MuiStepIcon-root": {
       color: theme.palette.primary.main,
-      border: "1px solid rgba(217, 212, 173, 0.3)",
+      border: `1px solid ${colors.tan[300]}`,
       borderRadius: "100%",
     },
   },
@@ -124,10 +143,10 @@ export const RealityModule: React.FC = () => {
               </Grid>
             </Grid>
             <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation='vertical'>
-              {REALITY_MODULE_STEPS.map((label) => (
-                <Step key={label}>
+              {REALITY_MODULE_STEPS.map((label, index) => (
+                <Step key={label} className={classes.step}>
                   <StepLabel>
-                    <Typography variant='h6'>{label}</Typography>{" "}
+                    <Typography variant='h6' className={classnames(index <= activeStep && "clickable", "step-label")}>{label}</Typography>{" "}
                   </StepLabel>
                   <StepContent>
                     {label === "Proposal" && <ProposalSection handleNext={() => setActiveStep(activeStep + 1)} />}
