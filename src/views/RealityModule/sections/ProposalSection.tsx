@@ -1,5 +1,15 @@
-import { Button, Divider, FormControlLabel, Grid, Link, makeStyles, Radio, RadioGroup, Typography } from "@material-ui/core";
-import { DangerAlert } from "components/Alert/DangerAlert";
+import {
+  Button,
+  Divider,
+  FormControlLabel,
+  Grid,
+  Link,
+  makeStyles,
+  Radio,
+  RadioGroup,
+  Typography,
+} from "@material-ui/core";
+import { DangerAlert } from "components/alert/DangerAlert";
 import React, { useState } from "react";
 import { useRootDispatch } from "store";
 import { setRealityModuleScreen } from "store/modules";
@@ -36,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
   textFieldSmall: {
     "& .MuiFormLabel-root": {
       fontSize: 12,
-    }
-  }
+    },
+  },
 }));
 
 export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) => {
@@ -64,12 +74,9 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
               </Typography>
             </Grid>
             <Grid item>
-              <Typography>Don’t have a snapshot space setup yet?{` `}
-                <Link
-                  underline='always'
-                  href='https://snapshot.com'
-                  target={"_blank"}
-                  color='inherit'>
+              <Typography>
+                Don’t have a snapshot space setup yet?{` `}
+                <Link underline='always' href='https://snapshot.com' target={"_blank"} color='inherit'>
                   Get started here.
                 </Link>
               </Typography>
@@ -87,13 +94,13 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2" className={classes.textSubdued}>
-                Suspendisse in enim nisl. Morbi quis mollis elit. Morbi eget sem tortor. Etiam ac laoreet eros, non
-                molestie risus. Praesent vitae sodales lorem, quis placerat velit. Integer a congue metus.
+              <Typography variant='body2' className={classes.textSubdued}>
+                Enter your snapshot space ENS domain below to get started. If you’d prefer to provide a custom proposal
+                integration, select Custom and provide the appropriate URL where the proposals can be viewed publicly.
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2">Select your proposal type:</Typography>
+              <Typography variant='body2'>Select your proposal type:</Typography>
               <RadioGroup aria-label='proposal type' name='proposalType' value={value} onChange={handleChange}>
                 <FormControlLabel
                   value='snapshot'
@@ -108,14 +115,19 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
               </RadioGroup>
             </Grid>
             <Grid item>
-              <ZodiacTextField label='Enter your snapshot ENS domain.' placeholder='weenus.eth' borderStyle='double' className={classes.textFieldSmall}/>
+              <ZodiacTextField
+                label='Enter your snapshot ENS domain.'
+                placeholder='weenus.eth'
+                borderStyle='double'
+                className={classes.textFieldSmall}
+              />
             </Grid>
             <Grid item>
               <DangerAlert address='0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a' />
             </Grid>
           </Grid>
         </Grid>
-        <Grid item style={{paddingBottom: 0}}>
+        <Grid item style={{ paddingBottom: 0 }}>
           <Divider />
         </Grid>
         <Grid item>

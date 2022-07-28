@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRootDispatch } from "store";
 import { setRealityModuleScreen } from "../../store/modules";
 import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components";
@@ -19,7 +19,7 @@ import { MonitoringSection } from "./sections/MonitoringSection";
 import { OracleSection } from "./sections/OracleSection";
 import { ProposalSection } from "./sections/ProposalSection";
 import { ReviewSection } from "./sections/ReviewSection";
-import classnames from "classnames"
+import classnames from "classnames";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,9 +53,9 @@ const useStyles = makeStyles((theme) => ({
         cursor: "pointer",
         "&:hover": {
           textDecoration: "underline",
-        }
+        },
       },
-    }
+    },
   },
   stepperRoot: {
     backgroundColor: "transparent",
@@ -80,20 +80,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+type Steps = "Proposal" | "Oracle" | "Monitoring" | "Review";
+
 const REALITY_MODULE_STEPS = ["Proposal", "Oracle", "Monitoring", "Review"];
 
 export const RealityModule: React.FC = () => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [completed, setCompleted] = useState({
+    Proposal: false,
+    Oracle: false,
+    Monitoring: false,
+    Review: false,
+  });
 
-  // const handleNext = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  // };
+  const handleOpenSection = (pageToOpen: number, step: Steps) => {
+    if (completed[step]) {
+      setActiveStep(pageToOpen);
+    }
+  };
 
-  // const handleBack = () => {
-  //   setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  // };
+  const handleNext = (nextPage: number, step: Steps) => {
+    setActiveStep(nextPage);
+    setCompleted({ ...completed, [step]: true });
+  };
+
+  const handleBack = (nextPage: number, step: Steps) => {
+    setActiveStep(nextPage);
+    setCompleted({ ...completed, [step]: false });
+  };
 
   return (
     <div className={classes.root}>
@@ -145,12 +161,19 @@ export const RealityModule: React.FC = () => {
             <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation='vertical'>
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
-                  <StepLabel>
-                    <Typography variant='h6' className={classnames(index <= activeStep && "clickable", "step-label")}>{label}</Typography>{" "}
+                  <StepLabel onClick={() => handleOpenSection(index, label as Steps)}>
+                    <Typography variant='h6' className={classnames(index <= activeStep && "clickable", "step-label")}>
+                      {label}
+                    </Typography>{" "}
                   </StepLabel>
                   <StepContent>
-                    {label === "Proposal" && <ProposalSection handleNext={() => setActiveStep(activeStep + 1)} />}
-                    {label === "Oracle" && <OracleSection />}
+                    {label === "Proposal" && <ProposalSection handleNext={() => handleNext(index + 1, label)} />}
+                    {label === "Oracle" && (
+                      <OracleSection
+                        handleNext={() => handleNext(index + 1, label)}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                      />
+                    )}
                     {label === "Monitoring" && <MonitoringSection />}
                     {label === "Review" && <ReviewSection />}
                   </StepContent>

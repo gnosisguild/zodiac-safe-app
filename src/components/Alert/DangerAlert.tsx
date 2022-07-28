@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "inline-block",
     "& .MuiTypography-root": {
       fontFamily: "Roboto Mono",
-    }
+    },
   },
 }));
 
@@ -32,23 +32,21 @@ export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
   const classes = useStyles();
   return (
     <ZodiacPaper borderStyle='double' className={classes.paperContainer}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} direction='column'>
         <Grid item>
-          <Grid container spacing={1} justifyContent='center'>
+          <Grid container spacing={1}>
             <Grid item>
               <ErrorOutline />
             </Grid>
             <Grid item>
-              <Typography color='inherit'>
-                Security Risk Detected:
-              </Typography>
+              <Typography color='inherit'>Security Risk Detected:</Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
-          <Grid container spacing={1} direction="column">
+          <Grid container spacing={1} direction='column'>
             <Grid item>
-              <Typography variant="body2">
+              <Typography variant='body2'>
                 The ENS that you’ve entered is not owned by a safe. This gives unilateral control to the individual with
                 this address:
               </Typography>
@@ -56,12 +54,14 @@ export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
             {address && (
               <Grid item>
                 <ZodiacPaper borderStyle='single' className={classes.addressPaperContainer}>
-                  <Typography variant="body2">{address}</Typography>
+                  <Typography variant='body2'>{address}</Typography>
                 </ZodiacPaper>
               </Grid>
             )}
             <Grid item>
-              <Typography variant="body2">We recommend transferring the ENS to a multisig safe before continuing.</Typography>
+              <Typography variant='body2'>
+                We recommend transferring the ENS to a multisig safe before continuing.
+              </Typography>
             </Grid>
           </Grid>
         </Grid>
