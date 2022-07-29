@@ -6,7 +6,6 @@ import {
   Button,
   Divider,
   Grid,
-  Link,
   makeStyles,
   Step,
   StepContent,
@@ -15,6 +14,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { TagList } from "components/list/TagList";
+import { Link } from "components/text/Link";
 import { MonitoringSection } from "./sections/MonitoringSection";
 import { OracleSection } from "./sections/OracleSection";
 import { ProposalSection } from "./sections/ProposalSection";

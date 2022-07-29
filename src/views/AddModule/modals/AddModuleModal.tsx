@@ -72,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
   readMore: {
     display: "block",
     marginTop: theme.spacing(1.5),
+    fontSize: 16,
   },
   loader: {
     display: "block",

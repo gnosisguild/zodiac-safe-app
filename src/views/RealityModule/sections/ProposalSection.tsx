@@ -3,13 +3,13 @@ import {
   Divider,
   FormControlLabel,
   Grid,
-  Link,
   makeStyles,
   Radio,
   RadioGroup,
   Typography,
 } from "@material-ui/core";
 import { DangerAlert } from "components/Alert/DangerAlert";
+import { Link } from "components/text/Link";
 
 import React, { useState } from "react";
 import { useRootDispatch } from "store";
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
   checked: {},
   textSubdued: {
-    opacity: 0.7,
+    color: "rgba(255 255 255 / 70%)",
   },
   textFieldSmall: {
     "& .MuiFormLabel-root": {
@@ -118,7 +118,7 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
             <Grid item>
               <ZodiacTextField
                 label='Enter your snapshot ENS domain.'
-                placeholder='weenus.eth'
+                placeholder='ex: gnosis.eth'
                 borderStyle='double'
                 className={classes.textFieldSmall}
               />

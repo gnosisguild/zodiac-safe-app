@@ -1,5 +1,6 @@
-import { Button, Divider, Grid, Link, makeStyles, Typography } from "@material-ui/core";
+import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
+import { Link } from "components/text/Link";
 import { TimeSelect } from "components/input/TimeSelect";
 import React, { useState } from "react";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
   checked: {},
   textSubdued: {
-    opacity: 0.7,
+    color: "rgba(255 255 255 / 70%)",
   },
   textFieldSmall: {
     "& .MuiFormLabel-root": {
@@ -51,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     background: "rgba(0, 0, 0, 0.2)",
   },
+  templateQuestion: {
+    fontFamily: "Roboto Mono",
+  }
 }));
 
 export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handleNext }) => {
@@ -60,7 +64,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
     <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
-          <Grid container spacing={2} className={classes.container}>
+          <Grid container spacing={1} className={classes.container}>
             <Grid item>
               <Typography variant='h3'>Set up the Oracle</Typography>
             </Grid>
@@ -85,93 +89,106 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h4' color='textSecondary'>
-                Oracle Template
-              </Typography>
+              <Grid container spacing={1}>
+                <Grid item>
+                  <Typography variant='h4' color='textSecondary'>
+                    Oracle Template
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant='body2' className={classes.textSubdued}>
+                    The oracle template creates an appropriate question based on the data of the proposal. We highly
+                    recommend using the default Zodiac Reality Module template
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item>
-              <Typography variant='body2' className={classes.textSubdued}>
-                The oracle template creates an appropriate question based on the data of the proposal. We highly
-                recommend using the default Zodiac Reality Module template
-              </Typography>
+              <Grid container justifyContent='space-between' spacing={2} alignItems='center'>
+                <Grid item xs={6}>
+                  <Dropdown
+                    value={template}
+                    options={[{ label: "Zodiac Reality Module (default)", value: "default" }, { label: "Custom", value: "custom" }]}
+                    onChange={(evt) => setTemplate(evt.target.value as string)}
+                    disableUnderline
+                    label='Select template:'
+                    tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <Dropdown
+                    defaultValue="english"
+                    options={[{ label: "English", value: "english" }]}
+                    disableUnderline
+                    label='Language:'
+                    onChange={(evt) => console.log("evt", evt.target.value)}
+                  />
+                </Grid>
+                {template === "custom" && <>
+                  <Grid item xs={6}>
+                    <Dropdown
+                      value="DAO"
+                      options={[{ label: "DAO Proposal", value: "DAO" }]}
+                      onChange={(evt) => console.log('evt', evt)}
+                      disableUnderline
+                      label='Category:'
+                      tooltipMsg='This will help categorize the oracle question in reality.eth so it can be found more easily.'
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Dropdown
+                      value="bool"
+                      options={[{ label: "Bool", value: "bool" }]}
+                      disableUnderline
+                      label='Type:'
+                      onChange={(evt) => console.log("evt", evt.target.value)}
+                      tooltipMsg="This corresponds with the type of proposal being submitted."
+                    />
+                  </Grid>
+                </>}
+                <Grid item>
+                  <Typography>Template question preview:</Typography>
+                  <ZodiacPaper className={classes.paperTemplateContainer}>
+                    <Typography variant="body2" className={classes.templateQuestion}>
+                      Did the Snapshot proposal with the id %s in the weenus.eth space pass the execution of the array of
+                      Module transactions that have the hash 0x%s and does it meet the requirements of the document
+                      referenced in the dao requirements record at weenust.eth? The hash is the keccak of the concatenation
+                      of the individual EIP-712 hashes of the Module transactions. If this question was asked before the
+                      corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!
+                    </Typography>
+                  </ZodiacPaper>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
 
-        <Grid item>
-          <Grid container justifyContent='space-between' spacing={2} alignItems='center'>
-            <Grid item xs={6}>
-              <Dropdown
-                value={template}
-                options={[{ label: "Zodiac Reality Module (default)", value: "default" }, { label: "Custom", value: "custom" }]}
-                onChange={(evt) => setTemplate(evt.target.value as string)}
-                disableUnderline
-                label='Select template:'
-                tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Dropdown
-                options={[{ label: "English", value: "english" }]}
-                disableUnderline
-                label='Language:'
-                onChange={(evt) => console.log("evt", evt.target.value)}
-              />
-            </Grid>
-            {template === "custom" && <>
-              <Grid item xs={6}>
-                <Dropdown
-                  value="DAO"
-                  options={[{ label: "DAO Proposal", value: "DAO" }]}
-                  onChange={(evt) => console.log('evt', evt)}
-                  disableUnderline
-                  label='Category:'
-                  tooltipMsg='This will help categorize the oracle question in reality.eth so it can be found more easily.'
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <Dropdown
-                  value="bool"
-                  options={[{ label: "Bool", value: "bool" }]}
-                  disableUnderline
-                  label='Type:'
-                  onChange={(evt) => console.log("evt", evt.target.value)}
-                  tooltipMsg="This corresponds with the type of proposal being submitted."
-                />
-              </Grid>
-            </>}
-            <Grid item>
-              <Typography>Template question preview:</Typography>
-              <ZodiacPaper className={classes.paperTemplateContainer}>
-                <Typography>
-                  Did the Snapshot proposal with the id %s in the weenus.eth space pass the execution of the array of
-                  Module transactions that have the hash 0x%s and does it meet the requirements of the document
-                  referenced in the dao requirements record at weenust.eth? The hash is the keccak of the concatenation
-                  of the individual EIP-712 hashes of the Module transactions. If this question was asked before the
-                  corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!
-                </Typography>
-              </ZodiacPaper>
-            </Grid>
-          </Grid>
-        </Grid>
 
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h4' color='textSecondary'>
-                Oracle Instance
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography variant='body2' className={classes.textSubdued}>
-                The oracle instance sets the appropriate bond token. It’s recommended to use the default (ETH) oracle
-                instance unless you have a specific reason to use something like a native token which can potentially be
-                more prone to price manipulation.
-              </Typography>
+              <Grid container spacing={1}>
+                <Grid item>
+                  <Typography variant='h4' color='textSecondary'>
+                    Oracle Instance
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant='body2' className={classes.textSubdued}>
+                    The oracle instance sets the appropriate bond token. It’s recommended to use the default (ETH) oracle
+                    instance unless you have a specific reason to use something like a native token which can potentially be
+                    more prone to price manipulation.
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item>
               <Dropdown
-                options={[{ label: "ETH - 0xDf33060F476511F806C72719394da1Ad64", value: "0x" }]}
+                defaultValue="0x"
+                options={[
+                  { label: "ETH - 0xDf33060F476511F806C72719394da1Ad64", value: "0x" },
+                  { label: "Add Custom Instance", value: "custom" },
+                ]}
                 disableUnderline
                 label='Select oracle:'
                 onChange={(evt) => console.log("evt", evt.target.value)}
@@ -183,20 +200,24 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h4' color='textSecondary'>
-                Delay Configuration
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography variant='body2' className={classes.textSubdued}>
-                These Parameters are very important for your DAO’s security and should be considered carefully. Allowing
-                enough time in these configurations will enable the safe to have a final chance to veto or circumvent
-                any potential malicious proposals that have snuck through.
-              </Typography>
+              <Grid container spacing={1} className={classes.container}>
+                <Grid item>
+                  <Typography variant='h4' color='textSecondary'>
+                    Delay Configuration
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant='body2' className={classes.textSubdued}>
+                    These Parameters are very important for your DAO’s security and should be considered carefully. Allowing
+                    enough time in these configurations will enable the safe to have a final chance to veto or circumvent
+                    any potential malicious proposals that have snuck through.
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item>
               <Grid container spacing={6} alignItems='center' justifyContent='space-between'>
-                <Grid item >
+                <Grid item xs={4} >
                   <TimeSelect
                     variant='secondary'
                     label='Timeout'
@@ -205,7 +226,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
                     onChange={(value) => console.log("value", value)}
                   />
                 </Grid>
-                <Grid item >
+                <Grid item xs={4} >
                   <TimeSelect
                     variant='secondary'
                     label='Cooldown'
@@ -214,7 +235,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
                     onChange={(value) => console.log("value", value)}
                   />
                 </Grid>
-                <Grid item >
+                <Grid item xs={4} >
                   <TimeSelect
                     variant='secondary'
                     label='Expiration'
@@ -231,26 +252,73 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h4' color='textSecondary'>
-                Bond
-              </Typography>
+              <Grid container spacing={1} className={classes.container}>
+                <Grid item>
+                  <Typography variant='h4' color='textSecondary'>
+                    Bond
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant='body2' className={classes.textSubdued}>
+                    Minimum bond required for an answer to be accepted. New answers must be submitted with double the
+                    previous bond. For more on why a bond is required in an escalation-game-based oracle, read more in the
+                    {` `}
+                    <Link
+                      underline='always'
+                      href='http://reality.eth.link/app/docs/html/whitepaper.html'
+                      target={"_blank"}
+                      color='inherit'>
+                      Reality.eth whitepaper.
+                    </Link>
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item>
-              <Typography variant='body2' className={classes.textSubdued}>
-                Minimum bond required for an answer to be accepted. New answers must be submitted with double the
-                previous bond. For more on why a bond is required in an escalation-game-based oracle, read more in the
-                {` `}
-                <Link
-                  underline='always'
-                  href='http://reality.eth.link/app/docs/html/whitepaper.html'
-                  target={"_blank"}
-                  color='inherit'>
-                  Reality.eth whitepaper.
-                </Link>
-              </Typography>
+              <ZodiacTextField
+                label='Bond'
+                color='secondary'
+                borderStyle="double"
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item>
+          <Grid container spacing={2} className={classes.container}>
+            <Grid item>
+              <Grid container spacing={1}>
+                <Grid item>
+                  <Typography variant='h4' color='textSecondary'>
+                    Arbitration
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant='body2' className={classes.textSubdued}>
+                    An arbitrator is responsible for providing a final answer to a question when there is a dispute,
+                    in exchange for a fee. In most cases, the bond escalation-game eliminates the need for this.
+                    However, if you feel it’s necessary to include a backup arbitration strategy incase of a dispute,
+                    you can select one from below. Read more in the{` `}
+                    <Link underline='always' href='https://reality.eth.link/app/docs/html/arbitrators.html'target={"_blank"} color='inherit'>Reality.eth arbitrators documentation</Link>
+                    .
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item>
-              <ZodiacTextField label='Bond' color='secondary' borderStyle="double" />
+              {/* <ArbitratorSelect
+                label="Arbitrator"
+                defaultAddress={getArbitrator(safe.chainId, ARBITRATOR_OPTIONS.NO_ARBITRATOR),}
+                defaultOption={arbitratorOptions.NO_ARBITRATOR}
+                onChange={(value) => onParamChange("arbitrator", value)}
+                chainId={safe.chainId}
+              /> */}
+              <Dropdown
+                options={[{ label: "No arbitration (highest bond wins)", value: "none" }]}
+                disableUnderline
+                label='Arbitrator:'
+                onChange={(evt) => console.log("evt", evt.target.value)}
+              />
             </Grid>
           </Grid>
         </Grid>
