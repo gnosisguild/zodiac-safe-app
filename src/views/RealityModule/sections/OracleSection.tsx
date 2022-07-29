@@ -1,7 +1,7 @@
 import { Button, Divider, Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
 import { TimeSelect } from "components/input/TimeSelect";
-import React from "react";
+import React, { useState } from "react";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
 interface OracleSectionProps {
@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handleNext }) => {
   const classes = useStyles();
+  const [template, setTemplate] = useState<string>("default")
   return (
     <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
@@ -101,8 +102,9 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
           <Grid container justifyContent='space-between' spacing={2} alignItems='center'>
             <Grid item xs={6}>
               <Dropdown
-                options={[{ label: "Zodiac Reality Module (default)", value: "default" }]}
-                onChange={(evt) => console.log("evt", evt.target.value)}
+                value={template}
+                options={[{ label: "Zodiac Reality Module (default)", value: "default" }, { label: "Custom", value: "custom" }]}
+                onChange={(evt) => setTemplate(evt.target.value as string)}
                 disableUnderline
                 label='Select template:'
                 tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
@@ -116,6 +118,28 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
                 onChange={(evt) => console.log("evt", evt.target.value)}
               />
             </Grid>
+            {template === "custom" && <>
+              <Grid item xs={6}>
+                <Dropdown
+                  value="DAO"
+                  options={[{ label: "DAO Proposal", value: "DAO" }]}
+                  onChange={(evt) => console.log('evt', evt)}
+                  disableUnderline
+                  label='Category:'
+                  tooltipMsg='This will help categorize the oracle question in reality.eth so it can be found more easily.'
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Dropdown
+                  value="bool"
+                  options={[{ label: "Bool", value: "bool" }]}
+                  disableUnderline
+                  label='Type:'
+                  onChange={(evt) => console.log("evt", evt.target.value)}
+                  tooltipMsg="This corresponds with the type of proposal being submitted."
+                />
+              </Grid>
+            </>}
             <Grid item>
               <Typography>Template question preview:</Typography>
               <ZodiacPaper className={classes.paperTemplateContainer}>
@@ -172,7 +196,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
             </Grid>
             <Grid item>
               <Grid container spacing={6} alignItems='center' justifyContent='space-between'>
-                <Grid item>
+                <Grid item >
                   <TimeSelect
                     variant='secondary'
                     label='Timeout'
@@ -181,7 +205,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
                     onChange={(value) => console.log("value", value)}
                   />
                 </Grid>
-                <Grid item>
+                <Grid item >
                   <TimeSelect
                     variant='secondary'
                     label='Cooldown'
@@ -190,7 +214,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
                     onChange={(value) => console.log("value", value)}
                   />
                 </Grid>
-                <Grid item>
+                <Grid item >
                   <TimeSelect
                     variant='secondary'
                     label='Expiration'
@@ -226,7 +250,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({ handleBack, handle
               </Typography>
             </Grid>
             <Grid item>
-              <ZodiacTextField label='Bond' color='secondary' borderStyle="double"/>
+              <ZodiacTextField label='Bond' color='secondary' borderStyle="double" />
             </Grid>
           </Grid>
         </Grid>

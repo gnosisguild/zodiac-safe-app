@@ -9,7 +9,8 @@ import {
   RadioGroup,
   Typography,
 } from "@material-ui/core";
-import { DangerAlert } from "components/alert/DangerAlert";
+import { DangerAlert } from "components/Alert/DangerAlert";
+
 import React, { useState } from "react";
 import { useRootDispatch } from "store";
 import { setRealityModuleScreen } from "store/modules";
