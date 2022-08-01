@@ -47,6 +47,9 @@ const useStyles = makeStyles((theme) => ({
   loadMessage: {
     textAlign: "center",
   },
+  errorMessage: {
+    color: "red",
+  },
 }));
 
 export const OptimisticGovernorModuleModal = ({
@@ -65,7 +68,7 @@ export const OptimisticGovernorModuleModal = ({
     finder: getFinder(safe.chainId),
     owner: safe.safeAddress,
     collateral: getCollateral(safe.chainId, 1),
-    bond: "0",
+    bond: "1500",
     rules: "",
     identifier:
       "0x5a4f444941430000000000000000000000000000000000000000000000000000",
@@ -76,7 +79,10 @@ export const OptimisticGovernorModuleModal = ({
   });
   const [validFields, setValidFields] = useState({
     finder: !!params.finder,
-    bond: params.bond !== "0",
+    bond: !!params.bond,
+    snapshotURL: !!params.snapshotURL,
+    votingPeriod: !!params.votingPeriod,
+    votingQuorum: !!params.votingQuorum,
   });
   const isValid = Object.values(validFields).every((field) => field);
 
@@ -160,6 +166,15 @@ export const OptimisticGovernorModuleModal = ({
             label="Bond"
             onChange={(value, valid) => onParamChange("bond", value, valid)}
           />
+          <Typography className={classes.errorMessage}>
+            {Number(params.bond) < 1500 &&
+            params.collateral === getCollateral(safe.chainId, 1)
+              ? "Warning: A minimum bond of 1,500 is recommended for USDC"
+              : Number(params.bond) < 1 &&
+                params.collateral === getCollateral(safe.chainId, 0)
+              ? "Warning: A minimum bond of 1 is recommended for WETH"
+              : null}
+          </Typography>
         </Grid>
         <Grid item xs={6}>
           <TimeSelect
@@ -168,6 +183,11 @@ export const OptimisticGovernorModuleModal = ({
             defaultUnit="hours"
             onChange={(value) => onParamChange("liveness", value)}
           />
+          <Typography className={classes.errorMessage}>
+            {Number(params.liveness) < 21600
+              ? "Warning: The minimum recommended liveness period is 6 hours."
+              : null}
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <ParamInput
