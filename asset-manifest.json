@@ -4,12 +4,12 @@
     "main.js.map": "./static/js/main.4794b2ea.chunk.js.map",
     "runtime-main.js": "./static/js/runtime-main.cb4effe6.js",
     "runtime-main.js.map": "./static/js/runtime-main.cb4effe6.js.map",
-    "static/js/2.884d71d2.chunk.js": "./static/js/2.884d71d2.chunk.js",
-    "static/js/2.884d71d2.chunk.js.map": "./static/js/2.884d71d2.chunk.js.map",
+    "static/js/2.22109c1c.chunk.js": "./static/js/2.22109c1c.chunk.js",
+    "static/js/2.22109c1c.chunk.js.map": "./static/js/2.22109c1c.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.88ebde87bd76a6d16733e36e1196d17c.js": "./precache-manifest.88ebde87bd76a6d16733e36e1196d17c.js",
+    "precache-manifest.e7c1622d8ea41f836c7696667d5e4245.js": "./precache-manifest.e7c1622d8ea41f836c7696667d5e4245.js",
     "service-worker.js": "./service-worker.js",
-    "static/js/2.884d71d2.chunk.js.LICENSE.txt": "./static/js/2.884d71d2.chunk.js.LICENSE.txt",
+    "static/js/2.22109c1c.chunk.js.LICENSE.txt": "./static/js/2.22109c1c.chunk.js.LICENSE.txt",
     "static/media/add-circle-icon.42a49a22.svg": "./static/media/add-circle-icon.42a49a22.svg",
     "static/media/add-icon.7ae47d81.svg": "./static/media/add-icon.7ae47d81.svg",
     "static/media/arrow-up-icon.7e5a12da.svg": "./static/media/arrow-up-icon.7e5a12da.svg",
@@ -31,7 +31,7 @@
   },
   "entrypoints": [
     "static/js/runtime-main.cb4effe6.js",
-    "static/js/2.884d71d2.chunk.js",
+    "static/js/2.22109c1c.chunk.js",
     "static/js/main.4794b2ea.chunk.js"
   ]
 }
