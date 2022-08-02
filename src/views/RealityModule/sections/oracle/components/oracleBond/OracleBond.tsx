@@ -56,6 +56,7 @@ export const OracleBond: React.FC = () => {
           color='secondary'
           borderStyle='double'
           className={classes.input}
+          prefix="ETH"
         />
       </Grid>
     </Grid>

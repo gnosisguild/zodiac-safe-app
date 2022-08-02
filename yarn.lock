@@ -15383,10 +15383,10 @@ yargs@^16.1.1:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
-zodiac-ui-components@^0.0.30:
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/zodiac-ui-components/-/zodiac-ui-components-0.0.30.tgz#1dd15dae9fe187b209d24387558dff8b7aeb1687"
-  integrity sha512-3JVHdEO0rLcfYnPBYu0ju5svZC2gRVXtqZdnX6dE48T72Tn27icmSqybLa6Wo/AUmUbCtoD2O0CoqUxlNQk5fQ==
+zodiac-ui-components@^0.0.32:
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/zodiac-ui-components/-/zodiac-ui-components-0.0.32.tgz#ec4837f62eb6cf3dc6fbfc816d1544e3b526810d"
+  integrity sha512-L4C3R+doMbmgOxVl3Y8E/hPIrR1GVH7K9wdILctkPyq+vXdzu1EZ71G/wZY7eQW4nByGHvI3qsAnc0ZsO0qH8g==
   dependencies:
     "@material-ui/icons" "^4.11.2"
     "@material-ui/lab" "^4.0.0-alpha.60"
