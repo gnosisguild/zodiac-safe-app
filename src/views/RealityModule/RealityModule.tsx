@@ -15,10 +15,10 @@ import {
 } from "@material-ui/core";
 import { TagList } from "components/list/TagList";
 import { Link } from "components/text/Link";
-import { MonitoringSection } from "./sections/MonitoringSection";
-import { OracleSection } from "./sections/OracleSection";
-import { ProposalSection } from "./sections/ProposalSection";
-import { ReviewSection } from "./sections/ReviewSection";
+import { MonitoringSection } from "./sections/monitoring/MonitoringSection";
+import { OracleSection } from "./sections/oracle/OracleSection";
+import { ProposalSection } from "./sections/proposal/ProposalSection";
+import { ReviewSection } from "./sections/review/ReviewSection";
 import classnames from "classnames";
 
 const useStyles = makeStyles((theme) => ({
@@ -87,7 +87,7 @@ const REALITY_MODULE_STEPS = ["Proposal", "Oracle", "Monitoring", "Review"];
 export const RealityModule: React.FC = () => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const [activeStep, setActiveStep] = useState<number>(1);
   const [completed, setCompleted] = useState({
     Proposal: false,
     Oracle: false,
@@ -121,7 +121,10 @@ export const RealityModule: React.FC = () => {
             </Grid>
             <Grid item>
               <Typography variant='h5'>Reality Module</Typography>
-              <TagList className={classes.tag} tags={["Stackable", "From Gnosis Guild"]} />
+              <TagList
+                className={classes.tag}
+                tags={["Stackable", "From Gnosis Guild"]}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -142,9 +145,16 @@ export const RealityModule: React.FC = () => {
         </Grid>
         <Grid item>
           <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
-            <Grid container justifyContent='space-between' alignItems='center' style={{ marginBottom: 15 }}>
+            <Grid
+              container
+              justifyContent='space-between'
+              alignItems='center'
+              style={{ marginBottom: 15 }}>
               <Grid item>
-                <Typography variant='h4' gutterBottom className={classes.paperTitle}>
+                <Typography
+                  variant='h4'
+                  gutterBottom
+                  className={classes.paperTitle}>
                   Add Reality Module
                 </Typography>
               </Grid>
@@ -158,16 +168,29 @@ export const RealityModule: React.FC = () => {
                 </Button>
               </Grid>
             </Grid>
-            <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation='vertical'>
+            <Stepper
+              activeStep={activeStep}
+              className={classes.stepperRoot}
+              orientation='vertical'>
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
-                  <StepLabel onClick={() => handleOpenSection(index, label as Steps)}>
-                    <Typography variant='h6' className={classnames(index <= activeStep && "clickable", "step-label")}>
+                  <StepLabel
+                    onClick={() => handleOpenSection(index, label as Steps)}>
+                    <Typography
+                      variant='h6'
+                      className={classnames(
+                        index <= activeStep && "clickable",
+                        "step-label"
+                      )}>
                       {label}
                     </Typography>{" "}
                   </StepLabel>
                   <StepContent>
-                    {label === "Proposal" && <ProposalSection handleNext={() => handleNext(index + 1, label)} />}
+                    {label === "Proposal" && (
+                      <ProposalSection
+                        handleNext={() => handleNext(index + 1, label)}
+                      />
+                    )}
                     {label === "Oracle" && (
                       <OracleSection
                         handleNext={() => handleNext(index + 1, label)}

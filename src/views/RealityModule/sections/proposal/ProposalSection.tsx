@@ -49,9 +49,19 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 12,
     },
   },
+  input: {
+    "& .MuiInputBase-root": {
+      borderColor: colors.tan[300],
+      "&::before": {
+        borderColor: colors.tan[300],
+      },
+    },
+  },
 }));
 
-export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) => {
+export const ProposalSection: React.FC<ProposalSectionProps> = ({
+  handleNext,
+}) => {
   const classes = useStyles();
   const [value, setValue] = useState<"snapshot" | "custom">("snapshot");
   const dispatch = useRootDispatch();
@@ -70,14 +80,18 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
             </Grid>
             <Grid item>
               <Typography>
-                Add your preferred proposal type below to get started. If you’re unsure, we recommend starting with
-                Snapshot.
+                Add your preferred proposal type below to get started. If you’re
+                unsure, we recommend starting with Snapshot.
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
                 Don’t have a snapshot space setup yet?{` `}
-                <Link underline='always' href='https://snapshot.com' target={"_blank"} color='inherit'>
+                <Link
+                  underline='always'
+                  href='https://snapshot.com'
+                  target={"_blank"}
+                  color='inherit'>
                   Get started here.
                 </Link>
               </Typography>
@@ -96,21 +110,43 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
             </Grid>
             <Grid item>
               <Typography variant='body2' className={classes.textSubdued}>
-                Enter your snapshot space ENS domain below to get started. If you’d prefer to provide a custom proposal
-                integration, select Custom and provide the appropriate URL where the proposals can be viewed publicly.
+                Enter your snapshot space ENS domain below to get started. If
+                you’d prefer to provide a custom proposal integration, select
+                Custom and provide the appropriate URL where the proposals can
+                be viewed publicly.
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant='body2'>Select your proposal type:</Typography>
-              <RadioGroup aria-label='proposal type' name='proposalType' value={value} onChange={handleChange}>
+              <Typography variant='body2'>
+                Select your proposal type:
+              </Typography>
+              <RadioGroup
+                aria-label='proposal type'
+                name='proposalType'
+                value={value}
+                onChange={handleChange}>
                 <FormControlLabel
                   value='snapshot'
-                  control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+                  control={
+                    <Radio
+                      classes={{
+                        root: classes.radio,
+                        checked: classes.checked,
+                      }}
+                    />
+                  }
                   label='Snapshot'
                 />
                 <FormControlLabel
                   value='custom'
-                  control={<Radio classes={{ root: classes.radio, checked: classes.checked }} />}
+                  control={
+                    <Radio
+                      classes={{
+                        root: classes.radio,
+                        checked: classes.checked,
+                      }}
+                    />
+                  }
                   label='Custom'
                 />
               </RadioGroup>
@@ -120,7 +156,7 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
                 label='Enter your snapshot ENS domain.'
                 placeholder='ex: gnosis.eth'
                 borderStyle='double'
-                className={classes.textFieldSmall}
+                className={`${classes.textFieldSmall} ${classes.input}`}
               />
             </Grid>
             <Grid item>
@@ -132,14 +168,25 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({ handleNext }) 
           <Divider />
         </Grid>
         <Grid item>
-          <Grid container spacing={3} justifyContent='center' alignItems='center'>
+          <Grid
+            container
+            spacing={3}
+            justifyContent='center'
+            alignItems='center'>
             <Grid item>
-              <Button size='medium' variant='text' onClick={() => dispatch(setRealityModuleScreen(false))}>
+              <Button
+                size='medium'
+                variant='text'
+                onClick={() => dispatch(setRealityModuleScreen(false))}>
                 Cancel
               </Button>
             </Grid>
             <Grid item>
-              <Button color='secondary' size='medium' variant='contained' onClick={handleNext}>
+              <Button
+                color='secondary'
+                size='medium'
+                variant='contained'
+                onClick={handleNext}>
                 Next
               </Button>
             </Grid>
