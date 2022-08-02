@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginBottom: theme.spacing(2),
   },
+  link: {
+    fontSize: 16,
+  }
 }));
 
 export const ModuleNoAvailable = () => {
@@ -28,7 +31,7 @@ export const ModuleNoAvailable = () => {
         We couldn't find an ABI and didn't recognize the bytecode for this
         module’s contract.
       </Typography>
-      <Link target="_blank" href={verifyUrl}>
+      <Link target="_blank" href={verifyUrl} className={classes.link}>
         Verify this contract on Etherscan to fix this.
       </Link>
     </ZodiacPaper>
