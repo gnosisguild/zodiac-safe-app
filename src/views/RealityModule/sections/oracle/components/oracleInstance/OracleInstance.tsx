@@ -1,6 +1,7 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
-import React from "react";
+import React, { useState } from "react";
+import { colors, ZodiacTextField } from "zodiac-ui-components";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -10,11 +11,20 @@ const useStyles = makeStyles((theme) => ({
   textSubdued: {
     color: "rgba(255 255 255 / 70%)",
   },
+  input: {
+    "& .MuiInputBase-root": {
+      padding: "9px 8px",
+      borderColor: colors.tan[300],
+      "&::before": {
+        borderColor: colors.tan[300],
+      },
+    },
+  },
 }));
 
 export const OracleInstance: React.FC = () => {
   const classes = useStyles();
-
+  const [instance, setInstance] = useState<string>("0x");
   return (
     <Grid container spacing={2} className={classes.container}>
       <Grid item>
@@ -36,7 +46,7 @@ export const OracleInstance: React.FC = () => {
       </Grid>
       <Grid item>
         <Dropdown
-          defaultValue='0x'
+          value={instance}
           options={[
             {
               label: "ETH - 0xDf33060F476511F806C72719394da1Ad64",
@@ -46,9 +56,29 @@ export const OracleInstance: React.FC = () => {
           ]}
           disableUnderline
           label='Select oracle:'
-          onChange={(evt) => console.log("evt", evt.target.value)}
+          onChange={(evt) => setInstance(evt.target.value as string)}
         />
       </Grid>
+      {instance === "custom" && (
+        <Grid item>
+          <Grid
+            container
+            justifyContent='space-between'
+            alignItems='center'
+            spacing={1}>
+            <Grid item sm={10}>
+              <ZodiacTextField
+                label='Contract Address'
+                borderStyle='double'
+                className={classes.input}
+              />
+            </Grid>
+            <Grid item sm={2}>
+              <Typography style={{ marginTop: 15 }}>WEENUS</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 };

@@ -1,9 +1,20 @@
-import { Grid, makeStyles, Typography, Button } from "@material-ui/core";
+import {
+  Grid,
+  makeStyles,
+  Typography,
+  Button,
+  Tooltip,
+} from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
 import React, { ChangeEvent, useState } from "react";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 import Delete from "@material-ui/icons/Delete";
 import Add from "@material-ui/icons/Add";
+import { HelpOutline } from "@material-ui/icons";
+
+const TEMPLATE_QUESTION = `Did the Snapshot proposal with the id {%s} in the weenus.eth space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at weenust.eth? The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`;
+
+const CUSTOM_TEMPLATE_QUESTION = `Provide a custom question here. Use %s as a variable for the proposal id.`;
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -23,11 +34,15 @@ const useStyles = makeStyles((theme) => ({
   },
   paperTemplateContainer: {
     marginTop: 4,
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     background: "rgba(0, 0, 0, 0.2)",
   },
   templateQuestion: {
     fontFamily: "Roboto Mono",
+    "& .MuiInputBase-root": {
+      border: "none",
+      fontSize: "0.85rem",
+    },
   },
   input: {
     "& .MuiInputBase-root": {
@@ -54,13 +69,19 @@ const useStyles = makeStyles((theme) => ({
   text: {
     fontSize: "0.75rem",
   },
+  tooltipIcon: {
+    fontSize: "1rem",
+  },
 }));
 
 export const OracleTemplate: React.FC = () => {
   const classes = useStyles();
   const [template, setTemplate] = useState<string>("default");
   const [templateType, setTemplateType] = useState<string>("bool");
-  const [outcomes, setOutcomes] = useState<Array<any>>([{ outcome: "" }]);
+  const [outcomes, setOutcomes] = useState<Array<any>>([
+    { outcome: "" },
+    { outcome: "" },
+  ]);
 
   const handleNewOutcomes = () => {
     const newOutcomes = [...outcomes];
@@ -70,7 +91,7 @@ export const OracleTemplate: React.FC = () => {
 
   const handleDeleteOutcomes = (index: number) => {
     const newOutcomes = [...outcomes];
-    if (newOutcomes.length > 1) {
+    if (newOutcomes.length > 2) {
       newOutcomes.splice(index, 1);
       setOutcomes(newOutcomes);
     }
@@ -158,6 +179,31 @@ export const OracleTemplate: React.FC = () => {
                   tooltipMsg='This corresponds with the type of proposal being submitted.'
                 />
               </Grid>
+              <Grid item xs={12}>
+                <Grid
+                  container
+                  justifyContent='space-between'
+                  alignItems='center'>
+                  <Typography>Template question preview:</Typography>
+
+                  <Tooltip title='Provide a custom question here. Use %s as a variable for the proposal id.'>
+                    <HelpOutline className={classes.tooltipIcon} />
+                  </Tooltip>
+                </Grid>
+
+                <ZodiacPaper className={classes.paperTemplateContainer}>
+                  <ZodiacTextField
+                    className={classes.templateQuestion}
+                    multiline
+                    rows={5}
+                    placeholder={
+                      templateType === "multiple"
+                        ? CUSTOM_TEMPLATE_QUESTION
+                        : TEMPLATE_QUESTION
+                    }
+                  />
+                </ZodiacPaper>
+              </Grid>
               {templateType === "multiple" && (
                 <Grid item xs={12}>
                   <Typography>Outcomes</Typography>
@@ -178,7 +224,8 @@ export const OracleTemplate: React.FC = () => {
                           className={classes.button}
                           onClick={() => handleDeleteOutcomes(index)}
                           variant='outlined'
-                          startIcon={<Delete />}>
+                          startIcon={<Delete />}
+                          disabled={index > 1 ? false : true}>
                           Remove
                         </Button>
                       </Grid>
@@ -206,21 +253,6 @@ export const OracleTemplate: React.FC = () => {
               )}
             </>
           )}
-          <Grid item>
-            <Typography>Template question preview:</Typography>
-            <ZodiacPaper className={classes.paperTemplateContainer}>
-              <Typography variant='body2' className={classes.templateQuestion}>
-                Did the Snapshot proposal with the id %s in the weenus.eth space
-                pass the execution of the array of Module transactions that have
-                the hash 0x%s and does it meet the requirements of the document
-                referenced in the dao requirements record at weenust.eth? The
-                hash is the keccak of the concatenation of the individual
-                EIP-712 hashes of the Module transactions. If this question was
-                asked before the corresponding Snapshot proposal was resolved,
-                it should ALWAYS be resolved to INVALID!
-              </Typography>
-            </ZodiacPaper>
-          </Grid>
         </Grid>
       </Grid>
     </Grid>
