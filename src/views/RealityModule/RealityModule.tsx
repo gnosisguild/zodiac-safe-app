@@ -87,7 +87,7 @@ const REALITY_MODULE_STEPS = ["Proposal", "Oracle", "Monitoring", "Review"];
 export const RealityModule: React.FC = () => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const [activeStep, setActiveStep] = useState<number>(3);
   const [completed, setCompleted] = useState({
     Proposal: false,
     Oracle: false,
@@ -197,8 +197,19 @@ export const RealityModule: React.FC = () => {
                         handleBack={() => handleBack(activeStep - 1, label)}
                       />
                     )}
-                    {label === "Monitoring" && <MonitoringSection />}
-                    {label === "Review" && <ReviewSection />}
+                    {label === "Monitoring" && (
+                      <MonitoringSection
+                        handleNext={() => handleNext(index + 1, label)}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                      />
+                    )}
+                    {label === "Review" && (
+                      <ReviewSection
+                        handleNext={() => console.log("execute transactions")}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                        goToStep={setActiveStep}
+                      />
+                    )}
                   </StepContent>
                 </Step>
               ))}
