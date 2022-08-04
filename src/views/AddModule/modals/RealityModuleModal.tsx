@@ -194,7 +194,7 @@ export const RealityModuleModal = ({
             <Grow />
             <Link
               color="textSecondary"
-              href="https://reality.eth.link/app/template-generator/"
+              href="https://reality.eth.limo/app/template-generator/"
               target="_blank"
             >
               Get a template here
