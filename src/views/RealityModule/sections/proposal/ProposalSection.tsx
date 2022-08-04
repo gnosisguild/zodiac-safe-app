@@ -80,13 +80,13 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
             </Grid>
             <Grid item>
               <Typography>
-                Add your preferred proposal type below to get started. If you’re
+                Add your preferred proposal type below to get started. If you&apos;re
                 unsure, we recommend starting with Snapshot.
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Don’t have a snapshot space setup yet?{` `}
+                Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
                   underline='always'
                   href='https://snapshot.com'
@@ -111,7 +111,7 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
             <Grid item>
               <Typography variant='body2' className={classes.textSubdued}>
                 Enter your snapshot space ENS domain below to get started. If
-                you’d prefer to provide a custom proposal integration, select
+                you&apos;d prefer to provide a custom proposal integration, select
                 Custom and provide the appropriate URL where the proposals can
                 be viewed publicly.
               </Typography>

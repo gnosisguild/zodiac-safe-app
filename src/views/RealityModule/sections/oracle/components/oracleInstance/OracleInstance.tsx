@@ -36,7 +36,7 @@ export const OracleInstance: React.FC = () => {
           </Grid>
           <Grid item>
             <Typography variant='body2' className={classes.textSubdued}>
-              The oracle instance sets the appropriate bond token. It’s
+              The oracle instance sets the appropriate bond token. It&apos;s
               recommended to use the default (ETH) oracle instance unless you
               have a specific reason to use something like a native token which
               can potentially be more prone to price manipulation.
