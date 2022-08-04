@@ -87,7 +87,7 @@ const REALITY_MODULE_STEPS = ["Proposal", "Oracle", "Monitoring", "Review"];
 export const RealityModule: React.FC = () => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
-  const [activeStep, setActiveStep] = useState<number>(3);
+  const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState({
     Proposal: false,
     Oracle: false,

@@ -26,7 +26,7 @@ export const OracleDelay: React.FC = () => {
           </Grid>
           <Grid item>
             <Typography variant='body2' className={classes.textSubdued}>
-              These Parameters are very important for your DAO’s security and
+              These Parameters are very important for your DAO&apos;s security and
               should be considered carefully. Allowing enough time in these
               configurations will enable the safe to have a final chance to veto
               or circumvent any potential malicious proposals that have snuck

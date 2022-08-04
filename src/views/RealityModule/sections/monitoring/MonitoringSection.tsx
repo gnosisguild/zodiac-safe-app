@@ -76,7 +76,7 @@ export const MonitoringSection: React.FC<MonitoringSectionProps> = ({
                   color='inherit'>
                   Tenderly.
                 </Link>{" "}
-                However, if you’d prefer to setup your monitoring with a
+                However, if you&apos;d prefer to setup your monitoring with a
                 different service, select the Custom monitoring option.
               </Typography>
             </Grid>

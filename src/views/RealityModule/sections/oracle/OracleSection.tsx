@@ -46,7 +46,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
             </Grid>
             <Grid item>
               <Typography>
-                Now, it’s time to set up the oracle for your reality module. The
+                Now, it&apos;s time to set up the oracle for your reality module. The
                 oracle ensures the results of proposals are brought accurately
                 on-chain. The Reality.eth oracle uses a mechanism known as the{" "}
                 <Link
