@@ -104,6 +104,28 @@ const deployRealityModuleTx = (
   return deployRealityModuleInternal(safeAddress, chainId, args, false);
 };
 
+export const addSafeSnapToSettings = (
+  spaceSettings: any,
+  chainId: number,
+  oracleAddress: string
+) => {
+  spaceSettings["plugins"] = {
+    ...spaceSettings["plugins"],
+    // TODO: this will overwrite existing safeSnap setup. IS this what we want?
+    safeSnap: {
+      safes: [
+        {
+          network: chainId,
+          realityAddress: oracleAddress,
+          multisend: MULTI_SEND_CONTRACT,
+        },
+      ],
+    },
+  };
+
+  return spaceSettings;
+};
+
 const addSafeSnapToSnapshotSpaceTx = async (
   provider: ethers.providers.JsonRpcProvider,
   ensName: string,
@@ -117,24 +139,15 @@ const addSafeSnapToSnapshotSpaceTx = async (
   const spaceSettings = await ipfs.getData(hash, protocol === "ipns");
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
-  spaceSettings["plugins"] = {
-    ...spaceSettings["plugins"],
-    // TODO: this will overwrite existing safeSnap setup. IS this what we want?
-    safeSnap: {
-      safes: [
-        {
-          network: chainId,
-          realityAddress,
-          multisend: MULTI_SEND_CONTRACT,
-        },
-      ],
-    },
-  };
-
+  const newSpaceSettings = addSafeSnapToSettings(
+    spaceSettings,
+    chainId,
+    realityAddress
+  );
   // validate the new schema
   const valid = snapshot.utils.validateSchema(
     snapshot.schemas.space,
-    spaceSettings
+    newSpaceSettings
   );
   console.log(valid);
 
