@@ -140,7 +140,7 @@ export const OptimisticGovernorModuleModal = ({
       title="Optimistic Governor Module"
       description="Allows successful Snapshot proposals to 
       execute transactions using UMA's optimistic oracle."
-      icon="tellor"
+      icon="optimisticGov"
       tags={["From Outcome Finance"]}
       onAdd={handleAddOptimisticGovernorModule}
       readMoreLink="https://docs.outcome.finance/optimistic-governance/what-is-the-optimistic-governor"
