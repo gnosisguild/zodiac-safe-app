@@ -9,6 +9,7 @@ import {
 import { CircleStep } from "components/circleStep/CircleStep";
 import React from "react";
 import { colors, ZodiacPaper } from "zodiac-ui-components";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 
 interface ReviewSectionProps {
   handleNext: () => void;
@@ -247,8 +248,9 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                 color='secondary'
                 size='medium'
                 variant='contained'
+                startIcon={<ArrowUpwardIcon />}
                 onClick={handleNext}>
-                Next
+                Submit
               </Button>
             </Grid>
           </Grid>
