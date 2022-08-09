@@ -1,5 +1,7 @@
-import { addSafeSnapToSettings } from "./setupService";
-import snapshot from "@snapshot-labs/snapshot.js";
+import {
+  addSafeSnapToSettings,
+  checkNewSnapshotSettingsValidity,
+} from "./setupService";
 
 const SNAPSHOT_SETTINGS_SAMPLE = {
   name: "GnosisDAO",
@@ -90,27 +92,32 @@ const SNAPSHOT_SETTINGS_SAMPLE = {
 };
 const oracleAddress = "0x0000000000000000000000000000000000000005";
 
-test("The SafeSnap plugin should be set", () => {
-  expect(SNAPSHOT_SETTINGS_SAMPLE.plugins).not.toHaveProperty("safeSnap");
-  const newSpaceSettings = addSafeSnapToSettings(
-    SNAPSHOT_SETTINGS_SAMPLE,
-    3,
-    oracleAddress
-  );
-  expect(newSpaceSettings.plugins).toHaveProperty("safeSnap");
-});
+describe("addSafeSnapToSettings function", () => {
+  test("it sets the safeSnap attribute correctly", () => {
+    expect(SNAPSHOT_SETTINGS_SAMPLE.plugins).not.toHaveProperty("safeSnap");
+    const newSpaceSettings = addSafeSnapToSettings(
+      SNAPSHOT_SETTINGS_SAMPLE,
+      3,
+      oracleAddress
+    );
+    expect(newSpaceSettings.plugins).toHaveProperty("safeSnap");
+    expect(newSpaceSettings).not.toEqual(SNAPSHOT_SETTINGS_SAMPLE);
+  });
 
-test("The new Space settings file should be a valide Snapshot Settings file", () => {
-  const newSpaceSettings = addSafeSnapToSettings(
-    SNAPSHOT_SETTINGS_SAMPLE,
-    3,
-    oracleAddress
-  );
-  const valid = snapshot.utils.validateSchema(
-    snapshot.schemas.space,
-    newSpaceSettings
-  );
-  expect(valid).toBe(true);
+  test("it does not change the Snapshot Space settings in unintended ways (only the safeSnap plugin should be added)", () => {
+    const newSpaceSettings = addSafeSnapToSettings(
+      SNAPSHOT_SETTINGS_SAMPLE,
+      3,
+      oracleAddress
+    );
+
+    expect(
+      checkNewSnapshotSettingsValidity(
+        SNAPSHOT_SETTINGS_SAMPLE,
+        newSpaceSettings
+      )
+    ).toBe(true);
+  });
 });
 
 export {};

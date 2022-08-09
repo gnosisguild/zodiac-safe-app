@@ -7,6 +7,7 @@ import { getNetworkNativeAsset } from "utils/networks";
 import snapshot from "@snapshot-labs/snapshot.js";
 import * as ipfs from "../../utils/ipfs";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
+import R from "ramda";
 
 const MULTI_SEND_CONTRACT = process.env.MULTI_SEND_CONTRACT;
 
@@ -105,14 +106,13 @@ const deployRealityModuleTx = (
 };
 
 export const addSafeSnapToSettings = (
-  spaceSettings: any,
+  originalSpaceSettings: any,
   chainId: number,
   oracleAddress: string
-) => {
-  spaceSettings["plugins"] = {
-    ...spaceSettings["plugins"],
-    // TODO: this will overwrite existing safeSnap setup. IS this what we want?
-    safeSnap: {
+) =>
+  R.assocPath(
+    ["plugins", "safeSnap"],
+    {
       safes: [
         {
           network: chainId,
@@ -121,10 +121,8 @@ export const addSafeSnapToSettings = (
         },
       ],
     },
-  };
-
-  return spaceSettings;
-};
+    originalSpaceSettings
+  );
 
 const addSafeSnapToSnapshotSpaceTx = async (
   provider: ethers.providers.JsonRpcProvider,
@@ -136,20 +134,20 @@ const addSafeSnapToSnapshotSpaceTx = async (
   const ensResolver = await provider.getResolver(ensName);
   const currentEnsSnapshotRecord = await ensResolver.getText("snapshot"); // for instance, "ipfs://QmWUemB5QDr6Zkp2tqQRcEW1ZC7n4MiLaE6CFneVJUeYyD"
   const [protocol, hash] = currentEnsSnapshotRecord.split("://");
-  const spaceSettings = await ipfs.getData(hash, protocol === "ipns");
+  const originalSpaceSettings = await ipfs.getData(hash, protocol === "ipns");
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
   const newSpaceSettings = addSafeSnapToSettings(
-    spaceSettings,
+    originalSpaceSettings,
     chainId,
     realityAddress
   );
   // validate the new schema
-  const valid = snapshot.utils.validateSchema(
-    snapshot.schemas.space,
-    newSpaceSettings
-  );
-  console.log(valid);
+  if (
+    !checkNewSnapshotSettingsValidity(originalSpaceSettings, newSpaceSettings)
+  ) {
+    throw new Error("The new settings file is changed in unexpected ways");
+  }
 
   // 3. Deploy the modified settings file to IPFS.
   // 4. Pin the new file.
@@ -157,5 +155,20 @@ const addSafeSnapToSnapshotSpaceTx = async (
 
   return [];
 };
+
+export const checkNewSnapshotSettingsValidity = (
+  originalSettings: any,
+  newSettings: any
+) =>
+  R.and(
+    // check that there are no unintended changes to the new Snapshot Space settings
+    R.equals(
+      R.omit(["plugins", "safeSnap"], originalSettings),
+      R.omit(["plugins", "safeSnap"], newSettings)
+    ),
+    // validate the schema
+    // we must be strict here, if not a truthy error value can be returned
+    snapshot.utils.validateSchema(snapshot.schemas.space, newSettings) === true
+  );
 
 const pokeSnapshotAPI = async () => {};
