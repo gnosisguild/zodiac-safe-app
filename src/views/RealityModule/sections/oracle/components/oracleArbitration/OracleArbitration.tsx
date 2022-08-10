@@ -29,7 +29,7 @@ export const OracleArbitration: React.FC = () => {
               An arbitrator is responsible for providing a final answer to a
               question when there is a dispute, in exchange for a fee. In most
               cases, the bond escalation-game eliminates the need for this.
-              However, if you feel it’s necessary to include a backup
+              However, if you feel it&apos;s necessary to include a backup
               arbitration strategy incase of a dispute, you can select one from
               below. Read more in the{` `}
               <Link

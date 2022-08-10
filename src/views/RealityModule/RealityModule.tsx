@@ -197,8 +197,19 @@ export const RealityModule: React.FC = () => {
                         handleBack={() => handleBack(activeStep - 1, label)}
                       />
                     )}
-                    {label === "Monitoring" && <MonitoringSection />}
-                    {label === "Review" && <ReviewSection />}
+                    {label === "Monitoring" && (
+                      <MonitoringSection
+                        handleNext={() => handleNext(index + 1, label)}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                      />
+                    )}
+                    {label === "Review" && (
+                      <ReviewSection
+                        handleNext={() => console.log("execute transactions")}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                        goToStep={setActiveStep}
+                      />
+                    )}
                   </StepContent>
                 </Step>
               ))}
