@@ -81,6 +81,7 @@ export const PanelItem: React.FC<PanelItemProps> = ({
     >
       <div
         onClick={active ? undefined : onClick}
+        onKeyDown={active ? undefined : onClick}
         className={classNames(classes.moduleItem, {
           active,
           sub,

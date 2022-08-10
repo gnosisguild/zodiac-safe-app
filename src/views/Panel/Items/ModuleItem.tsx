@@ -97,7 +97,7 @@ export const ModuleItem = (props: ModuleItemProps) => {
     <PanelItem
       image={<HashInfo showAvatar avatarSize='lg' showHash={false} hash={module.address} />}
       {...panelItemProps}>
-      <div onClick={onClick} className={classes.content}>
+      <div onClick={onClick} className={classes.content} onKeyDown={onClick} role="button" tabIndex={0}>
         <ModuleItemContent classes={classes} {...props} />
       </div>
 
