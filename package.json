@@ -17,6 +17,7 @@
     "classnames": "^2.3.1",
     "ethcall": "^3.4.1",
     "ethers": "^5.4.6",
+    "ipfs-core": "^0.15.4",
     "lodash.memoize": "^4.1.2",
     "material-ui": "^0.20.2",
     "ramda": "^0.28.0",

@@ -1,6 +1,31 @@
-const IPFS_GATEWAY = process.env.IPFS_GATEWAY;
+import * as IPFS from "ipfs-core";
 
-export const getData = async (hash: string, ipns = false) => {
-  const res = await fetch(`${IPFS_GATEWAY}/${ipns ? "ipns" : "ipfs"}/${hash}`);
-  return res.json();
+let node: IPFS.IPFS;
+const textDecoder = new TextDecoder();
+
+const getNode = async () => {
+  if (node == null) {
+    node = await IPFS.create();
+  }
+  return node;
+};
+export const getJsonData = async (path: string) => {
+  const node = await getNode();
+
+  if (path.startsWith("/ipns/")) {
+    path = await node.resolve(path, { recursive: true });
+  }
+
+  const chunks: string[] = [];
+  for await (const chunk of node.cat(path)) {
+    chunks.push(textDecoder.decode(chunk));
+  }
+  const rawContent = chunks.join("");
+  return JSON.parse(rawContent);
+};
+
+export const add = async (content: any) => {
+  const node = await getNode();
+  const { cid } = await node.add(content);
+  return cid;
 };

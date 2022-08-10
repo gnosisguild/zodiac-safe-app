@@ -133,8 +133,9 @@ const addSafeSnapToSnapshotSpaceTx = async (
   // 1. Get the current Space setting file.
   const ensResolver = await provider.getResolver(ensName);
   const currentEnsSnapshotRecord = await ensResolver.getText("snapshot"); // for instance, "ipfs://QmWUemB5QDr6Zkp2tqQRcEW1ZC7n4MiLaE6CFneVJUeYyD"
-  const [protocol, hash] = currentEnsSnapshotRecord.split("://");
-  const originalSpaceSettings = await ipfs.getData(hash, protocol === "ipns");
+  const originalSpaceSettings = await ipfs.getJsonData(
+    currentEnsSnapshotRecord
+  );
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
   const newSpaceSettings = addSafeSnapToSettings(
@@ -150,7 +151,10 @@ const addSafeSnapToSnapshotSpaceTx = async (
   }
 
   // 3. Deploy the modified settings file to IPFS.
+  const cid = await ipfs.add(newSpaceSettings);
+
   // 4. Pin the new file.
+
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
 
   return [];
