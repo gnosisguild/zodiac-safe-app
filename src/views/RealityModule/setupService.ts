@@ -2,8 +2,8 @@ import { ethers } from "ethers";
 import {
   deployRealityModule as deployRealityModuleInternal,
   RealityModuleParams as RealityModuleParamsInternal,
-} from "services";
-import { getNetworkNativeAsset } from "utils/networks";
+} from "../../services";
+import { getNetworkNativeAsset } from "../../utils/networks";
 import snapshot from "@snapshot-labs/snapshot.js";
 import * as ipfs from "../../utils/ipfs";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
@@ -132,6 +132,9 @@ const addSafeSnapToSnapshotSpaceTx = async (
 ): Promise<Transaction[]> => {
   // 1. Get the current Space setting file.
   const ensResolver = await provider.getResolver(ensName);
+  if (!ensResolver) {
+    throw new Error(`ENS ${ensName} not found`);
+  }
   const currentEnsSnapshotRecord = await ensResolver.getText("snapshot"); // for instance, "ipfs://QmWUemB5QDr6Zkp2tqQRcEW1ZC7n4MiLaE6CFneVJUeYyD"
   const originalSpaceSettings = await ipfs.getJsonData(
     currentEnsSnapshotRecord
