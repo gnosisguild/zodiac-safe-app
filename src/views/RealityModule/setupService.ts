@@ -8,6 +8,8 @@ import snapshot from "@snapshot-labs/snapshot.js";
 import * as ipfs from "../../utils/ipfs";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import R from "ramda";
+import { setTextRecordTx } from "utils/ens";
+import { SdkInstance } from "@gnosis.pm/safe-apps-sdk";
 
 const MULTI_SEND_CONTRACT = process.env.MULTI_SEND_CONTRACT;
 
@@ -29,7 +31,7 @@ export interface SetupParams {
   chainId: number;
   ensName: string;
   realityModuleParams: RealityModuleParams;
-  safeSdk: any;
+  safeSdk: SdkInstance;
 }
 
 /**
@@ -45,12 +47,12 @@ export const setup = async ({
   safeSdk,
   ensName,
 }: SetupParams) => {
-  const deploymentRealityModuleTxs = deployRealityModuleTx(
+  const deploymentRealityModuleTxs = deployRealityModuleTxs(
     chainId,
     safeAddress,
     realityModuleParams
   );
-  const addSafeToSnapshotTxs = await addSafeSnapToSnapshotSpaceTx(
+  const addSafeToSnapshotTxs = await addSafeSnapToSnapshotSpaceTxs(
     provider,
     ensName,
     realityModuleParams.oracleAddress,
@@ -74,7 +76,7 @@ export const setup = async ({
  * @param params Reality Module parameters
  * @returns transaction array
  */
-const deployRealityModuleTx = (
+const deployRealityModuleTxs = (
   chainId: number,
   safeAddress: string,
   params: RealityModuleParams
@@ -124,7 +126,7 @@ export const addSafeSnapToSettings = (
     originalSpaceSettings
   );
 
-const addSafeSnapToSnapshotSpaceTx = async (
+const addSafeSnapToSnapshotSpaceTxs = async (
   provider: ethers.providers.JsonRpcProvider,
   ensName: string,
   realityAddress: string,
@@ -156,11 +158,18 @@ const addSafeSnapToSnapshotSpaceTx = async (
   // 3. Deploy the modified settings file to IPFS.
   const cid = await ipfs.add(newSpaceSettings);
 
-  // 4. Pin the new file.
+  // 4. Pin the new file. No need, as long as we keep it available in our local
+  // IPFS node (running in the browser) until Snapshot picks it up, they will pin it..
 
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
+  const setEnsRecordTx = await setTextRecordTx(
+    provider,
+    ensName,
+    "snapshot",
+    cid.toString()
+  );
 
-  return [];
+  return [setEnsRecordTx];
 };
 
 export const checkNewSnapshotSettingsValidity = (
