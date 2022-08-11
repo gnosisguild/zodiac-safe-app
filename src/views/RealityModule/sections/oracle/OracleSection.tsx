@@ -37,23 +37,25 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
   const classes = useStyles();
 
   return (
-    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant='h3'>Set up the Oracle</Typography>
+              <Typography variant="h3">Set up the Oracle</Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Now, it&apos;s time to set up the oracle for your reality module. The
-                oracle ensures the results of proposals are brought accurately
-                on-chain. The Reality.eth oracle uses a mechanism known as the{" "}
+                Now, it&apos;s time to set up the oracle for your reality
+                module. The oracle ensures the results of proposals are brought
+                accurately on-chain. The Reality.eth oracle uses a mechanism
+                known as the{" "}
                 <Link
-                  underline='always'
-                  href='https://snapshot.com'
+                  underline="always"
+                  href="https://snapshot.com"
                   target={"_blank"}
-                  color='inherit'>
+                  color="inherit"
+                >
                   escalation game
                 </Link>{" "}
                 to generate correct answers that can be used as inputs for smart
@@ -96,19 +98,21 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent='center'
-            alignItems='center'>
+            justifyContent="center"
+            alignItems="center"
+          >
             <Grid item>
-              <Button size='medium' variant='text' onClick={handleBack}>
+              <Button size="medium" variant="text" onClick={handleBack}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color='secondary'
-                size='medium'
-                variant='contained'
-                onClick={handleNext}>
+                color="secondary"
+                size="medium"
+                variant="contained"
+                onClick={handleNext}
+              >
                 Next
               </Button>
             </Grid>

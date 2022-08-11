@@ -95,6 +95,8 @@ export const RealityModule: React.FC = () => {
     Review: false,
   });
 
+  // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
+
   const handleOpenSection = (pageToOpen: number, step: Steps) => {
     if (completed[step]) {
       setActiveStep(pageToOpen);
@@ -120,7 +122,7 @@ export const RealityModule: React.FC = () => {
               <BadgeIcon icon={"reality"} size={60} />
             </Grid>
             <Grid item>
-              <Typography variant='h5'>Reality Module</Typography>
+              <Typography variant="h5">Reality Module</Typography>
               <TagList
                 className={classes.tag}
                 tags={["Stackable", "From Gnosis Guild"]}
@@ -132,10 +134,11 @@ export const RealityModule: React.FC = () => {
           <Typography gutterBottom>
             Allows Reality.eth questions to execute a transaction when resolved.{" "}
             <Link
-              underline='always'
-              href='https://github.com/gnosis/zodiac-module-reality'
+              underline="always"
+              href="https://github.com/gnosis/zodiac-module-reality"
               target={"_blank"}
-              color='inherit'>
+              color="inherit"
+            >
               Read more here.
             </Link>
           </Typography>
@@ -144,26 +147,29 @@ export const RealityModule: React.FC = () => {
           <Divider />
         </Grid>
         <Grid item>
-          <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+          <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
             <Grid
               container
-              justifyContent='space-between'
-              alignItems='center'
-              style={{ marginBottom: 15 }}>
+              justifyContent="space-between"
+              alignItems="center"
+              style={{ marginBottom: 15 }}
+            >
               <Grid item>
                 <Typography
-                  variant='h4'
+                  variant="h4"
                   gutterBottom
-                  className={classes.paperTitle}>
+                  className={classes.paperTitle}
+                >
                   Add Reality Module
                 </Typography>
               </Grid>
               <Grid item>
                 <Button
-                  color='secondary'
-                  size='medium'
-                  variant='outlined'
-                  onClick={() => dispatch(setRealityModuleScreen(false))}>
+                  color="secondary"
+                  size="medium"
+                  variant="outlined"
+                  onClick={() => dispatch(setRealityModuleScreen(false))}
+                >
                   Cancel
                 </Button>
               </Grid>
@@ -171,17 +177,20 @@ export const RealityModule: React.FC = () => {
             <Stepper
               activeStep={activeStep}
               className={classes.stepperRoot}
-              orientation='vertical'>
+              orientation="vertical"
+            >
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
                   <StepLabel
-                    onClick={() => handleOpenSection(index, label as Steps)}>
+                    onClick={() => handleOpenSection(index, label as Steps)}
+                  >
                     <Typography
-                      variant='h6'
+                      variant="h6"
                       className={classnames(
                         index <= activeStep && "clickable",
                         "step-label"
-                      )}>
+                      )}
+                    >
                       {label}
                     </Typography>{" "}
                   </StepLabel>
@@ -205,7 +214,7 @@ export const RealityModule: React.FC = () => {
                     )}
                     {label === "Review" && (
                       <ReviewSection
-                        handleNext={() => console.log("execute transactions")}
+                        handleNext={() => console.log("execute transactions")} // this is where we would execute the transactions!!
                         handleBack={() => handleBack(activeStep - 1, label)}
                         goToStep={setActiveStep}
                       />

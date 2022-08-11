@@ -30,12 +30,12 @@ export const OracleInstance: React.FC = () => {
       <Grid item>
         <Grid container spacing={1}>
           <Grid item>
-            <Typography variant='h4' color='textSecondary'>
+            <Typography variant="h4" color="textSecondary">
               Oracle Instance
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant='body2' className={classes.textSubdued}>
+            <Typography variant="body2" className={classes.textSubdued}>
               The oracle instance sets the appropriate bond token. It&apos;s
               recommended to use the default (ETH) oracle instance unless you
               have a specific reason to use something like a native token which
@@ -55,7 +55,7 @@ export const OracleInstance: React.FC = () => {
             { label: "Add Custom Instance", value: "custom" },
           ]}
           disableUnderline
-          label='Select oracle:'
+          label="Select oracle:"
           onChange={(evt) => setInstance(evt.target.value as string)}
         />
       </Grid>
@@ -63,13 +63,14 @@ export const OracleInstance: React.FC = () => {
         <Grid item>
           <Grid
             container
-            justifyContent='space-between'
-            alignItems='center'
-            spacing={1}>
+            justifyContent="space-between"
+            alignItems="center"
+            spacing={1}
+          >
             <Grid item sm={10}>
               <ZodiacTextField
-                label='Contract Address'
-                borderStyle='double'
+                label="Contract Address"
+                borderStyle="double"
                 className={classes.input}
               />
             </Grid>

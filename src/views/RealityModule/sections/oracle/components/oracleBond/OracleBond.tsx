@@ -28,22 +28,23 @@ export const OracleBond: React.FC = () => {
       <Grid item>
         <Grid container spacing={1} className={classes.container}>
           <Grid item>
-            <Typography variant='h4' color='textSecondary'>
+            <Typography variant="h4" color="textSecondary">
               Bond
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant='body2' className={classes.textSubdued}>
+            <Typography variant="body2" className={classes.textSubdued}>
               Minimum bond required for an answer to be accepted. New answers
               must be submitted with double the previous bond. For more on why a
               bond is required in an escalation-game-based oracle, read more in
               the
               {` `}
               <Link
-                underline='always'
-                href='http://reality.eth.link/app/docs/html/whitepaper.html'
+                underline="always"
+                href="http://reality.eth.link/app/docs/html/whitepaper.html"
                 target={"_blank"}
-                color='inherit'>
+                color="inherit"
+              >
                 Reality.eth whitepaper.
               </Link>
             </Typography>
@@ -52,9 +53,9 @@ export const OracleBond: React.FC = () => {
       </Grid>
       <Grid item>
         <ZodiacTextField
-          label='Bond'
-          color='secondary'
-          borderStyle='double'
+          label="Bond"
+          color="secondary"
+          borderStyle="double"
           className={classes.input}
           prefix="ETH"
         />

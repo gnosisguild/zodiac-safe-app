@@ -71,27 +71,28 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
   };
 
   return (
-    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h3'>Configure Proposal Space</Typography>
+              <Typography variant="h3">Configure Proposal Space</Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Add your preferred proposal type below to get started. If you&apos;re
-                unsure, we recommend starting with Snapshot.
+                Add your preferred proposal type below to get started. If
+                you&apos;re unsure, we recommend starting with Snapshot.
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
-                  underline='always'
-                  href='https://snapshot.com'
+                  underline="always"
+                  href="https://snapshot.com"
                   target={"_blank"}
-                  color='inherit'>
+                  color="inherit"
+                >
                   Get started here.
                 </Link>
               </Typography>
@@ -104,29 +105,30 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h4' color='textSecondary'>
+              <Typography variant="h4" color="textSecondary">
                 Proposal Configuration
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant='body2' className={classes.textSubdued}>
+              <Typography variant="body2" className={classes.textSubdued}>
                 Enter your snapshot space ENS domain below to get started. If
-                you&apos;d prefer to provide a custom proposal integration, select
-                Custom and provide the appropriate URL where the proposals can
-                be viewed publicly.
+                you&apos;d prefer to provide a custom proposal integration,
+                select Custom and provide the appropriate URL where the
+                proposals can be viewed publicly.
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant='body2'>
+              <Typography variant="body2">
                 Select your proposal type:
               </Typography>
               <RadioGroup
-                aria-label='proposal type'
-                name='proposalType'
+                aria-label="proposal type"
+                name="proposalType"
                 value={value}
-                onChange={handleChange}>
+                onChange={handleChange}
+              >
                 <FormControlLabel
-                  value='snapshot'
+                  value="snapshot"
                   control={
                     <Radio
                       classes={{
@@ -135,10 +137,10 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
                       }}
                     />
                   }
-                  label='Snapshot'
+                  label="Snapshot"
                 />
                 <FormControlLabel
-                  value='custom'
+                  value="custom"
                   control={
                     <Radio
                       classes={{
@@ -147,20 +149,20 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
                       }}
                     />
                   }
-                  label='Custom'
+                  label="Custom"
                 />
               </RadioGroup>
             </Grid>
             <Grid item>
               <ZodiacTextField
-                label='Enter your snapshot ENS domain.'
-                placeholder='ex: gnosis.eth'
-                borderStyle='double'
+                label="Enter your snapshot ENS domain."
+                placeholder="ex: gnosis.eth"
+                borderStyle="double"
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
             </Grid>
             <Grid item>
-              <DangerAlert address='0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a' />
+              <DangerAlert address="0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a" />
             </Grid>
           </Grid>
         </Grid>
@@ -171,22 +173,25 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent='center'
-            alignItems='center'>
+            justifyContent="center"
+            alignItems="center"
+          >
             <Grid item>
               <Button
-                size='medium'
-                variant='text'
-                onClick={() => dispatch(setRealityModuleScreen(false))}>
+                size="medium"
+                variant="text"
+                onClick={() => dispatch(setRealityModuleScreen(false))}
+              >
                 Cancel
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color='secondary'
-                size='medium'
-                variant='contained'
-                onClick={handleNext}>
+                color="secondary"
+                size="medium"
+                variant="contained"
+                onClick={handleNext}
+              >
                 Next
               </Button>
             </Grid>

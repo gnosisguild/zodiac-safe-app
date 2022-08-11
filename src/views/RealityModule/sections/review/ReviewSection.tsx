@@ -93,12 +93,12 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   const classes = useStyles();
 
   return (
-    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant='h3'>Review</Typography>
+              <Typography variant="h3">Review</Typography>
             </Grid>
             <Grid item>
               <Typography>
@@ -130,10 +130,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               <Grid item>
                 <Typography>Snapshot Space:</Typography>
                 <Link
-                  color='inherit'
-                  href='https://snapshot.com/#/weenus.eth/'
-                  target='_blank'
-                  className={classes.link}>
+                  color="inherit"
+                  href="https://snapshot.com/#/weenus.eth/"
+                  target="_blank"
+                  className={classes.link}
+                >
                   snapshot.com/#/weenus.eth
                 </Link>
               </Grid>
@@ -141,7 +142,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 
             {item.label === "Oracle" && (
               <Grid item>
-                <Grid container spacing={2} direction='column'>
+                <Grid container spacing={2} direction="column">
                   <Grid item>
                     <Typography>Template question preview:</Typography>
                     <ZodiacPaper className={classes.paperTemplateContainer}>
@@ -161,10 +162,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <Grid item>
                     <Typography>Oracle Address:</Typography>
                     <Link
-                      color='inherit'
-                      href='https://rinkeby.etherscan.io/search?f=0&q=0xDf33060F476511F806C72719394da1Ad64'
-                      target='_blank'
-                      className={classes.link}>
+                      color="inherit"
+                      href="https://rinkeby.etherscan.io/search?f=0&q=0xDf33060F476511F806C72719394da1Ad64"
+                      target="_blank"
+                      className={classes.link}
+                    >
                       0xDf33060F476511F806C72719394da1Ad64
                     </Link>
                   </Grid>
@@ -173,7 +175,8 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                       container
                       spacing={1}
                       justifyContent={"space-between"}
-                      alignItems={"center"}>
+                      alignItems={"center"}
+                    >
                       <Grid item>
                         <Typography>Timeout:</Typography>
                         <Typography className={classes.label}>
@@ -203,10 +206,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <Grid item>
                     <Typography>Oracle Address:</Typography>
                     <Link
-                      color='inherit'
-                      href='https://reality.eth/proposal/343293804ji32khfgahfa '
-                      target='_blank'
-                      className={classes.link}>
+                      color="inherit"
+                      href="https://reality.eth/proposal/343293804ji32khfgahfa "
+                      target="_blank"
+                      className={classes.link}
+                    >
                       https://reality.eth/proposal/343293804ji32khfgahfa
                     </Link>
                   </Grid>
@@ -218,10 +222,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               <Grid item>
                 <Typography>Monitoring:</Typography>
                 <Link
-                  color='inherit'
-                  href='https://tenderly.com/#/3290ihfdajka'
-                  target='_blank'
-                  className={classes.link}>
+                  color="inherit"
+                  href="https://tenderly.com/#/3290ihfdajka"
+                  target="_blank"
+                  className={classes.link}
+                >
                   tenderly.com/#/3290ihfdajka
                 </Link>
               </Grid>
@@ -236,20 +241,22 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent='center'
-            alignItems='center'>
+            justifyContent="center"
+            alignItems="center"
+          >
             <Grid item>
-              <Button size='medium' variant='text' onClick={handleBack}>
+              <Button size="medium" variant="text" onClick={handleBack}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color='secondary'
-                size='medium'
-                variant='contained'
+                color="secondary"
+                size="medium"
+                variant="contained"
                 startIcon={<ArrowUpwardIcon />}
-                onClick={handleNext}>
+                onClick={handleNext}
+              >
                 Submit
               </Button>
             </Grid>

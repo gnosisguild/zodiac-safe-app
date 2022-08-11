@@ -20,14 +20,14 @@ export const OracleDelay: React.FC = () => {
       <Grid item>
         <Grid container spacing={1} className={classes.container}>
           <Grid item>
-            <Typography variant='h4' color='textSecondary'>
+            <Typography variant="h4" color="textSecondary">
               Delay Configuration
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant='body2' className={classes.textSubdued}>
-              These Parameters are very important for your DAO&apos;s security and
-              should be considered carefully. Allowing enough time in these
+            <Typography variant="body2" className={classes.textSubdued}>
+              These Parameters are very important for your DAO&apos;s security
+              and should be considered carefully. Allowing enough time in these
               configurations will enable the safe to have a final chance to veto
               or circumvent any potential malicious proposals that have snuck
               through.
@@ -39,32 +39,33 @@ export const OracleDelay: React.FC = () => {
         <Grid
           container
           spacing={6}
-          alignItems='center'
-          justifyContent='space-between'>
+          alignItems="center"
+          justifyContent="space-between"
+        >
           <Grid item xs={4}>
             <TimeSelect
-              variant='secondary'
-              label='Timeout'
-              tooltipMsg='Duration that answers can be submitted to the oracle (resets when a new answer is submitted)'
-              defaultUnit='hours'
+              variant="secondary"
+              label="Timeout"
+              tooltipMsg="Duration that answers can be submitted to the oracle (resets when a new answer is submitted)"
+              defaultUnit="hours"
               onChange={(value) => console.log("value", value)}
             />
           </Grid>
           <Grid item xs={4}>
             <TimeSelect
-              variant='secondary'
-              label='Cooldown'
-              tooltipMsg='Duration required before the transaction can be executed (after the timeout has expired).'
-              defaultUnit='hours'
+              variant="secondary"
+              label="Cooldown"
+              tooltipMsg="Duration required before the transaction can be executed (after the timeout has expired)."
+              defaultUnit="hours"
               onChange={(value) => console.log("value", value)}
             />
           </Grid>
           <Grid item xs={4}>
             <TimeSelect
-              variant='secondary'
-              label='Expiration'
-              tooltipMsg='Duration that a transaction is valid in seconds (or 0 if valid forever) after the cooldown (note this applies to all proposals on this module).'
-              defaultUnit='hours'
+              variant="secondary"
+              label="Expiration"
+              tooltipMsg="Duration that a transaction is valid in seconds (or 0 if valid forever) after the cooldown (note this applies to all proposals on this module)."
+              defaultUnit="hours"
               onChange={(value) => console.log("value", value)}
             />
           </Grid>
