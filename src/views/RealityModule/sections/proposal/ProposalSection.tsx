@@ -17,7 +17,7 @@ import { setRealityModuleScreen } from "store/modules";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
 interface ProposalSectionProps {
-  handleNext: () => void;
+  handleNext: (stepData: any) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -63,11 +63,16 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
   handleNext,
 }) => {
   const classes = useStyles();
-  const [value, setValue] = useState<"snapshot" | "custom">("snapshot");
+  const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
+    "snapshot"
+  );
+  const [ensDomain, setEnsDomain] = useState("");
   const dispatch = useRootDispatch();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value as "snapshot" | "custom");
+    setProposalType(
+      (event.target as HTMLInputElement).value as "snapshot" | "custom"
+    );
   };
 
   return (
@@ -124,7 +129,7 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
               <RadioGroup
                 aria-label="proposal type"
                 name="proposalType"
-                value={value}
+                value={proposalType}
                 onChange={handleChange}
               >
                 <FormControlLabel
@@ -155,6 +160,8 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
             </Grid>
             <Grid item>
               <ZodiacTextField
+                value={ensDomain}
+                onChange={({ target }) => setEnsDomain(target.value)} // TODO: validation
                 label="Enter your snapshot ENS domain."
                 placeholder="ex: gnosis.eth"
                 borderStyle="double"
@@ -190,7 +197,7 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                onClick={handleNext}
+                onClick={() => handleNext({ ensDomain, proposalType })}
               >
                 Next
               </Button>

@@ -94,8 +94,8 @@ export const RealityModule: React.FC = () => {
     Monitoring: false,
     Review: false,
   });
-
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
+  const [setupData, setSetupData] = useState({});
 
   const handleOpenSection = (pageToOpen: number, step: Steps) => {
     if (completed[step]) {
@@ -104,8 +104,11 @@ export const RealityModule: React.FC = () => {
   };
 
   const handleNext = (nextPage: number, step: Steps) => {
-    setActiveStep(nextPage);
-    setCompleted({ ...completed, [step]: true });
+    return (stepData: any) => {
+      setActiveStep(nextPage);
+      setCompleted({ ...completed, [step]: true });
+      setSetupData({ ...setupData, [step]: stepData });
+    };
   };
 
   const handleBack = (nextPage: number, step: Steps) => {
@@ -197,20 +200,22 @@ export const RealityModule: React.FC = () => {
                   <StepContent>
                     {label === "Proposal" && (
                       <ProposalSection
-                        handleNext={() => handleNext(index + 1, label)}
+                        handleNext={handleNext(index + 1, label)}
                       />
                     )}
                     {label === "Oracle" && (
-                      <OracleSection
-                        handleNext={() => handleNext(index + 1, label)}
-                        handleBack={() => handleBack(activeStep - 1, label)}
-                      />
+                      // <OracleSection
+                      //   handleNext={handleNext(index + 1, label)}
+                      //   handleBack={() => handleBack(activeStep - 1, label)}
+                      // />
+                      <></>
                     )}
                     {label === "Monitoring" && (
-                      <MonitoringSection
-                        handleNext={() => handleNext(index + 1, label)}
-                        handleBack={() => handleBack(activeStep - 1, label)}
-                      />
+                      // <MonitoringSection
+                      //   handleNext={handleNext(index + 1, label)}
+                      //   handleBack={() => handleBack(activeStep - 1, label)}
+                      // />
+                      <></>
                     )}
                     {label === "Review" && (
                       <ReviewSection
