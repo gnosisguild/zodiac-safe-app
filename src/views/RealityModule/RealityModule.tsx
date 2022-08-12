@@ -213,11 +213,10 @@ export const RealityModule: React.FC = () => {
                       />
                     )}
                     {label === "Oracle" && (
-                      // <OracleSection
-                      //   handleNext={handleNext(index + 1, label)}
-                      //   handleBack={() => handleBack(activeStep - 1, label)}
-                      // />
-                      <></>
+                      <OracleSection
+                        handleNext={handleNext(index + 1, label)}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                      />
                     )}
                     {label === "Monitoring" && (
                       // <MonitoringSection

@@ -15,8 +15,6 @@ import React, { useState } from "react";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
-interface ProposalSectionProps extends SectionProps {}
-
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -56,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ProposalSection: React.FC<ProposalSectionProps> = ({
+export const ProposalSection: React.FC<SectionProps> = ({
   handleNext,
   handleBack,
 }) => {

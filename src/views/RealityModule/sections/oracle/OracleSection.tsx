@@ -6,18 +6,14 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Link } from "components/text/Link";
-import React from "react";
+import React, { useState } from "react";
 import { ZodiacPaper } from "zodiac-ui-components";
 import { OracleTemplate } from "./components/oracleTemplate/OracleTemplate";
 import { OracleInstance } from "./components/oracleInstance/OracleInstance";
 import { OracleDelay } from "./components/oracleDelay/OracleDelay";
 import { OracleBond } from "./components/oracleBond/OracleBond";
 import { OracleArbitration } from "./components/oracleArbitration/OracleArbitration";
-
-interface OracleSectionProps {
-  handleNext: () => void;
-  handleBack: () => void;
-}
+import { SectionProps } from "views/RealityModule/RealityModule";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,11 +26,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const OracleSection: React.FC<OracleSectionProps> = ({
+export interface InputPartProps {
+  data: any;
+  setData: (data: any) => void;
+}
+
+export const OracleSection: React.FC<SectionProps> = ({
   handleBack,
   handleNext,
 }) => {
   const classes = useStyles();
+  const [oracleTemplateData, setOracleTemplateData] = useState({
+    template: "default",
+    language: "english",
+    category: "DAO",
+    templateType: "bool",
+    outcomes: [{ outcome: "" }, { outcome: "" }],
+  });
+  const [oracleInstanceData, setOracleInstanceData] = useState({
+    instance: "0x",
+    instanceType: "eth",
+  });
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -71,11 +83,17 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
         </Grid>
 
         <Grid item>
-          <OracleTemplate />
+          <OracleTemplate
+            data={oracleTemplateData}
+            setData={setOracleTemplateData}
+          />
         </Grid>
 
         <Grid item>
-          <OracleInstance />
+          <OracleInstance
+            data={oracleInstanceData}
+            setData={setOracleInstanceData}
+          />
         </Grid>
 
         <Grid item>
@@ -111,7 +129,7 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                onClick={handleNext}
+                onClick={() => handleNext({})}
               >
                 Next
               </Button>
