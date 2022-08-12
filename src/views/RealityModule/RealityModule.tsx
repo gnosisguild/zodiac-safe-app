@@ -21,6 +21,11 @@ import { ProposalSection } from "./sections/proposal/ProposalSection";
 import { ReviewSection } from "./sections/review/ReviewSection";
 import classnames from "classnames";
 
+export interface SectionProps {
+  handleNext: (stepData: any) => void;
+  handleBack: () => void;
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
@@ -105,6 +110,7 @@ export const RealityModule: React.FC = () => {
 
   const handleNext = (nextPage: number, step: Steps) => {
     return (stepData: any) => {
+      console.log("stepData", stepData);
       setActiveStep(nextPage);
       setCompleted({ ...completed, [step]: true });
       setSetupData({ ...setupData, [step]: stepData });
@@ -201,6 +207,9 @@ export const RealityModule: React.FC = () => {
                     {label === "Proposal" && (
                       <ProposalSection
                         handleNext={handleNext(index + 1, label)}
+                        handleBack={() =>
+                          dispatch(setRealityModuleScreen(false))
+                        }
                       />
                     )}
                     {label === "Oracle" && (

@@ -12,13 +12,10 @@ import { DangerAlert } from "components/Alert/DangerAlert";
 import { Link } from "components/text/Link";
 
 import React, { useState } from "react";
-import { useRootDispatch } from "store";
-import { setRealityModuleScreen } from "store/modules";
+import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
-interface ProposalSectionProps {
-  handleNext: (stepData: any) => void;
-}
+interface ProposalSectionProps extends SectionProps {}
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -61,13 +58,13 @@ const useStyles = makeStyles((theme) => ({
 
 export const ProposalSection: React.FC<ProposalSectionProps> = ({
   handleNext,
+  handleBack,
 }) => {
   const classes = useStyles();
   const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
     "snapshot"
   );
   const [ensDomain, setEnsDomain] = useState("");
-  const dispatch = useRootDispatch();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProposalType(
@@ -184,11 +181,7 @@ export const ProposalSection: React.FC<ProposalSectionProps> = ({
             alignItems="center"
           >
             <Grid item>
-              <Button
-                size="medium"
-                variant="text"
-                onClick={() => dispatch(setRealityModuleScreen(false))}
-              >
+              <Button size="medium" variant="text" onClick={handleBack}>
                 Cancel
               </Button>
             </Grid>
