@@ -10,7 +10,10 @@ import { Link } from "components/text/Link";
 import React, { useState } from "react";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
-
+interface MonitoringSectionProps {
+  handleNext: () => void;
+  handleBack: () => void;
+}
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -52,7 +55,6 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   const classes = useStyles();
 
   const [monitoringService, setMonitoringService] = useState<string>("default");
-
   const [param1, setParam1] = useState<string>("");
   const [param2, setParam2] = useState<string>("");
   const [param3, setParam3] = useState<string>("");
