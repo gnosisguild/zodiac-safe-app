@@ -1,6 +1,7 @@
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import React from "react";
 import { ZodiacTextField, colors } from "zodiac-ui-components";
+import { InputPartProps } from "../../OracleSection";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -20,8 +21,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const OracleBond: React.FC = () => {
+enum DataKeys {
+  BOUND = "bound",
+}
+
+export const OracleBond: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles();
+
+  const set = (key: DataKeys) => (value: any) =>
+    setData({ ...data, [key]: value });
+
+  const get = (key: DataKeys) => data[key];
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -58,6 +68,8 @@ export const OracleBond: React.FC = () => {
           borderStyle="double"
           className={classes.input}
           prefix="ETH"
+          value={get(DataKeys.BOUND)}
+          onChange={(e) => set(DataKeys.BOUND)(e.target.value)}
         />
       </Grid>
     </Grid>

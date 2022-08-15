@@ -47,6 +47,25 @@ export const OracleSection: React.FC<SectionProps> = ({
     instance: "0x",
     instanceType: "eth",
   });
+  const [oracleDelayData, setOracleDelayData] = useState({
+    timeout: 0,
+    cooldown: 0,
+    expiration: 0,
+  });
+  const [oracleBondData, setOracleBondData] = useState({
+    bond: 0,
+  });
+  const [arbitratorData, setArbitratorData] = useState({
+    arbitrator: "0x",
+  });
+
+  const collectData = () => ({
+    ...oracleTemplateData,
+    ...oracleInstanceData,
+    ...oracleDelayData,
+    ...oracleBondData,
+    ...arbitratorData,
+  });
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -97,15 +116,18 @@ export const OracleSection: React.FC<SectionProps> = ({
         </Grid>
 
         <Grid item>
-          <OracleDelay />
+          <OracleDelay data={oracleDelayData} setData={setOracleDelayData} />
         </Grid>
 
         <Grid item>
-          <OracleBond />
+          <OracleBond data={oracleBondData} setData={setOracleBondData} />
         </Grid>
 
         <Grid item>
-          <OracleArbitration />
+          <OracleArbitration
+            data={arbitratorData}
+            setData={setArbitratorData}
+          />
         </Grid>
 
         <Grid item style={{ paddingBottom: 0 }}>
@@ -129,7 +151,7 @@ export const OracleSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                onClick={() => handleNext({})}
+                onClick={() => handleNext(collectData())}
               >
                 Next
               </Button>

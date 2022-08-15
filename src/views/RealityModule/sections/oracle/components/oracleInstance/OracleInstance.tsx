@@ -1,6 +1,6 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
-import React, { useState } from "react";
+import React from "react";
 import { colors, ZodiacTextField } from "zodiac-ui-components";
 import { InputPartProps } from "../../OracleSection";
 

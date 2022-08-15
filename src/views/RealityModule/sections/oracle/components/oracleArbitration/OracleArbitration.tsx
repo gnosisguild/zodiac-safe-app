@@ -1,6 +1,7 @@
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
 import React from "react";
+import { InputPartProps } from "../../OracleSection";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -12,8 +13,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const OracleArbitration: React.FC = () => {
+enum DataKeys {
+  ARBITRATOR = "arbitrator",
+}
+
+export const OracleArbitration: React.FC<InputPartProps> = ({
+  data,
+  setData,
+}) => {
   const classes = useStyles();
+
+  const set = (key: DataKeys) => (value: any) =>
+    setData({ ...data, [key]: value });
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -52,7 +63,7 @@ export const OracleArbitration: React.FC = () => {
           ]}
           disableUnderline
           label="Arbitrator:"
-          onChange={(evt) => console.log("evt", evt.target.value)}
+          onChange={({ target }) => set(DataKeys.ARBITRATOR)(target.value)}
         />
       </Grid>
     </Grid>

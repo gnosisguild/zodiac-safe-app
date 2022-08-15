@@ -15,7 +15,6 @@ import {
 } from "@material-ui/core";
 import { TagList } from "components/list/TagList";
 import { Link } from "components/text/Link";
-import { MonitoringSection } from "./sections/monitoring/MonitoringSection";
 import { OracleSection } from "./sections/oracle/OracleSection";
 import { ProposalSection } from "./sections/proposal/ProposalSection";
 import { ReviewSection } from "./sections/review/ReviewSection";
