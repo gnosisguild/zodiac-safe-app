@@ -6,11 +6,12 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 import Delete from "@material-ui/icons/Delete";
 import Add from "@material-ui/icons/Add";
 import { HelpOutline } from "@material-ui/icons";
+import { InputPartProps } from "../../OracleSection";
 
 const TEMPLATE_QUESTION = `Did the Snapshot proposal with the id {%s} in the weenus.eth space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at weenust.eth? The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`;
 
@@ -74,26 +75,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const OracleTemplate: React.FC = () => {
+enum DataKeys {
+  TEMPLATE = "template",
+  LANGUAGE = "language",
+  CATEGORY = "category",
+  TEMPLATE_TYPE = "templateType",
+  OUTCOMES = "outcomes",
+}
+
+export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles();
-  const [template, setTemplate] = useState<string>("default");
-  const [templateType, setTemplateType] = useState<string>("bool");
-  const [outcomes, setOutcomes] = useState<Array<any>>([
-    { outcome: "" },
-    { outcome: "" },
-  ]);
+
+  const set = (key: DataKeys) => (value: any) =>
+    setData({ ...data, [key]: value });
+
+  const get = (key: DataKeys) => data[key];
 
   const handleNewOutcomes = () => {
-    const newOutcomes = [...outcomes];
+    const newOutcomes = [...data.outcomes];
     newOutcomes.push({ outcome: "" });
-    setOutcomes(newOutcomes);
+    set(DataKeys.OUTCOMES)(newOutcomes);
   };
 
   const handleDeleteOutcomes = (index: number) => {
-    const newOutcomes = [...outcomes];
+    const newOutcomes = [...data.outcomes];
     if (newOutcomes.length > 2) {
       newOutcomes.splice(index, 1);
-      setOutcomes(newOutcomes);
+      set(DataKeys.OUTCOMES)(newOutcomes);
     }
   };
   const handleOutcomeInput = (
@@ -101,9 +109,9 @@ export const OracleTemplate: React.FC = () => {
     index: number
   ) => {
     const val = e.target.value;
-    const list = [...outcomes];
+    const list = [...data.outcomes];
     list[index].outcome = val;
-    setOutcomes(list);
+    set(DataKeys.OUTCOMES)(list);
   };
 
   return (
@@ -111,12 +119,12 @@ export const OracleTemplate: React.FC = () => {
       <Grid item>
         <Grid container spacing={1}>
           <Grid item>
-            <Typography variant='h4' color='textSecondary'>
+            <Typography variant="h4" color="textSecondary">
               Oracle Template
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant='body2' className={classes.textSubdued}>
+            <Typography variant="body2" className={classes.textSubdued}>
               The oracle template creates an appropriate question based on the
               data of the proposal. We highly recommend using the default Zodiac
               Reality Module template
@@ -127,66 +135,74 @@ export const OracleTemplate: React.FC = () => {
       <Grid item>
         <Grid
           container
-          justifyContent='space-between'
+          justifyContent="space-between"
           spacing={2}
-          alignItems='center'>
+          alignItems="center"
+        >
           <Grid item xs={6}>
             <Dropdown
-              value={template}
+              value={get(DataKeys.TEMPLATE)}
               options={[
                 { label: "Zodiac Reality Module (default)", value: "default" },
                 { label: "Custom", value: "custom" },
               ]}
-              onChange={(evt) => setTemplate(evt.target.value as string)}
+              onChange={(evt) =>
+                set(DataKeys.TEMPLATE)(evt.target.value as string)
+              }
               disableUnderline
-              label='Select template:'
-              tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
+              label="Select template:"
+              tooltipMsg="The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type."
             />
           </Grid>
           <Grid item xs={6}>
             <Dropdown
-              defaultValue='english'
+              value={get(DataKeys.LANGUAGE)}
               options={[{ label: "English", value: "english" }]}
               disableUnderline
-              label='Language:'
-              onChange={(evt) => console.log("evt", evt.target.value)}
+              label="Language:"
+              onChange={({ target }) =>
+                set(DataKeys.LANGUAGE)(target.value as string)
+              }
             />
           </Grid>
-          {template === "custom" && (
+          {get(DataKeys.TEMPLATE) === "custom" && (
             <>
               <Grid item xs={6}>
                 <Dropdown
-                  value='DAO'
                   options={[{ label: "DAO Proposal", value: "DAO" }]}
-                  onChange={(evt) => console.log("evt", evt)}
+                  onChange={({ target }) =>
+                    set(DataKeys.CATEGORY)(target.value as string)
+                  }
                   disableUnderline
-                  label='Category:'
-                  tooltipMsg='This will help categorize the oracle question in reality.eth so it can be found more easily.'
+                  value={get(DataKeys.CATEGORY)}
+                  label="Category:"
+                  tooltipMsg="This will help categorize the oracle question in reality.eth so it can be found more easily."
                 />
               </Grid>
               <Grid item xs={6}>
                 <Dropdown
-                  value={templateType}
+                  value={get(DataKeys.TEMPLATE_TYPE)}
                   options={[
                     { label: "Bool", value: "bool" },
                     { label: "Multiple Select", value: "multiple" },
                   ]}
                   disableUnderline
-                  label='Type:'
+                  label="Type:"
                   onChange={(evt) =>
-                    setTemplateType(evt.target.value as string)
+                    set(DataKeys.TEMPLATE_TYPE)(evt.target.value as string)
                   }
-                  tooltipMsg='This corresponds with the type of proposal being submitted.'
+                  tooltipMsg="This corresponds with the type of proposal being submitted."
                 />
               </Grid>
               <Grid item xs={12}>
                 <Grid
                   container
-                  justifyContent='space-between'
-                  alignItems='center'>
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
                   <Typography>Template question preview:</Typography>
 
-                  <Tooltip title='Provide a custom question here. Use %s as a variable for the proposal id.'>
+                  <Tooltip title="Provide a custom question here. Use %s as a variable for the proposal id.">
                     <HelpOutline className={classes.tooltipIcon} />
                   </Tooltip>
                 </Grid>
@@ -197,54 +213,59 @@ export const OracleTemplate: React.FC = () => {
                     multiline
                     rows={5}
                     placeholder={
-                      templateType === "multiple"
+                      get(DataKeys.TEMPLATE_TYPE) === "multiple"
                         ? CUSTOM_TEMPLATE_QUESTION
                         : TEMPLATE_QUESTION
                     }
                   />
                 </ZodiacPaper>
               </Grid>
-              {templateType === "multiple" && (
+              {get(DataKeys.TEMPLATE_TYPE) === "multiple" && (
                 <Grid item xs={12}>
                   <Typography>Outcomes</Typography>
 
-                  {outcomes.map(({ outcome }, index) => (
-                    <Grid container alignItems='center' spacing={1}>
-                      <Grid item sm={10}>
-                        <ZodiacTextField
-                          borderStyle='double'
-                          value={outcome}
-                          placeholder={`Outcome ${index + 1}`}
-                          className={classes.input}
-                          onChange={(e) => handleOutcomeInput(e, index)}
-                        />
+                  {get(DataKeys.OUTCOMES).map(
+                    ({ outcome }: any, index: any) => (
+                      <Grid container alignItems="center" spacing={1}>
+                        <Grid item sm={10}>
+                          <ZodiacTextField
+                            borderStyle="double"
+                            value={outcome}
+                            placeholder={`Outcome ${index + 1}`}
+                            className={classes.input}
+                            onChange={(e) => handleOutcomeInput(e, index)}
+                          />
+                        </Grid>
+                        <Grid item sm={2}>
+                          <Button
+                            className={classes.button}
+                            onClick={() => handleDeleteOutcomes(index)}
+                            variant="outlined"
+                            startIcon={<Delete />}
+                            disabled={index > 1 ? false : true}
+                          >
+                            Remove
+                          </Button>
+                        </Grid>
                       </Grid>
-                      <Grid item sm={2}>
-                        <Button
-                          className={classes.button}
-                          onClick={() => handleDeleteOutcomes(index)}
-                          variant='outlined'
-                          startIcon={<Delete />}
-                          disabled={index > 1 ? false : true}>
-                          Remove
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  ))}
+                    )
+                  )}
 
                   <Grid
                     container
                     spacing={1}
-                    alignItems='center'
+                    alignItems="center"
                     className={classes.buttonContainer}
-                    onClick={handleNewOutcomes}>
+                    onClick={handleNewOutcomes}
+                  >
                     <Grid item>
                       <Add className={classes.icon} />
                     </Grid>
                     <Grid item>
                       <Typography
-                        color='textSecondary'
-                        className={classes.text}>
+                        color="textSecondary"
+                        className={classes.text}
+                      >
                         Add another outcome
                       </Typography>
                     </Grid>

@@ -6,18 +6,14 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Link } from "components/text/Link";
-import React from "react";
+import React, { useState } from "react";
 import { ZodiacPaper } from "zodiac-ui-components";
 import { OracleTemplate } from "./components/oracleTemplate/OracleTemplate";
 import { OracleInstance } from "./components/oracleInstance/OracleInstance";
 import { OracleDelay } from "./components/oracleDelay/OracleDelay";
 import { OracleBond } from "./components/oracleBond/OracleBond";
 import { OracleArbitration } from "./components/oracleArbitration/OracleArbitration";
-
-interface OracleSectionProps {
-  handleNext: () => void;
-  handleBack: () => void;
-}
+import { SectionProps } from "views/RealityModule/RealityModule";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,30 +26,67 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const OracleSection: React.FC<OracleSectionProps> = ({
+export interface InputPartProps {
+  data: any;
+  setData: (data: any) => void;
+}
+
+export const OracleSection: React.FC<SectionProps> = ({
   handleBack,
   handleNext,
 }) => {
   const classes = useStyles();
+  const [oracleTemplateData, setOracleTemplateData] = useState({
+    template: "default",
+    language: "english",
+    category: "DAO",
+    templateType: "bool",
+    outcomes: [{ outcome: "" }, { outcome: "" }],
+  });
+  const [oracleInstanceData, setOracleInstanceData] = useState({
+    instance: "0x",
+    instanceType: "eth",
+  });
+  const [oracleDelayData, setOracleDelayData] = useState({
+    timeout: 0,
+    cooldown: 0,
+    expiration: 0,
+  });
+  const [oracleBondData, setOracleBondData] = useState({
+    bond: 0,
+  });
+  const [arbitratorData, setArbitratorData] = useState({
+    arbitrator: "0x",
+  });
+
+  const collectData = () => ({
+    ...oracleTemplateData,
+    ...oracleInstanceData,
+    ...oracleDelayData,
+    ...oracleBondData,
+    ...arbitratorData,
+  });
 
   return (
-    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant='h3'>Set up the Oracle</Typography>
+              <Typography variant="h3">Set up the Oracle</Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Now, it&apos;s time to set up the oracle for your reality module. The
-                oracle ensures the results of proposals are brought accurately
-                on-chain. The Reality.eth oracle uses a mechanism known as the{" "}
+                Now, it&apos;s time to set up the oracle for your reality
+                module. The oracle ensures the results of proposals are brought
+                accurately on-chain. The Reality.eth oracle uses a mechanism
+                known as the{" "}
                 <Link
-                  underline='always'
-                  href='https://snapshot.com'
+                  underline="always"
+                  href="https://snapshot.com"
                   target={"_blank"}
-                  color='inherit'>
+                  color="inherit"
+                >
                   escalation game
                 </Link>{" "}
                 to generate correct answers that can be used as inputs for smart
@@ -69,23 +102,32 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
         </Grid>
 
         <Grid item>
-          <OracleTemplate />
+          <OracleTemplate
+            data={oracleTemplateData}
+            setData={setOracleTemplateData}
+          />
         </Grid>
 
         <Grid item>
-          <OracleInstance />
+          <OracleInstance
+            data={oracleInstanceData}
+            setData={setOracleInstanceData}
+          />
         </Grid>
 
         <Grid item>
-          <OracleDelay />
+          <OracleDelay data={oracleDelayData} setData={setOracleDelayData} />
         </Grid>
 
         <Grid item>
-          <OracleBond />
+          <OracleBond data={oracleBondData} setData={setOracleBondData} />
         </Grid>
 
         <Grid item>
-          <OracleArbitration />
+          <OracleArbitration
+            data={arbitratorData}
+            setData={setArbitratorData}
+          />
         </Grid>
 
         <Grid item style={{ paddingBottom: 0 }}>
@@ -96,19 +138,21 @@ export const OracleSection: React.FC<OracleSectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent='center'
-            alignItems='center'>
+            justifyContent="center"
+            alignItems="center"
+          >
             <Grid item>
-              <Button size='medium' variant='text' onClick={handleBack}>
+              <Button size="medium" variant="text" onClick={handleBack}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color='secondary'
-                size='medium'
-                variant='contained'
-                onClick={handleNext}>
+                color="secondary"
+                size="medium"
+                variant="contained"
+                onClick={() => handleNext(collectData())}
+              >
                 Next
               </Button>
             </Grid>

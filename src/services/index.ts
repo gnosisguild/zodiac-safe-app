@@ -20,7 +20,7 @@ export enum ARBITRATOR_OPTIONS {
   OTHER,
 }
 
-interface RealityModuleParams {
+export interface RealityModuleParams {
   executor: string;
   oracle?: string;
   bond: string;
@@ -139,7 +139,7 @@ export function deployTellorModule(
   chainId: number,
   args: TellorModuleParams
 ) {
-  const type = KnownContracts.TELLOR
+  const type = KnownContracts.TELLOR;
   const { oracle, cooldown, expiration, executor } = args;
   const provider = getProvider(chainId);
   const oracleAddress = oracle || getTellorOracle(chainId);
@@ -188,6 +188,8 @@ export function deployTellorModule(
   return daoModuleTransactions;
 }
 
+// TODO: Add support for Reality.ETH oracles that is not known (for instance deployed by the caller)
+// using `deployAndSetUpCustomModule` instead of `deployAndSetUpModule`
 export function deployRealityModule(
   safeAddress: string,
   chainId: number,
@@ -208,7 +210,7 @@ export function deployRealityModule(
     arbitrator,
   } = args;
   const provider = getProvider(chainId);
-  const oracleAddress = oracle || getDefaultOracle(chainId);
+  const oracleAddress = oracle ?? getDefaultOracle(chainId);
   const {
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,
