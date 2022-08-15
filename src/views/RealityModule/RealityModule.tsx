@@ -19,6 +19,7 @@ import { OracleSection } from "./sections/oracle/OracleSection";
 import { ProposalSection } from "./sections/proposal/ProposalSection";
 import { ReviewSection } from "./sections/review/ReviewSection";
 import classnames from "classnames";
+import { MonitoringSection } from "./sections/monitoring/MonitoringSection";
 
 export interface SectionProps {
   handleNext: (stepData: any) => void;
@@ -218,11 +219,10 @@ export const RealityModule: React.FC = () => {
                       />
                     )}
                     {label === "Monitoring" && (
-                      // <MonitoringSection
-                      //   handleNext={handleNext(index + 1, label)}
-                      //   handleBack={() => handleBack(activeStep - 1, label)}
-                      // />
-                      <></>
+                      <MonitoringSection
+                        handleNext={handleNext(index + 1, label)}
+                        handleBack={() => handleBack(activeStep - 1, label)}
+                      />
                     )}
                     {label === "Review" && (
                       <ReviewSection
