@@ -10,10 +10,6 @@ import { Link } from "components/text/Link";
 import React, { useState } from "react";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
-interface MonitoringSectionProps {
-  handleNext: () => void;
-  handleBack: () => void;
-}
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
