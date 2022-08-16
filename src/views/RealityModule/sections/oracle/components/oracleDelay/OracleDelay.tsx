@@ -13,16 +13,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum DataKeys {
-  EXPIRATION = "expiration",
-  COOLDOWN = "cooldown",
-  TIMEOUT = "timeout",
-}
+export type Data = {
+  expiration: number;
+  cooldown: number;
+  timeout: number;
+};
 
 export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles();
 
-  const set = (key: DataKeys) => (value: any) =>
+  const set = (key: keyof Data) => (value: any) =>
     setData({ ...data, [key]: value });
 
   return (
@@ -58,7 +58,7 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
               label="Timeout"
               tooltipMsg="Duration that answers can be submitted to the oracle (resets when a new answer is submitted)"
               defaultUnit="hours"
-              onChange={(value) => set(DataKeys.TIMEOUT)(value)}
+              onChange={(value) => set("timeout")(value)}
             />
           </Grid>
           <Grid item xs={4}>
@@ -67,7 +67,7 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
               label="Cooldown"
               tooltipMsg="Duration required before the transaction can be executed (after the timeout has expired)."
               defaultUnit="hours"
-              onChange={(value) => set(DataKeys.COOLDOWN)(value)}
+              onChange={(value) => set("cooldown")(value)}
             />
           </Grid>
           <Grid item xs={4}>
@@ -76,7 +76,7 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
               label="Expiration"
               tooltipMsg="Duration that a transaction is valid in seconds (or 0 if valid forever) after the cooldown (note this applies to all proposals on this module)."
               defaultUnit="hours"
-              onChange={(value) => set(DataKeys.EXPIRATION)(value)}
+              onChange={(value) => set("expiration")(value)}
             />
           </Grid>
         </Grid>

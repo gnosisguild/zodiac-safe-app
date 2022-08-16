@@ -23,18 +23,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum DataKeys {
-  INSTANCE = "instance",
-  INSTANCE_TYPE = "instanceType",
-}
+export type Data = {
+  instance: string;
+  instanceType: "eth" | "custom";
+};
 
 export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles();
 
-  const set = (key: DataKeys) => (value: any) =>
+  const set = (key: keyof Data) => (value: any) =>
     setData({ ...data, [key]: value });
 
-  const get = (key: DataKeys) => data[key];
+  const get = (key: keyof Data) => data[key];
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -57,7 +57,7 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
       </Grid>
       <Grid item>
         <Dropdown
-          value={get(DataKeys.INSTANCE_TYPE)}
+          value={get("instanceType")}
           options={[
             {
               label: "ETH - 0xDf33060F476511F806C72719394da1Ad64",
@@ -68,14 +68,14 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
           disableUnderline
           label="Select oracle:"
           onChange={({ target }) => {
-            set(DataKeys.INSTANCE_TYPE)(target.value as string);
+            set("instanceType")(target.value as string);
             if (target.value === "eth") {
-              set(DataKeys.INSTANCE)("0xDf33060F476511F806C72719394da1Ad64");
+              set("instance")("0xDf33060F476511F806C72719394da1Ad64");
             }
           }}
         />
       </Grid>
-      {get(DataKeys.INSTANCE_TYPE) === "custom" && (
+      {get("instanceType") === "custom" && (
         <Grid item>
           <Grid
             container
@@ -86,12 +86,10 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
             <Grid item sm={10}>
               <ZodiacTextField
                 label="Contract Address"
-                value={get(DataKeys.INSTANCE)}
+                value={get("instance")}
                 borderStyle="double"
                 className={classes.input}
-                onChange={(evt) =>
-                  set(DataKeys.INSTANCE)(evt.target.value as string)
-                }
+                onChange={(evt) => set("instance")(evt.target.value as string)}
               />
             </Grid>
             <Grid item sm={2}>

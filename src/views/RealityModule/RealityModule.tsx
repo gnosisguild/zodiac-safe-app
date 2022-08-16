@@ -15,16 +15,39 @@ import {
 } from "@material-ui/core";
 import { TagList } from "components/list/TagList";
 import { Link } from "components/text/Link";
-import { OracleSection } from "./sections/oracle/OracleSection";
-import { ProposalSection } from "./sections/proposal/ProposalSection";
+import {
+  OracleSection,
+  OracleSectionData,
+} from "./sections/oracle/OracleSection";
+import {
+  ProposalSection,
+  ProposalSectionData,
+} from "./sections/proposal/ProposalSection";
 import { ReviewSection } from "./sections/review/ReviewSection";
 import classnames from "classnames";
-import { MonitoringSection } from "./sections/monitoring/MonitoringSection";
+import {
+  MonitoringSection,
+  MonitoringSectionData,
+} from "./sections/monitoring/MonitoringSection";
 
 export interface SectionProps {
   handleNext: (stepData: any) => void;
   handleBack: () => void;
 }
+
+export type SetupData = {
+  proposal: ProposalSectionData;
+  oracle: OracleSectionData;
+  monitoring: MonitoringSectionData;
+  review: any;
+};
+
+const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
+  "proposal",
+  "oracle",
+  "monitoring",
+  "review",
+];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -85,39 +108,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-type Steps = "Proposal" | "Oracle" | "Monitoring" | "Review";
-
-const REALITY_MODULE_STEPS = ["Proposal", "Oracle", "Monitoring", "Review"];
-
 export const RealityModule: React.FC = () => {
   const classes = useStyles();
   const dispatch = useRootDispatch();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState({
-    Proposal: false,
-    Oracle: false,
-    Monitoring: false,
-    Review: false,
+    proposal: false,
+    oracle: false,
+    monitoring: false,
+    review: false,
   });
-  // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
-  const [setupData, setSetupData] = useState({});
 
-  const handleOpenSection = (pageToOpen: number, step: Steps) => {
+  // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
+  const [setupData, setSetupData] = useState<SetupData>();
+
+  const handleOpenSection = (pageToOpen: number, step: keyof SetupData) => {
     if (completed[step]) {
       setActiveStep(pageToOpen);
     }
   };
 
-  const handleNext = (nextPage: number, step: Steps) => {
+  const handleNext = (nextPage: number, step: keyof SetupData) => {
     return (stepData: any) => {
       console.log("stepData", stepData);
       setActiveStep(nextPage);
       setCompleted({ ...completed, [step]: true });
-      setSetupData({ ...setupData, [step]: stepData });
+      setSetupData({ ...setupData, [step]: stepData } as SetupData);
     };
   };
 
-  const handleBack = (nextPage: number, step: Steps) => {
+  const handleBack = (nextPage: number, step: keyof SetupData) => {
     setActiveStep(nextPage);
     setCompleted({ ...completed, [step]: false });
   };
@@ -191,7 +211,9 @@ export const RealityModule: React.FC = () => {
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
                   <StepLabel
-                    onClick={() => handleOpenSection(index, label as Steps)}
+                    onClick={() =>
+                      handleOpenSection(index, label as keyof SetupData)
+                    }
                   >
                     <Typography
                       variant="h6"
@@ -204,7 +226,7 @@ export const RealityModule: React.FC = () => {
                     </Typography>{" "}
                   </StepLabel>
                   <StepContent>
-                    {label === "Proposal" && (
+                    {label === "proposal" && (
                       <ProposalSection
                         handleNext={handleNext(index + 1, label)}
                         handleBack={() =>
@@ -212,19 +234,19 @@ export const RealityModule: React.FC = () => {
                         }
                       />
                     )}
-                    {label === "Oracle" && (
+                    {label === "oracle" && (
                       <OracleSection
                         handleNext={handleNext(index + 1, label)}
                         handleBack={() => handleBack(activeStep - 1, label)}
                       />
                     )}
-                    {label === "Monitoring" && (
+                    {label === "monitoring" && (
                       <MonitoringSection
                         handleNext={handleNext(index + 1, label)}
                         handleBack={() => handleBack(activeStep - 1, label)}
                       />
                     )}
-                    {label === "Review" && (
+                    {label === "review" && (
                       <ReviewSection
                         handleNext={() => console.log("execute transactions")} // this is where we would execute the transactions!!
                         handleBack={() => handleBack(activeStep - 1, label)}

@@ -54,6 +54,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export type ProposalSectionData = {
+  proposalType: "snapshot" | "custom";
+  ensName: string;
+};
+
 export const ProposalSection: React.FC<SectionProps> = ({
   handleNext,
   handleBack,
@@ -62,13 +67,18 @@ export const ProposalSection: React.FC<SectionProps> = ({
   const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
     "snapshot"
   );
-  const [ensDomain, setEnsDomain] = useState("");
+  const [ensName, setEnsName] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProposalType(
       (event.target as HTMLInputElement).value as "snapshot" | "custom"
     );
   };
+
+  const collectSectionData = (): ProposalSectionData => ({
+    proposalType,
+    ensName,
+  });
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -155,8 +165,8 @@ export const ProposalSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <ZodiacTextField
-                value={ensDomain}
-                onChange={({ target }) => setEnsDomain(target.value)} // TODO: validation
+                value={ensName}
+                onChange={({ target }) => setEnsName(target.value)} // TODO: validation
                 label="Enter your snapshot ENS domain."
                 placeholder="ex: gnosis.eth"
                 borderStyle="double"
@@ -188,7 +198,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                onClick={() => handleNext({ ensDomain, proposalType })}
+                onClick={() => handleNext(collectSectionData())}
               >
                 Next
               </Button>

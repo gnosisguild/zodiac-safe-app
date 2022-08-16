@@ -21,17 +21,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum DataKeys {
-  BOUND = "bound",
-}
+export type Data = {
+  bond: number;
+};
 
 export const OracleBond: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles();
 
-  const set = (key: DataKeys) => (value: any) =>
+  const set = (key: keyof Data) => (value: any) =>
     setData({ ...data, [key]: value });
 
-  const get = (key: DataKeys) => data[key];
+  const get = (key: keyof Data) => data[key];
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -68,8 +68,8 @@ export const OracleBond: React.FC<InputPartProps> = ({ data, setData }) => {
           borderStyle="double"
           className={classes.input}
           prefix="ETH"
-          value={get(DataKeys.BOUND)}
-          onChange={(e) => set(DataKeys.BOUND)(e.target.value)}
+          value={get("bond")}
+          onChange={(e) => set("bond")(e.target.value)}
         />
       </Grid>
     </Grid>

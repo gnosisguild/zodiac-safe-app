@@ -44,18 +44,36 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+export type MonitoringSectionData = {
+  monitoringService: "default" | "custom";
+  param1: string;
+  param2: string;
+  param3: string;
+  customParams: any;
+};
+
 export const MonitoringSection: React.FC<SectionProps> = ({
   handleBack,
   handleNext,
 }) => {
   const classes = useStyles();
 
-  const [monitoringService, setMonitoringService] = useState<string>("default");
+  const [monitoringService, setMonitoringService] = useState<
+    "default" | "custom"
+  >("default");
   const [param1, setParam1] = useState<string>("");
   const [param2, setParam2] = useState<string>("");
   const [param3, setParam3] = useState<string>("");
 
   const [customParams, setCustomParams] = useState({});
+
+  const collectSectionData = (): MonitoringSectionData => ({
+    monitoringService,
+    param1,
+    param2,
+    param3,
+    customParams,
+  });
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -108,7 +126,9 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                     disableUnderline
                     label="Select your monitoring service:"
                     onChange={(evt) =>
-                      setMonitoringService(evt.target.value as string)
+                      setMonitoringService(
+                        evt.target.value as "default" | "custom"
+                      )
                     }
                   />
                 </Grid>
@@ -199,15 +219,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                onClick={() =>
-                  handleNext({
-                    monitoringService,
-                    param1,
-                    param2,
-                    param3,
-                    customParams,
-                  })
-                }
+                onClick={() => handleNext(collectSectionData())}
               >
                 Next
               </Button>
