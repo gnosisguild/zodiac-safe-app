@@ -75,33 +75,33 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum DataKeys {
-  TEMPLATE = "template",
-  LANGUAGE = "language",
-  CATEGORY = "category",
-  TEMPLATE_TYPE = "templateType",
-  OUTCOMES = "outcomes",
-}
+export type Data = {
+  template: "default" | "custom";
+  language: "english";
+  category: "DAO";
+  templateType: "bool" | "multiple";
+  outcomes: { outcome: any }[];
+};
 
 export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles();
 
-  const set = (key: DataKeys) => (value: any) =>
+  const set = (key: keyof Data) => (value: any) =>
     setData({ ...data, [key]: value });
 
-  const get = (key: DataKeys) => data[key];
+  const get = (key: keyof Data) => data[key];
 
   const handleNewOutcomes = () => {
     const newOutcomes = [...data.outcomes];
     newOutcomes.push({ outcome: "" });
-    set(DataKeys.OUTCOMES)(newOutcomes);
+    set("outcomes")(newOutcomes);
   };
 
   const handleDeleteOutcomes = (index: number) => {
     const newOutcomes = [...data.outcomes];
     if (newOutcomes.length > 2) {
       newOutcomes.splice(index, 1);
-      set(DataKeys.OUTCOMES)(newOutcomes);
+      set("outcomes")(newOutcomes);
     }
   };
   const handleOutcomeInput = (
@@ -111,7 +111,7 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
     const val = e.target.value;
     const list = [...data.outcomes];
     list[index].outcome = val;
-    set(DataKeys.OUTCOMES)(list);
+    set("outcomes")(list);
   };
 
   return (
@@ -141,14 +141,12 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
         >
           <Grid item xs={6}>
             <Dropdown
-              value={get(DataKeys.TEMPLATE)}
+              value={get("template")}
               options={[
                 { label: "Zodiac Reality Module (default)", value: "default" },
                 { label: "Custom", value: "custom" },
               ]}
-              onChange={(evt) =>
-                set(DataKeys.TEMPLATE)(evt.target.value as string)
-              }
+              onChange={(evt) => set("template")(evt.target.value as string)}
               disableUnderline
               label="Select template:"
               tooltipMsg="The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type."
@@ -156,32 +154,30 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
           </Grid>
           <Grid item xs={6}>
             <Dropdown
-              value={get(DataKeys.LANGUAGE)}
+              value={get("language")}
               options={[{ label: "English", value: "english" }]}
               disableUnderline
               label="Language:"
-              onChange={({ target }) =>
-                set(DataKeys.LANGUAGE)(target.value as string)
-              }
+              onChange={({ target }) => set("language")(target.value as string)}
             />
           </Grid>
-          {get(DataKeys.TEMPLATE) === "custom" && (
+          {get("template") === "custom" && (
             <>
               <Grid item xs={6}>
                 <Dropdown
                   options={[{ label: "DAO Proposal", value: "DAO" }]}
                   onChange={({ target }) =>
-                    set(DataKeys.CATEGORY)(target.value as string)
+                    set("category")(target.value as string)
                   }
                   disableUnderline
-                  value={get(DataKeys.CATEGORY)}
+                  value={get("category")}
                   label="Category:"
                   tooltipMsg="This will help categorize the oracle question in reality.eth so it can be found more easily."
                 />
               </Grid>
               <Grid item xs={6}>
                 <Dropdown
-                  value={get(DataKeys.TEMPLATE_TYPE)}
+                  value={get("templateType")}
                   options={[
                     { label: "Bool", value: "bool" },
                     { label: "Multiple Select", value: "multiple" },
@@ -189,7 +185,7 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                   disableUnderline
                   label="Type:"
                   onChange={(evt) =>
-                    set(DataKeys.TEMPLATE_TYPE)(evt.target.value as string)
+                    set("templateType")(evt.target.value as string)
                   }
                   tooltipMsg="This corresponds with the type of proposal being submitted."
                 />
@@ -213,43 +209,41 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                     multiline
                     rows={5}
                     placeholder={
-                      get(DataKeys.TEMPLATE_TYPE) === "multiple"
+                      get("templateType") === "multiple"
                         ? CUSTOM_TEMPLATE_QUESTION
                         : TEMPLATE_QUESTION
                     }
                   />
                 </ZodiacPaper>
               </Grid>
-              {get(DataKeys.TEMPLATE_TYPE) === "multiple" && (
+              {get("templateType") === "multiple" && (
                 <Grid item xs={12}>
                   <Typography>Outcomes</Typography>
 
-                  {get(DataKeys.OUTCOMES).map(
-                    ({ outcome }: any, index: any) => (
-                      <Grid container alignItems="center" spacing={1}>
-                        <Grid item sm={10}>
-                          <ZodiacTextField
-                            borderStyle="double"
-                            value={outcome}
-                            placeholder={`Outcome ${index + 1}`}
-                            className={classes.input}
-                            onChange={(e) => handleOutcomeInput(e, index)}
-                          />
-                        </Grid>
-                        <Grid item sm={2}>
-                          <Button
-                            className={classes.button}
-                            onClick={() => handleDeleteOutcomes(index)}
-                            variant="outlined"
-                            startIcon={<Delete />}
-                            disabled={index > 1 ? false : true}
-                          >
-                            Remove
-                          </Button>
-                        </Grid>
+                  {get("outcomes").map(({ outcome }: any, index: any) => (
+                    <Grid container alignItems="center" spacing={1}>
+                      <Grid item sm={10}>
+                        <ZodiacTextField
+                          borderStyle="double"
+                          value={outcome}
+                          placeholder={`Outcome ${index + 1}`}
+                          className={classes.input}
+                          onChange={(e) => handleOutcomeInput(e, index)}
+                        />
                       </Grid>
-                    )
-                  )}
+                      <Grid item sm={2}>
+                        <Button
+                          className={classes.button}
+                          onClick={() => handleDeleteOutcomes(index)}
+                          variant="outlined"
+                          startIcon={<Delete />}
+                          disabled={index > 1 ? false : true}
+                        >
+                          Remove
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  ))}
 
                   <Grid
                     container

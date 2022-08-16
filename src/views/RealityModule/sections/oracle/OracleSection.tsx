@@ -8,11 +8,26 @@ import {
 import { Link } from "components/text/Link";
 import React, { useState } from "react";
 import { ZodiacPaper } from "zodiac-ui-components";
-import { OracleTemplate } from "./components/oracleTemplate/OracleTemplate";
-import { OracleInstance } from "./components/oracleInstance/OracleInstance";
-import { OracleDelay } from "./components/oracleDelay/OracleDelay";
-import { OracleBond } from "./components/oracleBond/OracleBond";
-import { OracleArbitration } from "./components/oracleArbitration/OracleArbitration";
+import {
+  OracleTemplate,
+  Data as OracleTemplateData,
+} from "./components/oracleTemplate/OracleTemplate";
+import {
+  OracleInstance,
+  Data as OracleInstanceData,
+} from "./components/oracleInstance/OracleInstance";
+import {
+  OracleDelay,
+  Data as OracleDelayData,
+} from "./components/oracleDelay/OracleDelay";
+import {
+  OracleBond,
+  Data as OracleBondData,
+} from "./components/oracleBond/OracleBond";
+import {
+  OracleArbitration,
+  Data as OracleArbitratorData,
+} from "./components/oracleArbitration/OracleArbitration";
 import { SectionProps } from "views/RealityModule/RealityModule";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,40 +46,48 @@ export interface InputPartProps {
   setData: (data: any) => void;
 }
 
+export type OracleSectionData = {
+  templateData: OracleTemplateData;
+  instanceData: OracleInstanceData;
+  delayData: OracleDelayData;
+  bondData: OracleBondData;
+  arbitratorData: OracleArbitratorData;
+};
+
 export const OracleSection: React.FC<SectionProps> = ({
   handleBack,
   handleNext,
 }) => {
   const classes = useStyles();
-  const [oracleTemplateData, setOracleTemplateData] = useState({
+  const [templateData, setTemplateData] = useState<OracleTemplateData>({
     template: "default",
     language: "english",
     category: "DAO",
     templateType: "bool",
     outcomes: [{ outcome: "" }, { outcome: "" }],
   });
-  const [oracleInstanceData, setOracleInstanceData] = useState({
+  const [instanceData, setInstanceData] = useState<OracleInstanceData>({
     instance: "0x",
     instanceType: "eth",
   });
-  const [oracleDelayData, setOracleDelayData] = useState({
+  const [delayData, setDelayData] = useState<OracleDelayData>({
     timeout: 0,
     cooldown: 0,
     expiration: 0,
   });
-  const [oracleBondData, setOracleBondData] = useState({
+  const [bondData, setBondData] = useState<OracleBondData>({
     bond: 0,
   });
-  const [arbitratorData, setArbitratorData] = useState({
+  const [arbitratorData, setArbitratorData] = useState<OracleArbitratorData>({
     arbitrator: "0x",
   });
 
-  const collectData = () => ({
-    ...oracleTemplateData,
-    ...oracleInstanceData,
-    ...oracleDelayData,
-    ...oracleBondData,
-    ...arbitratorData,
+  const collectData = (): OracleSectionData => ({
+    templateData,
+    instanceData,
+    delayData,
+    bondData,
+    arbitratorData,
   });
 
   return (
@@ -102,25 +125,19 @@ export const OracleSection: React.FC<SectionProps> = ({
         </Grid>
 
         <Grid item>
-          <OracleTemplate
-            data={oracleTemplateData}
-            setData={setOracleTemplateData}
-          />
+          <OracleTemplate data={templateData} setData={setTemplateData} />
         </Grid>
 
         <Grid item>
-          <OracleInstance
-            data={oracleInstanceData}
-            setData={setOracleInstanceData}
-          />
+          <OracleInstance data={instanceData} setData={setInstanceData} />
         </Grid>
 
         <Grid item>
-          <OracleDelay data={oracleDelayData} setData={setOracleDelayData} />
+          <OracleDelay data={delayData} setData={setDelayData} />
         </Grid>
 
         <Grid item>
-          <OracleBond data={oracleBondData} setData={setOracleBondData} />
+          <OracleBond data={bondData} setData={setBondData} />
         </Grid>
 
         <Grid item>

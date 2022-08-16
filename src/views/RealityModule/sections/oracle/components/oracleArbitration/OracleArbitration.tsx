@@ -13,9 +13,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-enum DataKeys {
-  ARBITRATOR = "arbitrator",
-}
+export type Data = {
+  arbitrator: string;
+};
 
 export const OracleArbitration: React.FC<InputPartProps> = ({
   data,
@@ -23,7 +23,7 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
 }) => {
   const classes = useStyles();
 
-  const set = (key: DataKeys) => (value: any) =>
+  const set = (key: keyof Data) => (value: any) =>
     setData({ ...data, [key]: value });
 
   return (
@@ -63,7 +63,7 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
           ]}
           disableUnderline
           label="Arbitrator:"
-          onChange={({ target }) => set(DataKeys.ARBITRATOR)(target.value)}
+          onChange={({ target }) => set("arbitrator")(target.value)}
         />
       </Grid>
     </Grid>
