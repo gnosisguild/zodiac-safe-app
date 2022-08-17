@@ -67,7 +67,7 @@ export const OracleSection: React.FC<SectionProps> = ({
     outcomes: [{ outcome: "" }, { outcome: "" }],
   });
   const [instanceData, setInstanceData] = useState<OracleInstanceData>({
-    instance: "0x",
+    instanceAddress: "0x",
     instanceType: "eth",
   });
   const [delayData, setDelayData] = useState<OracleDelayData>({
@@ -79,7 +79,7 @@ export const OracleSection: React.FC<SectionProps> = ({
     bond: 0,
   });
   const [arbitratorData, setArbitratorData] = useState<OracleArbitratorData>({
-    arbitrator: "0x",
+    arbitratorAddress: "0x",
   });
 
   const collectData = (): OracleSectionData => ({

@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export type Data = {
-  instance: string;
+  instanceAddress: string;
   instanceType: "eth" | "custom";
 };
 
@@ -70,7 +70,7 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
           onChange={({ target }) => {
             set("instanceType")(target.value as string);
             if (target.value === "eth") {
-              set("instance")("0xDf33060F476511F806C72719394da1Ad64");
+              set("instanceAddress")("0xDf33060F476511F806C72719394da1Ad64");
             }
           }}
         />
@@ -86,10 +86,12 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
             <Grid item sm={10}>
               <ZodiacTextField
                 label="Contract Address"
-                value={get("instance")}
+                value={get("instanceAddress")}
                 borderStyle="double"
                 className={classes.input}
-                onChange={(evt) => set("instance")(evt.target.value as string)}
+                onChange={(evt) =>
+                  set("instanceAddress")(evt.target.value as string)
+                }
               />
             </Grid>
             <Grid item sm={2}>

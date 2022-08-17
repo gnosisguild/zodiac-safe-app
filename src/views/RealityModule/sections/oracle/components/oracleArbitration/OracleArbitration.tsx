@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export type Data = {
-  arbitrator: string;
+  arbitratorAddress: string;
 };
 
 export const OracleArbitration: React.FC<InputPartProps> = ({
@@ -63,7 +63,7 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
           ]}
           disableUnderline
           label="Arbitrator:"
-          onChange={({ target }) => set("arbitrator")(target.value)}
+          onChange={({ target }) => set("arbitratorAddress")(target.value)}
         />
       </Grid>
     </Grid>

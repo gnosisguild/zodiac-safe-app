@@ -7,14 +7,16 @@ import {
   Typography,
 } from "@material-ui/core";
 import { CircleStep } from "components/circleStep/CircleStep";
-import React from "react";
+import React, { useState } from "react";
 import { colors, ZodiacPaper } from "zodiac-ui-components";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import { SectionProps } from "views/RealityModule/RealityModule";
+import { DelayModule, ModuleType } from "store/modules/models";
+import { AttachModuleForm } from "views/AddModule/AttachModuleForm";
 
-interface ReviewSectionProps {
-  handleNext: () => void;
-  handleBack: () => void;
+interface ReviewSectionProps extends SectionProps {
   goToStep: (step: number) => void;
+  delayModules: DelayModule[];
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -89,8 +91,13 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   handleBack,
   handleNext,
   goToStep,
+  delayModules,
 }) => {
   const classes = useStyles();
+
+  const [delayModule, setDelayModule] = useState<string>(
+    delayModules.length === 1 ? delayModules[0].address : ""
+  );
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -237,6 +244,30 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
           </>
         ))}
 
+        {delayModules.length >= 1 && (
+          <Grid item>
+            <Grid
+              container
+              spacing={3}
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Grid item>
+                <Typography variant="h6" gutterBottom>
+                  Deploy Options
+                </Typography>
+                <AttachModuleForm
+                  description={executionModuleDescription}
+                  modules={delayModules}
+                  value={delayModule}
+                  onChange={(value: string) => setDelayModule(value)}
+                  type={ModuleType.DELAY}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        )}
+
         <Grid item>
           <Grid
             container
@@ -266,3 +297,12 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
     </ZodiacPaper>
   );
 };
+
+const executionModuleDescription = (
+  <Typography variant="body2">
+    This will add a timedelay to any transactions created by this module.{" "}
+    <b>Note that this delay is cumulative with the cooldown set above</b> (e.g.
+    if both are set to 24 hours, the cumulative delay before the transaction can
+    be executed will be 48 hours).
+  </Typography>
+);

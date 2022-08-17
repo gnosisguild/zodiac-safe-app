@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useRootDispatch } from "store";
+import { useRootDispatch, useRootSelector } from "store";
 import { setRealityModuleScreen } from "../../store/modules";
 import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components";
 import {
@@ -29,6 +29,10 @@ import {
   MonitoringSection,
   MonitoringSectionData,
 } from "./sections/monitoring/MonitoringSection";
+import { setup } from "./setupService";
+import { getProvider } from "services";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { getDelayModules } from "store/modules/selectors";
 
 export interface SectionProps {
   handleNext: (stepData: any) => void;
@@ -110,6 +114,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const RealityModule: React.FC = () => {
   const classes = useStyles();
+  const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK();
+  const delayModules = useRootSelector(getDelayModules);
   const dispatch = useRootDispatch();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState({
@@ -140,6 +146,18 @@ export const RealityModule: React.FC = () => {
   const handleBack = (nextPage: number, step: keyof SetupData) => {
     setActiveStep(nextPage);
     setCompleted({ ...completed, [step]: false });
+  };
+
+  const handleDone = (delayModuleExecutor?: string) => {
+    const provider = getProvider(safeInfo.chainId);
+    if (setupData == null) {
+      throw new Error("No setup data");
+    }
+    const executorAddress =
+      delayModuleExecutor !== "" || delayModuleExecutor == null
+        ? safeInfo.safeAddress
+        : delayModuleExecutor;
+    setup(provider, safeSdk, safeInfo, executorAddress, setupData);
   };
 
   return (
@@ -247,11 +265,14 @@ export const RealityModule: React.FC = () => {
                       />
                     )}
                     {label === "review" && (
-                      <ReviewSection
-                        handleNext={() => console.log("execute transactions")} // this is where we would execute the transactions!!
-                        handleBack={() => handleBack(activeStep - 1, label)}
-                        goToStep={setActiveStep}
-                      />
+                      <>
+                        <ReviewSection
+                          handleNext={handleDone} // this is where we would execute the transactions!!
+                          handleBack={() => handleBack(activeStep - 1, label)}
+                          goToStep={setActiveStep}
+                          delayModules={delayModules}
+                        />
+                      </>
                     )}
                   </StepContent>
                 </Step>
