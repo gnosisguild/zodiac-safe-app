@@ -12,9 +12,11 @@ const getNode = async () => {
 export const getJsonData = async (path: string) => {
   const node = await getNode();
 
-  if (path.startsWith("/ipns/")) {
+  if (path.startsWith("ipns/")) {
     path = await node.resolve(path, { recursive: true });
   }
+
+  path = path.replace("ipfs/", "");
 
   const chunks: string[] = [];
   for await (const chunk of node.cat(path)) {
