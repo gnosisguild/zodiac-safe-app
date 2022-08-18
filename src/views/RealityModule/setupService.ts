@@ -45,7 +45,7 @@ export const setup = async (
 
   await safeSdk.txs.send({ txs });
 
-  await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
+  // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
 };
 
 /**
@@ -141,8 +141,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   }
 
   // 3. Deploy the modified settings file to IPFS.
-  const cid = await ipfs.add(newSpaceSettings);
-
+  const cid = await ipfs.add(JSON.stringify(newSpaceSettings));
   // 4. Pin the new file. No need, as long as we keep it available in our local
   // IPFS node (running in the browser) until Snapshot picks it up, they will pin it..
 
@@ -172,6 +171,5 @@ export const checkNewSnapshotSettingsValidity = (
     snapshot.utils.validateSchema(snapshot.schemas.space, newSettings) === true
   );
 
-const pokeSnapshotAPI = async (ensName: string) => {
+const pokeSnapshotAPI = async (ensName: string) =>
   fetch(`https://hub.snapshot.org/api/spaces/${ensName}/poke`);
-};
