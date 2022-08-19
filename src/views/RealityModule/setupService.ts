@@ -1,20 +1,19 @@
 import { ethers } from "ethers";
 import {
-  ARBITRATOR_OPTIONS,
   deployRealityModule as deployRealityModuleInternal,
   getArbitrator,
   RealityModuleParams as RealityModuleParamsInternal,
 } from "../../services";
 import { getNetworkNativeAsset } from "../../utils/networks";
-import snapshot from "@snapshot-labs/snapshot.js";
 import * as ipfs from "../../utils/ipfs";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import * as R from "ramda";
 import { setTextRecordTx } from "utils/ens";
 import { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { SetupData } from "./RealityModule";
+import * as snapshot from "../../utils/snapshot";
 
-const MULTI_SEND_CONTRACT = process.env.MULTI_SEND_CONTRACT;
+const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT;
 
 /**
  * Sets up the Reality Module.
@@ -76,7 +75,7 @@ const deployRealityModuleTxs = (
     expiration: setupData.oracle.delayData.expiration.toString(),
     arbitrator: getArbitrator(
       chainId,
-      ARBITRATOR_OPTIONS.NO_ARBITRATOR // ToDo: hardcoded
+      setupData.oracle.arbitratorData.arbitratorOption
     ),
     oracle: setupData.oracle.instanceData.instanceAddress,
   };
@@ -123,9 +122,12 @@ const addSafeSnapToSnapshotSpaceTxs = async (
       `ENS ${ensName} has no snapshot record, a Snapshot Space is required`
     );
   }
-  const originalSpaceSettings = await ipfs.getJsonData(
-    currentEnsSnapshotRecord
-  );
+
+  const originalSpaceSettings = await (currentEnsSnapshotRecord.includes(
+    "snapshot.page"
+  )
+    ? snapshot.getSnapshotSpaceSettings(ensName)
+    : ipfs.getJsonData(currentEnsSnapshotRecord));
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
   const newSpaceSettings = addSafeSnapToSettings(
@@ -140,6 +142,9 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     throw new Error("The new settings file is changed in unexpected ways");
   }
 
+  console.log("original space", originalSpaceSettings);
+  console.log("new space", newSpaceSettings);
+
   // 3. Deploy the modified settings file to IPFS.
   const cid = await ipfs.add(JSON.stringify(newSpaceSettings));
   // 4. Pin the new file. No need, as long as we keep it available in our local
@@ -150,7 +155,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     provider,
     ensName,
     "snapshot",
-    cid.toString()
+    `ipfs/${cid.toString()}`
   );
 
   return [setEnsRecordTx];
@@ -168,8 +173,8 @@ export const checkNewSnapshotSettingsValidity = (
     ),
     // validate the schema
     // we must be strict here, if not a truthy error value can be returned
-    snapshot.utils.validateSchema(snapshot.schemas.space, newSettings) === true
+    snapshot.validateSchema(newSettings) === true
   );
 
-const pokeSnapshotAPI = async (ensName: string) =>
-  fetch(`https://hub.snapshot.org/api/spaces/${ensName}/poke`);
+// const pokeSnapshotAPI = async (ensName: string) =>
+//   fetch(`https://hub.snapshot.org/api/spaces/${ensName}/poke`);

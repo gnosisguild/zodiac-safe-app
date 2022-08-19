@@ -1,6 +1,7 @@
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
 import { Dropdown } from "components/dropdown/Dropdown";
 import React from "react";
+import { ARBITRATOR_OPTIONS } from "services";
 import { InputPartProps } from "../../OracleSection";
 
 const useStyles = makeStyles((theme) => ({
@@ -14,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export type Data = {
-  arbitratorAddress: string;
+  arbitratorOption: ARBITRATOR_OPTIONS;
 };
 
 export const OracleArbitration: React.FC<InputPartProps> = ({
@@ -58,12 +59,17 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
       </Grid>
       <Grid item>
         <Dropdown
+          defaultValue={ARBITRATOR_OPTIONS.NO_ARBITRATOR}
           options={[
-            { label: "No arbitration (highest bond wins)", value: "none" },
+            {
+              label: "No arbitration (highest bond wins)",
+              value: ARBITRATOR_OPTIONS.NO_ARBITRATOR,
+            },
+            { label: "Kleros", value: ARBITRATOR_OPTIONS.KLEROS },
           ]}
           disableUnderline
           label="Arbitrator:"
-          onChange={({ target }) => set("arbitratorAddress")(target.value)}
+          onChange={({ target }) => set("arbitratorOption")(target.value)}
         />
       </Grid>
     </Grid>
