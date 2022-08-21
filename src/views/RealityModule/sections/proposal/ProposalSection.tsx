@@ -16,7 +16,7 @@ import { Link } from "components/text/Link";
 import React, { useEffect, useState } from "react";
 import { getProvider } from "services";
 import { SafeInfo } from "store/modules/models";
-import { SectionProps, SetupData } from "views/RealityModule/RealityModule";
+import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
 const useStyles = makeStyles((theme) => ({
