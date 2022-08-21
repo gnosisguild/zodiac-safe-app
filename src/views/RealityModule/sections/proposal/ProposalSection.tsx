@@ -1,18 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   Button,
   Divider,
-  FormControlLabel,
+  FormHelperText,
   Grid,
   makeStyles,
-  Radio,
-  RadioGroup,
+  // FormControlLabel,
+  // Radio,
+  // RadioGroup,
   Typography,
 } from "@material-ui/core";
-// import { DangerAlert } from "components/Alert/DangerAlert";
+import { DangerAlert } from "components/Alert/DangerAlert";
 import { Link } from "components/text/Link";
-
-import React, { useState } from "react";
-import { SectionProps } from "views/RealityModule/RealityModule";
+import React, { useEffect, useState } from "react";
+import { getProvider } from "services";
+import { SafeInfo } from "store/modules/models";
+import { SectionProps, SetupData } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
 
 const useStyles = makeStyles((theme) => ({
@@ -55,38 +59,70 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export type ProposalSectionData = {
-  proposalType: "snapshot" | "custom";
+  // proposalType: "snapshot" | "custom";
   ensName: string;
 };
 
 export const ProposalSection: React.FC<SectionProps> = ({
   handleNext,
   handleBack,
+  setupData,
 }) => {
+  const { safe } = useSafeAppsSDK();
+  const { owners } = safe as unknown as SafeInfo;
+  const provider = getProvider(safe.chainId);
   const classes = useStyles();
-  const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
-    "snapshot"
-  );
-  const [ensName, setEnsName] = useState("");
+  // const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
+  //   "snapshot"
+  // );
+  const [ensName, setEnsName] = useState<string>("");
+  const [ensAddress, setEnsAddress] = useState<string>("");
+  const [invalidEns, setInvalidEns] = useState<boolean>(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setProposalType(
-      (event.target as HTMLInputElement).value as "snapshot" | "custom"
-    );
+  useEffect(() => {
+    if (provider && setupData && setupData.proposal) {
+      setEnsName(setupData.proposal.ensName);
+      validEns();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (provider && ensName) {
+      validEns();
+    }
+  }, [provider, ensName]);
+
+  const validEns = async () => {
+    const address = await provider.resolveName(ensName);
+    if (address) {
+      setEnsAddress(address);
+      setInvalidEns(false);
+      return;
+    } else {
+      setEnsAddress("");
+      setInvalidEns(true);
+      return;
+    }
   };
 
   const collectSectionData = (): ProposalSectionData => ({
-    proposalType,
+    // proposalType,
     ensName,
   });
 
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setProposalType(
+  //     (event.target as HTMLInputElement).value as "snapshot" | "custom"
+  //   );
+  // };
+
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Configure Proposal Space</Typography>
+              <Typography variant='h3'>Configure Proposal Space</Typography>
             </Grid>
             <Grid item>
               <Typography>
@@ -98,11 +134,10 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <Typography>
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
-                  underline="always"
-                  href="https://snapshot.com"
+                  underline='always'
+                  href='https://snapshot.com'
                   target={"_blank"}
-                  color="inherit"
-                >
+                  color='inherit'>
                   Get started here.
                 </Link>
               </Typography>
@@ -115,12 +150,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Proposal Configuration
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2" className={classes.textSubdued}>
+              <Typography variant='body2' className={classes.textSubdued}>
                 {/* Enter your snapshot space ENS domain below to get started. If
                 you&apos;d prefer to provide a custom proposal integration,
                 select Custom and provide the appropriate URL where the
@@ -129,7 +164,8 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 Safe must be the controller of this ENS domain.
               </Typography>
             </Grid>
-            <Grid item>
+            {/* For now we're only use snapshot space */}
+            {/* <Grid item>
               <Typography variant="body2">
                 Select your proposal type:
               </Typography>
@@ -165,20 +201,24 @@ export const ProposalSection: React.FC<SectionProps> = ({
                   label="Custom"
                 />
               </RadioGroup>
-            </Grid>
+            </Grid> */}
             <Grid item>
               <ZodiacTextField
                 value={ensName}
                 onChange={({ target }) => setEnsName(target.value)} // TODO: validation
-                label="Enter your snapshot ENS domain."
-                placeholder="ex: gnosis.eth"
-                borderStyle="double"
+                label='Enter your snapshot ENS domain.'
+                placeholder='ex: gnosis.eth'
+                borderStyle='double'
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
+              {invalidEns && (
+                <FormHelperText>Please enter a valid ENS domain</FormHelperText>
+              )}
             </Grid>
             <Grid item>
-              {/* TODO: we must check that the current connected Safe is the controller of the ENS domain and warn the user if the Safe is not also the registrant (via the alert below).  */}
-              {/* <DangerAlert address="0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a" /> */}
+              {ensAddress && owners.length && !owners.includes(ensAddress) && (
+                <DangerAlert address={ensAddress} />
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -189,21 +229,20 @@ export const ProposalSection: React.FC<SectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent="center"
-            alignItems="center"
-          >
+            justifyContent='center'
+            alignItems='center'>
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button size='medium' variant='text' onClick={handleBack}>
                 Cancel
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
-                onClick={() => handleNext(collectSectionData())}
-              >
+                color='secondary'
+                size='medium'
+                variant='contained'
+                disabled={!ensAddress || invalidEns}
+                onClick={() => handleNext(collectSectionData())}>
                 Next
               </Button>
             </Grid>

@@ -30,6 +30,7 @@ import {
 } from "./components/oracleArbitration/OracleArbitration";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { ARBITRATOR_OPTIONS } from "services";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -41,6 +42,30 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 }));
+
+export const ORACLE_MAINNET_OPTION = [
+  {
+    label: "ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c",
+    value: "ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c",
+  },
+  {
+    label: "GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9",
+    value: "GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9",
+  },
+  {
+    label: "SWISE-0x867092A32bC16816F12Fb326EfF7A2865E1ec138",
+    value: "SWISE-0x867092A32bC16816F12Fb326EfF7A2865E1ec138",
+  },
+  { label: "Add Custom Instance", value: "custom" },
+];
+
+export const ORACLE_TEST_OPTION = [
+  {
+    label: "ETH-0xDf33060F476511F806C72719394da1Ad64",
+    value: "ETH-0xDf33060F476511F806C72719394da1Ad64",
+  },
+  { label: "Add Custom Instance", value: "custom" },
+];
 
 export interface InputPartProps {
   data: any;
@@ -60,6 +85,9 @@ export const OracleSection: React.FC<SectionProps> = ({
   handleNext,
 }) => {
   const classes = useStyles();
+  const { safe } = useSafeAppsSDK();
+  const options =
+    safe.chainId === 1 ? ORACLE_MAINNET_OPTION : ORACLE_TEST_OPTION;
   const [templateData, setTemplateData] = useState<OracleTemplateData>({
     template: "default",
     language: "english",
@@ -68,8 +96,12 @@ export const OracleSection: React.FC<SectionProps> = ({
     outcomes: [{ outcome: "" }, { outcome: "" }],
   });
   const [instanceData, setInstanceData] = useState<OracleInstanceData>({
-    instanceAddress: "0xDf33060F476511F806C72719394da1Ad64",
-    instanceType: "eth",
+    instanceAddress: options[0].value.substr(options[0].value.indexOf("-") + 1),
+    instanceType: options[0].value.substr(0, options[0].value.indexOf("-")) as
+      | "ETH"
+      | "GNO"
+      | "SWISE"
+      | "custom",
   });
   const [delayData, setDelayData] = useState<OracleDelayData>({
     timeout: 0,
@@ -92,12 +124,12 @@ export const OracleSection: React.FC<SectionProps> = ({
   });
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Set up the Oracle</Typography>
+              <Typography variant='h3'>Set up the Oracle</Typography>
             </Grid>
             <Grid item>
               <Typography>
@@ -106,11 +138,10 @@ export const OracleSection: React.FC<SectionProps> = ({
                 accurately on-chain. The Reality.eth oracle uses a mechanism
                 known as the{" "}
                 <Link
-                  underline="always"
-                  href="https://snapshot.com"
+                  underline='always'
+                  href='https://snapshot.com'
                   target={"_blank"}
-                  color="inherit"
-                >
+                  color='inherit'>
                   escalation game
                 </Link>{" "}
                 to generate correct answers that can be used as inputs for smart
@@ -156,21 +187,19 @@ export const OracleSection: React.FC<SectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent="center"
-            alignItems="center"
-          >
+            justifyContent='center'
+            alignItems='center'>
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button size='medium' variant='text' onClick={handleBack}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
-                onClick={() => handleNext(collectData())}
-              >
+                color='secondary'
+                size='medium'
+                variant='contained'
+                onClick={() => handleNext(collectData())}>
                 Next
               </Button>
             </Grid>

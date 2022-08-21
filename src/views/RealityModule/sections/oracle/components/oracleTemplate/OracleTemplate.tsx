@@ -17,6 +17,13 @@ const TEMPLATE_QUESTION = `Did the Snapshot proposal with the id {%s} in the wee
 
 const CUSTOM_TEMPLATE_QUESTION = `Provide a custom question here. Use %s as a variable for the proposal id.`;
 
+const ORACLE_TEMPLATE_OPTIONS = [
+  { label: "Zodiac Reality Module (default)", value: "default" },
+  { label: "Custom", value: "custom" },
+];
+
+const ORACLE_LANGUAGE = [{ label: "English", value: "english" }];
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -119,12 +126,12 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
       <Grid item>
         <Grid container spacing={1}>
           <Grid item>
-            <Typography variant="h4" color="textSecondary">
+            <Typography variant='h4' color='textSecondary'>
               Oracle Template
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant="body2" className={classes.textSubdued}>
+            <Typography variant='body2' className={classes.textSubdued}>
               The oracle template creates an appropriate question based on the
               data of the proposal. We highly recommend using the default Zodiac
               Reality Module template
@@ -135,29 +142,26 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
       <Grid item>
         <Grid
           container
-          justifyContent="space-between"
+          justifyContent='space-between'
           spacing={2}
-          alignItems="center"
-        >
+          alignItems='center'>
           <Grid item xs={6}>
             <Dropdown
               value={get("template")}
-              options={[
-                { label: "Zodiac Reality Module (default)", value: "default" },
-                { label: "Custom", value: "custom" },
-              ]}
+              options={ORACLE_TEMPLATE_OPTIONS}
               onChange={(evt) => set("template")(evt.target.value as string)}
               disableUnderline
-              label="Select template:"
-              tooltipMsg="The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type."
+              label='Select template:'
+              tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
             />
           </Grid>
           <Grid item xs={6}>
             <Dropdown
               value={get("language")}
-              options={[{ label: "English", value: "english" }]}
+              options={ORACLE_LANGUAGE}
               disableUnderline
-              label="Language:"
+              label='Language:'
+              disabled
               onChange={({ target }) => set("language")(target.value as string)}
             />
           </Grid>
@@ -171,8 +175,8 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                   }
                   disableUnderline
                   value={get("category")}
-                  label="Category:"
-                  tooltipMsg="This will help categorize the oracle question in reality.eth so it can be found more easily."
+                  label='Category:'
+                  tooltipMsg='This will help categorize the oracle question in reality.eth so it can be found more easily.'
                 />
               </Grid>
               <Grid item xs={6}>
@@ -183,22 +187,21 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                     { label: "Multiple Select", value: "multiple" },
                   ]}
                   disableUnderline
-                  label="Type:"
+                  label='Type:'
                   onChange={(evt) =>
                     set("templateType")(evt.target.value as string)
                   }
-                  tooltipMsg="This corresponds with the type of proposal being submitted."
+                  tooltipMsg='This corresponds with the type of proposal being submitted.'
                 />
               </Grid>
               <Grid item xs={12}>
                 <Grid
                   container
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
+                  justifyContent='space-between'
+                  alignItems='center'>
                   <Typography>Template question preview:</Typography>
 
-                  <Tooltip title="Provide a custom question here. Use %s as a variable for the proposal id.">
+                  <Tooltip title='Provide a custom question here. Use %s as a variable for the proposal id.'>
                     <HelpOutline className={classes.tooltipIcon} />
                   </Tooltip>
                 </Grid>
@@ -221,10 +224,10 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                   <Typography>Outcomes</Typography>
 
                   {get("outcomes").map(({ outcome }: any, index: any) => (
-                    <Grid container alignItems="center" spacing={1}>
+                    <Grid container alignItems='center' spacing={1}>
                       <Grid item sm={10}>
                         <ZodiacTextField
-                          borderStyle="double"
+                          borderStyle='double'
                           value={outcome}
                           placeholder={`Outcome ${index + 1}`}
                           className={classes.input}
@@ -235,10 +238,9 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                         <Button
                           className={classes.button}
                           onClick={() => handleDeleteOutcomes(index)}
-                          variant="outlined"
+                          variant='outlined'
                           startIcon={<Delete />}
-                          disabled={index > 1 ? false : true}
-                        >
+                          disabled={index > 1 ? false : true}>
                           Remove
                         </Button>
                       </Grid>
@@ -248,18 +250,16 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
                   <Grid
                     container
                     spacing={1}
-                    alignItems="center"
+                    alignItems='center'
                     className={classes.buttonContainer}
-                    onClick={handleNewOutcomes}
-                  >
+                    onClick={handleNewOutcomes}>
                     <Grid item>
                       <Add className={classes.icon} />
                     </Grid>
                     <Grid item>
                       <Typography
-                        color="textSecondary"
-                        className={classes.text}
-                      >
+                        color='textSecondary'
+                        className={classes.text}>
                         Add another outcome
                       </Typography>
                     </Grid>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   Divider,
@@ -7,16 +8,18 @@ import {
   Typography,
 } from "@material-ui/core";
 import { CircleStep } from "components/circleStep/CircleStep";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { colors, ZodiacPaper } from "zodiac-ui-components";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import { SectionProps } from "views/RealityModule/RealityModule";
+import { SectionProps, SetupData } from "views/RealityModule/RealityModule";
 import { DelayModule, ModuleType } from "store/modules/models";
 import { AttachModuleForm } from "views/AddModule/AttachModuleForm";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 interface ReviewSectionProps extends SectionProps {
   goToStep: (step: number) => void;
   delayModules: DelayModule[];
+  setupData: SetupData | undefined;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -92,28 +95,49 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   handleNext,
   goToStep,
   delayModules,
+  setupData,
 }) => {
   const classes = useStyles();
+  const { safe } = useSafeAppsSDK();
+
+  const [snapshopSpace, setSnapshotSpace] = useState<string>();
 
   const [delayModule, setDelayModule] = useState<string>(
     delayModules.length === 1 ? delayModules[0].address : ""
   );
 
+  useEffect(() => {
+    if (setupData) {
+      handleSnapshotSpace(setupData.proposal.ensName);
+    }
+  }, [setupData]);
+
+  const handleSnapshotSpace = (ens: string) => {
+    switch (safe.chainId) {
+      case 1:
+        setSnapshotSpace(`https://snapshot.org/#/${ens}`);
+        break;
+      case 4:
+        setSnapshotSpace(`https://demo.snapshot.org/#/${ens}`);
+        break;
+    }
+  };
+
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Review</Typography>
+              <Typography variant='h3'>Review</Typography>
             </Grid>
             <Grid item>
               <Typography>
                 Here is an overview of your reality module configuration. Please
-                review carefully. Once you’ve confirmed that the details are
-                correct, you can submit the transaction which will add the
+                review carefully. Once you&apos;ve confirmed that the details
+                are correct, you can submit the transaction which will add the
                 reality module to this safe, and automatically integrate the
-                SafeSnap plugin with the snapshot space you’ve include.
+                SafeSnap plugin with the snapshot space you&apos;ve include.
               </Typography>
             </Grid>
           </Grid>
@@ -137,19 +161,18 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               <Grid item>
                 <Typography>Snapshot Space:</Typography>
                 <Link
-                  color="inherit"
-                  href="https://snapshot.com/#/weenus.eth/"
-                  target="_blank"
-                  className={classes.link}
-                >
-                  snapshot.com/#/weenus.eth
+                  color='inherit'
+                  href={snapshopSpace}
+                  target='_blank'
+                  className={classes.link}>
+                  {snapshopSpace}
                 </Link>
               </Grid>
             )}
 
             {item.label === "Oracle" && (
               <Grid item>
-                <Grid container spacing={2} direction="column">
+                <Grid container spacing={2} direction='column'>
                   <Grid item>
                     <Typography>Template question preview:</Typography>
                     <ZodiacPaper className={classes.paperTemplateContainer}>
@@ -169,55 +192,54 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <Grid item>
                     <Typography>Oracle Address:</Typography>
                     <Link
-                      color="inherit"
-                      href="https://rinkeby.etherscan.io/search?f=0&q=0xDf33060F476511F806C72719394da1Ad64"
-                      target="_blank"
-                      className={classes.link}
-                    >
+                      color='inherit'
+                      href='https://rinkeby.etherscan.io/search?f=0&q=0xDf33060F476511F806C72719394da1Ad64'
+                      target='_blank'
+                      className={classes.link}>
                       0xDf33060F476511F806C72719394da1Ad64
                     </Link>
                   </Grid>
                   <Grid item>
-                    <Grid
-                      container
-                      spacing={1}
-                      justifyContent={"space-between"}
-                      alignItems={"center"}
-                    >
-                      <Grid item>
-                        <Typography>Timeout:</Typography>
-                        <Typography className={classes.label}>
-                          24 hours
-                        </Typography>
+                    {setupData && setupData.oracle && (
+                      <Grid
+                        container
+                        spacing={1}
+                        justifyContent={"space-between"}
+                        alignItems={"center"}>
+                        <Grid item>
+                          <Typography>Timeout:</Typography>
+                          <Typography className={classes.label}>
+                            24 hours
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography>Cooldown:</Typography>
+                          <Typography className={classes.label}>
+                            24 hours
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography>Expiration:</Typography>
+                          <Typography className={classes.label}>
+                            24 hours
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Typography>Bond:</Typography>
+                          <Typography className={classes.label}>
+                            0.1 ETH
+                          </Typography>
+                        </Grid>
                       </Grid>
-                      <Grid item>
-                        <Typography>Cooldown:</Typography>
-                        <Typography className={classes.label}>
-                          24 hours
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Typography>Expiration:</Typography>
-                        <Typography className={classes.label}>
-                          24 hours
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <Typography>Bond:</Typography>
-                        <Typography className={classes.label}>
-                          0.1 ETH
-                        </Typography>
-                      </Grid>
-                    </Grid>
+                    )}
                   </Grid>
                   <Grid item>
                     <Typography>Oracle Address:</Typography>
                     <Link
-                      color="inherit"
-                      href="https://reality.eth/proposal/343293804ji32khfgahfa "
-                      target="_blank"
-                      className={classes.link}
-                    >
+                      color='inherit'
+                      href='https://reality.eth/proposal/343293804ji32khfgahfa '
+                      target='_blank'
+                      className={classes.link}>
                       https://reality.eth/proposal/343293804ji32khfgahfa
                     </Link>
                   </Grid>
@@ -225,19 +247,19 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               </Grid>
             )}
 
-            {item.label === "Monitoring" && (
+            {/* {item.label === "Monitoring" && (
               <Grid item>
                 <Typography>Monitoring:</Typography>
                 <Link
-                  color="inherit"
-                  href="https://tenderly.com/#/3290ihfdajka"
-                  target="_blank"
-                  className={classes.link}
-                >
+                  color='inherit'
+                  href='https://tenderly.com/#/3290ihfdajka'
+                  target='_blank'
+                  className={classes.link}>
                   tenderly.com/#/3290ihfdajka
                 </Link>
               </Grid>
-            )}
+            )} */}
+
             <Grid item>
               <Divider />
             </Grid>
@@ -249,11 +271,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Grid
               container
               spacing={3}
-              justifyContent="center"
-              alignItems="center"
-            >
+              justifyContent='center'
+              alignItems='center'>
               <Grid item>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant='h6' gutterBottom>
                   Deploy Options
                 </Typography>
                 <AttachModuleForm
@@ -272,22 +293,20 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent="center"
-            alignItems="center"
-          >
+            justifyContent='center'
+            alignItems='center'>
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button size='medium' variant='text' onClick={handleBack}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
+                color='secondary'
+                size='medium'
+                variant='contained'
                 startIcon={<ArrowUpwardIcon />}
-                onClick={handleNext}
-              >
+                onClick={handleNext}>
                 Submit
               </Button>
             </Grid>
@@ -299,7 +318,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 };
 
 const executionModuleDescription = (
-  <Typography variant="body2">
+  <Typography variant='body2'>
     This will add a timedelay to any transactions created by this module.{" "}
     <b>Note that this delay is cumulative with the cooldown set above</b> (e.g.
     if both are set to 24 hours, the cumulative delay before the transaction can
