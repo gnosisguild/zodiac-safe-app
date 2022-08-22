@@ -8,7 +8,7 @@ import {
   RadioGroup,
   Typography,
 } from "@material-ui/core";
-import { DangerAlert } from "components/Alert/DangerAlert";
+// import { DangerAlert } from "components/Alert/DangerAlert";
 import { Link } from "components/text/Link";
 
 import React, { useState } from "react";
@@ -121,10 +121,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <Typography variant="body2" className={classes.textSubdued}>
-                Enter your snapshot space ENS domain below to get started. If
+                {/* Enter your snapshot space ENS domain below to get started. If
                 you&apos;d prefer to provide a custom proposal integration,
                 select Custom and provide the appropriate URL where the
-                proposals can be viewed publicly.
+                proposals can be viewed publicly. */}
+                Enter your snapshot space ENS domain below to get started. The
+                Safe must be the controller of this ENS domain.
               </Typography>
             </Grid>
             <Grid item>
@@ -150,6 +152,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                   label="Snapshot"
                 />
                 <FormControlLabel
+                  disabled={true}
                   value="custom"
                   control={
                     <Radio
@@ -174,7 +177,8 @@ export const ProposalSection: React.FC<SectionProps> = ({
               />
             </Grid>
             <Grid item>
-              <DangerAlert address="0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a" />
+              {/* TODO: we must check that the current connected Safe is the controller of the ENS domain and warn the user if the Safe is not also the registrant (via the alert below).  */}
+              {/* <DangerAlert address="0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a" /> */}
             </Grid>
           </Grid>
         </Grid>

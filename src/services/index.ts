@@ -210,7 +210,10 @@ export function deployRealityModule(
     arbitrator,
   } = args;
   const provider = getProvider(chainId);
-  const oracleAddress = oracle ?? getDefaultOracle(chainId);
+  const oracleAddress =
+    oracle != null && ethers.utils.isAddress(oracle)
+      ? oracle
+      : getDefaultOracle(chainId);
   const {
     transaction: daoModuleDeploymentTx,
     expectedModuleAddress: daoModuleExpectedAddress,

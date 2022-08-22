@@ -29,6 +29,7 @@ import {
   Data as OracleArbitratorData,
 } from "./components/oracleArbitration/OracleArbitration";
 import { SectionProps } from "views/RealityModule/RealityModule";
+import { ARBITRATOR_OPTIONS } from "services";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -67,7 +68,7 @@ export const OracleSection: React.FC<SectionProps> = ({
     outcomes: [{ outcome: "" }, { outcome: "" }],
   });
   const [instanceData, setInstanceData] = useState<OracleInstanceData>({
-    instance: "0x",
+    instanceAddress: "0xDf33060F476511F806C72719394da1Ad64",
     instanceType: "eth",
   });
   const [delayData, setDelayData] = useState<OracleDelayData>({
@@ -79,7 +80,7 @@ export const OracleSection: React.FC<SectionProps> = ({
     bond: 0,
   });
   const [arbitratorData, setArbitratorData] = useState<OracleArbitratorData>({
-    arbitrator: "0x",
+    arbitratorOption: ARBITRATOR_OPTIONS.NO_ARBITRATOR,
   });
 
   const collectData = (): OracleSectionData => ({

@@ -21,7 +21,6 @@ export const setTextRecordTx = async (
   const nameHash = ethers.utils.namehash(ensName);
   const populatedTx = await contract.populateTransaction.setText(
     nameHash,
-    "snapshot",
     key,
     content
   );

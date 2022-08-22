@@ -1,69 +1,50 @@
 import { ethers } from "ethers";
 import {
   deployRealityModule as deployRealityModuleInternal,
+  getArbitrator,
   RealityModuleParams as RealityModuleParamsInternal,
 } from "../../services";
 import { getNetworkNativeAsset } from "../../utils/networks";
-import snapshot from "@snapshot-labs/snapshot.js";
 import * as ipfs from "../../utils/ipfs";
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
-import R from "ramda";
+import * as R from "ramda";
 import { setTextRecordTx } from "utils/ens";
-import { SdkInstance } from "@gnosis.pm/safe-apps-sdk";
+import { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk";
+import { SetupData } from "./RealityModule";
+import * as snapshot from "../../utils/snapshot";
 
-const MULTI_SEND_CONTRACT = process.env.MULTI_SEND_CONTRACT;
-
-export interface RealityModuleParams {
-  executorAddress: string;
-  oracleAddress: string;
-  minimumBond: number;
-  templateId: string;
-  timeoutInSeconds: number;
-  cooldownInSeconds: number;
-  expirationInSeconds: number;
-  arbitratorAddress: string;
-  // bondTokenAddress: string; // using the network native asset for now
-}
-
-export interface SetupParams {
-  provider: ethers.providers.JsonRpcProvider;
-  safeAddress: string;
-  chainId: number;
-  ensName: string;
-  realityModuleParams: RealityModuleParams;
-  safeSdk: SdkInstance;
-}
+const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT;
 
 /**
  * Sets up the Reality Module.
  *
  * @notice The input variables are not checked for validity here, as this happens in the UI.
  */
-export const setup = async ({
-  provider,
-  safeAddress,
-  chainId,
-  realityModuleParams,
-  safeSdk,
-  ensName,
-}: SetupParams) => {
+export const setup = async (
+  provider: ethers.providers.JsonRpcProvider,
+  safeSdk: SdkInstance,
+  safeInfo: SafeInfo,
+  executorAddress: string,
+  setupData: SetupData
+) => {
   const deploymentRealityModuleTxs = deployRealityModuleTxs(
-    chainId,
-    safeAddress,
-    realityModuleParams
+    safeInfo.chainId,
+    safeInfo.safeAddress,
+    executorAddress,
+    setupData
   );
   const addSafeToSnapshotTxs = await addSafeSnapToSnapshotSpaceTxs(
     provider,
-    ensName,
-    realityModuleParams.oracleAddress,
-    chainId
+    setupData.proposal.ensName,
+    setupData.oracle.instanceData.instanceAddress,
+    safeInfo.chainId
   );
 
   const txs = [...deploymentRealityModuleTxs, ...addSafeToSnapshotTxs];
 
   await safeSdk.txs.send({ txs });
 
-  await pokeSnapshotAPI();
+  // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
 };
 
 /**
@@ -79,31 +60,28 @@ export const setup = async ({
 const deployRealityModuleTxs = (
   chainId: number,
   safeAddress: string,
-  params: RealityModuleParams
+  executorAddress: string,
+  setupData: SetupData
 ): Transaction[] => {
-  const {
-    executorAddress,
-    oracleAddress,
-    minimumBond,
-    templateId,
-    timeoutInSeconds,
-    cooldownInSeconds,
-    expirationInSeconds,
-    arbitratorAddress,
-  } = params;
   const bondToken = getNetworkNativeAsset(chainId);
   const args: RealityModuleParamsInternal = {
-    executor: executorAddress ?? safeAddress,
+    executor: executorAddress,
     bond: ethers.utils
-      .parseUnits(minimumBond.toString(), bondToken.decimals)
+      .parseUnits(setupData.oracle.bondData.bond.toString(), bondToken.decimals)
       .toString(),
-    templateId: templateId,
-    timeout: timeoutInSeconds.toString(),
-    cooldown: cooldownInSeconds.toString(),
-    expiration: expirationInSeconds.toString(),
-    arbitrator: arbitratorAddress,
-    oracle: oracleAddress,
+    templateId: "0", // TODO: this is a "empty" template, we need to deploy a new template and add its id here
+    timeout: setupData.oracle.delayData.timeout.toString(),
+    cooldown: setupData.oracle.delayData.cooldown.toString(),
+    expiration: setupData.oracle.delayData.expiration.toString(),
+    arbitrator: getArbitrator(
+      chainId,
+      setupData.oracle.arbitratorData.arbitratorOption
+    ),
+    oracle: setupData.oracle.instanceData.instanceAddress,
   };
+  console.log("args", args);
+  console.log("safeAddress", safeAddress);
+  console.log("chainId", chainId);
   return deployRealityModuleInternal(safeAddress, chainId, args, false);
 };
 
@@ -129,7 +107,7 @@ export const addSafeSnapToSettings = (
 const addSafeSnapToSnapshotSpaceTxs = async (
   provider: ethers.providers.JsonRpcProvider,
   ensName: string,
-  realityAddress: string,
+  oracleAddress: string,
   chainId: number
 ): Promise<Transaction[]> => {
   // 1. Get the current Space setting file.
@@ -138,15 +116,24 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     throw new Error(`ENS ${ensName} not found`);
   }
   const currentEnsSnapshotRecord = await ensResolver.getText("snapshot"); // for instance, "ipfs://QmWUemB5QDr6Zkp2tqQRcEW1ZC7n4MiLaE6CFneVJUeYyD"
-  const originalSpaceSettings = await ipfs.getJsonData(
-    currentEnsSnapshotRecord
-  );
+  console.log("currentEnsSnapshotRecord", currentEnsSnapshotRecord);
+  if (!currentEnsSnapshotRecord) {
+    throw new Error(
+      `ENS ${ensName} has no snapshot record, a Snapshot Space is required`
+    );
+  }
+
+  const originalSpaceSettings = await (currentEnsSnapshotRecord.includes(
+    "snapshot.page"
+  )
+    ? snapshot.getSnapshotSpaceSettings(ensName)
+    : ipfs.getJsonData(currentEnsSnapshotRecord));
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
   const newSpaceSettings = addSafeSnapToSettings(
     originalSpaceSettings,
     chainId,
-    realityAddress
+    oracleAddress
   );
   // validate the new schema
   if (
@@ -155,9 +142,11 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     throw new Error("The new settings file is changed in unexpected ways");
   }
 
-  // 3. Deploy the modified settings file to IPFS.
-  const cid = await ipfs.add(newSpaceSettings);
+  console.log("original space", originalSpaceSettings);
+  console.log("new space", newSpaceSettings);
 
+  // 3. Deploy the modified settings file to IPFS.
+  const cid = await ipfs.add(JSON.stringify(newSpaceSettings));
   // 4. Pin the new file. No need, as long as we keep it available in our local
   // IPFS node (running in the browser) until Snapshot picks it up, they will pin it..
 
@@ -166,7 +155,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     provider,
     ensName,
     "snapshot",
-    cid.toString()
+    `ipfs/${cid.toString()}`
   );
 
   return [setEnsRecordTx];
@@ -184,7 +173,8 @@ export const checkNewSnapshotSettingsValidity = (
     ),
     // validate the schema
     // we must be strict here, if not a truthy error value can be returned
-    snapshot.utils.validateSchema(snapshot.schemas.space, newSettings) === true
+    snapshot.validateSchema(newSettings) === true
   );
 
-const pokeSnapshotAPI = async () => {};
+// const pokeSnapshotAPI = async (ensName: string) =>
+//   fetch(`https://hub.snapshot.org/api/spaces/${ensName}/poke`);
