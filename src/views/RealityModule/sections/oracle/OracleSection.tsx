@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Link } from "components/text/Link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ZodiacPaper } from "zodiac-ui-components";
 import {
   OracleTemplate,
@@ -52,11 +52,7 @@ export const ORACLE_MAINNET_OPTION = [
     label: "GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9",
     value: "GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9",
   },
-  {
-    label: "SWISE-0x867092A32bC16816F12Fb326EfF7A2865E1ec138",
-    value: "SWISE-0x867092A32bC16816F12Fb326EfF7A2865E1ec138",
-  },
-  { label: "Add Custom Instance", value: "custom" },
+  // { label: "Add Custom Instance", value: "custom" },
 ];
 
 export const ORACLE_TEST_OPTION = [
@@ -64,7 +60,7 @@ export const ORACLE_TEST_OPTION = [
     label: "ETH-0xDf33060F476511F806C72719394da1Ad64",
     value: "ETH-0xDf33060F476511F806C72719394da1Ad64",
   },
-  { label: "Add Custom Instance", value: "custom" },
+  // { label: "Add Custom Instance", value: "custom" },
 ];
 
 export interface InputPartProps {
@@ -83,11 +79,13 @@ export type OracleSectionData = {
 export const OracleSection: React.FC<SectionProps> = ({
   handleBack,
   handleNext,
+  setupData,
 }) => {
   const classes = useStyles();
   const { safe } = useSafeAppsSDK();
   const options =
     safe.chainId === 1 ? ORACLE_MAINNET_OPTION : ORACLE_TEST_OPTION;
+
   const [templateData, setTemplateData] = useState<OracleTemplateData>({
     template: "default",
     language: "english",
@@ -95,22 +93,28 @@ export const OracleSection: React.FC<SectionProps> = ({
     templateType: "bool",
     outcomes: [{ outcome: "" }, { outcome: "" }],
   });
+
   const [instanceData, setInstanceData] = useState<OracleInstanceData>({
     instanceAddress: options[0].value.substr(options[0].value.indexOf("-") + 1),
     instanceType: options[0].value.substr(0, options[0].value.indexOf("-")) as
       | "ETH"
       | "GNO"
-      | "SWISE"
       | "custom",
   });
+
   const [delayData, setDelayData] = useState<OracleDelayData>({
     timeout: 0,
+    timeoutUnit: "hours",
     cooldown: 0,
+    cooldownUnit: "hours",
     expiration: 0,
+    expirationUnit: "hours",
   });
+
   const [bondData, setBondData] = useState<OracleBondData>({
-    bond: 0,
+    bond: 0.01,
   });
+
   const [arbitratorData, setArbitratorData] = useState<OracleArbitratorData>({
     arbitratorOption: ARBITRATOR_OPTIONS.NO_ARBITRATOR,
   });
@@ -122,6 +126,23 @@ export const OracleSection: React.FC<SectionProps> = ({
     bondData,
     arbitratorData,
   });
+
+  useEffect(() => {
+    if (setupData && setupData.oracle) {
+      const {
+        bondData,
+        delayData,
+        instanceData,
+        templateData,
+        arbitratorData,
+      } = setupData.oracle;
+      setBondData(bondData);
+      setDelayData(delayData);
+      setInstanceData(instanceData);
+      setTemplateData(templateData);
+      setArbitratorData(arbitratorData);
+    }
+  }, [setupData]);
 
   return (
     <ZodiacPaper borderStyle='single' className={classes.paperContainer}>

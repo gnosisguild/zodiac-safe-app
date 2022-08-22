@@ -70,7 +70,6 @@ export const ProposalSection: React.FC<SectionProps> = ({
   setupData,
 }) => {
   const { safe } = useSafeAppsSDK();
-  console.log(safe);
   const { owners } = safe as unknown as SafeInfo;
   const provider = getProvider(safe.chainId);
   const classes = useStyles();
@@ -128,12 +127,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
   // };
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Configure Proposal Space</Typography>
+              <Typography variant='h3'>Configure Proposal Space</Typography>
             </Grid>
             <Grid item>
               <Typography>
@@ -145,11 +144,10 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <Typography>
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
-                  underline="always"
-                  href="https://snapshot.com"
+                  underline='always'
+                  href='https://snapshot.com'
                   target={"_blank"}
-                  color="inherit"
-                >
+                  color='inherit'>
                   Get started here.
                 </Link>
               </Typography>
@@ -162,12 +160,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Proposal Configuration
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2" className={classes.textSubdued}>
+              <Typography variant='body2' className={classes.textSubdued}>
                 {/* Enter your snapshot space ENS domain below to get started. If
                 you&apos;d prefer to provide a custom proposal integration,
                 select Custom and provide the appropriate URL where the
@@ -218,9 +216,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <ZodiacTextField
                 value={ensName}
                 onChange={({ target }) => setEnsName(target.value)} // TODO: validation
-                label="Enter your snapshot ENS domain."
-                placeholder="ex: gnosis.eth"
-                borderStyle="double"
+                label='Enter your snapshot ENS domain.'
+                placeholder='ex: gnosis.eth'
+                borderStyle='double'
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
               {invalidEns && (
@@ -241,22 +239,20 @@ export const ProposalSection: React.FC<SectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent="center"
-            alignItems="center"
-          >
+            justifyContent='center'
+            alignItems='center'>
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button size='medium' variant='text' onClick={handleBack}>
                 Cancel
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
+                color='secondary'
+                size='medium'
+                variant='contained'
                 disabled={!ensAddress || invalidEns}
-                onClick={() => handleNext(collectSectionData())}
-              >
+                onClick={() => handleNext(collectSectionData())}>
                 Next
               </Button>
             </Grid>

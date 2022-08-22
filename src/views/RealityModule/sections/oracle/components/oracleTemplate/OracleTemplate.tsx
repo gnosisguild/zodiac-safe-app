@@ -124,7 +124,7 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
   return (
     <Grid container spacing={2} className={classes.container}>
       <Grid item>
-        <Grid container spacing={1}>
+        <Grid container spacing={1} direction='column'>
           <Grid item>
             <Typography variant='h4' color='textSecondary'>
               Oracle Template
@@ -151,6 +151,7 @@ export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
               options={ORACLE_TEMPLATE_OPTIONS}
               onChange={(evt) => set("template")(evt.target.value as string)}
               disableUnderline
+              disabled
               label='Select template:'
               tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
             />

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 export type Data = {
   instanceAddress: string;
-  instanceType: "ETH" | "GNO" | "SWISE" | "custom";
+  instanceType: "ETH" | "GNO" | "custom";
 };
 
 export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
@@ -55,6 +55,10 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
   const get = (key: keyof Data) => data[key];
 
   const handleInstance = (instance: string) => {
+    if (instance === "custom") {
+      set("instanceType")(instance);
+      return;
+    }
     const address = instance.substr(instance.indexOf("-") + 1);
     const instanceType = instance.substr(0, instance.indexOf("-"));
     setSelectedOracle(instance);
