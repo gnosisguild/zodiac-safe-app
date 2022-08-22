@@ -119,7 +119,7 @@ export const RealityModule: React.FC = () => {
   const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK();
   const delayModules = useRootSelector(getDelayModules);
   const dispatch = useRootDispatch();
-  const [activeStep, setActiveStep] = useState<number>(1);
+  const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState({
     proposal: false,
     oracle: false,
@@ -170,7 +170,7 @@ export const RealityModule: React.FC = () => {
               <BadgeIcon icon={"reality"} size={60} />
             </Grid>
             <Grid item>
-              <Typography variant='h5'>Reality Module</Typography>
+              <Typography variant="h5">Reality Module</Typography>
               <TagList
                 className={classes.tag}
                 tags={["Stackable", "From Gnosis Guild"]}
@@ -182,10 +182,11 @@ export const RealityModule: React.FC = () => {
           <Typography gutterBottom>
             Allows Reality.eth questions to execute a transaction when resolved.{" "}
             <Link
-              underline='always'
-              href='https://github.com/gnosis/zodiac-module-reality'
+              underline="always"
+              href="https://github.com/gnosis/zodiac-module-reality"
               target={"_blank"}
-              color='inherit'>
+              color="inherit"
+            >
               Read more here.
             </Link>
           </Typography>
@@ -194,26 +195,29 @@ export const RealityModule: React.FC = () => {
           <Divider />
         </Grid>
         <Grid item>
-          <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+          <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
             <Grid
               container
-              justifyContent='space-between'
-              alignItems='center'
-              style={{ marginBottom: 15 }}>
+              justifyContent="space-between"
+              alignItems="center"
+              style={{ marginBottom: 15 }}
+            >
               <Grid item>
                 <Typography
-                  variant='h4'
+                  variant="h4"
                   gutterBottom
-                  className={classes.paperTitle}>
+                  className={classes.paperTitle}
+                >
                   Add Reality Module
                 </Typography>
               </Grid>
               <Grid item>
                 <Button
-                  color='secondary'
-                  size='medium'
-                  variant='outlined'
-                  onClick={() => dispatch(setRealityModuleScreen(false))}>
+                  color="secondary"
+                  size="medium"
+                  variant="outlined"
+                  onClick={() => dispatch(setRealityModuleScreen(false))}
+                >
                   Cancel
                 </Button>
               </Grid>
@@ -221,19 +225,22 @@ export const RealityModule: React.FC = () => {
             <Stepper
               activeStep={activeStep}
               className={classes.stepperRoot}
-              orientation='vertical'>
+              orientation="vertical"
+            >
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
                   <StepLabel
                     onClick={() =>
                       handleOpenSection(index, label as keyof SetupData)
-                    }>
+                    }
+                  >
                     <Typography
-                      variant='h6'
+                      variant="h6"
                       className={classnames(
                         index <= activeStep && "clickable",
                         "step-label"
-                      )}>
+                      )}
+                    >
                       {label}
                     </Typography>{" "}
                   </StepLabel>
