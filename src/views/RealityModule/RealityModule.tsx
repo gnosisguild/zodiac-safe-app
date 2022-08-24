@@ -172,6 +172,7 @@ export const RealityModule: React.FC = () => {
 
   useEffect(() => {
     if (loading && modulesList.length > modules) {
+      setModules(modulesList.length);
       setLoading(false);
       dispatch(setRealityModuleScreen(false));
     }
