@@ -5,6 +5,7 @@ import ErrorOutline from "@material-ui/icons/ErrorOutline";
 
 interface AlertProps {
   address?: string;
+  msg: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
+export const DangerAlert: React.FC<AlertProps> = ({ address, msg }) => {
   const classes = useStyles();
   return (
     <ZodiacPaper borderStyle='double' className={classes.paperContainer}>
@@ -46,21 +47,21 @@ export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
         <Grid item>
           <Grid container spacing={1} direction='column'>
             <Grid item>
-              <Typography variant='body2'>
-                The ENS that you’ve entered is not owned by a safe. This gives unilateral control to the individual with
-                this address:
-              </Typography>
+              <Typography variant='body2'>{msg}</Typography>
             </Grid>
             {address && (
               <Grid item>
-                <ZodiacPaper borderStyle='single' className={classes.addressPaperContainer}>
+                <ZodiacPaper
+                  borderStyle='single'
+                  className={classes.addressPaperContainer}>
                   <Typography variant='body2'>{address}</Typography>
                 </ZodiacPaper>
               </Grid>
             )}
             <Grid item>
               <Typography variant='body2'>
-                We recommend transferring the ENS to a multisig safe before continuing.
+                We recommend transferring the ENS to a multisig safe before
+                continuing.
               </Typography>
             </Grid>
           </Grid>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRootDispatch, useRootSelector } from "store";
 import { setRealityModuleScreen } from "../../store/modules";
 import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components";
@@ -32,7 +32,7 @@ import {
 import { setup } from "./setupService";
 import { getProvider } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getDelayModules } from "store/modules/selectors";
+import { getDelayModules, getModulesList } from "store/modules/selectors";
 
 export interface SectionProps {
   handleNext: (stepData: any) => void;
@@ -119,6 +119,8 @@ export const RealityModule: React.FC = () => {
   const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK();
   const delayModules = useRootSelector(getDelayModules);
   const dispatch = useRootDispatch();
+  const modulesList = useRootSelector(getModulesList);
+  const [modules, setModules] = useState<number>(modulesList.length);
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState({
     proposal: false,
@@ -126,7 +128,7 @@ export const RealityModule: React.FC = () => {
     monitoring: false,
     review: false,
   });
-
+  const [loading, setLoading] = useState<boolean>(false);
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
   const [setupData, setSetupData] = useState<SetupData>();
 
@@ -149,18 +151,31 @@ export const RealityModule: React.FC = () => {
     setCompleted({ ...completed, [step]: false });
   };
 
-  const handleDone = (delayModuleExecutor?: string) => {
+  const handleDone = async (delayModuleExecutor?: string) => {
     const provider = getProvider(safeInfo.chainId);
+    setLoading(true);
     if (setupData == null) {
+      setLoading(false);
       throw new Error("No setup data");
     }
     const executorAddress =
       delayModuleExecutor !== "" || delayModuleExecutor == null
         ? safeInfo.safeAddress
         : delayModuleExecutor;
-    setup(provider, safeSdk, safeInfo, executorAddress, setupData);
+    try {
+      await setup(provider, safeSdk, safeInfo, executorAddress, setupData);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    if (loading && modulesList.length > modules) {
+      setLoading(false);
+      dispatch(setRealityModuleScreen(false));
+    }
+  }, [dispatch, loading, modules, modulesList]);
   return (
     <div className={classes.root}>
       <Grid container spacing={2} className={classes.container}>
@@ -269,6 +284,7 @@ export const RealityModule: React.FC = () => {
                           goToStep={setActiveStep}
                           setupData={setupData}
                           delayModules={delayModules}
+                          loading={loading}
                         />
                       </>
                     )}

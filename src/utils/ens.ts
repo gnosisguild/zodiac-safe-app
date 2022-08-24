@@ -62,14 +62,12 @@ export const checkIfIsOwner = async (
   const name = ensName.split(".")[0]; // only supports toplevel
   const labelHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(name));
   const tokenId = BigNumber.from(labelHash).toString();
-
   const contract = new ethers.Contract(
     ensImplementation,
     abiImplementation,
     provider
   );
   const nftOwner = await contract.ownerOf(tokenId);
-
   return ethers.utils.getAddress(nftOwner) === ethers.utils.getAddress(address);
 };
 

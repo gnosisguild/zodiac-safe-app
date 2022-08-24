@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Loader } from "@gnosis.pm/safe-react-components";
 import {
+  Box,
   Button,
   Divider,
   FormHelperText,
@@ -15,7 +17,6 @@ import { DangerAlert } from "components/Alert/DangerAlert";
 import { Link } from "components/text/Link";
 import React, { useEffect, useState } from "react";
 import { getProvider } from "services";
-import { SafeInfo } from "store/modules/models";
 import { checkIfIsController, checkIfIsOwner } from "utils/ens";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
@@ -28,7 +29,11 @@ const useStyles = makeStyles((theme) => ({
   paperContainer: {
     padding: theme.spacing(2),
   },
-
+  loading: {
+    width: "15px !important",
+    height: "15px !important",
+    marginRight: 8,
+  },
   radio: {
     marginLeft: -2,
     padding: 2,
@@ -57,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }));
 
 export type ProposalSectionData = {
@@ -70,7 +76,6 @@ export const ProposalSection: React.FC<SectionProps> = ({
   setupData,
 }) => {
   const { safe } = useSafeAppsSDK();
-  const { owners } = safe as unknown as SafeInfo;
   const provider = getProvider(safe.chainId);
   const classes = useStyles();
   // const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
@@ -78,7 +83,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
   // );
   const [ensName, setEnsName] = useState<string>("");
   const [ensAddress, setEnsAddress] = useState<string>("");
-  const [invalidEns, setInvalidEns] = useState<boolean>(false);
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [isController, setIsController] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (provider && setupData && setupData.proposal) {
@@ -88,29 +95,37 @@ export const ProposalSection: React.FC<SectionProps> = ({
   }, []);
 
   useEffect(() => {
-    if (provider && ensName) {
-      validEns();
+    if (ensName) {
+      if (ensName.length > 5) {
+        const validateInfo = async () => {
+          await validEns();
+        };
+        validateInfo();
+      } else {
+        setIsController(false);
+        setIsOwner(false);
+      }
     }
-  }, [provider, ensName]);
+  }, [ensName]);
 
   const validEns = async () => {
+    setLoading(true);
     const address = await provider.resolveName(ensName);
     if (address) {
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress);
-      console.log("isOwner", isOwner);
+
       const isController = await checkIfIsController(
         provider,
         ensName,
         safe.safeAddress
       );
-      console.log("isController", isController);
-
+      setIsOwner(isOwner);
+      setIsController(isController);
       setEnsAddress(address);
-      setInvalidEns(false);
+      setLoading(false);
       return;
     } else {
-      setEnsAddress("");
-      setInvalidEns(true);
+      setLoading(false);
       return;
     }
   };
@@ -215,21 +230,37 @@ export const ProposalSection: React.FC<SectionProps> = ({
             <Grid item>
               <ZodiacTextField
                 value={ensName}
-                onChange={({ target }) => setEnsName(target.value)} // TODO: validation
+                onChange={({ target }) => setEnsName(target.value)}
                 label='Enter your snapshot ENS domain.'
                 placeholder='ex: gnosis.eth'
                 borderStyle='double'
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
-              {invalidEns && (
-                <FormHelperText>Please enter a valid ENS domain</FormHelperText>
-              )}
+              <Box className={classes.errorContainer}>
+                {loading && (
+                  <Loader
+                    className={classes.loading}
+                    size='sm'
+                    color='background'
+                  />
+                )}
+                {ensAddress && ensAddress.length > 5 && !isController && (
+                  <FormHelperText>
+                    The Safe must be the controller of the ENS
+                  </FormHelperText>
+                )}
+              </Box>
             </Grid>
-            <Grid item>
-              {ensAddress && owners.length && !owners.includes(ensAddress) && (
-                <DangerAlert address={ensAddress} />
-              )}
-            </Grid>
+            {ensAddress && !isOwner && (
+              <Grid item>
+                <DangerAlert
+                  msg={
+                    "The ENS that you've entered is not owned by a safe. This gives unilateral control to the individual with this address:"
+                  }
+                  address={ensAddress}
+                />
+              </Grid>
+            )}
           </Grid>
         </Grid>
         <Grid item style={{ paddingBottom: 0 }}>
@@ -251,7 +282,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 color='secondary'
                 size='medium'
                 variant='contained'
-                disabled={!ensAddress || invalidEns}
+                disabled={!isController}
                 onClick={() => handleNext(collectSectionData())}>
                 Next
               </Button>

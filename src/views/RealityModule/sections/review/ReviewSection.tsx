@@ -16,11 +16,15 @@ import { DelayModule, ModuleType } from "store/modules/models";
 import { AttachModuleForm } from "views/AddModule/AttachModuleForm";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { OracleSectionData } from "../oracle/OracleSection";
+import { Loader } from "@gnosis.pm/safe-react-components";
+import { BigNumber } from "ethers";
+import { unitConversion } from "components/input/TimeSelect";
 
 interface ReviewSectionProps extends SectionProps {
   goToStep: (step: number) => void;
   delayModules: DelayModule[];
   setupData: SetupData | undefined;
+  loading: boolean;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -71,6 +75,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     fontWeight: "bold",
   },
+  loading: {
+    width: "15px !important",
+    height: "15px !important",
+  },
 }));
 
 const SECTIONS = [
@@ -97,6 +105,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   goToStep,
   delayModules,
   setupData,
+  loading,
 }) => {
   const classes = useStyles();
   const { safe } = useSafeAppsSDK();
@@ -159,6 +168,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               <CircleStep
                 label={item.label}
                 number={item.number}
+                disabled={loading}
                 onClick={() => goToStep(item.section)}
               />
             </Grid>
@@ -187,7 +197,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                         {setupData.proposal.ensName} space pass the execution of
                         the array of Module transactions that have the hash 0x%s
                         and does it meet the requirements of the document
-                        referenced in the dao requirements record at
+                        referenced in the dao requirements record at{" "}
                         {setupData.proposal.ensName}? The hash is the keccak of
                         the concatenation of the individual EIP-712 hashes of
                         the Module transactions. If this question was asked
@@ -215,21 +225,35 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                       <Grid item>
                         <Typography>Timeout:</Typography>
                         <Typography className={classes.label}>
-                          {oracleData.delayData.timeout}{" "}
+                          {BigNumber.from(oracleData.delayData.timeout)
+                            .div(
+                              unitConversion[oracleData.delayData.timeoutUnit]
+                            )
+                            .toString()}{" "}
                           {oracleData.delayData.timeoutUnit}
                         </Typography>
                       </Grid>
                       <Grid item>
                         <Typography>Cooldown:</Typography>
                         <Typography className={classes.label}>
-                          {oracleData.delayData.cooldown}{" "}
+                          {BigNumber.from(oracleData.delayData.cooldown)
+                            .div(
+                              unitConversion[oracleData.delayData.cooldownUnit]
+                            )
+                            .toString()}{" "}
                           {oracleData.delayData.cooldownUnit}
                         </Typography>
                       </Grid>
                       <Grid item>
                         <Typography>Expiration:</Typography>
                         <Typography className={classes.label}>
-                          {oracleData.delayData.expiration}{" "}
+                          {BigNumber.from(oracleData.delayData.expiration)
+                            .div(
+                              unitConversion[
+                                oracleData.delayData.expirationUnit
+                              ]
+                            )
+                            .toString()}{" "}
                           {oracleData.delayData.expirationUnit}
                         </Typography>
                       </Grid>
@@ -313,7 +337,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             justifyContent='center'
             alignItems='center'>
             <Grid item>
-              <Button size='medium' variant='text' onClick={handleBack}>
+              <Button
+                size='medium'
+                variant='text'
+                onClick={handleBack}
+                disabled={loading}>
                 Back
               </Button>
             </Grid>
@@ -322,7 +350,18 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                 color='secondary'
                 size='medium'
                 variant='contained'
-                startIcon={<ArrowUpwardIcon />}
+                startIcon={
+                  loading ? (
+                    <Loader
+                      className={classes.loading}
+                      size='sm'
+                      color='background'
+                    />
+                  ) : (
+                    <ArrowUpwardIcon />
+                  )
+                }
+                disabled={loading}
                 onClick={handleNext}>
                 Submit
               </Button>
