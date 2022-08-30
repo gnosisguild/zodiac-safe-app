@@ -60,8 +60,7 @@ export const DangerAlert: React.FC<AlertProps> = ({ address, msg }) => {
             )}
             <Grid item>
               <Typography variant='body2'>
-                We recommend transferring the ENS to a multisig safe before
-                continuing.
+                We recommend transferring the ENS name to the Safe before
               </Typography>
             </Grid>
           </Grid>

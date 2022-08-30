@@ -1,11 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Loader } from "@gnosis.pm/safe-react-components";
 import {
-  Box,
   Button,
   Divider,
-  FormHelperText,
   Grid,
   makeStyles,
   // FormControlLabel,
@@ -20,6 +17,7 @@ import { getProvider } from "services";
 import { checkIfIsController, checkIfIsOwner } from "utils/ens";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
+import { ProposalStatus } from "./components/proposalStatus/ProposalStatus";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -86,6 +84,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isController, setIsController] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
+  const [showControllerErrorAlert, setControllerShowErrorAlert] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (provider && setupData && setupData.proposal) {
@@ -96,12 +97,15 @@ export const ProposalSection: React.FC<SectionProps> = ({
 
   useEffect(() => {
     if (ensName) {
-      if (ensName.length > 5) {
+      if (ensName.includes(".eth")) {
+        setLoading(true);
         const validateInfo = async () => {
           await validEns();
         };
         validateInfo();
       } else {
+        setShowErrorAlert(false);
+        setControllerShowErrorAlert(false);
         setIsController(false);
         setIsOwner(false);
       }
@@ -109,23 +113,27 @@ export const ProposalSection: React.FC<SectionProps> = ({
   }, [ensName]);
 
   const validEns = async () => {
-    setLoading(true);
     const address = await provider.resolveName(ensName);
     if (address) {
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress);
-
       const isController = await checkIfIsController(
         provider,
         ensName,
         safe.safeAddress
       );
       setIsOwner(isOwner);
+      setShowErrorAlert(!isOwner);
       setIsController(isController);
+      setControllerShowErrorAlert(!isController);
       setEnsAddress(address);
       setLoading(false);
       return;
     } else {
       setLoading(false);
+      setIsOwner(false);
+      setShowErrorAlert(false);
+      setIsController(false);
+      setControllerShowErrorAlert(false);
       return;
     }
   };
@@ -140,6 +148,66 @@ export const ProposalSection: React.FC<SectionProps> = ({
   //     (event.target as HTMLInputElement).value as "snapshot" | "custom"
   //   );
   // };
+
+  const handleStatus = (
+    type: "controller" | "owner"
+  ): "loading" | "success" | "error" => {
+    if (loading) {
+      return "loading";
+    }
+    if (type === "controller" && isController) {
+      return "success";
+    }
+    if (type === "controller" && showControllerErrorAlert) {
+      return "error";
+    }
+    if (type === "owner" && isOwner) {
+      return "success";
+    }
+    if (type === "owner" && showErrorAlert) {
+      return "error";
+    }
+    return "loading";
+  };
+
+  const handleStatusMessage = (type: "controller" | "owner"): string => {
+    if (type === "controller") {
+      if (loading) {
+        return "Confirming the safe is the controller of the ENS name. Please wait...";
+      }
+      if (isController) {
+        return "The safe is the controller of the ENS name.";
+      }
+      if (showControllerErrorAlert) {
+        return "The safe must be the controller of the ENS name.";
+      }
+    }
+    if (type === "owner") {
+      if (loading) {
+        return "Confirming that the safe is the owner of the ENS name. Please wait...";
+      }
+      if (isOwner) {
+        return "The safe is the owner of the ENS name.";
+      }
+      if (showErrorAlert) {
+        return "The safe is not the owner of the ENS name. Please transfer ENS to this safe or enter a different ENS before continuing.";
+      }
+    }
+
+    return "";
+  };
+
+  const handleEns = (ens: string) => {
+    if (ens === "") {
+      setShowErrorAlert(false);
+      setControllerShowErrorAlert(false);
+      setIsController(false);
+      setIsOwner(false);
+      setEnsName("");
+    } else {
+      setEnsName(ens);
+    }
+  };
 
   return (
     <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
@@ -230,32 +298,33 @@ export const ProposalSection: React.FC<SectionProps> = ({
             <Grid item>
               <ZodiacTextField
                 value={ensName}
-                onChange={({ target }) => setEnsName(target.value)}
-                label='Enter your snapshot ENS domain.'
+                onChange={({ target }) => handleEns(target.value)}
+                label='Enter the Snapshot ENS name.'
                 placeholder='ex: gnosis.eth'
                 borderStyle='double'
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
-              <Box className={classes.errorContainer}>
-                {loading && (
-                  <Loader
-                    className={classes.loading}
-                    size='sm'
-                    color='background'
-                  />
-                )}
-                {ensAddress && ensAddress.length > 5 && !isController && (
-                  <FormHelperText>
-                    The Safe must be the controller of the ENS
-                  </FormHelperText>
-                )}
-              </Box>
+              <br />
+              <br />
+
+              {(loading || isController || showControllerErrorAlert) && (
+                <ProposalStatus
+                  status={handleStatus("controller")}
+                  message={handleStatusMessage("controller")}
+                />
+              )}
+              {(loading || isOwner || showErrorAlert) && (
+                <ProposalStatus
+                  status={handleStatus("owner")}
+                  message={handleStatusMessage("owner")}
+                />
+              )}
             </Grid>
             {ensAddress && !isOwner && (
               <Grid item>
                 <DangerAlert
                   msg={
-                    "The ENS that you've entered is not owned by a safe. This gives unilateral control to the individual with this address:"
+                    "The connected safe does not own the ENS name that you've entered. The owner of the ENS name has unilateral control of the ENS name (for instance, the owner can change the controller and the ENS records at any time)."
                   }
                   address={ensAddress}
                 />
