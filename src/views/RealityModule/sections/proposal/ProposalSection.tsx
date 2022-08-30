@@ -89,7 +89,6 @@ export const ProposalSection: React.FC<SectionProps> = ({
   useEffect(() => {
     if (provider && setupData && setupData.proposal) {
       setEnsName(setupData.proposal.ensName);
-      validEns();
     }
   }, []);
 
@@ -125,6 +124,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
       setLoading(false);
       return;
     } else {
+      setEnsAddress("");
       setLoading(false);
       setIsOwner(false);
       setIsController(false);
