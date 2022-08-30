@@ -190,7 +190,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
         return "The safe is the owner of the ENS name.";
       }
       if (showErrorAlert) {
-        return "The safe is not the owner of the ENS name. Please transfer ENS to this safe or enter a different ENS before continuing.";
+        return "The safe is not the owner of the ENS name. Please transfer the ENS name to this safe or enter a different ENS name before continuing.";
       }
     }
 
@@ -210,12 +210,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
   };
 
   return (
-    <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
+    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h3'>Configure Proposal Space</Typography>
+              <Typography variant="h3">Configure Proposal Space</Typography>
             </Grid>
             <Grid item>
               <Typography>
@@ -227,10 +227,11 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <Typography>
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
-                  underline='always'
-                  href='https://snapshot.com'
+                  underline="always"
+                  href="https://snapshot.com"
                   target={"_blank"}
-                  color='inherit'>
+                  color="inherit"
+                >
                   Get started here.
                 </Link>
               </Typography>
@@ -243,12 +244,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant='h4' color='textSecondary'>
+              <Typography variant="h4" color="textSecondary">
                 Proposal Configuration
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant='body2' className={classes.textSubdued}>
+              <Typography variant="body2" className={classes.textSubdued}>
                 {/* Enter your snapshot space ENS domain below to get started. If
                 you&apos;d prefer to provide a custom proposal integration,
                 select Custom and provide the appropriate URL where the
@@ -299,9 +300,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <ZodiacTextField
                 value={ensName}
                 onChange={({ target }) => handleEns(target.value)}
-                label='Enter the Snapshot ENS name.'
-                placeholder='ex: gnosis.eth'
-                borderStyle='double'
+                label="Enter the Snapshot ENS name."
+                placeholder="ex: gnosis.eth"
+                borderStyle="double"
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
               <br />
@@ -314,22 +315,24 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 />
               )}
               {(loading || isOwner || showErrorAlert) && (
-                <ProposalStatus
-                  status={handleStatus("owner")}
-                  message={handleStatusMessage("owner")}
-                />
+                <>
+                  <ProposalStatus
+                    status={handleStatus("owner")}
+                    message={handleStatusMessage("owner")}
+                  />
+                  {ensAddress && !isOwner && handleStatus("owner") === "error" && (
+                    <Grid item>
+                      <DangerAlert
+                        msg={
+                          "The connected safe does not own the ENS name that you've entered. The owner of the ENS name has unilateral control of the ENS name (for instance, the owner can change the controller and the ENS records at any time)."
+                        }
+                        address={ensAddress}
+                      />
+                    </Grid>
+                  )}
+                </>
               )}
             </Grid>
-            {ensAddress && !isOwner && (
-              <Grid item>
-                <DangerAlert
-                  msg={
-                    "The connected safe does not own the ENS name that you've entered. The owner of the ENS name has unilateral control of the ENS name (for instance, the owner can change the controller and the ENS records at any time)."
-                  }
-                  address={ensAddress}
-                />
-              </Grid>
-            )}
           </Grid>
         </Grid>
         <Grid item style={{ paddingBottom: 0 }}>
@@ -339,20 +342,22 @@ export const ProposalSection: React.FC<SectionProps> = ({
           <Grid
             container
             spacing={3}
-            justifyContent='center'
-            alignItems='center'>
+            justifyContent="center"
+            alignItems="center"
+          >
             <Grid item>
-              <Button size='medium' variant='text' onClick={handleBack}>
+              <Button size="medium" variant="text" onClick={handleBack}>
                 Cancel
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color='secondary'
-                size='medium'
-                variant='contained'
+                color="secondary"
+                size="medium"
+                variant="contained"
                 disabled={!isController}
-                onClick={() => handleNext(collectSectionData())}>
+                onClick={() => handleNext(collectSectionData())}
+              >
                 Next
               </Button>
             </Grid>
