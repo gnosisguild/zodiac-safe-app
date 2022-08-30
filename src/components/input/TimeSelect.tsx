@@ -5,7 +5,7 @@ import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.sv
 import { TextField } from "./TextField";
 import { colors } from "zodiac-ui-components";
 
-const unitConversion = {
+export const unitConversion = {
   seconds: 1,
   minutes: 60,
   hours: 3600,
@@ -18,9 +18,11 @@ interface TimeSelectProps {
   tooltipMsg?: string;
   defaultValue?: BigNumberish;
   defaultUnit?: Unit;
+  value?: string;
+  valueUnit?: Unit;
   label: string;
   variant?: "primary" | "secondary";
-  onChange(time: string): void;
+  onChange(time: string, unit: Unit): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -81,13 +83,17 @@ export const TimeSelect = ({
   onChange,
   defaultUnit = "hours",
   defaultValue = "0",
+  value,
+  valueUnit,
   label,
   variant = "primary",
   tooltipMsg,
 }: TimeSelectProps) => {
   const classes = useStyles();
   const [unit, setUnit] = useState<Unit>(defaultUnit);
-  const [amount, setAmount] = useState(BigNumber.from(defaultValue).div(unitConversion[unit]).toString());
+  const [amount, setAmount] = useState(
+    BigNumber.from(defaultValue).div(unitConversion[unit]).toString()
+  );
 
   const [open, setOpen] = useState(false);
 
@@ -100,7 +106,7 @@ export const TimeSelect = ({
     try {
       const newAmount = calculateTime(_amount || "0", unit);
       setAmount(_amount);
-      onChange(newAmount.toString());
+      onChange(newAmount.toString(), unit);
     } catch (err) {
       console.warn("invalid time");
     }
@@ -109,7 +115,7 @@ export const TimeSelect = ({
   const handleUnitChange = (newUnit: Unit) => {
     handleClose();
     setUnit(newUnit);
-    if (amount) onChange(calculateTime(amount, newUnit).toString());
+    if (amount) onChange(calculateTime(amount, newUnit).toString(), newUnit);
   };
 
   useEffect(() => {
@@ -119,6 +125,19 @@ export const TimeSelect = ({
       });
     }
   }, [selectRef]);
+
+  useEffect(() => {
+    if (value && valueUnit) {
+      if (amount === "0" && value !== amount) {
+        setAmount(
+          BigNumber.from(value).div(unitConversion[valueUnit]).toString()
+        );
+      }
+      if (unit === "hours" && valueUnit !== unit) {
+        setUnit(valueUnit);
+      }
+    }
+  }, [value, valueUnit, amount, unit]);
 
   return (
     <TextField
@@ -144,7 +163,9 @@ export const TimeSelect = ({
           ref={selectRef}
           onOpen={handleOpen}
           onClose={handleClose}
-          className={`${classes.select} ${variant === "primary" ? classes.primary : classes.secondary}`}
+          className={`${classes.select} ${
+            variant === "primary" ? classes.primary : classes.secondary
+          }`}
           MenuProps={{
             anchorOrigin: {
               vertical: "bottom",

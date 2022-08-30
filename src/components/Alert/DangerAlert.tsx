@@ -5,6 +5,7 @@ import ErrorOutline from "@material-ui/icons/ErrorOutline";
 
 interface AlertProps {
   address?: string;
+  msg: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -28,39 +29,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const DangerAlert: React.FC<AlertProps> = ({ address }) => {
+export const DangerAlert: React.FC<AlertProps> = ({ address, msg }) => {
   const classes = useStyles();
   return (
-    <ZodiacPaper borderStyle='double' className={classes.paperContainer}>
-      <Grid container spacing={2} direction='column'>
+    <ZodiacPaper borderStyle="double" className={classes.paperContainer}>
+      <Grid container spacing={2} direction="column">
         <Grid item>
           <Grid container spacing={1}>
             <Grid item>
               <ErrorOutline />
             </Grid>
             <Grid item>
-              <Typography color='inherit'>Security Risk Detected:</Typography>
+              <Typography color="inherit">Security Risk Detected:</Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
-          <Grid container spacing={1} direction='column'>
+          <Grid container spacing={1} direction="column">
             <Grid item>
-              <Typography variant='body2'>
-                The ENS that you’ve entered is not owned by a safe. This gives unilateral control to the individual with
-                this address:
-              </Typography>
+              <Typography variant="body2">{msg}</Typography>
             </Grid>
             {address && (
               <Grid item>
-                <ZodiacPaper borderStyle='single' className={classes.addressPaperContainer}>
-                  <Typography variant='body2'>{address}</Typography>
+                <ZodiacPaper
+                  borderStyle="single"
+                  className={classes.addressPaperContainer}
+                >
+                  Current ENS name owner:
+                  <Typography variant="body2">{address}</Typography>
                 </ZodiacPaper>
               </Grid>
             )}
             <Grid item>
-              <Typography variant='body2'>
-                We recommend transferring the ENS to a multisig safe before continuing.
+              <Typography variant="body2">
+                We recommend transferring the ENS name to the Safe before
+                continuing.
               </Typography>
             </Grid>
           </Grid>

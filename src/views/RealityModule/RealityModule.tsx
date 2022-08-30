@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRootDispatch, useRootSelector } from "store";
 import { setRealityModuleScreen } from "../../store/modules";
 import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components";
@@ -32,11 +32,12 @@ import {
 import { setup } from "./setupService";
 import { getProvider } from "services";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getDelayModules } from "store/modules/selectors";
+import { getDelayModules, getModulesList } from "store/modules/selectors";
 
 export interface SectionProps {
   handleNext: (stepData: any) => void;
   handleBack: () => void;
+  setupData: SetupData | undefined;
 }
 
 export type SetupData = {
@@ -49,7 +50,7 @@ export type SetupData = {
 const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
   "proposal",
   "oracle",
-  "monitoring",
+  // "monitoring",
   "review",
 ];
 
@@ -79,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
       fontFamily: "Roboto Mono",
     },
     "& .step-label": {
+      textTransform: "capitalize",
       display: "inline",
       fontFamily: "Roboto Mono",
       "&.clickable": {
@@ -117,6 +119,8 @@ export const RealityModule: React.FC = () => {
   const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK();
   const delayModules = useRootSelector(getDelayModules);
   const dispatch = useRootDispatch();
+  const modulesList = useRootSelector(getModulesList);
+  const [modules, setModules] = useState<number>(modulesList.length);
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState({
     proposal: false,
@@ -124,7 +128,7 @@ export const RealityModule: React.FC = () => {
     monitoring: false,
     review: false,
   });
-
+  const [loading, setLoading] = useState<boolean>(false);
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
   const [setupData, setSetupData] = useState<SetupData>();
 
@@ -136,7 +140,6 @@ export const RealityModule: React.FC = () => {
 
   const handleNext = (nextPage: number, step: keyof SetupData) => {
     return (stepData: any) => {
-      console.log("stepData", stepData);
       setActiveStep(nextPage);
       setCompleted({ ...completed, [step]: true });
       setSetupData({ ...setupData, [step]: stepData } as SetupData);
@@ -148,18 +151,32 @@ export const RealityModule: React.FC = () => {
     setCompleted({ ...completed, [step]: false });
   };
 
-  const handleDone = (delayModuleExecutor?: string) => {
+  const handleDone = async (delayModuleExecutor?: string) => {
     const provider = getProvider(safeInfo.chainId);
+    setLoading(true);
     if (setupData == null) {
+      setLoading(false);
       throw new Error("No setup data");
     }
     const executorAddress =
       delayModuleExecutor !== "" || delayModuleExecutor == null
         ? safeInfo.safeAddress
         : delayModuleExecutor;
-    setup(provider, safeSdk, safeInfo, executorAddress, setupData);
+    try {
+      await setup(provider, safeSdk, safeInfo, executorAddress, setupData);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    if (loading && modulesList.length > modules) {
+      setModules(modulesList.length);
+      setLoading(false);
+      dispatch(setRealityModuleScreen(false));
+    }
+  }, [dispatch, loading, modules, modulesList]);
   return (
     <div className={classes.root}>
       <Grid container spacing={2} className={classes.container}>
@@ -169,7 +186,7 @@ export const RealityModule: React.FC = () => {
               <BadgeIcon icon={"reality"} size={60} />
             </Grid>
             <Grid item>
-              <Typography variant="h5">Reality Module</Typography>
+              <Typography variant='h5'>Reality Module</Typography>
               <TagList
                 className={classes.tag}
                 tags={["Stackable", "From Gnosis Guild"]}
@@ -181,11 +198,10 @@ export const RealityModule: React.FC = () => {
           <Typography gutterBottom>
             Allows Reality.eth questions to execute a transaction when resolved.{" "}
             <Link
-              underline="always"
-              href="https://github.com/gnosis/zodiac-module-reality"
+              underline='always'
+              href='https://github.com/gnosis/zodiac-module-reality'
               target={"_blank"}
-              color="inherit"
-            >
+              color='inherit'>
               Read more here.
             </Link>
           </Typography>
@@ -194,29 +210,26 @@ export const RealityModule: React.FC = () => {
           <Divider />
         </Grid>
         <Grid item>
-          <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+          <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
             <Grid
               container
-              justifyContent="space-between"
-              alignItems="center"
-              style={{ marginBottom: 15 }}
-            >
+              justifyContent='space-between'
+              alignItems='center'
+              style={{ marginBottom: 15 }}>
               <Grid item>
                 <Typography
-                  variant="h4"
+                  variant='h4'
                   gutterBottom
-                  className={classes.paperTitle}
-                >
+                  className={classes.paperTitle}>
                   Add Reality Module
                 </Typography>
               </Grid>
               <Grid item>
                 <Button
-                  color="secondary"
-                  size="medium"
-                  variant="outlined"
-                  onClick={() => dispatch(setRealityModuleScreen(false))}
-                >
+                  color='secondary'
+                  size='medium'
+                  variant='outlined'
+                  onClick={() => dispatch(setRealityModuleScreen(false))}>
                   Cancel
                 </Button>
               </Grid>
@@ -224,22 +237,19 @@ export const RealityModule: React.FC = () => {
             <Stepper
               activeStep={activeStep}
               className={classes.stepperRoot}
-              orientation="vertical"
-            >
+              orientation='vertical'>
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
                   <StepLabel
                     onClick={() =>
                       handleOpenSection(index, label as keyof SetupData)
-                    }
-                  >
+                    }>
                     <Typography
-                      variant="h6"
+                      variant='h6'
                       className={classnames(
                         index <= activeStep && "clickable",
                         "step-label"
-                      )}
-                    >
+                      )}>
                       {label}
                     </Typography>{" "}
                   </StepLabel>
@@ -250,18 +260,21 @@ export const RealityModule: React.FC = () => {
                         handleBack={() =>
                           dispatch(setRealityModuleScreen(false))
                         }
+                        setupData={setupData}
                       />
                     )}
                     {label === "oracle" && (
                       <OracleSection
                         handleNext={handleNext(index + 1, label)}
                         handleBack={() => handleBack(activeStep - 1, label)}
+                        setupData={setupData}
                       />
                     )}
                     {label === "monitoring" && (
                       <MonitoringSection
                         handleNext={handleNext(index + 1, label)}
                         handleBack={() => handleBack(activeStep - 1, label)}
+                        setupData={setupData}
                       />
                     )}
                     {label === "review" && (
@@ -270,7 +283,9 @@ export const RealityModule: React.FC = () => {
                           handleNext={handleDone} // this is where we would execute the transactions!!
                           handleBack={() => handleBack(activeStep - 1, label)}
                           goToStep={setActiveStep}
+                          setupData={setupData}
                           delayModules={delayModules}
+                          loading={loading}
                         />
                       </>
                     )}

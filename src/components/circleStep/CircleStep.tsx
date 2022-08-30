@@ -6,6 +6,7 @@ type CircleStepProps = {
   label: string;
   number: number;
   onClick: () => void;
+  disabled?: boolean;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -33,11 +34,18 @@ const useStyles = makeStyles((theme) => ({
 export const CircleStep: React.FC<CircleStepProps> = ({
   label,
   number,
+  disabled,
   onClick,
 }) => {
   const classes = useStyles();
   return (
-    <Grid container spacing={1} alignItems='center' onClick={onClick}>
+    <Grid
+      container
+      spacing={1}
+      alignItems='center'
+      onClick={() => {
+        !disabled && onClick();
+      }}>
       <Grid item>
         <Box className={classes.circle}>
           <Typography>{number}</Typography>

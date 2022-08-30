@@ -27,17 +27,19 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
   const set = (key: keyof Data) => (value: any) =>
     setData({ ...data, [key]: value });
 
+  const get = (key: keyof Data) => data[key];
+
   return (
     <Grid container spacing={2} className={classes.container}>
       <Grid item>
         <Grid container spacing={1}>
           <Grid item>
-            <Typography variant="h4" color="textSecondary">
+            <Typography variant='h4' color='textSecondary'>
               Arbitration
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant="body2" className={classes.textSubdued}>
+            <Typography variant='body2' className={classes.textSubdued}>
               An arbitrator is responsible for providing a final answer to a
               question when there is a dispute, in exchange for a fee. In most
               cases, the bond escalation-game eliminates the need for this.
@@ -45,11 +47,10 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
               arbitration strategy incase of a dispute, you can select one from
               below. Read more in the{` `}
               <Link
-                underline="always"
-                href="https://reality.eth.link/app/docs/html/arbitrators.html"
+                underline='always'
+                href='https://reality.eth.link/app/docs/html/arbitrators.html'
                 target={"_blank"}
-                color="inherit"
-              >
+                color='inherit'>
                 Reality.eth arbitrators documentation
               </Link>
               .
@@ -59,7 +60,7 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
       </Grid>
       <Grid item>
         <Dropdown
-          defaultValue={ARBITRATOR_OPTIONS.NO_ARBITRATOR}
+          value={get("arbitratorOption")}
           options={[
             {
               label: "No arbitration (highest bond wins)",
@@ -68,7 +69,7 @@ export const OracleArbitration: React.FC<InputPartProps> = ({
             { label: "Kleros", value: ARBITRATOR_OPTIONS.KLEROS },
           ]}
           disableUnderline
-          label="Arbitrator:"
+          label='Arbitrator:'
           onChange={({ target }) => set("arbitratorOption")(target.value)}
         />
       </Grid>

@@ -1,19 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   Button,
   Divider,
-  FormControlLabel,
   Grid,
   makeStyles,
-  Radio,
-  RadioGroup,
+  // FormControlLabel,
+  // Radio,
+  // RadioGroup,
   Typography,
 } from "@material-ui/core";
-// import { DangerAlert } from "components/Alert/DangerAlert";
+import { DangerAlert } from "components/Alert/DangerAlert";
 import { Link } from "components/text/Link";
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getProvider } from "services";
+import { checkIfIsController, checkIfIsOwner } from "utils/ens";
 import { SectionProps } from "views/RealityModule/RealityModule";
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
+import { ProposalStatus } from "./components/proposalStatus/ProposalStatus";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -23,7 +27,11 @@ const useStyles = makeStyles((theme) => ({
   paperContainer: {
     padding: theme.spacing(2),
   },
-
+  loading: {
+    width: "15px !important",
+    height: "15px !important",
+    marginRight: 8,
+  },
   radio: {
     marginLeft: -2,
     padding: 2,
@@ -52,33 +60,146 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }));
 
 export type ProposalSectionData = {
-  proposalType: "snapshot" | "custom";
+  // proposalType: "snapshot" | "custom";
   ensName: string;
 };
 
 export const ProposalSection: React.FC<SectionProps> = ({
   handleNext,
   handleBack,
+  setupData,
 }) => {
+  const { safe } = useSafeAppsSDK();
+  const provider = getProvider(safe.chainId);
   const classes = useStyles();
-  const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
-    "snapshot"
-  );
-  const [ensName, setEnsName] = useState("");
+  // const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
+  //   "snapshot"
+  // );
+  const [ensName, setEnsName] = useState<string>("");
+  const [ensAddress, setEnsAddress] = useState<string>("");
+  const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [isController, setIsController] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [ensIsValid, setEnsIsValid] = useState<boolean>(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setProposalType(
-      (event.target as HTMLInputElement).value as "snapshot" | "custom"
-    );
+  useEffect(() => {
+    if (provider && setupData && setupData.proposal) {
+      setEnsName(setupData.proposal.ensName);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (ensName) {
+      if (ensName.includes(".eth")) {
+        setEnsIsValid(true);
+        setLoading(true);
+        const validateInfo = async () => {
+          await validEns();
+        };
+        validateInfo();
+      } else {
+        setEnsIsValid(false);
+        setIsController(false);
+        setIsOwner(false);
+      }
+    }
+  }, [ensName]);
+
+  const validEns = async () => {
+    const address = await provider.resolveName(ensName);
+    if (address) {
+      const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress);
+      const isController = await checkIfIsController(
+        provider,
+        ensName,
+        safe.safeAddress
+      );
+      setIsOwner(isOwner);
+      setIsController(isController);
+      setEnsAddress(address);
+      setLoading(false);
+      return;
+    } else {
+      setEnsAddress("");
+      setLoading(false);
+      setIsOwner(false);
+      setIsController(false);
+      return;
+    }
   };
 
   const collectSectionData = (): ProposalSectionData => ({
-    proposalType,
+    // proposalType,
     ensName,
   });
+
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setProposalType(
+  //     (event.target as HTMLInputElement).value as "snapshot" | "custom"
+  //   );
+  // };
+
+  const handleStatus = (
+    type: "controller" | "owner"
+  ): "loading" | "success" | "error" => {
+    if (loading) {
+      return "loading";
+    }
+    if (type === "controller" && isController) {
+      return "success";
+    }
+    if (type === "controller" && !isController) {
+      return "error";
+    }
+    if (type === "owner" && isOwner) {
+      return "success";
+    }
+    if (type === "owner" && !isOwner) {
+      return "error";
+    }
+    return "loading";
+  };
+
+  const handleStatusMessage = (type: "controller" | "owner"): string => {
+    if (type === "controller") {
+      if (loading) {
+        return "Confirming the safe is the controller of the ENS name. Please wait...";
+      }
+      if (isController) {
+        return "The safe is the controller of the ENS name.";
+      }
+      if (!isController) {
+        return "The safe must be the controller of the ENS name.";
+      }
+    }
+    if (type === "owner") {
+      if (loading) {
+        return "Confirming that the safe is the owner of the ENS name. Please wait...";
+      }
+      if (isOwner) {
+        return "The safe is the owner of the ENS name.";
+      }
+      if (!isOwner) {
+        return "The safe is not the owner of the ENS name. Please transfer the ENS name to this safe or enter a different ENS name before continuing.";
+      }
+    }
+
+    return "";
+  };
+
+  const handleEns = (ens: string) => {
+    if (ens === "") {
+      setIsController(false);
+      setIsOwner(false);
+      setEnsName("");
+    } else {
+      setEnsName(ens);
+    }
+  };
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -129,7 +250,8 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 Safe must be the controller of this ENS domain.
               </Typography>
             </Grid>
-            <Grid item>
+            {/* For now we're only use snapshot space */}
+            {/* <Grid item>
               <Typography variant="body2">
                 Select your proposal type:
               </Typography>
@@ -165,20 +287,41 @@ export const ProposalSection: React.FC<SectionProps> = ({
                   label="Custom"
                 />
               </RadioGroup>
-            </Grid>
+            </Grid> */}
             <Grid item>
               <ZodiacTextField
                 value={ensName}
-                onChange={({ target }) => setEnsName(target.value)} // TODO: validation
-                label="Enter your snapshot ENS domain."
+                onChange={({ target }) => handleEns(target.value)}
+                label="Enter the Snapshot ENS name."
                 placeholder="ex: gnosis.eth"
                 borderStyle="double"
                 className={`${classes.textFieldSmall} ${classes.input}`}
               />
-            </Grid>
-            <Grid item>
-              {/* TODO: we must check that the current connected Safe is the controller of the ENS domain and warn the user if the Safe is not also the registrant (via the alert below).  */}
-              {/* <DangerAlert address="0x4589fCbf4ec91a6EE0f760287cbFEBBEd5431D0a" /> */}
+              <br />
+              <br />
+
+              {ensIsValid && (
+                <>
+                  <ProposalStatus
+                    status={handleStatus("controller")}
+                    message={handleStatusMessage("controller")}
+                  />
+                  <ProposalStatus
+                    status={handleStatus("owner")}
+                    message={handleStatusMessage("owner")}
+                  />
+                  {ensAddress && !isOwner && handleStatus("owner") === "error" && (
+                    <Grid item>
+                      <DangerAlert
+                        msg={
+                          "The connected safe does not own the ENS name that you've entered. The owner of the ENS name has unilateral control of the ENS name (for instance, the owner can change the controller and the ENS records at any time)."
+                        }
+                        address={ensAddress}
+                      />
+                    </Grid>
+                  )}
+                </>
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -202,6 +345,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
+                disabled={!isController}
                 onClick={() => handleNext(collectSectionData())}
               >
                 Next
