@@ -32,35 +32,38 @@ const useStyles = makeStyles((theme) => ({
 export const DangerAlert: React.FC<AlertProps> = ({ address, msg }) => {
   const classes = useStyles();
   return (
-    <ZodiacPaper borderStyle='double' className={classes.paperContainer}>
-      <Grid container spacing={2} direction='column'>
+    <ZodiacPaper borderStyle="double" className={classes.paperContainer}>
+      <Grid container spacing={2} direction="column">
         <Grid item>
           <Grid container spacing={1}>
             <Grid item>
               <ErrorOutline />
             </Grid>
             <Grid item>
-              <Typography color='inherit'>Security Risk Detected:</Typography>
+              <Typography color="inherit">Security Risk Detected:</Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
-          <Grid container spacing={1} direction='column'>
+          <Grid container spacing={1} direction="column">
             <Grid item>
-              <Typography variant='body2'>{msg}</Typography>
+              <Typography variant="body2">{msg}</Typography>
             </Grid>
             {address && (
               <Grid item>
                 <ZodiacPaper
-                  borderStyle='single'
-                  className={classes.addressPaperContainer}>
-                  <Typography variant='body2'>{address}</Typography>
+                  borderStyle="single"
+                  className={classes.addressPaperContainer}
+                >
+                  Current ENS name owner:
+                  <Typography variant="body2">{address}</Typography>
                 </ZodiacPaper>
               </Grid>
             )}
             <Grid item>
-              <Typography variant='body2'>
+              <Typography variant="body2">
                 We recommend transferring the ENS name to the Safe before
+                continuing.
               </Typography>
             </Grid>
           </Grid>
