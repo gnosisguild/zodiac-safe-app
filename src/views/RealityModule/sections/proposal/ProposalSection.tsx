@@ -84,9 +84,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [isController, setIsController] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [showErrorAlert, setShowErrorAlert] = useState<boolean>(false);
-  const [showControllerErrorAlert, setControllerShowErrorAlert] =
-    useState<boolean>(false);
+  const [ensIsValid, setEnsIsValid] = useState<boolean>(false);
 
   useEffect(() => {
     if (provider && setupData && setupData.proposal) {
@@ -98,14 +96,14 @@ export const ProposalSection: React.FC<SectionProps> = ({
   useEffect(() => {
     if (ensName) {
       if (ensName.includes(".eth")) {
+        setEnsIsValid(true);
         setLoading(true);
         const validateInfo = async () => {
           await validEns();
         };
         validateInfo();
       } else {
-        setShowErrorAlert(false);
-        setControllerShowErrorAlert(false);
+        setEnsIsValid(false);
         setIsController(false);
         setIsOwner(false);
       }
@@ -122,18 +120,14 @@ export const ProposalSection: React.FC<SectionProps> = ({
         safe.safeAddress
       );
       setIsOwner(isOwner);
-      setShowErrorAlert(!isOwner);
       setIsController(isController);
-      setControllerShowErrorAlert(!isController);
       setEnsAddress(address);
       setLoading(false);
       return;
     } else {
       setLoading(false);
       setIsOwner(false);
-      setShowErrorAlert(false);
       setIsController(false);
-      setControllerShowErrorAlert(false);
       return;
     }
   };
@@ -158,13 +152,13 @@ export const ProposalSection: React.FC<SectionProps> = ({
     if (type === "controller" && isController) {
       return "success";
     }
-    if (type === "controller" && showControllerErrorAlert) {
+    if (type === "controller" && !isController) {
       return "error";
     }
     if (type === "owner" && isOwner) {
       return "success";
     }
-    if (type === "owner" && showErrorAlert) {
+    if (type === "owner" && !isOwner) {
       return "error";
     }
     return "loading";
@@ -178,7 +172,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
       if (isController) {
         return "The safe is the controller of the ENS name.";
       }
-      if (showControllerErrorAlert) {
+      if (!isController) {
         return "The safe must be the controller of the ENS name.";
       }
     }
@@ -189,7 +183,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
       if (isOwner) {
         return "The safe is the owner of the ENS name.";
       }
-      if (showErrorAlert) {
+      if (!isOwner) {
         return "The safe is not the owner of the ENS name. Please transfer the ENS name to this safe or enter a different ENS name before continuing.";
       }
     }
@@ -199,8 +193,6 @@ export const ProposalSection: React.FC<SectionProps> = ({
 
   const handleEns = (ens: string) => {
     if (ens === "") {
-      setShowErrorAlert(false);
-      setControllerShowErrorAlert(false);
       setIsController(false);
       setIsOwner(false);
       setEnsName("");
@@ -308,14 +300,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <br />
               <br />
 
-              {(loading || isController || showControllerErrorAlert) && (
-                <ProposalStatus
-                  status={handleStatus("controller")}
-                  message={handleStatusMessage("controller")}
-                />
-              )}
-              {(loading || isOwner || showErrorAlert) && (
+              {ensIsValid && (
                 <>
+                  <ProposalStatus
+                    status={handleStatus("controller")}
+                    message={handleStatusMessage("controller")}
+                  />
                   <ProposalStatus
                     status={handleStatus("owner")}
                     message={handleStatusMessage("owner")}
