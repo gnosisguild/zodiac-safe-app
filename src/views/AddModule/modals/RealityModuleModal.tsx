@@ -1,47 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
-import { ethers } from "ethers";
-import { AddModuleModal } from "./AddModuleModal";
-import {
-  ARBITRATOR_OPTIONS,
-  deployRealityModule,
-  getArbitrator,
-  getDefaultOracle,
-} from "../../../services";
-import { useRootSelector } from "../../../store";
-import { AttachModuleForm } from "../AttachModuleForm";
-import { getDelayModules } from "../../../store/modules/selectors";
-import { Row } from "../../../components/layout/Row";
-import { TimeSelect } from "../../../components/input/TimeSelect";
-import {
-  arbitratorOptions,
-  ArbitratorSelect,
-} from "../../../components/input/ArbitratorSelect";
-import { ZodiacTextField } from "zodiac-ui-components";
-import { getArbitratorBondToken } from "../../../utils/reality-eth";
-import { Grow } from "../../../components/layout/Grow";
-import { ModuleType } from "../../../store/modules/models";
-import { ParamInput } from "../../../components/ethereum/ParamInput";
-import { ParamType } from "@ethersproject/abi";
-import { getNetworkNativeAsset } from "../../../utils/networks";
+import React, { useEffect, useState } from "react"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { Grid, Link, makeStyles, Typography } from "@material-ui/core"
+import { ethers } from "ethers"
+import { AddModuleModal } from "./AddModuleModal"
+import { ARBITRATOR_OPTIONS, getArbitrator, getDefaultOracle } from "../../../services"
+import { useRootSelector } from "../../../store"
+import { AttachModuleForm } from "../AttachModuleForm"
+import { getDelayModules } from "../../../store/modules/selectors"
+import { Row } from "../../../components/layout/Row"
+import { TimeSelect } from "../../../components/input/TimeSelect"
+import { arbitratorOptions, ArbitratorSelect } from "../../../components/input/ArbitratorSelect"
+import { ZodiacTextField } from "zodiac-ui-components"
+import { getArbitratorBondToken } from "../../../utils/reality-eth"
+import { Grow } from "../../../components/layout/Grow"
+import { ModuleType } from "../../../store/modules/models"
+import { ParamInput } from "../../../components/ethereum/ParamInput"
+import { ParamType } from "@ethersproject/abi"
+import { getNetworkNativeAsset } from "../../../utils/networks"
+import { deployRealityModule } from "views/RealityModule/moduleDeployment"
 
 interface RealityModuleModalProps {
-  open: boolean;
+  open: boolean
 
-  onClose?(): void;
+  onClose?(): void
 
-  onSubmit?(): void;
+  onSubmit?(): void
 }
 
 interface RealityModuleParams {
-  oracle: string;
-  templateId: string;
-  timeout: string;
-  cooldown: string;
-  expiration: string;
-  bond: string;
-  arbitrator: string;
+  oracle: string
+  templateId: string
+  timeout: string
+  cooldown: string
+  expiration: string
+  bond: string
+  arbitrator: string
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -51,24 +44,16 @@ const useStyles = makeStyles((theme) => ({
   loadMessage: {
     textAlign: "center",
   },
-}));
+}))
 
-export const RealityModuleModal = ({
-  open,
-  onClose,
-  onSubmit,
-}: RealityModuleModalProps) => {
-  const classes = useStyles();
-  const { sdk, safe } = useSafeAppsSDK();
+export const RealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleModalProps) => {
+  const classes = useStyles()
+  const { sdk, safe } = useSafeAppsSDK()
 
-  const delayModules = useRootSelector(getDelayModules);
-  const [isERC20, setERC20] = useState(false);
-  const [delayModule, setDelayModule] = useState<string>(
-    delayModules.length === 1 ? delayModules[0].address : ""
-  );
-  const [bondToken, setBondToken] = useState(
-    getNetworkNativeAsset(safe.chainId)
-  );
+  const delayModules = useRootSelector(getDelayModules)
+  const [isERC20, setERC20] = useState(false)
+  const [delayModule, setDelayModule] = useState<string>(delayModules.length === 1 ? delayModules[0].address : "")
+  const [bondToken, setBondToken] = useState(getNetworkNativeAsset(safe.chainId))
   const [params, setParams] = useState<RealityModuleParams>({
     oracle: getDefaultOracle(safe.chainId),
     templateId: "",
@@ -77,92 +62,83 @@ export const RealityModuleModal = ({
     expiration: "604800",
     bond: "0.1",
     arbitrator: getArbitrator(safe.chainId, ARBITRATOR_OPTIONS.NO_ARBITRATOR),
-  });
+  })
   const [validFields, setValidFields] = useState({
     oracle: !!params.oracle,
     templateId: !!params.templateId,
     bond: !!params.bond,
-  });
-  const isValid = Object.values(validFields).every((field) => field);
+  })
+  const isValid = Object.values(validFields).every((field) => field)
 
   useEffect(() => {
     if (params.oracle && ethers.utils.isAddress(params.oracle)) {
       getArbitratorBondToken(params.oracle, safe.chainId)
         .then((response) => {
-          setBondToken(response.coin);
-          setERC20(response.isERC20);
+          setBondToken(response.coin)
+          setERC20(response.isERC20)
         })
         .catch(() => {
-          setBondToken(getNetworkNativeAsset(safe.chainId));
-          setERC20(false);
-        });
+          setBondToken(getNetworkNativeAsset(safe.chainId))
+          setERC20(false)
+        })
     }
-  }, [params.oracle, safe.chainId]);
+  }, [params.oracle, safe.chainId])
 
   const onParamChange = <Field extends keyof RealityModuleParams>(
     field: Field,
     value: RealityModuleParams[Field],
-    valid?: boolean
+    valid?: boolean,
   ) => {
     setParams({
       ...params,
       [field]: value,
-    });
+    })
     if (valid !== undefined)
       setValidFields({
         ...validFields,
         [field]: valid,
-      });
-  };
+      })
+  }
 
   const handleAddRealityModule = async () => {
     try {
-      const minimumBond = ethers.utils.parseUnits(
-        params.bond,
-        bondToken.decimals
-      );
+      const minimumBond = ethers.utils.parseUnits(params.bond, bondToken.decimals)
       const args = {
         ...params,
         executor: delayModule || safe.safeAddress,
         bond: minimumBond.toString(),
-      };
-      const txs = deployRealityModule(
-        safe.safeAddress,
-        safe.chainId,
-        args,
-        isERC20
-      );
+      }
+      const txs = deployRealityModule(safe.safeAddress, safe.chainId, args, isERC20).txs
 
-      await sdk.txs.send({ txs });
-      if (onSubmit) onSubmit();
-      if (onClose) onClose();
+      await sdk.txs.send({ txs })
+      if (onSubmit) onSubmit()
+      if (onClose) onClose()
     } catch (error) {
-      console.log("Error deploying module: ", error);
+      console.log("Error deploying module: ", error)
     }
-  };
+  }
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value || "0";
-    const leftZero = value.startsWith("0") && value.length > 1;
-    let bond = leftZero ? value.substr(1) : value;
-    bond = bond.startsWith(".") ? "0" + bond : bond;
+    const value = event.target.value || "0"
+    const leftZero = value.startsWith("0") && value.length > 1
+    let bond = leftZero ? value.substr(1) : value
+    bond = bond.startsWith(".") ? "0" + bond : bond
 
     try {
-      ethers.utils.parseUnits(bond, bondToken.decimals);
-      onParamChange("bond", bond);
+      ethers.utils.parseUnits(bond, bondToken.decimals)
+      onParamChange("bond", bond)
     } catch (error) {
-      console.warn("invalid bond", value, error);
+      console.warn("invalid bond", value, error)
     }
-  };
+  }
 
   const description = (
     <Typography variant="body2">
       This will add a timedelay to any transactions created by this module.{" "}
-      <b>Note that this delay is cumulative with the cooldown set above</b>{" "}
-      (e.g. if both are set to 24 hours, the cumulative delay before the
-      transaction can be executed will be 48 hours).
+      <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both are set to 24 hours, the
+      cumulative delay before the transaction can be executed will be 48 hours).
     </Typography>
-  );
+  )
 
   return (
     <AddModuleModal
@@ -192,11 +168,7 @@ export const RealityModuleModal = ({
           <Row style={{ alignItems: "center" }}>
             <Typography>TemplateId</Typography>
             <Grow />
-            <Link
-              color="textSecondary"
-              href="https://reality.eth.link/app/template-generator/"
-              target="_blank"
-            >
+            <Link color="textSecondary" href="https://reality.eth.link/app/template-generator/" target="_blank">
               Get a template here
             </Link>
           </Row>
@@ -206,9 +178,7 @@ export const RealityModuleModal = ({
             placeholder="10929783"
             label={undefined}
             value={params.templateId}
-            onChange={(value, valid) =>
-              onParamChange("templateId", value, valid)
-            }
+            onChange={(value, valid) => onParamChange("templateId", value, valid)}
           />
         </Grid>
         <Grid item xs={6}>
@@ -269,5 +239,5 @@ export const RealityModuleModal = ({
         </>
       ) : null}
     </AddModuleModal>
-  );
-};
+  )
+}
