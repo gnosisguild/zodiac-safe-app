@@ -9,11 +9,11 @@ import {
 } from "@gnosis.pm/zodiac"
 import { Transaction } from "@gnosis.pm/safe-apps-sdk"
 import { buildTransaction } from "services/helpers"
+import { Data as OracleTemplateData } from "./sections/oracle/components/oracleTemplate/OracleTemplate"
 export interface RealityModuleParams {
   executor: string
   oracle?: string
   bond: string
-  templateId: string
   timeout: string
   cooldown: string
   expiration: string
@@ -24,19 +24,21 @@ export interface RealityModuleParams {
 // using `deployAndSetUpCustomModule` instead of `deployAndSetUpModule`
 export function deployRealityModule(
   safeAddress: string,
+  deterministicDeploymentHelperAddress: string,
   chainId: number,
   args: RealityModuleParams,
+  template: OracleTemplateData,
   isERC20?: boolean,
 ): TxWitMeta {
   const oracleType: KnownContracts = isERC20 ? KnownContracts.REALITY_ERC20 : KnownContracts.REALITY_ETH
-  const { timeout, cooldown, expiration, bond, templateId, oracle, executor, arbitrator } = args
+  const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
   const provider = getProvider(chainId)
   const oracleAddress = oracle != null && ethers.utils.isAddress(oracle) ? oracle : getDefaultOracle(chainId)
   const saltNonce = Date.now().toString()
   const initData = {
     types: ["address", "address", "address", "address", "uint32", "uint32", "uint32", "uint256", "uint256", "address"],
     values: [
-      safeAddress,
+      deterministicDeploymentHelperAddress, // this is the owner, this needs to be replaced with the new DeterministicDeploymentHelper
       safeAddress,
       executor,
       oracleAddress,
@@ -44,7 +46,7 @@ export function deployRealityModule(
       cooldown,
       expiration,
       bond,
-      templateId,
+      "0", // templateId
       arbitrator,
     ],
   }
@@ -93,3 +95,5 @@ export const calculateRealityModuleAddress = (
   const encodedInitParams = ethers.utils.defaultAbiCoder.encode(args.types, args.values)
   return calculateProxyAddress(factory, module.address, encodedInitParams, saltNonce)
 }
+
+// export const deterministicDeploymentHelper

@@ -10,6 +10,7 @@ import * as snapshot from "../../utils/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
 
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
+const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS = ""
 
 /**
  * Sets up the Reality Module.
@@ -65,20 +66,26 @@ const deployRealityModuleTxs = (
   setupData: SetupData,
 ): TxsWitMeta => {
   const bondToken = getNetworkNativeAsset(chainId)
-  const args: RealityModuleParams = {
+  const moduleDeploymentParameters: RealityModuleParams = {
     executor: executorAddress,
     bond: ethers.utils.parseUnits(setupData.oracle.bondData.bond.toString(), bondToken.decimals).toString(),
-    templateId: "0", // TODO: this is a "empty" template, we need to deploy a new template and add its id here
     timeout: setupData.oracle.delayData.timeout.toString(),
     cooldown: setupData.oracle.delayData.cooldown.toString(),
     expiration: setupData.oracle.delayData.expiration.toString(),
     arbitrator: getArbitrator(chainId, setupData.oracle.arbitratorData.arbitratorOption),
     oracle: setupData.oracle.instanceData.instanceAddress,
   }
-  console.log("args", args)
+  console.log("moduleDeploymentParameters:", moduleDeploymentParameters)
   console.log("safeAddress", safeAddress)
   console.log("chainId", chainId)
-  return deployRealityModule(safeAddress, chainId, args, false)
+  return deployRealityModule(
+    safeAddress,
+    DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
+    chainId,
+    moduleDeploymentParameters,
+    setupData.oracle.templateData,
+    false,
+  )
 }
 
 export const addSafeSnapToSettings = (originalSpaceSettings: any, chainId: number, realityModuleAddress: string) =>
