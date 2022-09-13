@@ -1,15 +1,10 @@
-import {
-  Button,
-  Divider,
-  Grid,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
-import { Dropdown } from "components/dropdown/Dropdown";
-import { Link } from "components/text/Link";
-import React, { useState } from "react";
-import { SectionProps } from "views/RealityModule/RealityModule";
-import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
+import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import { MultiSelect, MultiSelectValues } from "components/multiSelect/MultiSelect"
+import { Link } from "components/text/Link"
+import React, { ChangeEvent, useEffect, useState } from "react"
+import { SectionProps } from "views/RealityModule/RealityModule"
+import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
+
 const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
@@ -24,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
     color: "rgba(255 255 255 / 70%)",
   },
 
+  inputContainer: {
+    width: "50%",
+  },
   input: {
     "& .MuiInputBase-root": {
       borderColor: colors.tan[300],
@@ -42,38 +40,62 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-}));
+}))
 
-export type MonitoringSectionData = {
-  monitoringService: "default" | "custom";
-  param1: string;
-  param2: string;
-  param3: string;
-  customParams: any;
-};
+export interface MonitoringSectionData {
+  apiKey: string
+  secretKey: string
+  email: string[]
+  discordKey: string
+  telegram: { botToken: string; chatID: string }
+  slackKey: string
+}
 
-export const MonitoringSection: React.FC<SectionProps> = ({
-  handleBack,
-  handleNext,
-}) => {
-  const classes = useStyles();
+const INITIAL_DATA: MonitoringSectionData = {
+  apiKey: "",
+  secretKey: "",
+  email: [],
+  discordKey: "",
+  telegram: {
+    botToken: "",
+    chatID: "",
+  },
+  slackKey: "",
+}
 
-  const [monitoringService, setMonitoringService] = useState<
-    "default" | "custom"
-  >("default");
-  const [param1, setParam1] = useState<string>("");
-  const [param2, setParam2] = useState<string>("");
-  const [param3, setParam3] = useState<string>("");
+export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNext, setupData }) => {
+  const classes = useStyles()
+  const monitoring = setupData?.monitoring
+  const [monitoringData, setMonitoringData] = useState<MonitoringSectionData>(monitoring ?? INITIAL_DATA)
+  const [emailValues, setEmailValues] = useState<MultiSelectValues[]>([])
 
-  const [customParams, setCustomParams] = useState({});
+  useEffect(() => {
+    if (monitoring && monitoring.email.length) {
+      const emails: MultiSelectValues[] = []
+      monitoring.email.forEach((item: string) => emails.push({ label: item, value: item }))
+      setEmailValues(emails)
+    }
+  }, [monitoring])
 
-  const collectSectionData = (): MonitoringSectionData => ({
-    monitoringService,
-    param1,
-    param2,
-    param3,
-    customParams,
-  });
+  const updateForm = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, fieldName: string) => {
+    event.preventDefault()
+    if (["chatID", "botToken"].includes(fieldName)) {
+      const telegram = { ...monitoringData.telegram }
+      const newValues = { ...telegram, [fieldName]: event.target.value }
+      setMonitoringData({
+        ...monitoringData,
+        telegram: newValues,
+      })
+      return
+    }
+    setMonitoringData({ ...monitoringData, [fieldName]: event.target.value })
+  }
+
+  const handleNewEmail = async (value: MultiSelectValues[]) => {
+    const list = value.map((item: MultiSelectValues) => item.value)
+    setEmailValues(value)
+    setMonitoringData({ ...monitoringData, email: list })
+  }
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -85,19 +107,16 @@ export const MonitoringSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <Typography>
-                Setting up an effective monitoring strategy is critical for the
-                security of your safe. Gnosis is providing you with a free,
-                baseline monitoring service via{" "}
+                Setting up an effective monitoring strategy is critical for the security of your safe. In order to set
+                up the monitoring for this module, you&apos;ll need to first{" "}
                 <Link
                   underline="always"
-                  href="https://tenderly.co/monitoring/"
+                  href="https://defender.openzeppelin.com/#/auth/sign-in"
                   target={"_blank"}
                   color="inherit"
                 >
-                  Tenderly.
-                </Link>{" "}
-                However, if you&apos;d prefer to setup your monitoring with a
-                different service, select the Custom monitoring option.
+                  create an Open Zeppelin account.
+                </Link>
               </Typography>
             </Grid>
           </Grid>
@@ -110,26 +129,126 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Grid container spacing={1} className={classes.container}>
-                <Grid item>
-                  <Typography variant="h4" color="textSecondary">
-                    Monitoring Service
-                  </Typography>
+              <Typography variant="h4" color="textSecondary">
+                API Configuration
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography>
+                Include the API Key and Secret Key from your Open Zeppelin account below. Follow the Open Zeppelin guide{" "}
+                {""}
+                <Link
+                  underline="always"
+                  href="https://docs.openzeppelin.com/defender/guide-factory#generate-api-key"
+                  target={"_blank"}
+                  color="inherit"
+                >
+                  here.
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item>
+              <ZodiacTextField
+                label="API Key"
+                placeholder="0f9u8yuiahkjdh8qhiflahfjajdhafa"
+                borderStyle="double"
+                value={monitoringData.apiKey}
+                onChange={(e) => updateForm(e, "apiKey")}
+                className={classes.input}
+              />
+            </Grid>
+            <Grid item>
+              <ZodiacTextField
+                label="API Secret"
+                placeholder="hkjdh8qhiflahfjajdhafa0f9u8yuiahkjdh8qhiflahfjajdhafa"
+                value={monitoringData.secretKey}
+                onChange={(e) => updateForm(e, "secretKey")}
+                borderStyle="double"
+                className={classes.input}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item>
+          <Grid container spacing={2} className={classes.container}>
+            <Grid item>
+              <Typography variant="h4" color="textSecondary">
+                Email
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography>Add as many emails as you&apos;d like.</Typography>
+            </Grid>
+            <Grid item>
+              <MultiSelect onChange={(values) => handleNewEmail(values as MultiSelectValues[])} value={emailValues} />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item>
+          <Grid container spacing={2} className={classes.container}>
+            <Grid item>
+              <Typography variant="h4" color="textSecondary">
+                Discord
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography>
+                To add a Discord integration, include the Discord channel&apos;s url including key below. Find out more{" "}
+                <Link underline="always" href="" target={"_blank"} color="inherit">
+                  here.
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item>
+              <ZodiacTextField
+                label="Discord Key"
+                placeholder="key"
+                borderStyle="double"
+                className={classes.input}
+                value={monitoringData.discordKey}
+                onChange={(e) => updateForm(e, "discordKey")}
+              />
+            </Grid>
+          </Grid>
+        </Grid>
+
+        <Grid item>
+          <Grid container spacing={2} className={classes.container}>
+            <Grid item>
+              <Typography variant="h4" color="textSecondary">
+                Telegram
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography>
+                To add a Telegram integration, include the telegram bot token and chat ID below. Find out more{" "}
+                <Link underline="always" href="" target={"_blank"} color="inherit">
+                  here.
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Grid container spacing={2} direction="row" alignItems="center" justifyContent="space-between">
+                <Grid item className={classes.inputContainer}>
+                  <ZodiacTextField
+                    label="Bot token"
+                    placeholder="abc"
+                    borderStyle="double"
+                    className={classes.input}
+                    value={monitoringData.telegram.botToken}
+                    onChange={(e) => updateForm(e, "botToken")}
+                  />
                 </Grid>
-                <Grid item>
-                  <Dropdown
-                    value={monitoringService}
-                    options={[
-                      { label: "Tenderly (default)", value: "default" },
-                      { label: "Custom", value: "custom" },
-                    ]}
-                    disableUnderline
-                    label="Select your monitoring service:"
-                    onChange={(evt) =>
-                      setMonitoringService(
-                        evt.target.value as "default" | "custom"
-                      )
-                    }
+                <Grid item className={classes.inputContainer}>
+                  <ZodiacTextField
+                    label="Chat ID"
+                    placeholder="123"
+                    borderStyle="double"
+                    className={classes.input}
+                    value={monitoringData.telegram.chatID}
+                    onChange={(e) => updateForm(e, "chatID")}
                   />
                 </Grid>
               </Grid>
@@ -140,60 +259,27 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Grid container spacing={1} className={classes.container}>
-                <Grid item>
-                  <Typography variant="h4" color="textSecondary">
-                    Monitoring Configuration
-                  </Typography>
-                </Grid>
-                {monitoringService === "default" && (
-                  <Grid item>
-                    <Grid container direction="column" spacing={2}>
-                      <Grid item>
-                        <ZodiacTextField
-                          label="Parameter 1"
-                          borderStyle="double"
-                          tooltipMsg="..."
-                          className={classes.input}
-                          onChange={(evt) => setParam1(evt.target.value)}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <ZodiacTextField
-                          label="Parameter 2"
-                          borderStyle="double"
-                          tooltipMsg="..."
-                          className={classes.input}
-                          onChange={(evt) => setParam2(evt.target.value)}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <ZodiacTextField
-                          label="Parameter 3"
-                          borderStyle="double"
-                          tooltipMsg="..."
-                          className={classes.input}
-                          onChange={(evt) => setParam3(evt.target.value)}
-                        />
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                )}
-                {monitoringService === "custom" && (
-                  <Grid item>
-                    <ZodiacTextField
-                      label="JSON"
-                      borderStyle="double"
-                      tooltipMsg="..."
-                      className={classes.textarea}
-                      multiline
-                      rows={5}
-                      value={customParams}
-                      onChange={(evt) => setCustomParams(evt.target.value)}
-                    />
-                  </Grid>
-                )}
-              </Grid>
+              <Typography variant="h4" color="textSecondary">
+                Slack
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography>
+                To add a Slack integration, include the Slack channel&apos;s url including key below. Find out more{" "}
+                <Link underline="always" href="" target={"_blank"} color="inherit">
+                  here.
+                </Link>
+              </Typography>
+            </Grid>
+            <Grid item>
+              <ZodiacTextField
+                label="Slack Channel URL"
+                placeholder="https://slack.com/url/key"
+                borderStyle="double"
+                className={classes.input}
+                value={monitoringData.slackKey}
+                onChange={(e) => updateForm(e, "slackKey")}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -203,24 +289,14 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         </Grid>
 
         <Grid item>
-          <Grid
-            container
-            spacing={3}
-            justifyContent="center"
-            alignItems="center"
-          >
+          <Grid container spacing={3} justifyContent="center" alignItems="center">
             <Grid item>
               <Button size="medium" variant="text" onClick={handleBack}>
                 Back
               </Button>
             </Grid>
             <Grid item>
-              <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
-                onClick={() => handleNext(collectSectionData())}
-              >
+              <Button color="secondary" size="medium" variant="contained" onClick={() => handleNext(monitoringData)}>
                 Next
               </Button>
             </Grid>
@@ -228,5 +304,5 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         </Grid>
       </Grid>
     </ZodiacPaper>
-  );
-};
+  )
+}
