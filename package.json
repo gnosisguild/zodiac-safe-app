@@ -18,8 +18,6 @@
     "axios": "^0.27.2",
     "classnames": "^2.3.1",
     "cognito-srp": "^0.2.0",
-    "defender-admin-client": "^1.29.1",
-    "defender-sentinel-client": "^1.28.1",
     "ethcall": "^3.4.1",
     "ethers": "^5.4.6",
     "ipfs-core": "0.14.3",
