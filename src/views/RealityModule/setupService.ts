@@ -10,7 +10,7 @@ import * as snapshot from "../../utils/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
 
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
-const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS = ""
+const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS = "0x0961F418E0B6efaA073004989EF1B2fd1bc4a41c" // needs to be deployed on all networks supported by the Reality Module
 
 /**
  * Sets up the Reality Module.
@@ -24,13 +24,13 @@ export const setup = async (
   executorAddress: string,
   setupData: SetupData,
 ) => {
-  const deploymentRealityModuleTxsMm = deployRealityModuleTxs(
+  const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
     safeInfo.chainId,
     safeInfo.safeAddress,
     executorAddress,
     setupData,
   )
-  const realityModuleAddress = deploymentRealityModuleTxsMm.meta?.addressWhenDeployed
+  const realityModuleAddress = deploymentRealityModuleTxsMm.meta?.expectedModuleAddress
   console.log("realityModuleAddress calculated:", realityModuleAddress)
   if (realityModuleAddress == null) {
     throw new Error("Unable to calculate the Reality Module future address.")
@@ -59,12 +59,12 @@ export const setup = async (
  * @param params Reality Module parameters
  * @returns transaction array
  */
-const deployRealityModuleTxs = (
+const deployRealityModuleTxs = async (
   chainId: number,
   safeAddress: string,
   executorAddress: string,
   setupData: SetupData,
-): TxsWitMeta => {
+): Promise<TxsWitMeta> => {
   const bondToken = getNetworkNativeAsset(chainId)
   const moduleDeploymentParameters: RealityModuleParams = {
     executor: executorAddress,
@@ -78,7 +78,7 @@ const deployRealityModuleTxs = (
   console.log("moduleDeploymentParameters:", moduleDeploymentParameters)
   console.log("safeAddress", safeAddress)
   console.log("chainId", chainId)
-  return deployRealityModule(
+  return await deployRealityModule(
     safeAddress,
     DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
     chainId,
