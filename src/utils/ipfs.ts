@@ -7,6 +7,7 @@ const getNode = async () => {
   if (node == null) {
     // node = await IPFS.create()
     //@ts-ignore
+    
     node = await window.IpfsCore.create()
   }
   return node
