@@ -137,6 +137,7 @@ export const RealityModule: React.FC = () => {
     }
     const executorAddress =
       delayModuleExecutor !== "" || delayModuleExecutor == null ? safeInfo.safeAddress : delayModuleExecutor
+    await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
     try {
       const { apiKey, secretKey, email } = setupData.monitoring
       const token = await osDefenderService.generateToken(apiKey, secretKey)
@@ -156,7 +157,6 @@ export const RealityModule: React.FC = () => {
         )
         console.log("generateEmail", generateEmail)
       }
-      await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
     } catch (error) {
       console.error(error)
       setLoading(false)
