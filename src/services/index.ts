@@ -120,6 +120,8 @@ export function getFinder(chainId: number): string {
       return "0xbb6206fb01fAad31e8aaFc3AD303cEA89D8c8157";
     case NETWORK.POLYGON:
       return "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64";
+    case NETWORK.GOERLI:
+      return "0xE60dBa66B85E10E7Fd18a67a6859E241A243950e";
   }
   return "";
 }
@@ -150,6 +152,8 @@ function getUSDCAddress(chainId: number): string {
       return "0xeb8f08a975Ab53E34D8a0330E0D34de942C95926";
     case NETWORK.POLYGON:
       return "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+    case NETWORK.GOERLI:
+      return "0x07865c6E87B9F70255377e024ace6630C1Eaa37F";
   }
   return "";
 }
@@ -162,6 +166,8 @@ function getWETHAddress(chainId: number): string {
       return "0xc778417E063141139Fce010982780140Aa0cD5Ab";
     case NETWORK.POLYGON:
       return "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
+    case NETWORK.GOERLI:
+      return "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6";
   }
   return "";
 }

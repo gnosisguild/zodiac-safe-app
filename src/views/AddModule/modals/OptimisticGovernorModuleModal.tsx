@@ -131,7 +131,7 @@ export const OptimisticGovernorModuleModal = ({
     </Typography>
   );
 
-  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum}% and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited.`;
+  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum}% and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. A value set for a proposal in Snapshot should be used if it is greater than the rules parameter.`;
 
   return (
     <AddModuleModal
@@ -160,7 +160,7 @@ export const OptimisticGovernorModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <ParamInput
-            param={ParamType.from("uint256")}
+            param={ParamType.from("string")}
             color="secondary"
             value={params.bond}
             label="Bond"
