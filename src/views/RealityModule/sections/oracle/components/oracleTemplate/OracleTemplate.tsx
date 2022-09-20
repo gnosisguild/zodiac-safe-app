@@ -1,28 +1,21 @@
-import {
-  Grid,
-  makeStyles,
-  Typography,
-  Button,
-  Tooltip,
-} from "@material-ui/core";
-import { Dropdown } from "components/dropdown/Dropdown";
-import React, { ChangeEvent } from "react";
-import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
-import Delete from "@material-ui/icons/Delete";
-import Add from "@material-ui/icons/Add";
-import { HelpOutline } from "@material-ui/icons";
-import { InputPartProps } from "../../OracleSection";
+import { Grid, makeStyles, Typography, Tooltip } from "@material-ui/core"
+import { Dropdown } from "components/dropdown/Dropdown"
+import React from "react"
+import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
+import { HelpOutline } from "@material-ui/icons"
+import { InputPartProps } from "../../OracleSection"
 
-const TEMPLATE_QUESTION = `Did the Snapshot proposal with the id {%s} in the weenus.eth space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at weenust.eth? The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`;
+const getDefaultTemplateQuestion = (ensName: string) =>
+  `Did the Snapshot proposal with the id {%s} in the ${ensName} space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at ${ensName}?  The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`
 
-const CUSTOM_TEMPLATE_QUESTION = `Provide a custom question here. Use %s as a variable for the proposal id.`;
+const CUSTOM_TEMPLATE_QUESTION = `Provide a custom question here. Use %s as a variable for the proposal id.`
 
 const ORACLE_TEMPLATE_OPTIONS = [
   { label: "Zodiac Reality Module (default)", value: "default" },
   { label: "Custom", value: "custom" },
-];
+]
 
-const ORACLE_LANGUAGE = [{ label: "English", value: "english" }];
+const ORACLE_LANGUAGE = [{ label: "English", value: "english" }]
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -80,197 +73,99 @@ const useStyles = makeStyles((theme) => ({
   tooltipIcon: {
     fontSize: "1rem",
   },
-}));
+}))
 
 export type Data = {
-  template: "default" | "custom";
-  language: "english";
-  category: "DAO";
-  templateType: "bool" | "multiple";
-  outcomes: { outcome: any }[];
-};
+  templateType: "default" | "custom"
+  language: "english"
+  category: "DAO proposal"
+  templateQuestion: string
+}
 
-export const OracleTemplate: React.FC<InputPartProps> = ({ data, setData }) => {
-  const classes = useStyles();
+interface OracleTemplateProps extends InputPartProps {
+  ensName: string
+}
 
-  const set = (key: keyof Data) => (value: any) =>
-    setData({ ...data, [key]: value });
+export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, ensName }) => {
+  const classes = useStyles()
 
-  const get = (key: keyof Data) => data[key];
+  const set = (key: keyof Data) => (value: any) => setData({ ...data, [key]: value })
 
-  const handleNewOutcomes = () => {
-    const newOutcomes = [...data.outcomes];
-    newOutcomes.push({ outcome: "" });
-    set("outcomes")(newOutcomes);
-  };
+  const get = (key: keyof Data) => data[key]
 
-  const handleDeleteOutcomes = (index: number) => {
-    const newOutcomes = [...data.outcomes];
-    if (newOutcomes.length > 2) {
-      newOutcomes.splice(index, 1);
-      set("outcomes")(newOutcomes);
+  const setTemplateType = (templateType: "default" | "custom") => {
+    if (templateType === "default") {
+      setData({ ...data, templateQuestion: getDefaultTemplateQuestion(ensName), templateType: templateType })
+    } else {
+      setData({ ...data, templateQuestion: "", templateType: templateType })
     }
-  };
-  const handleOutcomeInput = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    index: number
-  ) => {
-    const val = e.target.value;
-    const list = [...data.outcomes];
-    list[index].outcome = val;
-    set("outcomes")(list);
-  };
+  }
 
   return (
     <Grid container spacing={2} className={classes.container}>
       <Grid item>
-        <Grid container spacing={1} direction='column'>
+        <Grid container spacing={1} direction="column">
           <Grid item>
-            <Typography variant='h4' color='textSecondary'>
+            <Typography variant="h4" color="textSecondary">
               Oracle Template
             </Typography>
           </Grid>
           <Grid item>
-            <Typography variant='body2' className={classes.textSubdued}>
-              The oracle template creates an appropriate question based on the
-              data of the proposal. We highly recommend using the default Zodiac
-              Reality Module template
+            <Typography variant="body2" className={classes.textSubdued}>
+              The oracle template creates an appropriate question based on the data of the proposal. We highly recommend
+              using the default Zodiac Reality Module template
             </Typography>
           </Grid>
         </Grid>
       </Grid>
       <Grid item>
-        <Grid
-          container
-          justifyContent='space-between'
-          spacing={2}
-          alignItems='center'>
+        <Grid container justifyContent="space-between" spacing={2} alignItems="center">
           <Grid item xs={6}>
             <Dropdown
-              value={get("template")}
+              value={get("templateType")}
               options={ORACLE_TEMPLATE_OPTIONS}
-              onChange={(evt) => set("template")(evt.target.value as string)}
-              disableUnderline
-              disabled
-              label='Select template:'
-              tooltipMsg='The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type.'
+              onChange={(evt) => setTemplateType(evt.target.value as "default" | "custom")}
+              label="Select template:"
+              tooltipMsg="The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type."
             />
           </Grid>
           <Grid item xs={6}>
             <Dropdown
               value={get("language")}
               options={ORACLE_LANGUAGE}
-              disableUnderline
-              label='Language:'
-              disabled
+              disableUnderline={get("templateType") === "default"}
+              label="Language:"
+              disabled={get("templateType") === "default"}
               onChange={({ target }) => set("language")(target.value as string)}
             />
           </Grid>
-          {get("template") === "custom" && (
-            <>
-              <Grid item xs={6}>
-                <Dropdown
-                  options={[{ label: "DAO Proposal", value: "DAO" }]}
-                  onChange={({ target }) =>
-                    set("category")(target.value as string)
+          <>
+            <Grid item xs={12}>
+              <Grid container justifyContent="space-between" alignItems="center">
+                <Typography>Template question preview:</Typography>
+
+                <Tooltip title="Templates use %s as a variable for the proposal id.">
+                  <HelpOutline className={classes.tooltipIcon} />
+                </Tooltip>
+              </Grid>
+
+              <ZodiacPaper className={classes.paperTemplateContainer}>
+                <ZodiacTextField
+                  className={classes.templateQuestion}
+                  value={get("templateQuestion")}
+                  onChange={({ target }) => set("templateQuestion")(target.value as string)}
+                  multiline
+                  rows={5}
+                  disabled={get("templateType") === "default"}
+                  placeholder={
+                    get("templateType") === "default" ? getDefaultTemplateQuestion(ensName) : CUSTOM_TEMPLATE_QUESTION
                   }
-                  disableUnderline
-                  value={get("category")}
-                  label='Category:'
-                  tooltipMsg='This will help categorize the oracle question in reality.eth so it can be found more easily.'
                 />
-              </Grid>
-              <Grid item xs={6}>
-                <Dropdown
-                  value={get("templateType")}
-                  options={[
-                    { label: "Bool", value: "bool" },
-                    { label: "Multiple Select", value: "multiple" },
-                  ]}
-                  disableUnderline
-                  label='Type:'
-                  onChange={(evt) =>
-                    set("templateType")(evt.target.value as string)
-                  }
-                  tooltipMsg='This corresponds with the type of proposal being submitted.'
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Grid
-                  container
-                  justifyContent='space-between'
-                  alignItems='center'>
-                  <Typography>Template question preview:</Typography>
-
-                  <Tooltip title='Provide a custom question here. Use %s as a variable for the proposal id.'>
-                    <HelpOutline className={classes.tooltipIcon} />
-                  </Tooltip>
-                </Grid>
-
-                <ZodiacPaper className={classes.paperTemplateContainer}>
-                  <ZodiacTextField
-                    className={classes.templateQuestion}
-                    multiline
-                    rows={5}
-                    placeholder={
-                      get("templateType") === "multiple"
-                        ? CUSTOM_TEMPLATE_QUESTION
-                        : TEMPLATE_QUESTION
-                    }
-                  />
-                </ZodiacPaper>
-              </Grid>
-              {get("templateType") === "multiple" && (
-                <Grid item xs={12}>
-                  <Typography>Outcomes</Typography>
-
-                  {get("outcomes").map(({ outcome }: any, index: any) => (
-                    <Grid container alignItems='center' spacing={1}>
-                      <Grid item sm={10}>
-                        <ZodiacTextField
-                          borderStyle='double'
-                          value={outcome}
-                          placeholder={`Outcome ${index + 1}`}
-                          className={classes.input}
-                          onChange={(e) => handleOutcomeInput(e, index)}
-                        />
-                      </Grid>
-                      <Grid item sm={2}>
-                        <Button
-                          className={classes.button}
-                          onClick={() => handleDeleteOutcomes(index)}
-                          variant='outlined'
-                          startIcon={<Delete />}
-                          disabled={index > 1 ? false : true}>
-                          Remove
-                        </Button>
-                      </Grid>
-                    </Grid>
-                  ))}
-
-                  <Grid
-                    container
-                    spacing={1}
-                    alignItems='center'
-                    className={classes.buttonContainer}
-                    onClick={handleNewOutcomes}>
-                    <Grid item>
-                      <Add className={classes.icon} />
-                    </Grid>
-                    <Grid item>
-                      <Typography
-                        color='textSecondary'
-                        className={classes.text}>
-                        Add another outcome
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              )}
-            </>
-          )}
+              </ZodiacPaper>
+            </Grid>
+          </>
         </Grid>
       </Grid>
     </Grid>
-  );
-};
+  )
+}

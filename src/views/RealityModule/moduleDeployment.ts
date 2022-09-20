@@ -1,19 +1,14 @@
 import { ethers } from "ethers"
 import { enableModule, getDefaultOracle, getProvider, TxWitMeta } from "../../services"
-import {
-  calculateProxyAddress,
-  deployAndSetUpModule,
-  getFactoryAndMasterCopy,
-  getModuleInstance,
-  KnownContracts,
-} from "@gnosis.pm/zodiac"
+import { deployAndSetUpModule, getModuleInstance, KnownContracts } from "@gnosis.pm/zodiac"
 import { Transaction } from "@gnosis.pm/safe-apps-sdk"
 import { buildTransaction } from "services/helpers"
+import { Data as OracleTemplateData } from "./sections/oracle/components/oracleTemplate/OracleTemplate"
+import DETERMINISTIC_DEPLOYMENT_HELPER_META from "../../contracts/DeterministicDeploymentHelper.json"
 export interface RealityModuleParams {
   executor: string
   oracle?: string
   bond: string
-  templateId: string
   timeout: string
   cooldown: string
   expiration: string
@@ -22,21 +17,23 @@ export interface RealityModuleParams {
 
 // TODO: Add support for Reality.ETH oracles that is not known (for instance deployed by the caller)
 // using `deployAndSetUpCustomModule` instead of `deployAndSetUpModule`
-export function deployRealityModule(
+export async function deployRealityModule(
   safeAddress: string,
+  deterministicDeploymentHelperAddress: string,
   chainId: number,
   args: RealityModuleParams,
+  template: OracleTemplateData,
   isERC20?: boolean,
-): TxWitMeta {
+): Promise<TxWitMeta> {
   const oracleType: KnownContracts = isERC20 ? KnownContracts.REALITY_ERC20 : KnownContracts.REALITY_ETH
-  const { timeout, cooldown, expiration, bond, templateId, oracle, executor, arbitrator } = args
+  const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
   const provider = getProvider(chainId)
   const oracleAddress = oracle != null && ethers.utils.isAddress(oracle) ? oracle : getDefaultOracle(chainId)
   const saltNonce = Date.now().toString()
   const initData = {
     types: ["address", "address", "address", "address", "uint32", "uint32", "uint32", "uint256", "uint256", "address"],
     values: [
-      safeAddress,
+      deterministicDeploymentHelperAddress, // this is the owner, this needs to be replaced with the new DeterministicDeploymentHelper
       safeAddress,
       executor,
       oracleAddress,
@@ -44,11 +41,11 @@ export function deployRealityModule(
       cooldown,
       expiration,
       bond,
-      templateId,
+      0, // templateId - must use 0 here, will be set up later
       arbitrator,
     ],
   }
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } = deployAndSetUpModule(
+  const { transaction: daoModuleDeploymentTx, expectedModuleAddress } = deployAndSetUpModule(
     oracleType,
     initData,
     provider,
@@ -65,31 +62,42 @@ export function deployRealityModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
-    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [daoModuleExpectedAddress])
+    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [expectedModuleAddress])
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(safeAddress, chainId, daoModuleExpectedAddress)
+    const enableDaoModuleTransaction = enableModule(safeAddress, chainId, expectedModuleAddress)
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
 
+  const deterministicSetupHelper = new ethers.Contract(
+    deterministicDeploymentHelperAddress,
+    DETERMINISTIC_DEPLOYMENT_HELPER_META.abi,
+    provider,
+  )
+  const populatedTemplateConfigurationTx =
+    await deterministicSetupHelper.populateTransaction.createTemplateAndChangeOwner(
+      expectedModuleAddress,
+      oracleAddress,
+      JSON.stringify(template),
+      safeAddress,
+    )
+
+  if (populatedTemplateConfigurationTx.to == null) {
+    throw new Error("Missing to address")
+  }
+  if (populatedTemplateConfigurationTx.data == null) {
+    throw new Error("Missing data")
+  }
+
+  daoModuleTransactions.push({
+    to: populatedTemplateConfigurationTx.to,
+    data: populatedTemplateConfigurationTx.data,
+    value: "0",
+  })
+
   return {
     txs: daoModuleTransactions,
-    meta: { addressWhenDeployed: calculateRealityModuleAddress(oracleType, initData, provider, chainId, saltNonce) },
+    meta: { expectedModuleAddress },
   }
-}
-
-export const calculateRealityModuleAddress = (
-  oracleType: KnownContracts.REALITY_ETH | KnownContracts.REALITY_ERC20,
-  args: {
-    types: string[]
-    values: string[]
-  },
-  provider: ethers.providers.JsonRpcProvider,
-  chainId: number,
-  saltNonce: string,
-): string => {
-  const { factory, module } = getFactoryAndMasterCopy(oracleType, provider, chainId)
-  const encodedInitParams = ethers.utils.defaultAbiCoder.encode(args.types, args.values)
-  return calculateProxyAddress(factory, module.address, encodedInitParams, saltNonce)
 }

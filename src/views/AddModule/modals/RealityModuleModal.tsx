@@ -19,6 +19,8 @@ import { ParamType } from "@ethersproject/abi"
 import { getNetworkNativeAsset } from "../../../utils/networks"
 import { deployRealityModule } from "views/RealityModule/moduleDeployment"
 
+// TODO: delete this when the new flow is done
+
 interface RealityModuleModalProps {
   open: boolean
 
@@ -108,7 +110,7 @@ export const RealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleMod
         executor: delayModule || safe.safeAddress,
         bond: minimumBond.toString(),
       }
-      const txs = deployRealityModule(safe.safeAddress, safe.chainId, args, isERC20).txs
+      const txs = (await deployRealityModule(safe.safeAddress, "", safe.chainId, args, "" as any, isERC20)).txs
 
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()
