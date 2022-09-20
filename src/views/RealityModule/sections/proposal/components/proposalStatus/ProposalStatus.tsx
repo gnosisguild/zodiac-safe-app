@@ -1,11 +1,14 @@
-import { Box, Grid, makeStyles, Typography } from "@material-ui/core";
-import React from "react";
-import { colors } from "zodiac-ui-components";
-import DoneIcon from "@material-ui/icons/Done";
-import ClearIcon from "@material-ui/icons/Clear";
-import { Loader } from "@gnosis.pm/safe-react-components";
+import { Box, Grid, makeStyles, Typography } from "@material-ui/core"
+import React from "react"
+import { colors } from "zodiac-ui-components"
+import DoneIcon from "@material-ui/icons/Done"
+import ClearIcon from "@material-ui/icons/Clear"
+import { Loader } from "@gnosis.pm/safe-react-components"
 
 const useStyles = makeStyles((theme) => ({
+  message: {
+    fontSize: "0.9rem",
+  },
   circle: {
     padding: 6,
     display: "flex",
@@ -51,20 +54,17 @@ const useStyles = makeStyles((theme) => ({
     fill: "black",
     width: "16px",
   },
-}));
+}))
 
 export interface ProposalStatusProps {
-  status: "loading" | "success" | "error";
-  message: string;
+  status: "loading" | "success" | "error"
+  message: string
 }
 
-export const ProposalStatus: React.FC<ProposalStatusProps> = ({
-  status,
-  message,
-}) => {
-  const classes = useStyles();
+export const ProposalStatus: React.FC<ProposalStatusProps> = ({ status, message }) => {
+  const classes = useStyles()
   return (
-    <Grid container spacing={1} alignItems='center'>
+    <Grid container spacing={1} alignItems="center">
       <Grid item>
         {status === "success" && (
           <Box className={classes.circle}>
@@ -73,7 +73,7 @@ export const ProposalStatus: React.FC<ProposalStatusProps> = ({
         )}
         {status === "loading" && (
           <Box className={classes.loadingContainer}>
-            <Loader size='sm' className={classes.loading} />
+            <Loader size="sm" className={classes.loading} />
           </Box>
         )}
         {status === "error" && (
@@ -83,8 +83,8 @@ export const ProposalStatus: React.FC<ProposalStatusProps> = ({
         )}
       </Grid>
       <Grid item>
-        <Typography>{message}</Typography>
+        <Typography className={classes.message}>{message}</Typography>
       </Grid>
     </Grid>
-  );
-};
+  )
+}
