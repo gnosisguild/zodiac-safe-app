@@ -14,7 +14,6 @@ import { setup } from "./setupService"
 import { getProvider } from "services"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { getDelayModules, getModulesList } from "store/modules/selectors"
-import osDefenderService from "services/os-defender.service"
 
 export interface SectionProps {
   handleNext: (stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any) => void
@@ -139,24 +138,7 @@ export const RealityModule: React.FC = () => {
       delayModuleExecutor !== "" || delayModuleExecutor == null ? safeInfo.safeAddress : delayModuleExecutor
     await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
     try {
-      const { apiKey, secretKey, email } = setupData.monitoring
-      const token = await osDefenderService.generateToken(apiKey, secretKey)
-      if (token) {
-        const generateEmail = await osDefenderService.createNotification(
-          "email",
-          {
-            type: "email",
-            name: "Testing by contract",
-            config: { emails: email },
-            paused: false,
-          },
-          {
-            apiKey,
-            token,
-          },
-        )
-        console.log("generateEmail", generateEmail)
-      }
+      console.log("TODO: call the monitoring setup worker")
     } catch (error) {
       console.error(error)
       setLoading(false)
