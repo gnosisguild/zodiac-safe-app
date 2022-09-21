@@ -4,7 +4,7 @@ export enum NETWORK {
   XDAI = 100,
   BSC = 56,
   POLYGON = 137,
-  GOERLI = 420,
+  GOERLI = 5,
 }
 
 export interface Coin {

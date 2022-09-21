@@ -14,11 +14,12 @@ import { DangerAlert } from "components/Alert/DangerAlert"
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { getProvider } from "services"
-import useSpace from "services/snapshot/hooks/useSpace"
+// import useSpace from "services/snapshot/hooks/useSpace"
 import { checkIfIsController, checkIfIsOwner } from "utils/ens"
 import { SectionProps } from "views/RealityModule/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { ProposalStatus } from "./components/proposalStatus/ProposalStatus"
+import * as snapshot from "utils/snapshot"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -77,10 +78,10 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   //   "snapshot"
   // );
   const [ensName, setEnsName] = useState<string>("")
-  const { executeQuery, data, loading: snapshotLoading } = useSpace(ensName)
   const [ensAddress, setEnsAddress] = useState<string>("")
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [isController, setIsController] = useState<boolean>(false)
+  const [validSnapshot, setValidSnapshot] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [ensIsValid, setEnsIsValid] = useState<boolean>(false)
 
@@ -110,9 +111,10 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   const validEns = async () => {
     const address = await provider.resolveName(ensName)
     if (address) {
-      executeQuery()
+      const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName)
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress)
       const isController = await checkIfIsController(provider, ensName, safe.safeAddress)
+      setValidSnapshot(snapshotSpace ? true : false)
       setIsOwner(isOwner)
       setIsController(isController)
       setEnsAddress(address)
@@ -123,6 +125,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
       setLoading(false)
       setIsOwner(false)
       setIsController(false)
+      setValidSnapshot(false)
       return
     }
   }
@@ -139,7 +142,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   // };
 
   const handleStatus = (type: "controller" | "owner" | "snapshot"): "loading" | "success" | "error" => {
-    if (loading || snapshotLoading) {
+    if (loading) {
       return "loading"
     }
     if (type === "controller" && isController) {
@@ -154,10 +157,10 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
     if (type === "owner" && !isOwner) {
       return "error"
     }
-    if (type === "snapshot" && data) {
+    if (type === "snapshot" && validSnapshot) {
       return "success"
     }
-    if (type === "snapshot" && !data) {
+    if (type === "snapshot" && !validSnapshot) {
       return "error"
     }
     return "loading"
@@ -165,13 +168,13 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
 
   const handleStatusMessage = (type: "controller" | "owner" | "snapshot"): string => {
     if (type === "snapshot") {
-      if (snapshotLoading) {
+      if (loading) {
         return "Confirming the ENS name has a Snapshot space created. Please wait..."
       }
-      if (data) {
+      if (validSnapshot) {
         return "The ENS name has a Snapshot space created."
       }
-      if (!data) {
+      if (!validSnapshot) {
         return "The ENS name should have a Snapshot space created."
       }
     }
@@ -205,6 +208,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
     if (ens === "") {
       setIsController(false)
       setIsOwner(false)
+      setValidSnapshot(false)
       setEnsName("")
     } else {
       setEnsName(ens)

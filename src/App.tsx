@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { AppLayout } from "./components/layout/AppLayout"
 import { fetchModulesList } from "./store/modules"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
@@ -8,9 +8,7 @@ import { Views } from "./Views"
 import { Header } from "./views/Header/Header"
 import { makeStyles } from "@material-ui/core"
 import { TransactionBuilder } from "./views/TransactionBuilder/TransactionBuilder"
-import { Provider as UrqlProvider } from "urql"
 import zodiacBackground from "./assets/images/zodiac-bg.svg"
-import { subgraphClient } from "services/graphql"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,12 +26,7 @@ const useStyles = makeStyles((theme) => ({
 const App: React.FC = () => {
   const dispatch = useRootDispatch()
   const { safe, sdk } = useSafeAppsSDK()
-  const [currentSubgraphClient, setCurrentSubgraphClient] = useState(subgraphClient(safe.chainId))
   const classes = useStyles()
-
-  useEffect(() => {
-    setCurrentSubgraphClient(subgraphClient(safe.chainId))
-  }, [safe.chainId])
 
   useEffect(() => {
     const exec = () => {
@@ -54,13 +47,11 @@ const App: React.FC = () => {
   return (
     <div className={classes.root}>
       <div className={classes.background}>
-        <UrqlProvider value={currentSubgraphClient}>
-          <Header />
-          <AppLayout left={<Panel />}>
-            <Views />
-          </AppLayout>
-          <TransactionBuilder />
-        </UrqlProvider>
+        <Header />
+        <AppLayout left={<Panel />}>
+          <Views />
+        </AppLayout>
+        <TransactionBuilder />
       </div>
     </div>
   )
