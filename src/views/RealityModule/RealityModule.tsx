@@ -1,58 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { useRootDispatch, useRootSelector } from "store";
-import { setRealityModuleScreen } from "../../store/modules";
-import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components";
-import {
-  Button,
-  Divider,
-  Grid,
-  makeStyles,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography,
-} from "@material-ui/core";
-import { TagList } from "components/list/TagList";
-import { Link } from "components/text/Link";
-import {
-  OracleSection,
-  OracleSectionData,
-} from "./sections/oracle/OracleSection";
-import {
-  ProposalSection,
-  ProposalSectionData,
-} from "./sections/proposal/ProposalSection";
-import { ReviewSection } from "./sections/review/ReviewSection";
-import classnames from "classnames";
-import {
-  MonitoringSection,
-  MonitoringSectionData,
-} from "./sections/monitoring/MonitoringSection";
-import { setup } from "./setupService";
-import { getProvider } from "services";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getDelayModules, getModulesList } from "store/modules/selectors";
+import React, { useEffect, useState } from "react"
+import { useRootDispatch, useRootSelector } from "store"
+import { setRealityModuleScreen } from "../../store/modules"
+import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components"
+import { Button, Divider, Grid, makeStyles, Step, StepContent, StepLabel, Stepper, Typography } from "@material-ui/core"
+import { TagList } from "components/list/TagList"
+import { Link } from "components/text/Link"
+import { OracleSection, OracleSectionData } from "./sections/oracle/OracleSection"
+import { ProposalSection, ProposalSectionData } from "./sections/proposal/ProposalSection"
+import { ReviewSection } from "./sections/review/ReviewSection"
+import classnames from "classnames"
+import { MonitoringSection, MonitoringSectionData } from "./sections/monitoring/MonitoringSection"
+import { setup } from "./setupService"
+import { getProvider } from "services"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { getDelayModules, getModulesList } from "store/modules/selectors"
 
 export interface SectionProps {
-  handleNext: (stepData: any) => void;
-  handleBack: () => void;
-  setupData: SetupData | undefined;
+  handleNext: (stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any) => void
+  handleBack: () => void
+  setupData: SetupData | undefined
 }
 
 export type SetupData = {
-  proposal: ProposalSectionData;
-  oracle: OracleSectionData;
-  monitoring: MonitoringSectionData;
-  review: any;
-};
+  proposal: ProposalSectionData
+  oracle: OracleSectionData
+  monitoring: MonitoringSectionData
+  review: any
+}
 
-const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
-  "proposal",
-  "oracle",
-  // "monitoring",
-  "review",
-];
+const REALITY_MODULE_STEPS: (keyof SetupData)[] = ["proposal", "oracle", "monitoring", "review"]
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -112,71 +88,71 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: "100%",
     },
   },
-}));
+}))
 
 export const RealityModule: React.FC = () => {
-  const classes = useStyles();
-  const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK();
-  const delayModules = useRootSelector(getDelayModules);
-  const dispatch = useRootDispatch();
-  const modulesList = useRootSelector(getModulesList);
-  const [modules, setModules] = useState<number>(modulesList.length);
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const classes = useStyles()
+  const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK()
+  const delayModules = useRootSelector(getDelayModules)
+  const dispatch = useRootDispatch()
+  const modulesList = useRootSelector(getModulesList)
+  const [modules, setModules] = useState<number>(modulesList.length)
+  const [activeStep, setActiveStep] = useState<number>(0)
   const [completed, setCompleted] = useState({
     proposal: false,
     oracle: false,
     monitoring: false,
     review: false,
-  });
-  const [loading, setLoading] = useState<boolean>(false);
+  })
+  const [loading, setLoading] = useState<boolean>(false)
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
-  const [setupData, setSetupData] = useState<SetupData>();
+  const [setupData, setSetupData] = useState<SetupData>()
 
   const handleOpenSection = (pageToOpen: number, step: keyof SetupData) => {
     if (completed[step]) {
-      setActiveStep(pageToOpen);
+      setActiveStep(pageToOpen)
     }
-  };
+  }
 
   const handleNext = (nextPage: number, step: keyof SetupData) => {
     return (stepData: any) => {
-      setActiveStep(nextPage);
-      setCompleted({ ...completed, [step]: true });
-      setSetupData({ ...setupData, [step]: stepData } as SetupData);
-    };
-  };
+      setActiveStep(nextPage)
+      setCompleted({ ...completed, [step]: true })
+      setSetupData({ ...setupData, [step]: stepData } as SetupData)
+    }
+  }
 
   const handleBack = (nextPage: number, step: keyof SetupData) => {
-    setActiveStep(nextPage);
-    setCompleted({ ...completed, [step]: false });
-  };
+    setActiveStep(nextPage)
+    setCompleted({ ...completed, [step]: false })
+  }
 
   const handleDone = async (delayModuleExecutor?: string) => {
-    const provider = getProvider(safeInfo.chainId);
-    setLoading(true);
+    const provider = getProvider(safeInfo.chainId)
+    setLoading(true)
     if (setupData == null) {
-      setLoading(false);
-      throw new Error("No setup data");
+      setLoading(false)
+      throw new Error("No setup data")
     }
     const executorAddress =
-      delayModuleExecutor !== "" || delayModuleExecutor == null
-        ? safeInfo.safeAddress
-        : delayModuleExecutor;
+      delayModuleExecutor !== "" || delayModuleExecutor == null ? safeInfo.safeAddress : delayModuleExecutor
+    await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
     try {
-      await setup(provider, safeSdk, safeInfo, executorAddress, setupData);
+      console.log("TODO: call the monitoring setup worker")
     } catch (error) {
-      console.error(error);
-      setLoading(false);
+      console.error(error)
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     if (loading && modulesList.length > modules) {
-      setModules(modulesList.length);
-      setLoading(false);
-      dispatch(setRealityModuleScreen(false));
+      setModules(modulesList.length)
+      setLoading(false)
+      dispatch(setRealityModuleScreen(false))
     }
-  }, [dispatch, loading, modules, modulesList]);
+  }, [dispatch, loading, modules, modulesList])
+
   return (
     <div className={classes.root}>
       <Grid container spacing={2} className={classes.container}>
@@ -186,11 +162,8 @@ export const RealityModule: React.FC = () => {
               <BadgeIcon icon={"reality"} size={60} />
             </Grid>
             <Grid item>
-              <Typography variant='h5'>Reality Module</Typography>
-              <TagList
-                className={classes.tag}
-                tags={["Stackable", "From Gnosis Guild"]}
-              />
+              <Typography variant="h5">Reality Module</Typography>
+              <TagList className={classes.tag} tags={["Stackable", "From Gnosis Guild"]} />
             </Grid>
           </Grid>
         </Grid>
@@ -198,10 +171,11 @@ export const RealityModule: React.FC = () => {
           <Typography gutterBottom>
             Allows Reality.eth questions to execute a transaction when resolved.{" "}
             <Link
-              underline='always'
-              href='https://github.com/gnosis/zodiac-module-reality'
+              underline="always"
+              href="https://github.com/gnosis/zodiac-module-reality"
               target={"_blank"}
-              color='inherit'>
+              color="inherit"
+            >
               Read more here.
             </Link>
           </Typography>
@@ -210,46 +184,29 @@ export const RealityModule: React.FC = () => {
           <Divider />
         </Grid>
         <Grid item>
-          <ZodiacPaper borderStyle='single' className={classes.paperContainer}>
-            <Grid
-              container
-              justifyContent='space-between'
-              alignItems='center'
-              style={{ marginBottom: 15 }}>
+          <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+            <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: 15 }}>
               <Grid item>
-                <Typography
-                  variant='h4'
-                  gutterBottom
-                  className={classes.paperTitle}>
+                <Typography variant="h4" gutterBottom className={classes.paperTitle}>
                   Add Reality Module
                 </Typography>
               </Grid>
               <Grid item>
                 <Button
-                  color='secondary'
-                  size='medium'
-                  variant='outlined'
-                  onClick={() => dispatch(setRealityModuleScreen(false))}>
+                  color="secondary"
+                  size="medium"
+                  variant="outlined"
+                  onClick={() => dispatch(setRealityModuleScreen(false))}
+                >
                   Cancel
                 </Button>
               </Grid>
             </Grid>
-            <Stepper
-              activeStep={activeStep}
-              className={classes.stepperRoot}
-              orientation='vertical'>
+            <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation="vertical">
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
-                  <StepLabel
-                    onClick={() =>
-                      handleOpenSection(index, label as keyof SetupData)
-                    }>
-                    <Typography
-                      variant='h6'
-                      className={classnames(
-                        index <= activeStep && "clickable",
-                        "step-label"
-                      )}>
+                  <StepLabel onClick={() => handleOpenSection(index, label as keyof SetupData)}>
+                    <Typography variant="h6" className={classnames(index <= activeStep && "clickable", "step-label")}>
                       {label}
                     </Typography>{" "}
                   </StepLabel>
@@ -257,9 +214,7 @@ export const RealityModule: React.FC = () => {
                     {label === "proposal" && (
                       <ProposalSection
                         handleNext={handleNext(index + 1, label)}
-                        handleBack={() =>
-                          dispatch(setRealityModuleScreen(false))
-                        }
+                        handleBack={() => dispatch(setRealityModuleScreen(false))}
                         setupData={setupData}
                       />
                     )}
@@ -297,5 +252,5 @@ export const RealityModule: React.FC = () => {
         </Grid>
       </Grid>
     </div>
-  );
-};
+  )
+}
