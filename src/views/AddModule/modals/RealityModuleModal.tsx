@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
 export const RealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleModalProps) => {
   const classes = useStyles()
   const { sdk, safe } = useSafeAppsSDK()
-
   const delayModules = useRootSelector(getDelayModules)
   const [isERC20, setERC20] = useState(false)
   const [delayModule, setDelayModule] = useState<string>(delayModules.length === 1 ? delayModules[0].address : "")
@@ -119,6 +118,7 @@ export const RealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleMod
       console.log("Error deploying module: ", error)
     }
   }
+
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value || "0"
