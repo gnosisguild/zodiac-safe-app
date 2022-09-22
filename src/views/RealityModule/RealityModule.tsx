@@ -28,7 +28,7 @@ export type SetupData = {
   review: any
 }
 
-const REALITY_MODULE_STEPS: (keyof SetupData)[] = ["proposal", "oracle", "monitoring", "review"]
+const REALITY_MODULE_STEPS: (keyof SetupData)[] = ["proposal", "oracle", "review"] // TODO: Add monitoring
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -136,8 +136,8 @@ export const RealityModule: React.FC = () => {
     }
     const executorAddress =
       delayModuleExecutor !== "" || delayModuleExecutor == null ? safeInfo.safeAddress : delayModuleExecutor
-    await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
     try {
+      await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
       console.log("TODO: call the monitoring setup worker")
     } catch (error) {
       console.error(error)

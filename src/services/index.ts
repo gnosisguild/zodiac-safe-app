@@ -86,6 +86,8 @@ export function getDefaultOracle(chainId: number): string {
       return "0xE78996A233895bE74a66F451f1019cA9734205cc"
     case NETWORK.POLYGON:
       return "0x60573B8DcE539aE5bF9aD7932310668997ef0428"
+    case NETWORK.GOERLI:
+      return "0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f"
   }
   return ""
 }

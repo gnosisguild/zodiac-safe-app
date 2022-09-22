@@ -29,6 +29,9 @@ export async function deployRealityModule(
   const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
   const provider = getProvider(chainId)
   const oracleAddress = oracle != null && ethers.utils.isAddress(oracle) ? oracle : getDefaultOracle(chainId)
+  if (oracleAddress == null) {
+    throw new Error(`No oracle address provided and no default oracle available for this chain (chainID: ${chainId})`)
+  }
   const saltNonce = Date.now().toString()
   const initData = {
     types: ["address", "address", "address", "address", "uint32", "uint32", "uint32", "uint256", "uint256", "address"],
@@ -45,6 +48,13 @@ export async function deployRealityModule(
       arbitrator,
     ],
   }
+
+  console.log(oracleType)
+  console.log(initData)
+  console.log(provider)
+  console.log(chainId)
+  console.log(saltNonce)
+
   const { transaction: daoModuleDeploymentTx, expectedModuleAddress } = deployAndSetUpModule(
     oracleType,
     initData,
