@@ -240,7 +240,7 @@ export const RealityModuleModal = ({
             label="Bond"
             color="secondary"
             value={params.bond}
-            append={bondToken.symbol}
+            append={bondToken?.symbol}
             onChange={handleBondChange}
           />
         </Grid>

@@ -30,6 +30,10 @@ export function scaleBondDecimals(collateralAddress: string, bond: string): numb
       return Number(bond) * Math.pow(10, 18);
     case "0xc778417E063141139Fce010982780140Aa0cD5Ab":
       return Number(bond) * Math.pow(10, 18);
+    case "0x07865c6E87B9F70255377e024ace6630C1Eaa37F":
+      return Number(bond) * Math.pow(10, 18);
+    case "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6":
+      return Number(bond) * Math.pow(10, 18);
   }
   return 18;
 }
@@ -39,6 +43,7 @@ const optimisticGovernorAvailability: number[] = [
   NETWORK.MAINNET,
   NETWORK.RINKEBY,
   NETWORK.POLYGON,
+  NETWORK.GOERLI,
 ];
 
 type Option = keyof typeof collateralOptions;
