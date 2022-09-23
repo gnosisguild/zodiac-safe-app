@@ -1,3 +1,9 @@
+[build]
+  # Directory to change to before starting a build.
+  # This is where we will look for package.json/.nvmrc/etc.
+  # If not set, defaults to the root directory.
+  base = "packages/app"
+
 # The following redirect is intended for use with most SPAs that handle
 # routing internally.
 [[redirects]]
