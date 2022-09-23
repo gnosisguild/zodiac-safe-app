@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Box, makeStyles, MenuItem, Select } from "@material-ui/core";
 import { BigNumber, BigNumberish } from "ethers";
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
-import { TextField } from "./TextField"
+import { TextField } from "./TextField";
+import { colors } from "zodiac-ui-components";
 
-const unitConversion = {
+export const unitConversion = {
   seconds: 1,
   minutes: 60,
   hours: 3600,
@@ -14,11 +15,14 @@ const unitConversion = {
 type Unit = keyof typeof unitConversion;
 
 interface TimeSelectProps {
+  tooltipMsg?: string;
   defaultValue?: BigNumberish;
   defaultUnit?: Unit;
+  value?: string;
+  valueUnit?: Unit;
   label: string;
-
-  onChange(time: string): void;
+  variant?: "primary" | "secondary";
+  onChange(time: string, unit: Unit): void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -63,6 +67,12 @@ const useStyles = makeStyles((theme) => ({
     borderTopStyle: "solid",
     marginTop: -1,
   },
+  primary: {
+    borderColor: theme.palette.primary.light,
+  },
+  secondary: {
+    borderColor: colors.tan[300],
+  },
 }));
 
 function calculateTime(amount: string, unit: Unit): BigNumber {
@@ -73,7 +83,11 @@ export const TimeSelect = ({
   onChange,
   defaultUnit = "hours",
   defaultValue = "0",
+  value,
+  valueUnit,
   label,
+  variant = "primary",
+  tooltipMsg,
 }: TimeSelectProps) => {
   const classes = useStyles();
   const [unit, setUnit] = useState<Unit>(defaultUnit);
@@ -92,7 +106,7 @@ export const TimeSelect = ({
     try {
       const newAmount = calculateTime(_amount || "0", unit);
       setAmount(_amount);
-      onChange(newAmount.toString());
+      onChange(newAmount.toString(), unit);
     } catch (err) {
       console.warn("invalid time");
     }
@@ -101,7 +115,7 @@ export const TimeSelect = ({
   const handleUnitChange = (newUnit: Unit) => {
     handleClose();
     setUnit(newUnit);
-    if (amount) onChange(calculateTime(amount, newUnit).toString());
+    if (amount) onChange(calculateTime(amount, newUnit).toString(), newUnit);
   };
 
   useEffect(() => {
@@ -112,12 +126,30 @@ export const TimeSelect = ({
     }
   }, [selectRef]);
 
+  useEffect(() => {
+    if (value && valueUnit) {
+      if (amount === "0" && value !== amount) {
+        setAmount(
+          BigNumber.from(value).div(unitConversion[valueUnit]).toString()
+        );
+      }
+      if (unit === "hours" && valueUnit !== unit) {
+        setUnit(valueUnit);
+      }
+    }
+  }, [value, valueUnit, amount, unit]);
+
   return (
     <TextField
       label={label}
+      variantAppend={variant}
+      tooltipMsg={tooltipMsg}
       InputProps={{
         value: amount,
         placeholder: "24",
+        classes: {
+          root: variant === "primary" ? classes.primary : classes.secondary,
+        },
         onChange: (evt) => handleAmountChange(evt.target.value),
       }}
       AppendProps={{
@@ -131,7 +163,9 @@ export const TimeSelect = ({
           ref={selectRef}
           onOpen={handleOpen}
           onClose={handleClose}
-          className={classes.select}
+          className={`${classes.select} ${
+            variant === "primary" ? classes.primary : classes.secondary
+          }`}
           MenuProps={{
             anchorOrigin: {
               vertical: "bottom",
@@ -149,13 +183,12 @@ export const TimeSelect = ({
             },
           }}
           renderValue={(value) => value as string}
-          onChange={(evt) => handleUnitChange(evt.target.value as Unit)}
-        >
+          onChange={(evt) => handleUnitChange(evt.target.value as Unit)}>
           {Object.keys(unitConversion).map((unit) => (
             <MenuItem key={unit} value={unit} className={classes.item}>
               {unit}
-              <Box className="show-if-selected" flexGrow={1} />
-              <CheckmarkIcon className="show-if-selected" />
+              <Box className='show-if-selected' flexGrow={1} />
+              <CheckmarkIcon className='show-if-selected' />
             </MenuItem>
           ))}
         </Select>

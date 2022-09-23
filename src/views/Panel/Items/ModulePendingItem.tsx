@@ -15,9 +15,6 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(0.5),
     textTransform: "uppercase",
   },
-  link: {
-    fontSize: 12,
-  },
   image: {
     width: 50,
     height: 50,
@@ -53,7 +50,7 @@ export const ModulePendingItem = ({
         {title}
       </Typography>
       <div>
-        <Link target="_parent" href={link} className={classes.link}>
+        <Link target="_parent" href={link}>
           {linkText}
         </Link>
       </div>

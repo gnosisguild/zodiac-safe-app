@@ -11,8 +11,7 @@ import { ParamInput } from "../../components/ethereum/ParamInput";
 import { ParamType } from "@ethersproject/abi";
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
 import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services";
-import {NETWORK} from "../../utils/networks";
-
+import { NETWORK } from "../../utils/networks";
 
 export const arbitratorOptions = {
   NO_ARBITRATOR: "No arbitration (highest bond wins)",
@@ -21,10 +20,7 @@ export const arbitratorOptions = {
 };
 
 // List of chain IDs where Kleros is available.
-const klerosAvailability:number[] = [
-  NETWORK.MAINNET,
-  NETWORK.RINKEBY
-];
+const klerosAvailability: number[] = [NETWORK.MAINNET, NETWORK.RINKEBY];
 
 type Option = keyof typeof arbitratorOptions;
 
@@ -108,9 +104,7 @@ export const ArbitratorSelect = ({
 }: ArbitratorSelectProps) => {
   const classes = useStyles();
   const [option, setOption] = useState<string>(defaultOption);
-  const [arbitratorAddress, setArbitratorAddress] = useState(
-    defaultAddress
-  );
+  const [arbitrator, setArbitrator] = useState(defaultAddress);
 
   const [open, setOpen] = useState(false);
 
@@ -119,11 +113,11 @@ export const ArbitratorSelect = ({
 
   const selectRef = React.useRef<HTMLDivElement>(null);
 
-  const handleArbitratorAddressChange = (_arbitratorAddress: string, valid?: boolean) => {
+  const handleArbitratorChange = (_arbitrator: string, valid?: boolean) => {
     try {
       if (valid === true) {
-        setArbitratorAddress(_arbitratorAddress);
-        onChange(_arbitratorAddress);
+        setArbitrator(_arbitrator);
+        onChange(_arbitrator);
       }
     } catch (err) {
       console.warn("invalid arbitrator option");
@@ -132,16 +126,19 @@ export const ArbitratorSelect = ({
 
   const handleArbitratorOptionChange = (newOption: string) => {
     handleClose();
-    const newOptionKey = Object
-      .keys(arbitratorOptions)
-      .find(k => arbitratorOptions[`${k}` as Option] === newOption) as Option;
+    const newOptionKey = Object.keys(arbitratorOptions).find(
+      (k) => arbitratorOptions[`${k}` as Option] === newOption
+    ) as Option;
     setOption(newOption);
     if (newOptionKey === "OTHER") {
-      setArbitratorAddress("");
+      setArbitrator("");
       onChange("");
     } else {
-      const newArbitrator = getArbitrator(chainId, ARBITRATOR_OPTIONS[newOptionKey]);
-      setArbitratorAddress(newArbitrator);
+      const newArbitrator = getArbitrator(
+        chainId,
+        ARBITRATOR_OPTIONS[newOptionKey]
+      );
+      setArbitrator(newArbitrator);
       onChange(newArbitrator);
     }
   };
@@ -184,14 +181,23 @@ export const ArbitratorSelect = ({
               },
             }}
             renderValue={(value) => value as string}
-            onChange={(evt) => handleArbitratorOptionChange(evt.target.value as string)}
+            onChange={(evt) =>
+              handleArbitratorOptionChange(evt.target.value as string)
+            }
           >
             {Object.keys(arbitratorOptions).map((optionKey) => {
-              if (!klerosAvailability.includes(chainId) && optionKey === "KLEROS") {
+              if (
+                !klerosAvailability.includes(chainId) &&
+                optionKey === "KLEROS"
+              ) {
                 return null;
               }
               return (
-                <MenuItem key={optionKey} value={arbitratorOptions[`${optionKey}` as Option]} className={classes.item}>
+                <MenuItem
+                  key={optionKey}
+                  value={arbitratorOptions[`${optionKey}` as Option]}
+                  className={classes.item}
+                >
                   {arbitratorOptions[`${optionKey}` as Option]}
                   <Box className="show-if-selected" flexGrow={1} />
                   <CheckmarkIcon className="show-if-selected" />
@@ -201,18 +207,20 @@ export const ArbitratorSelect = ({
           </Select>
         </Grid>
       </Grid>
-      {(option === arbitratorOptions.OTHER) && <Grid container className={classes.root}>
-        <Grid item xs={12}>
-          <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
-            value={arbitratorAddress}
-            label=""
-            placeholder="address (0x...)"
-            onChange={(value, valid) => handleArbitratorAddressChange(value, valid)}
-          />
+      {option === arbitratorOptions.OTHER && (
+        <Grid container className={classes.root}>
+          <Grid item xs={12}>
+            <ParamInput
+              param={ParamType.from("address")}
+              color="secondary"
+              value={arbitrator}
+              label=""
+              placeholder="address (0x...)"
+              onChange={(value, valid) => handleArbitratorChange(value, valid)}
+            />
+          </Grid>
         </Grid>
-      </Grid>}
+      )}
     </div>
   );
 };

@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grid, makeStyles, Typography } from "@material-ui/core";
-import { AddModuleModal } from "./AddModuleModal";
-import { AMBModuleParams, deployBridgeModule } from "../../../services";
-import { ParamInput } from "../../../components/ethereum/ParamInput";
-import { ParamType } from "@ethersproject/abi";
+import React, { useState } from "react"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { Grid, makeStyles, Typography } from "@material-ui/core"
+import { AddModuleModal } from "./AddModuleModal"
+import { AMBModuleParams, deployBridgeModule } from "../../../services"
+import { ParamInput } from "../../../components/ethereum/ParamInput"
+import { ParamType } from "@ethersproject/abi"
 
 interface AMBModuleModalProps {
-  open: boolean;
+  open: boolean
 
-  onClose?(): void;
+  onClose?(): void
 
-  onSubmit?(): void;
+  onSubmit?(): void
 }
 
-type AMBModuleParamsInput = Omit<AMBModuleParams, "executor">;
+type AMBModuleParamsInput = Omit<AMBModuleParams, "executor">
 
 const useStyles = makeStyles((theme) => ({
   fields: {
@@ -23,56 +23,50 @@ const useStyles = makeStyles((theme) => ({
   loadMessage: {
     textAlign: "center",
   },
-}));
+}))
 
-export const AMBModuleModal = ({
-  open,
-  onClose,
-  onSubmit,
-}: AMBModuleModalProps) => {
-  const classes = useStyles();
-  const { sdk, safe } = useSafeAppsSDK();
+export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps) => {
+  const classes = useStyles()
+  const { sdk, safe } = useSafeAppsSDK()
 
-  const [errors, setErrors] = useState<
-    Record<keyof AMBModuleParamsInput, boolean>
-  >({
+  const [errors, setErrors] = useState<Record<keyof AMBModuleParamsInput, boolean>>({
     amb: false,
     controller: false,
     chainId: false,
-  });
+  })
   const [params, setParams] = useState<AMBModuleParamsInput>({
     amb: "",
     chainId: "",
     controller: "",
-  });
-  const isValid = Object.values(errors).every((x) => x);
+  })
+  const isValid = Object.values(errors).every((x) => x)
 
   const onParamChange = <Field extends keyof AMBModuleParamsInput>(
     field: Field,
     value: AMBModuleParamsInput[Field],
-    valid: boolean
+    valid: boolean,
   ) => {
-    setErrors({ ...errors, [field]: valid });
+    setErrors({ ...errors, [field]: valid })
     setParams({
       ...params,
       [field]: value,
-    });
-  };
+    })
+  }
 
   const handleAddAMBModule = async () => {
     try {
       const txs = deployBridgeModule(safe.safeAddress, safe.chainId, {
         ...params,
         executor: safe.safeAddress,
-      });
+      })
 
-      await sdk.txs.send({ txs });
-      if (onSubmit) onSubmit();
-      if (onClose) onClose();
+      await sdk.txs.send({ txs })
+      if (onSubmit) onSubmit()
+      if (onClose) onClose()
     } catch (error) {
-      console.log("Error deploying module: ", error);
+      console.log("Error deploying module: ", error)
     }
-  };
+  }
 
   return (
     <AddModuleModal
@@ -104,20 +98,18 @@ export const AMBModuleModal = ({
             color="secondary"
             value={params.controller}
             label="Controller Contract Address"
-            onChange={(value, valid) =>
-              onParamChange("controller", value, valid)
-            }
+            onChange={(value, valid) => onParamChange("controller", value, valid)}
           />
         </Grid>
         <Grid item xs={12}>
           <ParamInput
             param={ParamType.from("uint256")}
             label="Chain Id"
-            defaultValue={params.chainId}
+            value={params.chainId}
             onChange={(value, valid) => onParamChange("chainId", value, valid)}
           />
         </Grid>
       </Grid>
     </AddModuleModal>
-  );
-};
+  )
+}

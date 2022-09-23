@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import { AppLayout } from "./components/layout/AppLayout";
-import { fetchModulesList } from "./store/modules";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { useRootDispatch } from "./store";
-import { Panel } from "./views/Panel/Panel";
-import { Views } from "./Views";
-import { Header } from "./views/Header/Header";
-import { makeStyles } from "@material-ui/core";
-import { TransactionBuilder } from "./views/TransactionBuilder/TransactionBuilder";
-import zodiacBackground from "./assets/images/zodiac-bg.svg";
+import React, { useEffect } from "react"
+import { AppLayout } from "./components/layout/AppLayout"
+import { fetchModulesList } from "./store/modules"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { useRootDispatch } from "./store"
+import { Panel } from "./views/Panel/Panel"
+import { Views } from "./Views"
+import { Header } from "./views/Header/Header"
+import { makeStyles } from "@material-ui/core"
+import { TransactionBuilder } from "./views/TransactionBuilder/TransactionBuilder"
+import zodiacBackground from "./assets/images/zodiac-bg.svg"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme) => ({
     background:
       "linear-gradient(108.86deg, rgba(26, 33, 66, 0.85) 6.24%, rgba(12, 19, 8, 0.85) 53.08%, rgba(37, 6, 4, 0.85) 96.54%);",
   },
-}));
+}))
 
 const App: React.FC = () => {
-  const dispatch = useRootDispatch();
-  const { safe, sdk } = useSafeAppsSDK();
-  const classes = useStyles();
+  const dispatch = useRootDispatch()
+  const { safe, sdk } = useSafeAppsSDK()
+  const classes = useStyles()
 
   useEffect(() => {
     const exec = () => {
@@ -35,14 +35,14 @@ const App: React.FC = () => {
           safeSDK: sdk,
           chainId: safe.chainId,
           safeAddress: safe.safeAddress,
-        })
-      );
-    };
+        }),
+      )
+    }
     setInterval(() => {
-      exec();
-    }, 5000);
-    exec();
-  }, [sdk, dispatch, safe]);
+      exec()
+    }, 5000)
+    exec()
+  }, [sdk, dispatch, safe])
 
   return (
     <div className={classes.root}>
@@ -54,7 +54,7 @@ const App: React.FC = () => {
         <TransactionBuilder />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
