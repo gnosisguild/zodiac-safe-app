@@ -5,7 +5,6 @@ export enum NETWORK {
   XDAI = 100,
   BSC = 56,
   POLYGON = 137,
-  GOERLI = 5,
 }
 
 export interface Coin {
@@ -27,7 +26,6 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.XDAI]: NATIVE_ASSET.XDAI,
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
-  [NETWORK.GOERLI]: NATIVE_ASSET.ETH,
 }
 
 export function getNetworkNativeAsset(network: NETWORK) {
