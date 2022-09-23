@@ -9,6 +9,7 @@ The Zodiac Safe app let's you deploy and manage modules and Guards for your Gnos
 Install dependencies and start a local dev server.
 
 ```bash
+cd packages/app
 yarn install
 cp .env.sample .env
 # fill in details in .env
@@ -36,7 +37,6 @@ Then:
 ### Security and Liability
 
 All code is WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
 
 ### License
 

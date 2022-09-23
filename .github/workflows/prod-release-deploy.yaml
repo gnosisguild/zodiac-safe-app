@@ -19,15 +19,18 @@ jobs:
         with:
           node-version: 16
       - run: npm install -g yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
+      - name: Install deps and build
+        working-directory: ./packages/app
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
 
       - name: Pin to IPFS
         id: upload
         uses: anantaramdas/ipfs-pinata-deploy-action@39bbda1ce1fe24c69c6f57861b8038278d53688d
         with:
           pin-name: Zodiac Safe App - Prod — ${ GITHUB_SHA }
-          path: "./build"
+          path: "./packages/app/build"
           pinata-api-key: ${{ secrets.PINATA_API_KEY }}
           pinata-secret-api-key: ${{ secrets.PINATA_API_SECRET_KEY }}
 
@@ -76,4 +79,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: build
+          folder: packages/app/build
