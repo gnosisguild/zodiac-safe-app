@@ -157,6 +157,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName)
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress)
       const isController = await checkIfIsController(provider, ensName, safe.safeAddress)
+      // console.log(snapshotSpace)
       const plugins = snapshotSpace?.plugins
       if (plugins) {
         setIsSafesnapInstalled(plugins.safeSnap ? true : false)
@@ -189,7 +190,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   //     (event.target as HTMLInputElement).value as "snapshot" | "custom"
   //   );
   // };
-  console.log("isSafesnapInstalled", isSafesnapInstalled)
+  // console.log("isSafesnapInstalled", isSafesnapInstalled)
   const handleEns = (ens: string) => {
     if (ens === "") {
       setIsController(false)

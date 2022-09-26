@@ -153,6 +153,3 @@ export const checkNewSnapshotSettingsValidity = (originalSettings: any, newSetti
     // we must be strict here, if not a truthy error value can be returned
     snapshot.validateSchema(newSettings) === true,
   )
-
-// const pokeSnapshotAPI = async (ensName: string) =>
-//   fetch(`https://hub.snapshot.org/api/spaces/${ensName}/poke`);
