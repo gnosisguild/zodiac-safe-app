@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import {
+  Box,
   Button,
   Divider,
   Grid,
@@ -10,7 +11,7 @@ import {
   // RadioGroup,
   Typography,
 } from "@material-ui/core"
-import { DangerAlert } from "components/Alert/DangerAlert"
+
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { getProvider } from "services"
@@ -20,6 +21,10 @@ import { SectionProps } from "views/RealityModule/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { ProposalStatus } from "./components/proposalStatus/ProposalStatus"
 import * as snapshot from "utils/snapshot"
+import { handleProposalStatus, handleProposalStatusMessage } from "utils/proposalValidation"
+import { Loader } from "@gnosis.pm/safe-react-components"
+import DoneIcon from "@material-ui/icons/Done"
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -28,6 +33,34 @@ const useStyles = makeStyles((theme) => ({
   },
   paperContainer: {
     padding: theme.spacing(2),
+  },
+
+  doneIcon: {
+    marginRight: 4,
+    fill: "#A8E07E",
+    width: "16px",
+  },
+  errorIcon: {
+    marginRight: 4,
+    fill: "rgba(244, 67, 54, 1)",
+    width: "16px",
+  },
+
+  loadingContainer: {
+    marginRight: 4,
+    padding: 2,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: "50%",
+    height: 14,
+    width: 14,
+    border: `1px solid ${colors.tan[300]}`,
+  },
+  spinner: {
+    width: "8px !important",
+    height: "8px !important",
+    color: `${colors.tan[300]} !important`,
   },
   loading: {
     width: "15px !important",
@@ -62,6 +95,15 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
+  inputError: {
+    "& .MuiInputBase-root": {
+      borderColor: "rgba(244, 67, 54, 0.3)",
+      background: "rgba(244, 67, 54, 0.1)",
+      "&::before": {
+        borderColor: "rgba(244, 67, 54, 0.3)",
+      },
+    },
+  },
   errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }))
 
@@ -80,6 +122,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   const [ensName, setEnsName] = useState<string>("")
   const [ensAddress, setEnsAddress] = useState<string>("")
   const [isOwner, setIsOwner] = useState<boolean>(false)
+  const [isSafesnapInstalled, setIsSafesnapInstalled] = useState<boolean>(false)
   const [isController, setIsController] = useState<boolean>(false)
   const [validSnapshot, setValidSnapshot] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -114,6 +157,11 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName)
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress)
       const isController = await checkIfIsController(provider, ensName, safe.safeAddress)
+      const plugins = snapshotSpace?.plugins
+      if (plugins) {
+        setIsSafesnapInstalled(plugins.safeSnap ? true : false)
+      }
+
       setValidSnapshot(snapshotSpace ? true : false)
       setIsOwner(isOwner)
       setIsController(isController)
@@ -126,6 +174,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
       setIsOwner(false)
       setIsController(false)
       setValidSnapshot(false)
+      setIsSafesnapInstalled(false)
       return
     }
   }
@@ -140,70 +189,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   //     (event.target as HTMLInputElement).value as "snapshot" | "custom"
   //   );
   // };
-
-  const handleStatus = (type: "controller" | "owner" | "snapshot"): "loading" | "success" | "error" => {
-    if (loading) {
-      return "loading"
-    }
-    if (type === "controller" && isController) {
-      return "success"
-    }
-    if (type === "controller" && !isController) {
-      return "error"
-    }
-    if (type === "owner" && isOwner) {
-      return "success"
-    }
-    if (type === "owner" && !isOwner) {
-      return "error"
-    }
-    if (type === "snapshot" && validSnapshot) {
-      return "success"
-    }
-    if (type === "snapshot" && !validSnapshot) {
-      return "error"
-    }
-    return "loading"
-  }
-
-  const handleStatusMessage = (type: "controller" | "owner" | "snapshot"): string => {
-    if (type === "snapshot") {
-      if (loading) {
-        return "Confirming the ENS name has a Snapshot space created. Please wait..."
-      }
-      if (validSnapshot) {
-        return "The ENS name has a Snapshot space created."
-      }
-      if (!validSnapshot) {
-        return "The ENS name should have a Snapshot space created."
-      }
-    }
-    if (type === "controller") {
-      if (loading) {
-        return "Confirming the safe is the controller of the ENS name. Please wait..."
-      }
-      if (isController) {
-        return "The safe is the controller of the ENS name."
-      }
-      if (!isController) {
-        return "The safe must be the controller of the ENS name."
-      }
-    }
-    if (type === "owner") {
-      if (loading) {
-        return "Confirming that the safe is the owner of the ENS name. Please wait..."
-      }
-      if (isOwner) {
-        return "The safe is the owner of the ENS name."
-      }
-      if (!isOwner) {
-        return "The safe is not the owner of the ENS name. Please transfer the ENS name to this safe or enter a different ENS name before continuing."
-      }
-    }
-
-    return ""
-  }
-
+  console.log("isSafesnapInstalled", isSafesnapInstalled)
   const handleEns = (ens: string) => {
     if (ens === "") {
       setIsController(false)
@@ -304,17 +290,54 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
                 label="Enter the Snapshot ENS name."
                 placeholder="ex: gnosis.eth"
                 borderStyle="double"
-                className={`${classes.textFieldSmall} ${classes.input}`}
+                className={`${classes.textFieldSmall} ${
+                  ensName.includes(".eth") && !loading && (!validSnapshot || !isController || !isOwner)
+                    ? classes.inputError
+                    : classes.input
+                }`}
+                rightIcon={
+                  <>
+                    {loading && (
+                      <Box className={classes.loadingContainer}>
+                        <Loader size="sm" className={classes.spinner} />
+                      </Box>
+                    )}
+                    {ensName.includes(".eth") && !loading && (!validSnapshot || !isController || !isOwner) && (
+                      <ErrorOutlineIcon className={classes.errorIcon} />
+                    )}
+                    {ensName.includes(".eth") && !loading && validSnapshot && isController && isOwner && (
+                      <DoneIcon className={classes.doneIcon} />
+                    )}
+                  </>
+                }
               />
               <br />
               <br />
 
               {ensIsValid && (
                 <>
-                  <ProposalStatus status={handleStatus("snapshot")} message={handleStatusMessage("snapshot")} />
-                  <ProposalStatus status={handleStatus("controller")} message={handleStatusMessage("controller")} />
-                  <ProposalStatus status={handleStatus("owner")} message={handleStatusMessage("owner")} />
-                  {ensAddress && !isOwner && handleStatus("owner") === "error" && (
+                  <ProposalStatus
+                    type="snapshot"
+                    status={handleProposalStatus("snapshot", loading, false, false, validSnapshot, false)}
+                    message={handleProposalStatusMessage("snapshot", false, false, validSnapshot, false)}
+                  />
+                  <ProposalStatus
+                    type="safesnap"
+                    status={handleProposalStatus("safesnap", loading, false, false, false, isSafesnapInstalled)}
+                    message={handleProposalStatusMessage("safesnap", false, false, false, isSafesnapInstalled)}
+                  />
+                  <ProposalStatus
+                    type="controller"
+                    status={handleProposalStatus("controller", loading, isController, false, false, false)}
+                    message={handleProposalStatusMessage("controller", isController, false, false, false)}
+                  />
+                  <ProposalStatus
+                    type="owner"
+                    status={handleProposalStatus("owner", loading, false, isOwner, false, false)}
+                    message={handleProposalStatusMessage("owner", false, isOwner, false, false)}
+                    address={ensAddress}
+                  />
+                  {/* {ensAddress && !isOwner && handleProposalStatus("owner") === "error" && (
                     <Grid item>
                       <DangerAlert
                         msg={
@@ -323,7 +346,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
                         address={ensAddress}
                       />
                     </Grid>
-                  )}
+                  )} */}
                 </>
               )}
             </Grid>

@@ -27,7 +27,7 @@
     "styled-components": "^5.3.5",
     "react-select": "^5.4.0",
     "timeago-react": "^3.0.2",
-    "zodiac-ui-components": "^0.1.5"
+    "zodiac-ui-components": "^0.1.6"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
