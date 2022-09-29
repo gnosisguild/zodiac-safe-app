@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Box, makeStyles, MenuItem, Select } from "@material-ui/core";
-import { BigNumber, BigNumberish } from "ethers";
-import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
-import { TextField } from "./TextField";
-import { colors } from "zodiac-ui-components";
+import React, { useEffect, useState } from "react"
+import { Box, makeStyles, MenuItem, Select } from "@material-ui/core"
+import { BigNumber, BigNumberish } from "ethers"
+import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg"
+import { TextField } from "./TextField"
+import { colors } from "zodiac-ui-components"
+import useKeyPress from "hooks/useKeyPress"
 
 export const unitConversion = {
   seconds: 1,
@@ -11,18 +12,18 @@ export const unitConversion = {
   hours: 3600,
   days: 86400,
   months: 2592000, // 30 Days
-};
-type Unit = keyof typeof unitConversion;
+}
+type Unit = keyof typeof unitConversion
 
 interface TimeSelectProps {
-  tooltipMsg?: string;
-  defaultValue?: BigNumberish;
-  defaultUnit?: Unit;
-  value?: string;
-  valueUnit?: Unit;
-  label: string;
-  variant?: "primary" | "secondary";
-  onChange(time: string, unit: Unit): void;
+  tooltipMsg?: string
+  defaultValue?: BigNumberish
+  defaultUnit?: Unit
+  value?: string
+  valueUnit?: Unit
+  label: string
+  variant?: "primary" | "secondary"
+  onChange(time: string, unit: Unit): void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -73,10 +74,10 @@ const useStyles = makeStyles((theme) => ({
   secondary: {
     borderColor: colors.tan[300],
   },
-}));
+}))
 
 function calculateTime(amount: string, unit: Unit): BigNumber {
-  return BigNumber.from(amount).mul(unitConversion[unit]);
+  return BigNumber.from(amount).mul(unitConversion[unit])
 }
 
 export const TimeSelect = ({
@@ -89,55 +90,58 @@ export const TimeSelect = ({
   variant = "primary",
   tooltipMsg,
 }: TimeSelectProps) => {
-  const classes = useStyles();
-  const [unit, setUnit] = useState<Unit>(defaultUnit);
-  const [amount, setAmount] = useState(
-    BigNumber.from(defaultValue).div(unitConversion[unit]).toString()
-  );
+  const classes = useStyles()
+  const tabPress = useKeyPress("Tab")
+  const [unit, setUnit] = useState<Unit>(defaultUnit)
+  const [amount, setAmount] = useState(BigNumber.from(defaultValue).div(unitConversion[unit]).toString())
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false)
+  const handleOpen = () => setOpen(true)
 
-  const selectRef = React.useRef<HTMLDivElement>(null);
+  const selectRef = React.useRef<HTMLDivElement>(null)
 
   const handleAmountChange = (_amount: string) => {
     try {
-      const newAmount = calculateTime(_amount || "0", unit);
-      setAmount(_amount);
-      onChange(newAmount.toString(), unit);
+      const newAmount = calculateTime(_amount || "0", unit)
+      setAmount(_amount)
+      onChange(newAmount.toString(), unit)
     } catch (err) {
-      console.warn("invalid time");
+      console.warn("invalid time")
     }
-  };
+  }
 
   const handleUnitChange = (newUnit: Unit) => {
-    handleClose();
-    setUnit(newUnit);
-    if (amount) onChange(calculateTime(amount, newUnit).toString(), newUnit);
-  };
+    handleClose()
+    setUnit(newUnit)
+    if (amount) onChange(calculateTime(amount, newUnit).toString(), newUnit)
+  }
+
+  useEffect(() => {
+    if (tabPress && open) {
+      handleClose()
+    }
+  }, [tabPress, open])
 
   useEffect(() => {
     if (selectRef.current) {
       selectRef.current.addEventListener("keyup", (event) => {
-        if (event.code === "Tab") handleOpen();
-      });
+        if (event.code === "Tab") handleOpen()
+      })
     }
-  }, [selectRef]);
+  }, [selectRef])
 
   useEffect(() => {
     if (value && valueUnit) {
       if (amount === "0" && value !== amount) {
-        setAmount(
-          BigNumber.from(value).div(unitConversion[valueUnit]).toString()
-        );
+        setAmount(BigNumber.from(value).div(unitConversion[valueUnit]).toString())
       }
       if (unit === "hours" && valueUnit !== unit) {
-        setUnit(valueUnit);
+        setUnit(valueUnit)
       }
     }
-  }, [value, valueUnit, amount, unit]);
+  }, [value, valueUnit, amount, unit])
 
   return (
     <TextField
@@ -163,9 +167,7 @@ export const TimeSelect = ({
           ref={selectRef}
           onOpen={handleOpen}
           onClose={handleClose}
-          className={`${classes.select} ${
-            variant === "primary" ? classes.primary : classes.secondary
-          }`}
+          className={`${classes.select} ${variant === "primary" ? classes.primary : classes.secondary}`}
           MenuProps={{
             anchorOrigin: {
               vertical: "bottom",
@@ -183,16 +185,17 @@ export const TimeSelect = ({
             },
           }}
           renderValue={(value) => value as string}
-          onChange={(evt) => handleUnitChange(evt.target.value as Unit)}>
+          onChange={(evt) => handleUnitChange(evt.target.value as Unit)}
+        >
           {Object.keys(unitConversion).map((unit) => (
             <MenuItem key={unit} value={unit} className={classes.item}>
               {unit}
-              <Box className='show-if-selected' flexGrow={1} />
-              <CheckmarkIcon className='show-if-selected' />
+              <Box className="show-if-selected" flexGrow={1} />
+              <CheckmarkIcon className="show-if-selected" />
             </MenuItem>
           ))}
         </Select>
       }
     />
-  );
-};
+  )
+}
