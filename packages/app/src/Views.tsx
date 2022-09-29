@@ -1,8 +1,8 @@
-import { ModuleDetails } from "./views/ModuleDetails/ModuleDetails"
+import ModuleDetails from "./views/ModuleDetails"
 import React from "react"
 import { useRootSelector } from "./store"
 import { getCurrentModule, getCurrentPendingModule } from "./store/modules/selectors"
-import { AddModulesView } from "./views/AddModule/AddModulesView"
+import AddModules from "./views/AddModule"
 import { ModulePendingTransaction } from "./views/ModuleDetails/ModulePendingTransaction"
 import RealityModule from "views/RealityModule"
 
@@ -25,7 +25,7 @@ export const Views: React.FC = () => {
   }
 
   if (!loadingModules) {
-    return <AddModulesView />
+    return <AddModules />
   }
 
   return null

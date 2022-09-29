@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
-import { ZodiacPaper } from "zodiac-ui-components";
-import { ModuleButton } from "./ModuleButton";
-import { useRootDispatch, useRootSelector } from "../../store";
-import { getModulesList } from "../../store/modules/selectors";
-import { ModuleModals } from "./modals/ModuleModals";
-import { ModuleType } from "../../store/modules/models";
-import { fetchPendingModules, setModuleAdded, setRealityModuleScreen } from "../../store/modules";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import React, { useState } from "react"
+import { makeStyles, Typography } from "@material-ui/core"
+import { ZodiacPaper } from "zodiac-ui-components"
+import { ModuleButton } from "./ModuleButton"
+import { useRootDispatch, useRootSelector } from "../../store"
+import { getModulesList } from "../../store/modules/selectors"
+import { ModuleModals } from "./modals/ModuleModals"
+import { ModuleType } from "../../store/modules/models"
+import { fetchPendingModules, setModuleAdded, setRealityModuleScreen } from "../../store/modules"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,24 +36,21 @@ const useStyles = makeStyles((theme) => ({
   link: {
     color: theme.palette.text.primary,
   },
-}));
+}))
 
 export const AddModulesView = () => {
-  const classes = useStyles();
-  const dispatch = useRootDispatch();
-  const { safe } = useSafeAppsSDK();
-  const hasModules = useRootSelector(
-    (state) => getModulesList(state).length > 0
-  );
-  const [module, setModule] = useState<ModuleType>();
+  const classes = useStyles()
+  const dispatch = useRootDispatch()
+  const { safe } = useSafeAppsSDK()
+  const hasModules = useRootSelector((state) => getModulesList(state).length > 0)
+  const [module, setModule] = useState<ModuleType>()
 
   const handleSubmit = () => {
-    dispatch(fetchPendingModules(safe));
-    dispatch(setModuleAdded(true));
-  };
+    dispatch(fetchPendingModules(safe))
+    dispatch(setModuleAdded(true))
+  }
 
-
-  const title = hasModules ? "Add another mod" : "Start by adding a mod";
+  const title = hasModules ? "Add another mod" : "Start by adding a mod"
 
   return (
     <div className={classes.root}>
@@ -64,9 +61,8 @@ export const AddModulesView = () => {
               {title}
             </Typography>
             <Typography variant="body2">
-              Built according to an open standard, the Zodiac collection of
-              tools are mods that support, expand, and transform how
-              organizations operate. Learn more about Zodiac in{" "}
+              Built according to an open standard, the Zodiac collection of tools are mods that support, expand, and
+              transform how organizations operate. Learn more about Zodiac in{" "}
               <a
                 href="https://gnosisguild.mirror.xyz/OuhG5s2X5uSVBx1EK4tKPhnUc91Wh9YM0fwSnC8UNcg"
                 target="_blank"
@@ -147,11 +143,9 @@ export const AddModulesView = () => {
         />
       </div>
 
-      <ModuleModals
-        selected={module}
-        onClose={() => setModule(undefined)}
-        onSubmit={handleSubmit}
-      />
+      <ModuleModals selected={module} onClose={() => setModule(undefined)} onSubmit={handleSubmit} />
     </div>
-  );
-};
+  )
+}
+
+export default AddModulesView

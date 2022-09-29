@@ -1,31 +1,19 @@
-import React from "react";
-import {
-  Badge,
-  Fade,
-  makeStyles,
-  Modal,
-  Typography,
-} from "@material-ui/core";
-import { Interface } from "@ethersproject/abi";
-import { ActionButton } from "../../components/ActionButton";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Transaction } from "@gnosis.pm/safe-apps-sdk";
-import { useRootDispatch, useRootSelector } from "../../store";
-import {
-  getTransactionBuilderOpen,
-  getTransactions,
-} from "../../store/transactionBuilder/selectors";
-import {
-  closeTransactionBuilder,
-  resetTransactions,
-} from "../../store/transactionBuilder";
-import { fetchPendingModules } from "../../store/modules";
-import { TransactionBuilderList } from "./components/TransactionBuilderList";
-import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList";
-import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg";
-import classNames from "classnames";
-import { Grow } from "../../components/layout/Grow";
-import { colors, ZodiacPaper } from "zodiac-ui-components";
+import React from "react"
+import { Badge, Fade, makeStyles, Modal, Typography } from "@material-ui/core"
+import { Interface } from "@ethersproject/abi"
+import { ActionButton } from "../../components/ActionButton"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { Transaction } from "@gnosis.pm/safe-apps-sdk"
+import { useRootDispatch, useRootSelector } from "../../store"
+import { getTransactionBuilderOpen, getTransactions } from "../../store/transactionBuilder/selectors"
+import { closeTransactionBuilder, resetTransactions } from "../../store/transactionBuilder"
+import { fetchPendingModules } from "../../store/modules"
+import { TransactionBuilderList } from "./components/TransactionBuilderList"
+import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList"
+import { ReactComponent as ArrowUpIcon } from "../../assets/icons/arrow-up-icon.svg"
+import classNames from "classnames"
+import { Grow } from "../../components/layout/Grow"
+import { colors, ZodiacPaper } from "zodiac-ui-components"
 
 const useStyles = makeStyles((theme) => ({
   fullWindow: {
@@ -94,41 +82,41 @@ const useStyles = makeStyles((theme) => ({
     borderColor: colors.tan[300],
     padding: theme.spacing(0.5),
   },
-}));
+}))
 
 export const TransactionBuilder = () => {
-  const classes = useStyles();
-  const { sdk, safe } = useSafeAppsSDK();
-  const dispatch = useRootDispatch();
+  const classes = useStyles()
+  const { sdk, safe } = useSafeAppsSDK()
+  const dispatch = useRootDispatch()
 
-  const open = useRootSelector(getTransactionBuilderOpen);
-  const transactions = useRootSelector(getTransactions);
+  const open = useRootSelector(getTransactionBuilderOpen)
+  const transactions = useRootSelector(getTransactions)
 
-  const handleClose = () => dispatch(closeTransactionBuilder());
+  const handleClose = () => dispatch(closeTransactionBuilder())
 
   const handleSubmitTransaction = async () => {
     try {
       const txs = transactions.map((tx): Transaction => {
-        const encoder = new Interface([tx.func]);
+        const encoder = new Interface([tx.func])
         return {
           to: tx.to,
           value: "0",
           data: encoder.encodeFunctionData(tx.func, tx.params),
-        };
-      });
-      await sdk.txs.send({ txs });
-      dispatch(resetTransactions());
+        }
+      })
+      await sdk.txs.send({ txs })
+      dispatch(resetTransactions())
       dispatch(
         fetchPendingModules({
           safeAddress: safe.safeAddress,
           chainId: safe.chainId,
-        })
-      );
-      handleClose();
+        }),
+      )
+      handleClose()
     } catch (error) {
-      console.log("handleSubmitTransaction:error", error);
+      console.log("handleSubmitTransaction:error", error)
     }
-  };
+  }
 
   return (
     <Modal
@@ -141,20 +129,12 @@ export const TransactionBuilder = () => {
       }}
     >
       <Fade in={open}>
-        <ZodiacPaper
-          borderStyle="double"
-          className={classNames(classes.fullWindow, classes.content)}
-          elevation={2}
-        >
+        <ZodiacPaper borderStyle="double" className={classNames(classes.fullWindow, classes.content)} elevation={2}>
           <ZodiacPaper rounded="right" className={classes.header}>
             <Typography variant="h5">Bundle Transactions</Typography>
             <Grow />
 
-            <ZodiacPaper 
-              rounded="full"
-              variant="outlined"
-              className={classes.circleIconContainer}
-            >
+            <ZodiacPaper rounded="full" variant="outlined" className={classes.circleIconContainer}>
               <Badge
                 showZero
                 badgeContent={transactions.length}
@@ -182,5 +162,7 @@ export const TransactionBuilder = () => {
         </ZodiacPaper>
       </Fade>
     </Modal>
-  );
-};
+  )
+}
+
+export default TransactionBuilder

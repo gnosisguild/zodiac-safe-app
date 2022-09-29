@@ -1,11 +1,11 @@
-import React from "react";
-import { Row } from "../../components/layout/Row";
-import { Badge, makeStyles, Typography } from "@material-ui/core";
-import { BadgeIcon, colors, doubleBorder, ZodiacPaper } from "zodiac-ui-components";
-import classNames from "classnames";
-import { useRootDispatch, useRootSelector } from "../../store";
-import { getTransactions } from "../../store/transactionBuilder/selectors";
-import { openTransactionBuilder } from "../../store/transactionBuilder";
+import React from "react"
+import { Row } from "../../components/layout/Row"
+import { Badge, makeStyles, Typography } from "@material-ui/core"
+import { BadgeIcon, colors, doubleBorder, ZodiacPaper } from "zodiac-ui-components"
+import classNames from "classnames"
+import { useRootDispatch, useRootSelector } from "../../store"
+import { getTransactions } from "../../store/transactionBuilder/selectors"
+import { openTransactionBuilder } from "../../store/transactionBuilder"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,13 +16,13 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      "&::before": doubleBorder(-5, colors.tan[300])
+      "&::before": doubleBorder(-5, colors.tan[300]),
     },
   },
   header: {
     "&.MuiPaper-root": {
       padding: theme.spacing(0.5, 2, 0.5, 0.5),
-      "&::before": doubleBorder(-5, colors.tan[300])
+      "&::before": doubleBorder(-5, colors.tan[300]),
     },
   },
   txBuilder: {
@@ -81,17 +81,17 @@ const useStyles = makeStyles((theme) => ({
       borderColor: colors.tan[300],
       backgroundColor: colors.tan[100],
       margin: theme.spacing(0, 2),
-      "&::before": doubleBorder(-5, colors.tan[300])
-    }
+      "&::before": doubleBorder(-5, colors.tan[300]),
+    },
   },
-}));
+}))
 
 export const Header = () => {
-  const classes = useStyles();
-  const dispatch = useRootDispatch();
-  const transaction = useRootSelector(getTransactions);
+  const classes = useStyles()
+  const dispatch = useRootDispatch()
+  const transaction = useRootSelector(getTransactions)
 
-  const handleOpen = () => dispatch(openTransactionBuilder());
+  const handleOpen = () => dispatch(openTransactionBuilder())
 
   return (
     <Row className={classes.root}>
@@ -100,12 +100,9 @@ export const Header = () => {
         borderStyle="double"
         rounded="left"
         variant="elevation"
-        className={classNames(
-          classes.container,
-          classes.header,
-        )}
+        className={classNames(classes.container, classes.header)}
       >
-        <BadgeIcon icon="zodiac"/>
+        <BadgeIcon icon="zodiac" />
         <Typography variant="h5" className={classes.title}>
           Zodiac
         </Typography>
@@ -116,19 +113,10 @@ export const Header = () => {
         onClick={handleOpen}
         elevation={0}
         rounded="right"
-        className={classNames(
-          classes.container,
-          classes.txBuilder,
-        )}
+        className={classNames(classes.container, classes.txBuilder)}
       >
-        <Typography className={classes.txBuilderTitle}>
-          Bundle Transactions
-        </Typography>
-        <ZodiacPaper
-          rounded="full"
-          variant="outlined"
-          className={classes.circleIconContainer}
-        >
+        <Typography className={classes.txBuilderTitle}>Bundle Transactions</Typography>
+        <ZodiacPaper rounded="full" variant="outlined" className={classes.circleIconContainer}>
           <Badge
             showZero
             badgeContent={transaction.length}
@@ -138,5 +126,7 @@ export const Header = () => {
         </ZodiacPaper>
       </ZodiacPaper>
     </Row>
-  );
-};
+  )
+}
+
+export default Header

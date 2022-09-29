@@ -1,16 +1,12 @@
-import React from "react";
-import { Button, makeStyles, Typography } from "@material-ui/core";
-import { ModuleList } from "./ModuleList";
-import { Row } from "../../components/layout/Row";
-import { useRootDispatch, useRootSelector } from "../../store";
-import {
-  getCurrentModule,
-  getCurrentPendingModule,
-  getModulesList,
-} from "../../store/modules/selectors";
-import { unsetCurrentModule } from "../../store/modules";
-import { Grow } from "../../components/layout/Grow";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-icon.svg";
+import React from "react"
+import { Button, makeStyles, Typography } from "@material-ui/core"
+import { ModuleList } from "./ModuleList"
+import { Row } from "../../components/layout/Row"
+import { useRootDispatch, useRootSelector } from "../../store"
+import { getCurrentModule, getCurrentPendingModule, getModulesList } from "../../store/modules/selectors"
+import { unsetCurrentModule } from "../../store/modules"
+import { Grow } from "../../components/layout/Grow"
+import { ReactComponent as AddIcon } from "../../assets/icons/add-icon.svg"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,18 +30,18 @@ const useStyles = makeStyles((theme) => ({
   moduleList: {
     marginTop: theme.spacing(3),
   },
-}));
+}))
 
 export const Panel = () => {
-  const classes = useStyles();
-  const dispatch = useRootDispatch();
-  const modulesList = useRootSelector(getModulesList);
-  const currentModule = useRootSelector(getCurrentModule);
-  const currentPending = useRootSelector(getCurrentPendingModule);
+  const classes = useStyles()
+  const dispatch = useRootDispatch()
+  const modulesList = useRootSelector(getModulesList)
+  const currentModule = useRootSelector(getCurrentModule)
+  const currentPending = useRootSelector(getCurrentPendingModule)
 
   const handleAddModule = () => {
-    dispatch(unsetCurrentModule());
-  };
+    dispatch(unsetCurrentModule())
+  }
 
   return (
     <div className={classes.root}>
@@ -68,5 +64,7 @@ export const Panel = () => {
 
       <ModuleList modules={modulesList} />
     </div>
-  );
-};
+  )
+}
+
+export default Panel
