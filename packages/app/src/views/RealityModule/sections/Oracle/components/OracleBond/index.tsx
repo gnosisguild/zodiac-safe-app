@@ -1,7 +1,7 @@
-import { Grid, Link, makeStyles, Typography } from "@material-ui/core";
-import React from "react";
-import { ZodiacTextField, colors } from "zodiac-ui-components";
-import { InputPartProps } from "../../OracleSection";
+import { Grid, Link, makeStyles, Typography } from "@material-ui/core"
+import React from "react"
+import { ZodiacTextField, colors } from "zodiac-ui-components"
+import { InputPartProps } from "../.."
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,19 +19,18 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-}));
+}))
 
 export type Data = {
-  bond: number;
-};
+  bond: number
+}
 
 export const OracleBond: React.FC<InputPartProps> = ({ data, setData }) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
-  const set = (key: keyof Data) => (value: any) =>
-    setData({ ...data, [key]: value });
+  const set = (key: keyof Data) => (value: any) => setData({ ...data, [key]: value })
 
-  const get = (key: keyof Data) => data[key];
+  const get = (key: keyof Data) => data[key]
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -44,10 +43,8 @@ export const OracleBond: React.FC<InputPartProps> = ({ data, setData }) => {
           </Grid>
           <Grid item>
             <Typography variant="body2" className={classes.textSubdued}>
-              Minimum bond required for an answer to be accepted. New answers
-              must be submitted with double the previous bond. For more on why a
-              bond is required in an escalation-game-based oracle, read more in
-              the
+              Minimum bond required for an answer to be accepted. New answers must be submitted with double the previous
+              bond. For more on why a bond is required in an escalation-game-based oracle, read more in the
               {` `}
               <Link
                 underline="always"
@@ -73,5 +70,7 @@ export const OracleBond: React.FC<InputPartProps> = ({ data, setData }) => {
         />
       </Grid>
     </Grid>
-  );
-};
+  )
+}
+
+export default OracleBond

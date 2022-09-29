@@ -1,12 +1,12 @@
 import { ethers } from "ethers"
-import { getArbitrator, TxWitMeta as TxsWitMeta } from "../../services"
-import { getNetworkNativeAsset } from "../../utils/networks"
-import * as ipfs from "../../utils/ipfs"
+import { getArbitrator, TxWitMeta as TxsWitMeta } from "../../../services"
+import { getNetworkNativeAsset } from "../../../utils/networks"
+import * as ipfs from "../../../services/ipfs"
 import * as R from "ramda"
-import { setTextRecordTx } from "utils/ens"
+import { setTextRecordTx } from "services/ens"
 import { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk"
-import { SetupData } from "./RealityModule"
-import * as snapshot from "../../utils/snapshot"
+import { SetupData } from ".."
+import * as snapshot from "../../../services/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
 
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT

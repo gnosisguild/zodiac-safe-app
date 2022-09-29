@@ -107,3 +107,5 @@ export const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({ titl
     </Grid>
   )
 }
+
+export default ProposalDetailsModal

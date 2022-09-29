@@ -1,7 +1,4 @@
-import {
-  addSafeSnapToSettings,
-  checkNewSnapshotSettingsValidity,
-} from "./setupService";
+import { addSafeSnapToSettings, checkNewSnapshotSettingsValidity } from "./setupService"
 
 const SNAPSHOT_SETTINGS_SAMPLE = {
   name: "GnosisDAO",
@@ -40,8 +37,7 @@ const SNAPSHOT_SETTINGS_SAMPLE = {
       params: {
         symbol: "GNO",
         decimals: 18,
-        SUBGRAPH_URL:
-          "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip",
+        SUBGRAPH_URL: "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip",
       },
     },
     {
@@ -54,8 +50,7 @@ const SNAPSHOT_SETTINGS_SAMPLE = {
             params: {
               symbol: "GNO",
               decimals: 18,
-              SUBGRAPH_URL:
-                "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip",
+              SUBGRAPH_URL: "https://api.thegraph.com/subgraphs/id/QmYNFPz2j1S8wdm2nhou6wRhGXfVVFzVi37LKuvcHBayip",
             },
           },
         ],
@@ -67,8 +62,7 @@ const SNAPSHOT_SETTINGS_SAMPLE = {
       params: {
         symbol: "GNO",
         decimals: 18,
-        SUBGRAPH_URL:
-          "https://api.thegraph.com/subgraphs/id/QmduKVUHCPjR5tmNEgooXHBMGKqDJWrUPdp6dEMeJM6Kqa",
+        SUBGRAPH_URL: "https://api.thegraph.com/subgraphs/id/QmduKVUHCPjR5tmNEgooXHBMGKqDJWrUPdp6dEMeJM6Kqa",
       },
     },
     {
@@ -81,43 +75,29 @@ const SNAPSHOT_SETTINGS_SAMPLE = {
             params: {
               symbol: "GNO",
               decimals: 18,
-              SUBGRAPH_URL:
-                "https://api.thegraph.com/subgraphs/id/QmduKVUHCPjR5tmNEgooXHBMGKqDJWrUPdp6dEMeJM6Kqa",
+              SUBGRAPH_URL: "https://api.thegraph.com/subgraphs/id/QmduKVUHCPjR5tmNEgooXHBMGKqDJWrUPdp6dEMeJM6Kqa",
             },
           },
         ],
       },
     },
   ],
-};
-const oracleAddress = "0x0000000000000000000000000000000000000005";
+}
+const oracleAddress = "0x0000000000000000000000000000000000000005"
 
 describe("addSafeSnapToSettings function", () => {
   test("it sets the safeSnap attribute correctly", () => {
-    expect(SNAPSHOT_SETTINGS_SAMPLE.plugins).not.toHaveProperty("safeSnap");
-    const newSpaceSettings = addSafeSnapToSettings(
-      SNAPSHOT_SETTINGS_SAMPLE,
-      3,
-      oracleAddress
-    );
-    expect(newSpaceSettings.plugins).toHaveProperty("safeSnap");
-    expect(newSpaceSettings).not.toEqual(SNAPSHOT_SETTINGS_SAMPLE);
-  });
+    expect(SNAPSHOT_SETTINGS_SAMPLE.plugins).not.toHaveProperty("safeSnap")
+    const newSpaceSettings = addSafeSnapToSettings(SNAPSHOT_SETTINGS_SAMPLE, 3, oracleAddress)
+    expect(newSpaceSettings.plugins).toHaveProperty("safeSnap")
+    expect(newSpaceSettings).not.toEqual(SNAPSHOT_SETTINGS_SAMPLE)
+  })
 
   test("it does not change the Snapshot Space settings in unintended ways (only the safeSnap plugin should be added)", () => {
-    const newSpaceSettings = addSafeSnapToSettings(
-      SNAPSHOT_SETTINGS_SAMPLE,
-      3,
-      oracleAddress
-    );
+    const newSpaceSettings = addSafeSnapToSettings(SNAPSHOT_SETTINGS_SAMPLE, 3, oracleAddress)
 
-    expect(
-      checkNewSnapshotSettingsValidity(
-        SNAPSHOT_SETTINGS_SAMPLE,
-        newSpaceSettings
-      )
-    ).toBe(true);
-  });
-});
+    expect(checkNewSnapshotSettingsValidity(SNAPSHOT_SETTINGS_SAMPLE, newSpaceSettings)).toBe(true)
+  })
+})
 
-export {};
+export {}

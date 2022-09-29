@@ -1,10 +1,10 @@
 import { ethers } from "ethers"
-import { enableModule, getDefaultOracle, getProvider, TxWitMeta } from "../../services"
+import { enableModule, getDefaultOracle, getProvider, TxWitMeta } from "../../../services"
 import { deployAndSetUpModule, getModuleInstance, KnownContracts } from "@gnosis.pm/zodiac"
 import { Transaction } from "@gnosis.pm/safe-apps-sdk"
 import { buildTransaction } from "services/helpers"
-import { Data as OracleTemplateData } from "./sections/oracle/components/oracleTemplate/OracleTemplate"
-import DETERMINISTIC_DEPLOYMENT_HELPER_META from "../../contracts/DeterministicDeploymentHelper.json"
+import { Data as OracleTemplateData } from "../sections/Oracle/components/OracleTemplate"
+import DETERMINISTIC_DEPLOYMENT_HELPER_META from "../../../contracts/DeterministicDeploymentHelper.json"
 export interface RealityModuleParams {
   executor: string
   oracle?: string

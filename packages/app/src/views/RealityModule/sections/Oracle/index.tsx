@@ -2,12 +2,12 @@ import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { ZodiacPaper } from "zodiac-ui-components"
-import { OracleTemplate, Data as OracleTemplateData } from "./components/oracleTemplate/OracleTemplate"
-import { OracleInstance, Data as OracleInstanceData } from "./components/oracleInstance/OracleInstance"
-import { OracleDelay, Data as OracleDelayData } from "./components/oracleDelay/OracleDelay"
-import { OracleBond, Data as OracleBondData } from "./components/oracleBond/OracleBond"
-import { OracleArbitration, Data as OracleArbitratorData } from "./components/oracleArbitration/OracleArbitration"
-import { SectionProps } from "views/RealityModule/RealityModule"
+import OracleTemplate, { Data as OracleTemplateData } from "./components/OracleTemplate"
+import OracleInstance, { Data as OracleInstanceData } from "./components/OracleInstance"
+import OracleDelay, { Data as OracleDelayData } from "./components/OracleDelay"
+import OracleBond, { Data as OracleBondData } from "./components/OracleBond"
+import OracleArbitration, { Data as OracleArbitratorData } from "./components/OracleArbitration"
+import { SectionProps } from "views/RealityModule"
 import { ARBITRATOR_OPTIONS } from "services"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 
@@ -182,3 +182,5 @@ export const OracleSection: React.FC<SectionProps> = ({ handleBack, handleNext, 
     </ZodiacPaper>
   )
 }
+
+export default OracleSection

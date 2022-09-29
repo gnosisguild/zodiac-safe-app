@@ -11,13 +11,13 @@ import { Row } from "../../../components/layout/Row"
 import { TimeSelect } from "../../../components/input/TimeSelect"
 import { arbitratorOptions, ArbitratorSelect } from "../../../components/input/ArbitratorSelect"
 import { ZodiacTextField } from "zodiac-ui-components"
-import { getArbitratorBondToken } from "../../../utils/reality-eth"
+import { getArbitratorBondToken } from "../../../services/reality-eth"
 import { Grow } from "../../../components/layout/Grow"
 import { ModuleType } from "../../../store/modules/models"
 import { ParamInput } from "../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
 import { getNetworkNativeAsset } from "../../../utils/networks"
-import { deployRealityModule } from "views/RealityModule/moduleDeployment"
+import { deployRealityModule } from "views/RealityModule/service/moduleDeployment"
 
 // TODO: delete this when the new flow is done
 
@@ -118,7 +118,6 @@ export const RealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleMod
       console.log("Error deploying module: ", error)
     }
   }
-
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value || "0"

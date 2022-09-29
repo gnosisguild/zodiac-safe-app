@@ -16,11 +16,11 @@ import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { getProvider } from "services"
 // import useSpace from "services/snapshot/hooks/useSpace"
-import { checkIfIsController, checkIfIsOwner } from "utils/ens"
-import { SectionProps } from "views/RealityModule/RealityModule"
+import { checkIfIsController, checkIfIsOwner } from "services/ens"
+import { SectionProps } from "views/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
-import { ProposalStatus } from "./components/proposalStatus/ProposalStatus"
-import * as snapshot from "utils/snapshot"
+import ProposalStatus from "./components/ProposalStatus"
+import * as snapshot from "services/snapshot"
 import { handleProposalStatus, handleProposalStatusMessage } from "utils/proposalValidation"
 import { Loader } from "@gnosis.pm/safe-react-components"
 import DoneIcon from "@material-ui/icons/Done"
@@ -380,3 +380,5 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
     </ZodiacPaper>
   )
 }
+
+export default ProposalSection

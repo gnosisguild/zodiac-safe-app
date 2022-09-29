@@ -1,9 +1,9 @@
 import { Grid, makeStyles, Typography, Tooltip } from "@material-ui/core"
-import { Dropdown } from "components/dropdown/Dropdown"
+import { Dropdown } from "components/Dropdown"
 import React from "react"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { HelpOutline } from "@material-ui/icons"
-import { InputPartProps } from "../../OracleSection"
+import { InputPartProps } from "../.."
 
 const getDefaultTemplateQuestion = (ensName: string) =>
   `Did the Snapshot proposal with the id {%s} in the ${ensName} space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at ${ensName}?  The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`
@@ -169,3 +169,5 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, e
     </Grid>
   )
 }
+
+export default OracleTemplate

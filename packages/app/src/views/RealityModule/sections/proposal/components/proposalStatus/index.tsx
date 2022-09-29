@@ -4,7 +4,7 @@ import React, { useState } from "react"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import WarningOutlinedIcon from "@material-ui/icons/WarningOutlined"
 import { ZodiacModal } from "zodiac-ui-components"
-import { ProposalDetailsModal } from "./ProposalDetailsModal"
+import ProposalDetailsModal from "./ProposalDetailsModal"
 
 const useStyles = makeStyles((theme) => ({
   message: {
@@ -89,3 +89,5 @@ export const ProposalStatus: React.FC<ProposalStatusProps> = ({ status, message,
     )
   )
 }
+
+export default ProposalStatus

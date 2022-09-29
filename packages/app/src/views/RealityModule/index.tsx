@@ -5,12 +5,12 @@ import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components"
 import { Button, Divider, Grid, makeStyles, Step, StepContent, StepLabel, Stepper, Typography } from "@material-ui/core"
 import { TagList } from "components/list/TagList"
 import { Link } from "components/text/Link"
-import { OracleSection, OracleSectionData } from "./sections/oracle/OracleSection"
-import { ProposalSection, ProposalSectionData } from "./sections/proposal/ProposalSection"
-import { ReviewSection } from "./sections/review/ReviewSection"
+import OracleSection, { OracleSectionData } from "./sections/Oracle"
+import ProposalSection, { ProposalSectionData } from "./sections/Proposal"
+import ReviewSection from "./sections/Review"
 import classnames from "classnames"
-import { MonitoringSection, MonitoringSectionData } from "./sections/monitoring/MonitoringSection"
-import { setup } from "./setupService"
+import MonitoringSection, { MonitoringSectionData } from "./sections/Monitoring"
+import { setup } from "./service/setupService"
 import { getProvider } from "services"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { getDelayModules, getModulesList } from "store/modules/selectors"
@@ -254,3 +254,5 @@ export const RealityModule: React.FC = () => {
     </div>
   )
 }
+
+export default RealityModule

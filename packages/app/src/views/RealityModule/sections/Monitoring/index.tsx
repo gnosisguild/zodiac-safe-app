@@ -1,8 +1,8 @@
 import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
-import { MultiSelect, MultiSelectValues } from "components/multiSelect/MultiSelect"
+import { MultiSelect, MultiSelectValues } from "components/MultiSelect"
 import { Link } from "components/text/Link"
 import React, { ChangeEvent, useEffect, useState } from "react"
-import { SectionProps } from "views/RealityModule/RealityModule"
+import { SectionProps } from "views/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 
 const useStyles = makeStyles((theme) => ({
@@ -306,3 +306,5 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
     </ZodiacPaper>
   )
 }
+
+export default MonitoringSection
