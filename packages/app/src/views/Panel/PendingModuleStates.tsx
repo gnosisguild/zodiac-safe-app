@@ -8,7 +8,7 @@ import {
   getSafeThreshold,
 } from "../../store/modules/selectors"
 import { fetchModulesList, fetchPendingModules, setCurrentPendingModule } from "../../store/modules"
-import { ModulePendingItem } from "./items/ModulePendingItem"
+import { ModulePendingItem } from "./item/ModulePendingItem"
 import { LoadingIcon } from "../../components/icons/LoadingIcon"
 import { ReactComponent as AddIcon } from "../../assets/icons/add-circle-icon.svg"
 import { ReactComponent as ModulePendingImg } from "../../assets/images/dao-module-pending.svg"
