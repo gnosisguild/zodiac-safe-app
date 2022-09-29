@@ -13,5 +13,8 @@
     "start-remote": "wrangler dev -l",
     "deploy": "wrangler publish",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.ts'"
+  },
+  "dependencies": {
+    "defender-sentinel-client": "^1.32.0"
   }
 }
