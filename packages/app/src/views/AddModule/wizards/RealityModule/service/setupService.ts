@@ -140,7 +140,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   // IPFS node (running in the browser) until Snapshot picks it up, they will pin it..
 
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
-  const setEnsRecordTx = await setTextRecordTx(provider, ensName, "snapshot", `ipfs/${cid.toString()}`)
+  const setEnsRecordTx = await setTextRecordTx(provider, ensName, "snapshot", `ipfs://${cid.toString()}`)
 
   return { txs: [setEnsRecordTx] }
 }
