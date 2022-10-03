@@ -1,17 +1,17 @@
-import { NETWORK } from "./networks";
+import { NETWORK } from "./networks"
 
-const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY;
-const REACT_APP_INFURA_ID = process.env.REACT_APP_INFURA_ID;
+const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY
+const REACT_APP_INFURA_ID = process.env.REACT_APP_INFURA_ID
 
 interface ExplorerData {
-  networkExplorerName: string;
-  networkExplorerUrl: string;
-  networkExplorerApiUrl: string;
-  safeTransactionApi: string;
-  safeUrl: string;
-  explorerApiKey?: string;
-  verifyContractUrl: string;
-  rpcUrl: string;
+  networkExplorerName: string
+  networkExplorerUrl: string
+  networkExplorerApiUrl: string
+  safeTransactionApi: string
+  safeUrl: string
+  explorerApiKey?: string
+  verifyContractUrl: string
+  rpcUrl: string
 }
 
 export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
@@ -85,11 +85,11 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
     rpcUrl: `https://goerli.infura.io/v3/${REACT_APP_INFURA_ID}`,
   },
-};
+}
 
 export const getNetworkExplorerInfo = (chainId: number) => {
-  const networkBaseConfig = EXPLORERS_CONFIG[chainId as NETWORK];
-  if (!networkBaseConfig) return;
+  const networkBaseConfig = EXPLORERS_CONFIG[chainId as NETWORK]
+  if (!networkBaseConfig) return
   return {
     name: networkBaseConfig.networkExplorerName,
     url: networkBaseConfig.networkExplorerUrl,
@@ -99,15 +99,15 @@ export const getNetworkExplorerInfo = (chainId: number) => {
     safeUrl: networkBaseConfig.safeUrl,
     verifyUrl: networkBaseConfig.verifyContractUrl,
     rpcUrl: networkBaseConfig.rpcUrl,
-  };
-};
+  }
+}
 
 export const getExplorerInfo = (chainId: number, hash: string) => {
-  const explorerData = getNetworkExplorerInfo(chainId);
-  if (!explorerData) return;
-  const type = hash.length > 42 ? "tx" : "address";
+  const explorerData = getNetworkExplorerInfo(chainId)
+  if (!explorerData) return
+  const type = hash.length > 42 ? "tx" : "address"
   return () => ({
     url: `${explorerData.url}/${type}/${hash}`,
     alt: explorerData.name,
-  });
-};
+  })
+}

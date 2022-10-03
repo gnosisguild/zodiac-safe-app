@@ -4,6 +4,7 @@ export enum NETWORK {
   GOERLI = 5,
   XDAI = 100,
   BSC = 56,
+  GNOSIS_CHAIN = 100,
   POLYGON = 137,
 }
 
@@ -26,6 +27,34 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.XDAI]: NATIVE_ASSET.XDAI,
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
+}
+
+export enum ChainNames {
+  MAINNET = "mainnet",
+  RINKEBY = "rinkeby",
+  GNOSIS_CHAIN = "gnosis_chain",
+  GOERLI = "goerli",
+  POLYGON = "polygon",
+  ARBITRUM = "arbitrum",
+  OPTIMISM = "optimism",
+  OPTIMISM_ON_GNOSIS_CHAIN = "optimism_on_gnosis_chain",
+}
+
+export const chainIdToChainName = (chainId: number) => {
+  switch (chainId) {
+    case NETWORK.MAINNET:
+      return ChainNames.MAINNET
+    case NETWORK.RINKEBY:
+      return ChainNames.RINKEBY
+    case NETWORK.GNOSIS_CHAIN:
+      return ChainNames.GNOSIS_CHAIN
+    case NETWORK.GOERLI:
+      return ChainNames.GOERLI
+    case NETWORK.POLYGON:
+      return ChainNames.POLYGON
+    default:
+      return ChainNames.MAINNET
+  }
 }
 
 export function getNetworkNativeAsset(network: NETWORK) {
