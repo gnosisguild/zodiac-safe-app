@@ -7,23 +7,31 @@ import {
 import { Network, Body } from "./types"
 
 export default async (request: VercelRequest, response: VercelResponse) => {
+  response.setHeader("Access-Control-Allow-Origin", "*")
+  response.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT")
+  response.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+  )
+  if (request.method === "OPTIONS") {
+    response.status(200).end()
+    return
+  }
   try {
     console.log("Incoming request", request.body)
     const body = request.body as Body
-    const {
-      apiKey,
-      apiSecret,
-      notificationChannels,
-      realityModuleAddress,
-      network,
-    } = body
+    const { apiKey, apiSecret, notificationChannels, realityModuleAddress, network } =
+      body
     const client = new SentinelClient({ apiKey, apiSecret })
     console.log("Client is ready")
 
     const notificationChannelIds = await Promise.all(
       notificationChannels.map(async ({ channel, config }) => {
-        const notificationChannelSetupResponds =
-          await setupNewNotificationChannel(client, channel, config)
+        const notificationChannelSetupResponds = await setupNewNotificationChannel(
+          client,
+          channel,
+          config,
+        )
         console.log(
           "Notification channel set up responds",
           notificationChannelSetupResponds,
