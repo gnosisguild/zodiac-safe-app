@@ -1,0 +1,16 @@
+{
+  "name": "zodiac-safe-app-api",
+  "version": "1.0.0",
+  "description": "Helper functionality for the Zodiac Safe App.",
+  "main": "index.ts",
+  "repository": "https://github.com/gnosis/zodiac-safe-app",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+  },
+  "dependencies": {
+    "@vercel/node": "^2.5.21",
+    "defender-sentinel-client": "^1.32.0"
+  }
+}
