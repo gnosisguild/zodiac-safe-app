@@ -63,21 +63,32 @@ const INITIAL_DATA: MonitoringSectionData = {
   slackKey: "",
 }
 
-export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNext, setupData }) => {
+export const MonitoringSection: React.FC<SectionProps> = ({
+  handleBack,
+  handleNext,
+  setupData,
+}) => {
   const classes = useStyles()
   const monitoring = setupData?.monitoring
-  const [monitoringData, setMonitoringData] = useState<MonitoringSectionData>(monitoring ?? INITIAL_DATA)
+  const [monitoringData, setMonitoringData] = useState<MonitoringSectionData>(
+    monitoring ?? INITIAL_DATA,
+  )
   const [emailValues, setEmailValues] = useState<MultiSelectValues[]>([])
 
   useEffect(() => {
     if (monitoring && monitoring.email.length) {
       const emails: MultiSelectValues[] = []
-      monitoring.email.forEach((item: string) => emails.push({ label: item, value: item }))
+      monitoring.email.forEach((item: string) =>
+        emails.push({ label: item, value: item }),
+      )
       setEmailValues(emails)
     }
   }, [monitoring])
 
-  const updateForm = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, fieldName: string) => {
+  const updateForm = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    fieldName: string,
+  ) => {
     event.preventDefault()
     if (["chatID", "botToken"].includes(fieldName)) {
       const telegram = { ...monitoringData.telegram }
@@ -107,8 +118,9 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
             </Grid>
             <Grid item>
               <Typography>
-                Setting up an effective monitoring strategy is critical for the security of your safe. In order to set
-                up the monitoring for this module, you&apos;ll need to first{" "}
+                Setting up an effective monitoring strategy is critical for the security
+                of your safe. In order to set up the monitoring for this module,
+                you&apos;ll need to first{" "}
                 <Link
                   underline="always"
                   href="https://defender.openzeppelin.com/#/auth/sign-in"
@@ -135,8 +147,8 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
             </Grid>
             <Grid item>
               <Typography>
-                Include the API Key and Secret Key from your Open Zeppelin account below. Follow the Open Zeppelin guide{" "}
-                {""}
+                Include the API Key and Secret Key from your Open Zeppelin account below.
+                Follow the Open Zeppelin guide {""}
                 <Link
                   underline="always"
                   href="https://docs.openzeppelin.com/defender/guide-factory#generate-api-key"
@@ -181,7 +193,10 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
               <Typography>Add as many emails as you&apos;d like.</Typography>
             </Grid>
             <Grid item>
-              <MultiSelect onChange={(values) => handleNewEmail(values as MultiSelectValues[])} value={emailValues} />
+              <MultiSelect
+                onChange={(values) => handleNewEmail(values as MultiSelectValues[])}
+                value={emailValues}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -195,7 +210,8 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
             </Grid>
             <Grid item>
               <Typography>
-                To add a Discord integration, include the Discord channel&apos;s url including key below. Find out more{" "}
+                To add a Discord integration, include the Discord channel&apos;s url
+                including key below. Find out more{" "}
                 <Link underline="always" href="" target={"_blank"} color="inherit">
                   here.
                 </Link>
@@ -223,14 +239,21 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
             </Grid>
             <Grid item>
               <Typography>
-                To add a Telegram integration, include the telegram bot token and chat ID below. Find out more{" "}
+                To add a Telegram integration, include the telegram bot token and chat ID
+                below. Find out more{" "}
                 <Link underline="always" href="" target={"_blank"} color="inherit">
                   here.
                 </Link>
               </Typography>
             </Grid>
             <Grid item>
-              <Grid container spacing={2} direction="row" alignItems="center" justifyContent="space-between">
+              <Grid
+                container
+                spacing={2}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
                 <Grid item className={classes.inputContainer}>
                   <ZodiacTextField
                     label="Bot token"
@@ -265,7 +288,8 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
             </Grid>
             <Grid item>
               <Typography>
-                To add a Slack integration, include the Slack channel&apos;s url including key below. Find out more{" "}
+                To add a Slack integration, include the Slack channel&apos;s url including
+                key below. Find out more{" "}
                 <Link underline="always" href="" target={"_blank"} color="inherit">
                   here.
                 </Link>
@@ -296,7 +320,12 @@ export const MonitoringSection: React.FC<SectionProps> = ({ handleBack, handleNe
               </Button>
             </Grid>
             <Grid item>
-              <Button color="secondary" size="medium" variant="contained" onClick={() => handleNext(monitoringData)}>
+              <Button
+                color="secondary"
+                size="medium"
+                variant="contained"
+                onClick={() => handleNext(monitoringData)}
+              >
                 Next
               </Button>
             </Grid>

@@ -16,7 +16,7 @@ export const getJsonData = async (path: string) => {
     path = await node.resolve(path, { recursive: true })
   }
 
-  path = path.replace("ipfs/", "")
+  path = path.replace("ipfs://", "")
 
   const chunks: string[] = []
   for await (const chunk of node.cat(path)) {

@@ -1,8 +1,22 @@
 import React, { useEffect, useState } from "react"
 import { useRootDispatch, useRootSelector } from "store"
-import { fetchPendingModules, setModuleAdded, setRealityModuleScreen } from "../../../../store/modules"
+import {
+  fetchPendingModules,
+  setModuleAdded,
+  setRealityModuleScreen,
+} from "../../../../store/modules"
 import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components"
-import { Button, Divider, Grid, makeStyles, Step, StepContent, StepLabel, Stepper, Typography } from "@material-ui/core"
+import {
+  Button,
+  Divider,
+  Grid,
+  makeStyles,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from "@material-ui/core"
 import { TagList } from "components/list/TagList"
 import { Link } from "components/text/Link"
 import OracleSection, { OracleSectionData } from "./sections/Oracle"
@@ -16,7 +30,9 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { getDelayModules, getModulesList } from "store/modules/selectors"
 
 export interface SectionProps {
-  handleNext: (stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any) => void
+  handleNext: (
+    stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any,
+  ) => void
   handleBack: () => void
   setupData: SetupData | undefined
 }
@@ -28,7 +44,12 @@ export type SetupData = {
   review: any
 }
 
-const REALITY_MODULE_STEPS: (keyof SetupData)[] = ["proposal", "oracle", "review"] // TODO: Add monitoring
+const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
+  "proposal",
+  "oracle",
+  "monitoring",
+  "review",
+] // TODO: Add monitoring
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -135,7 +156,9 @@ export const RealityModule: React.FC = () => {
       throw new Error("No setup data")
     }
     const executorAddress =
-      delayModuleExecutor !== "" || delayModuleExecutor == null ? safeInfo.safeAddress : delayModuleExecutor
+      delayModuleExecutor !== "" || delayModuleExecutor == null
+        ? safeInfo.safeAddress
+        : delayModuleExecutor
     try {
       await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
       console.log("TODO: call the monitoring setup worker")
@@ -165,7 +188,10 @@ export const RealityModule: React.FC = () => {
             </Grid>
             <Grid item>
               <Typography variant="h5">Reality Module</Typography>
-              <TagList className={classes.tag} tags={["Stackable", "From Gnosis Guild"]} />
+              <TagList
+                className={classes.tag}
+                tags={["Stackable", "From Gnosis Guild"]}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -187,7 +213,12 @@ export const RealityModule: React.FC = () => {
         </Grid>
         <Grid item>
           <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
-            <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: 15 }}>
+            <Grid
+              container
+              justifyContent="space-between"
+              alignItems="center"
+              style={{ marginBottom: 15 }}
+            >
               <Grid item>
                 <Typography variant="h4" gutterBottom className={classes.paperTitle}>
                   Add Reality Module
@@ -204,11 +235,23 @@ export const RealityModule: React.FC = () => {
                 </Button>
               </Grid>
             </Grid>
-            <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation="vertical">
+            <Stepper
+              activeStep={activeStep}
+              className={classes.stepperRoot}
+              orientation="vertical"
+            >
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
-                  <StepLabel onClick={() => handleOpenSection(index, label as keyof SetupData)}>
-                    <Typography variant="h6" className={classnames(index <= activeStep && "clickable", "step-label")}>
+                  <StepLabel
+                    onClick={() => handleOpenSection(index, label as keyof SetupData)}
+                  >
+                    <Typography
+                      variant="h6"
+                      className={classnames(
+                        index <= activeStep && "clickable",
+                        "step-label",
+                      )}
+                    >
                       {label}
                     </Typography>{" "}
                   </StepLabel>

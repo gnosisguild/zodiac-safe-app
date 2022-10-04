@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { getArbitrator, TxWitMeta as TxsWitMeta } from "../../../../../services"
-import { getNetworkNativeAsset } from "../../../../../utils/networks"
+import { chainIdToChainName, getNetworkNativeAsset } from "../../../../../utils/networks"
 import * as ipfs from "../../../../../services/ipfs"
 import * as R from "ramda"
 import { setTextRecordTx } from "services/ens"
@@ -8,9 +8,11 @@ import { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 import { SetupData } from ".."
 import * as snapshot from "../../../../../services/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
+import { setUpMonitoring } from "./minitoring"
 
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
-const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS = "0x0961F418E0B6efaA073004989EF1B2fd1bc4a41c" // needs to be deployed on all networks supported by the Reality Module
+const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS =
+  "0x0961F418E0B6efaA073004989EF1B2fd1bc4a41c" // needs to be deployed on all networks supported by the Reality Module
 
 /**
  * Sets up the Reality Module.
@@ -44,7 +46,14 @@ export const setup = async (
 
   const txs = [...deploymentRealityModuleTxsMm.txs, ...addSafeToSnapshotTxsMm.txs]
 
-  await safeSdk.txs.send({ txs })
+  await Promise.all([
+    safeSdk.txs.send({ txs }),
+    setUpMonitoring(
+      chainIdToChainName(safeInfo.chainId),
+      realityModuleAddress,
+      setupData.monitoring,
+    ),
+  ])
 
   // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
 }
@@ -68,7 +77,9 @@ const deployRealityModuleTxs = async (
   const bondToken = getNetworkNativeAsset(chainId)
   const moduleDeploymentParameters: RealityModuleParams = {
     executor: executorAddress,
-    bond: ethers.utils.parseUnits(setupData.oracle.bondData.bond.toString(), bondToken.decimals).toString(),
+    bond: ethers.utils
+      .parseUnits(setupData.oracle.bondData.bond.toString(), bondToken.decimals)
+      .toString(),
     timeout: setupData.oracle.delayData.timeout.toString(),
     cooldown: setupData.oracle.delayData.cooldown.toString(),
     expiration: setupData.oracle.delayData.expiration.toString(),
@@ -88,7 +99,11 @@ const deployRealityModuleTxs = async (
   )
 }
 
-export const addSafeSnapToSettings = (originalSpaceSettings: any, chainId: number, realityModuleAddress: string) =>
+export const addSafeSnapToSettings = (
+  originalSpaceSettings: any,
+  chainId: number,
+  realityModuleAddress: string,
+) =>
   R.assocPath(
     ["plugins", "safeSnap"],
     {
@@ -125,7 +140,11 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     : ipfs.getJsonData(currentEnsSnapshotRecord))
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
-  const newSpaceSettings = addSafeSnapToSettings(originalSpaceSettings, chainId, realityModuleAddress)
+  const newSpaceSettings = addSafeSnapToSettings(
+    originalSpaceSettings,
+    chainId,
+    realityModuleAddress,
+  )
   // validate the new schema
   if (!checkNewSnapshotSettingsValidity(originalSpaceSettings, newSpaceSettings)) {
     throw new Error("The new settings file is changed in unexpected ways")
@@ -140,15 +159,26 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   // IPFS node (running in the browser) until Snapshot picks it up, they will pin it..
 
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
-  const setEnsRecordTx = await setTextRecordTx(provider, ensName, "snapshot", `ipfs://${cid.toString()}`)
+  const setEnsRecordTx = await setTextRecordTx(
+    provider,
+    ensName,
+    "snapshot",
+    `ipfs://${cid.toString()}`,
+  )
 
   return { txs: [setEnsRecordTx] }
 }
 
-export const checkNewSnapshotSettingsValidity = (originalSettings: any, newSettings: any) =>
+export const checkNewSnapshotSettingsValidity = (
+  originalSettings: any,
+  newSettings: any,
+) =>
   R.and(
     // check that there are no unintended changes to the new Snapshot Space settings
-    R.equals(R.omit(["plugins", "safeSnap"], originalSettings), R.omit(["plugins", "safeSnap"], newSettings)),
+    R.equals(
+      R.omit(["plugins", "safeSnap"], originalSettings),
+      R.omit(["plugins", "safeSnap"], newSettings),
+    ),
     // validate the schema
     // we must be strict here, if not a truthy error value can be returned
     snapshot.validateSchema(newSettings) === true,
