@@ -10,7 +10,11 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "dependencies": {
+    "@snapshot-labs/snapshot.js": "^0.4.36",
     "@vercel/node": "^2.5.21",
-    "defender-sentinel-client": "^1.32.0"
+    "defender-sentinel-client": "^1.32.0",
+    "ipfs-http-client": "54.0.0",
+    "node-fetch": "2",
+    "ramda": "^0.28.0"
   }
 }

@@ -9,6 +9,7 @@ import { SetupData } from ".."
 import * as snapshot from "../../../../../services/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
 import { setUpMonitoring } from "./minitoring"
+import { pinSnapshotSpace } from "./snapshot-space-pinning"
 
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
 const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS =
@@ -124,20 +125,8 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   realityModuleAddress: string,
   chainId: number,
 ): Promise<TxsWitMeta> => {
-  // 1. Get the current Space setting file.
-  const ensResolver = await provider.getResolver(ensName)
-  if (!ensResolver) {
-    throw new Error(`ENS ${ensName} not found`)
-  }
-  const currentEnsSnapshotRecord = await ensResolver.getText("snapshot") // for instance, "ipfs://QmWUemB5QDr6Zkp2tqQRcEW1ZC7n4MiLaE6CFneVJUeYyD"
-  console.log("currentEnsSnapshotRecord", currentEnsSnapshotRecord)
-  if (!currentEnsSnapshotRecord) {
-    throw new Error(`ENS ${ensName} has no snapshot record, a Snapshot Space is required`)
-  }
-
-  const originalSpaceSettings = await (currentEnsSnapshotRecord.includes("snapshot.page")
-    ? snapshot.getSnapshotSpaceSettings(ensName)
-    : ipfs.getJsonData(currentEnsSnapshotRecord))
+  // 1. Get the current Space setting file. from IPFS directly or from
+  const originalSpaceSettings = await snapshot.getSnapshotSpaceSettings(ensName)
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
   const newSpaceSettings = addSafeSnapToSettings(
@@ -146,7 +135,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     realityModuleAddress,
   )
   // validate the new schema
-  if (!checkNewSnapshotSettingsValidity(originalSpaceSettings, newSpaceSettings)) {
+  if (!snapshot.verifyNewSnapshotSettings(originalSpaceSettings, newSpaceSettings)) {
     throw new Error("The new settings file is changed in unexpected ways")
   }
 
@@ -154,32 +143,27 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   console.log("new space", newSpaceSettings)
 
   // 3. Deploy the modified settings file to IPFS.
-  const cid = await ipfs.add(JSON.stringify(newSpaceSettings))
-  // 4. Pin the new file. No need, as long as we keep it available in our local
-  // IPFS node (running in the browser) until Snapshot picks it up, they will pin it..
+  const cidV1Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV1().toString()
+  // 4. Pin the new file
+
+  const { cidV1: cidV1FromPinning } = await pinSnapshotSpace({
+    snapshotSpaceEnsName: ensName,
+    snapshotSpaceSettings: newSpaceSettings,
+  })
+
+  if (cidV1Locale !== cidV1FromPinning) {
+    throw new Error(
+      `The CID from the locale browser node (${cidV1Locale}) does not correspond with the CID from the pinning service (${cidV1FromPinning})`,
+    )
+  }
 
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
   const setEnsRecordTx = await setTextRecordTx(
     provider,
     ensName,
     "snapshot",
-    `ipfs://${cid.toString()}`,
+    `ipfs://${cidV1Locale}`,
   )
 
   return { txs: [setEnsRecordTx] }
 }
-
-export const checkNewSnapshotSettingsValidity = (
-  originalSettings: any,
-  newSettings: any,
-) =>
-  R.and(
-    // check that there are no unintended changes to the new Snapshot Space settings
-    R.equals(
-      R.omit(["plugins", "safeSnap"], originalSettings),
-      R.omit(["plugins", "safeSnap"], newSettings),
-    ),
-    // validate the schema
-    // we must be strict here, if not a truthy error value can be returned
-    snapshot.validateSchema(newSettings) === true,
-  )

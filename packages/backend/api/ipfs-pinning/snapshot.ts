@@ -1,7 +1,8 @@
 import snapshot from "@snapshot-labs/snapshot.js"
 import * as R from "ramda"
+import fetch from "node-fetch"
 
-const SNAPSHOT_HUB = process.env.REACT_APP_SNAPSHOT_HUB
+const SNAPSHOT_HUB = process.env.SNAPSHOT_HUB
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
 export const getSnapshotSpaceSettings = async (ensName: string) => {
