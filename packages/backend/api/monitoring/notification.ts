@@ -8,7 +8,7 @@ import { Network, Body } from "./types"
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*")
-  response.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT")
+  response.setHeader("Access-Control-Allow-Methods", "OPTIONS,POST")
   response.setHeader(
     "Access-Control-Allow-Headers",
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
@@ -18,7 +18,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     return
   }
   try {
-    console.log("Incoming request", request.body)
+    console.log("Incoming request at ", request.url)
+    console.log("Request body", request.body)
     const body = request.body as Body
     const { apiKey, apiSecret, notificationChannels, realityModuleAddress, network } =
       body
