@@ -23,6 +23,25 @@ export const setUpMonitoring = async (
   realityModuleAddress: string,
   data: MonitoringSectionData,
 ) => {
+  if ((data.apiKey ?? "") === "" || (data.secretKey ?? "") === "") {
+    console.log(
+      "Warning: api keys for monitoring service missing. Monitoring will NOT be set up.",
+    )
+    return
+  }
+  if (
+    (data.discordKey ?? "") === "" &&
+    (data.slackKey ?? "") === "" &&
+    data.email.length === 0 &&
+    (data.telegram.botToken ?? "") === "" &&
+    (data.telegram.chatID ?? "")
+  ) {
+    console.log(
+      "Warning: no notification channel(s) specified. Monitoring will NOT be set up.",
+    )
+    return
+  }
+
   const notificationChannels: NotificationChannels[] = []
 
   if (data.email.length > 0) {
