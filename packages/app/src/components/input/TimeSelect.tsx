@@ -173,10 +173,10 @@ export const TimeSelect = ({
 
   useEffect(() => {
     if (value && valueUnit) {
-      if (amount === "0" && value !== amount) {
+      if (["0", "172800", "86400"].includes(amount) && value !== amount) {
         setAmount(BigNumber.from(value).div(unitConversion[valueUnit]).toString())
       }
-      if (unit === "hours" && valueUnit !== unit) {
+      if (["hours", "days"].includes(unit) && valueUnit !== unit) {
         setUnit(valueUnit)
       }
     }
