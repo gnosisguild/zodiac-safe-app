@@ -143,17 +143,17 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   console.log("new space", newSpaceSettings)
 
   // 3. Deploy the modified settings file to IPFS.
-  const cidV1Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV1().toString()
+  const cidV0Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV0().toString()
   // 4. Pin the new file
 
-  const { cidV1: cidV1FromPinning } = await pinSnapshotSpace({
+  const { cidV0: cidV0FromPinning } = await pinSnapshotSpace({
     snapshotSpaceEnsName: ensName,
     snapshotSpaceSettings: newSpaceSettings,
   })
 
-  if (cidV1Locale !== cidV1FromPinning) {
+  if (cidV0Locale != null && cidV0Locale !== cidV0FromPinning) {
     throw new Error(
-      `The CID from the locale browser node (${cidV1Locale}) does not correspond with the CID from the pinning service (${cidV1FromPinning})`,
+      `The CID from the locale browser node (${cidV0Locale}) does not correspond with the CID from the pinning service (${cidV0FromPinning})`,
     )
   }
 
@@ -162,7 +162,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     provider,
     ensName,
     "snapshot",
-    `ipfs://${cidV1Locale}`,
+    `ipfs://${cidV0Locale}`,
   )
 
   return { txs: [setEnsRecordTx] }

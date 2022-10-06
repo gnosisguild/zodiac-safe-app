@@ -1,18 +1,11 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import * as snapshot from "./snapshot"
-import { create } from "ipfs-http-client"
 import fetch from "node-fetch"
+import { getEnv } from "../util"
 
-const PINNING_SERVICES_API_URL = process.env.PINNING_SERVICES_API_URL
-const PINNINGS_SERVICE_KEY = process.env.PINNINGS_SERVICE_KEY
-const IPFS_INFURA_IPFS_PROJECT_ID = process.env.IPFS_INFURA_IPFS_PROJECT_ID
-const IPFS_INFURA_IPFS_API_KEY_SECRET = process.env.IPFS_INFURA_IPFS_API_KEY_SECRET
-
-const IPFS_INFURA_AUTH =
-  "Basic " +
-  Buffer.from(
-    IPFS_INFURA_IPFS_PROJECT_ID + ":" + IPFS_INFURA_IPFS_API_KEY_SECRET,
-  ).toString("base64")
+const PINATA_BASE_URL = getEnv("PINATA_BASE_URL")
+const PINATA_API_KEY = getEnv("PINATA_API_KEY")
+const PINATA_SECRET_API_KEY = getEnv("PINATA_SECRET_API_KEY")
 
 interface Body {
   snapshotSpaceEnsName: string
@@ -42,57 +35,35 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     snapshot.verifyNewSnapshotSettings(originalSpaceSettings, snapshotSpaceSettings)
 
     // upload to IPFS and pinning
-    const ipfs = create({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https",
-      apiPath: "/api/v0",
+    const pinataResponds = await fetch(PINATA_BASE_URL + "/pinning/pinJSONToIPFS", {
+      method: "POST",
+
       headers: {
-        authorization: IPFS_INFURA_AUTH,
+        pinata_api_key: PINATA_API_KEY,
+        pinata_secret_api_key: PINATA_SECRET_API_KEY,
+        "Content-Type": "application/json",
       },
-    })
-    const { cid: rawCid } = await ipfs.add(JSON.stringify(snapshotSpaceSettings))
-    console.log("Respond CID from IPFS (Infura) raw:", rawCid)
+      body: JSON.stringify(snapshotSpaceSettings),
+    }).then((res) => res.json())
 
-    const cid = rawCid.toV1().toString()
-    console.log("Converted CIDv1:", cid)
-
-    try {
-      const pinningRes = await fetch(`${PINNING_SERVICES_API_URL}/pins`, {
-        method: "POST",
-        body: JSON.stringify({
-          cid: cid,
-          name: `SnapshotSpaceSettings-${snapshotSpaceEnsName}`,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${PINNINGS_SERVICE_KEY}`,
-        },
-      })
-      console.log("Responds from Pinning Service API", pinningRes)
-    } catch (error) {
-      if (error.reason !== "DUPLICATE_OBJECT") {
-        return response
-          .status(500)
-          .setHeader("content-type", "application/json;charset=UTF-8")
-          .setHeader("Access-Control-Allow-Origin", "*")
-          .send("error from pinning service")
-      }
-      console.log("Pinning Service API error:", error)
-    }
-
-    console.log("SUCCESS: Pinnings successfully. CIDv1:", cid)
+    console.log("Pinata responds", pinataResponds)
+    const { IpfsHash: cidV0 } = pinataResponds
     return response
       .status(200)
       .setHeader("content-type", "application/json;charset=UTF-8")
       .setHeader("Access-Control-Allow-Origin", "*")
       .send(
         JSON.stringify({
-          cidV1: cid,
+          cidV0,
         }),
       )
   } catch (e) {
     console.error(e)
-    return response.status(500).send("error")
+
+    return response
+      .status(500)
+      .setHeader("content-type", "application/json;charset=UTF-8")
+      .setHeader("Access-Control-Allow-Origin", "*")
+      .send("error")
   }
 }
