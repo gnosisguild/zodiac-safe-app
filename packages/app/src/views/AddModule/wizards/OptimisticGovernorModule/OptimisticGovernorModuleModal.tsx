@@ -118,8 +118,8 @@ export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: Optim
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="Optimistic Governor Module"
-      description="Allows successful Snapshot proposals to
+      title="UMA Optimistic Governor Module"
+      description="Allows successful Snapshot proposals to 
       execute transactions using UMA's optimistic oracle."
       icon="optimisticGov"
       tags={["From Outcome Finance"]}
