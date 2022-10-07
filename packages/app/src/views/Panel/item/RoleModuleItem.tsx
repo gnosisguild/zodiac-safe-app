@@ -1,15 +1,16 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Link, makeStyles, Typography } from "@material-ui/core";
-import { Address } from "components/ethereum/Address";
-import { Row } from "components/layout/Row";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { Link, makeStyles, Typography } from "@material-ui/core"
+import { Address } from "components/ethereum/Address"
+import { Row } from "components/layout/Row"
 
-import React from "react";
-import { SUPPORTED_SAFE_CHAIN } from "store/modules/constants";
-import { Module } from "store/modules/models";
-import { PanelItemProps } from "./PanelItem";
+import React from "react"
+import { Module } from "store/modules/models"
+import { NETWORK, NETWORKS } from "utils/networks"
+import { PanelItemProps } from "./PanelItem"
 
 interface RoleModuleItemProps extends PanelItemProps {
-  module: Module;
+  module: Module
+  chainId: number
 }
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,32 +39,29 @@ const useStyles = makeStyles((theme) => ({
       opacity: 0.5,
     },
   },
-}));
+}))
 
 export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
-  const classes = useStyles();
-  const { safe } = useSafeAppsSDK();
+  const classes = useStyles()
+  const { safe } = useSafeAppsSDK()
 
+  console.log(window.location.href)
+
+  // https://gnosis-safe.io/app/gor:0x69D196E3498EBC1752647dC05A6D12adb91472e8/apps?appUrl=https://localhost:3001/
   const handleClick = () => {
-    const chainId = safe.chainId as number;
-    const currentChain = SUPPORTED_SAFE_CHAIN[chainId as keyof typeof SUPPORTED_SAFE_CHAIN];
-    const prevUrl = window.location.ancestorOrigins[0];
+    const chainId = safe.chainId as number
+    const currentChainShortName = NETWORKS[chainId as NETWORK].shortName
+    const prevUrl = window.location.ancestorOrigins[0]
+    console.log(prevUrl)
     if (prevUrl) {
-      if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
-        const DEV = process.env.REACT_APP_ROLES_APP_DEV;
-        const newUrl = `${prevUrl}/app/${currentChain}:${module.owner}/apps?appUrl=${DEV}/#/${currentChain}:${module.owner}`;
-        window.open(newUrl, "_blank");
-      } else {
-        const PROD = process.env.REACT_APP_ROLES_APP_PROD;
-        const newUrl = `${prevUrl}/app/${currentChain}:${module.owner}/apps?appUrl=${PROD}/#/${currentChain}:${module.owner}`;
-        window.open(newUrl, "_blank");
-      }
+      const newUrl = `${prevUrl}/app/${currentChainShortName}:${safe.safeAddress}/apps?appUrl=https://roles.gnosisguild.org/%23/${currentChainShortName}:${module.owner}`
+      window.open(newUrl, "_blank")
     }
-  };
+  }
 
   return (
     <div className={classes.root}>
-      <Typography variant='body2' className={classes.moduleName}>
+      <Typography variant="body2" className={classes.moduleName}>
         {module.name}
       </Typography>
 
@@ -77,10 +75,16 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
             className: classes.address,
           }}
         />
-        <Link color='textPrimary' noWrap className={classes.link} onClick={handleClick} underline='always'>
+        <Link
+          color="textPrimary"
+          noWrap
+          className={classes.link}
+          onClick={handleClick}
+          underline="always"
+        >
           Open Roles App
         </Link>
       </Row>
     </div>
-  );
-};
+  )
+}

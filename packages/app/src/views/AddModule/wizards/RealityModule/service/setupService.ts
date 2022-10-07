@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { getArbitrator, TxWitMeta as TxsWitMeta } from "../../../../../services"
-import { chainIdToChainName, getNetworkNativeAsset } from "../../../../../utils/networks"
+import { NETWORK, NETWORKS } from "../../../../../utils/networks"
 import * as ipfs from "../../../../../services/ipfs"
 import * as R from "ramda"
 import { setTextRecordTx } from "services/ens"
@@ -50,7 +50,7 @@ export const setup = async (
   await Promise.all([
     safeSdk.txs.send({ txs }),
     setUpMonitoring(
-      chainIdToChainName(safeInfo.chainId),
+      NETWORKS[safeInfo.chainId as NETWORK].name,
       realityModuleAddress,
       setupData.monitoring,
     ),
@@ -75,7 +75,7 @@ const deployRealityModuleTxs = async (
   executorAddress: string,
   setupData: SetupData,
 ): Promise<TxsWitMeta> => {
-  const bondToken = getNetworkNativeAsset(chainId)
+  const bondToken = NETWORKS[chainId as NETWORK].nativeAsset
   const moduleDeploymentParameters: RealityModuleParams = {
     executor: executorAddress,
     bond: ethers.utils

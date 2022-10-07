@@ -35,7 +35,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
     rpcUrl: `https://goerli.infura.io/v3/${REACT_APP_INFURA_ID}`,
   },
-  [NETWORK.XDAI]: {
+  [NETWORK.GNOSIS_CHAIN]: {
     networkExplorerName: "Blockscout",
     networkExplorerUrl: "https://blockscout.com/poa/xdai",
     networkExplorerApiUrl: "https://blockscout.com/xdai/mainnet/api",

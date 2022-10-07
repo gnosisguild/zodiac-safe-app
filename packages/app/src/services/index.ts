@@ -89,7 +89,7 @@ export function getDefaultOracle(chainId: number): string {
       return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c"
     case NETWORK.BSC:
       return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9"
-    case NETWORK.XDAI:
+    case NETWORK.GNOSIS_CHAIN:
       return "0xE78996A233895bE74a66F451f1019cA9734205cc"
     case NETWORK.POLYGON:
       return "0x60573B8DcE539aE5bF9aD7932310668997ef0428"
