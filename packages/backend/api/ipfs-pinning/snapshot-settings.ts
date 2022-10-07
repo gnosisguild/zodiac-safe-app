@@ -60,10 +60,16 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   } catch (e) {
     console.error(e)
 
+    const { name, message } = e
     return response
       .status(500)
       .setHeader("content-type", "application/json;charset=UTF-8")
       .setHeader("Access-Control-Allow-Origin", "*")
-      .send("error")
+      .send(
+        JSON.stringify({
+          name,
+          message,
+        }),
+      )
   }
 }
