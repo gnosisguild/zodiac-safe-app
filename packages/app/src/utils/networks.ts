@@ -1,6 +1,5 @@
 export enum NETWORK {
   MAINNET = 1,
-  RINKEBY = 4,
   GOERLI = 5,
   XDAI = 100,
   BSC = 56,
@@ -22,7 +21,6 @@ export const NATIVE_ASSET: Record<string, Coin> = {
 
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.MAINNET]: NATIVE_ASSET.ETH,
-  [NETWORK.RINKEBY]: NATIVE_ASSET.ETH,
   [NETWORK.GOERLI]: NATIVE_ASSET.ETH,
   [NETWORK.XDAI]: NATIVE_ASSET.XDAI,
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
@@ -31,7 +29,6 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
 
 export enum ChainNames {
   MAINNET = "mainnet",
-  RINKEBY = "rinkeby",
   GNOSIS_CHAIN = "gnosis_chain",
   GOERLI = "goerli",
   POLYGON = "polygon",
@@ -44,8 +41,6 @@ export const chainIdToChainName = (chainId: number) => {
   switch (chainId) {
     case NETWORK.MAINNET:
       return ChainNames.MAINNET
-    case NETWORK.RINKEBY:
-      return ChainNames.RINKEBY
     case NETWORK.GNOSIS_CHAIN:
       return ChainNames.GNOSIS_CHAIN
     case NETWORK.GOERLI:

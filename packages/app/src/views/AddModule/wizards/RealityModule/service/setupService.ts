@@ -126,7 +126,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
   chainId: number,
 ): Promise<TxsWitMeta> => {
   // 1. Get the current Space setting file. from IPFS directly or from
-  const originalSpaceSettings = await snapshot.getSnapshotSpaceSettings(ensName)
+  const originalSpaceSettings = await snapshot.getSnapshotSpaceSettings(ensName, chainId)
 
   // 2. Update the Space setting file, by adding the SafeSnap plugin.
   const newSpaceSettings = addSafeSnapToSettings(

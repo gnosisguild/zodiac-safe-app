@@ -12,6 +12,9 @@ import { OracleSectionData } from "../Oracle"
 import { Loader } from "@gnosis.pm/safe-react-components"
 import { BigNumber } from "ethers"
 import { unitConversion } from "components/input/TimeSelect"
+import { EXPLORERS_CONFIG } from "utils/explorers"
+import { NETWORK } from "utils/networks"
+import { getSnapshotSpaceUrl } from "services/snapshot"
 
 interface ReviewSectionProps extends SectionProps {
   goToStep: (step: number) => void
@@ -105,27 +108,18 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [snapshopSpace, setSnapshotSpace] = useState<string>()
   const [oracleData, setOracleData] = useState<OracleSectionData | undefined>(undefined)
 
-  const [delayModule, setDelayModule] = useState<string>(delayModules.length === 1 ? delayModules[0].address : "")
+  const [delayModule, setDelayModule] = useState<string>(
+    delayModules.length === 1 ? delayModules[0].address : "",
+  )
 
   useEffect(() => {
     if (setupData && setupData.proposal) {
-      handleSnapshotSpace(setupData.proposal.ensName)
+      setSnapshotSpace(getSnapshotSpaceUrl(safe.chainId, setupData.proposal.ensName))
     }
     if (setupData && setupData.oracle) {
       setOracleData(setupData.oracle)
     }
   }, [setupData])
-
-  const handleSnapshotSpace = (ens: string) => {
-    switch (safe.chainId) {
-      case 1:
-        setSnapshotSpace(`https://snapshot.org/#/${ens}`)
-        break
-      case 4:
-        setSnapshotSpace(`https://demo.snapshot.org/#/${ens}`)
-        break
-    }
-  }
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -137,10 +131,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             </Grid>
             <Grid item>
               <Typography>
-                Here is an overview of your reality module configuration. Please review carefully. Once you&apos;ve
-                confirmed that the details are correct, you can submit the transaction which will add the reality module
-                to this safe, and automatically integrate the SafeSnap plugin with the snapshot space you&apos;ve
-                include.
+                Here is an overview of your reality module configuration. Please review
+                carefully. Once you&apos;ve confirmed that the details are correct, you
+                can submit the transaction which will add the reality module to this safe,
+                and automatically integrate the SafeSnap plugin with the snapshot space
+                you&apos;ve include.
               </Typography>
             </Grid>
           </Grid>
@@ -164,7 +159,12 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             {item.label === "Proposal" && (
               <Grid item>
                 <Typography>Snapshot Space:</Typography>
-                <Link color="inherit" href={snapshopSpace} target="_blank" className={classes.link}>
+                <Link
+                  color="inherit"
+                  href={snapshopSpace}
+                  target="_blank"
+                  className={classes.link}
+                >
                   {snapshopSpace}
                 </Link>
               </Grid>
@@ -178,11 +178,14 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                     <ZodiacPaper className={classes.paperTemplateContainer}>
                       <Typography>
                         Did the Snapshot proposal with the id %s in the
-                        {setupData.proposal.ensName} space pass the execution of the array of Module transactions that
-                        have the hash 0x%s and does it meet the requirements of the document referenced in the dao
-                        requirements record at {setupData.proposal.ensName}? The hash is the keccak of the concatenation
-                        of the individual EIP-712 hashes of the Module transactions. If this question was asked before
-                        the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!
+                        {setupData.proposal.ensName} space pass the execution of the array
+                        of Module transactions that have the hash 0x%s and does it meet
+                        the requirements of the document referenced in the dao
+                        requirements record at {setupData.proposal.ensName}? The hash is
+                        the keccak of the concatenation of the individual EIP-712 hashes
+                        of the Module transactions. If this question was asked before the
+                        corresponding Snapshot proposal was resolved, it should ALWAYS be
+                        resolved to INVALID!
                       </Typography>
                     </ZodiacPaper>
                   </Grid>
@@ -190,7 +193,9 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                     <Typography>Oracle Address:</Typography>
                     <Link
                       color="inherit"
-                      href={`https://rinkeby.etherscan.io/search?f=0&q=${oracleData.instanceData.instanceAddress}`}
+                      href={`${EXPLORERS_CONFIG[safe.chainId as NETWORK]}/search?f=0&q=${
+                        oracleData.instanceData.instanceAddress
+                      }`}
                       target="_blank"
                       className={classes.link}
                     >
@@ -198,7 +203,12 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                     </Link>
                   </Grid>
                   <Grid item>
-                    <Grid container spacing={1} justifyContent={"space-between"} alignItems={"center"}>
+                    <Grid
+                      container
+                      spacing={1}
+                      justifyContent={"space-between"}
+                      alignItems={"center"}
+                    >
                       <Grid item>
                         <Typography>Timeout:</Typography>
                         <Typography className={classes.label}>
@@ -228,14 +238,17 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                       </Grid>
                       <Grid item>
                         <Typography>Bond:</Typography>
-                        <Typography className={classes.label}>{oracleData.bondData.bond} ETH</Typography>
+                        <Typography className={classes.label}>
+                          {oracleData.bondData.bond} ETH
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
                   <Grid item>
                     <Typography>Arbitrator:</Typography>
                     <Typography className={classes.label}>
-                      {oracleData.arbitratorData.arbitratorOption === 0 && "No arbitration (highest bond wins)"}
+                      {oracleData.arbitratorData.arbitratorOption === 0 &&
+                        "No arbitration (highest bond wins)"}
                       {oracleData.arbitratorData.arbitratorOption === 1 && "Kleros"}
                     </Typography>
                   </Grid>
@@ -294,7 +307,12 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         <Grid item>
           <Grid container spacing={3} justifyContent="center" alignItems="center">
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack} disabled={loading}>
+              <Button
+                size="medium"
+                variant="text"
+                onClick={handleBack}
+                disabled={loading}
+              >
                 Back
               </Button>
             </Grid>
@@ -304,7 +322,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                 size="medium"
                 variant="contained"
                 startIcon={
-                  loading ? <Loader className={classes.loading} size="sm" color="background" /> : <ArrowUpwardIcon />
+                  loading ? (
+                    <Loader className={classes.loading} size="sm" color="background" />
+                  ) : (
+                    <ArrowUpwardIcon />
+                  )
                 }
                 disabled={loading}
                 onClick={handleNext}
@@ -322,8 +344,9 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 const executionModuleDescription = (
   <Typography variant="body2">
     This will add a time delay to any transactions created by this module.{" "}
-    <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both are set to 24 hours, the
-    cumulative delay before the transaction can be executed will be 48 hours).
+    <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both
+    are set to 24 hours, the cumulative delay before the transaction can be executed will
+    be 48 hours).
   </Typography>
 )
 

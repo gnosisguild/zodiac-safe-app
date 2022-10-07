@@ -77,8 +77,6 @@ export function getTellorOracle(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
-    case NETWORK.RINKEBY:
-      return "0x18431fd88adF138e8b979A7246eb58EA7126ea16"
     case NETWORK.POLYGON:
       return "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537"
   }
@@ -89,8 +87,6 @@ export function getDefaultOracle(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c"
-    case NETWORK.RINKEBY:
-      return "0xDf33060F476F8cff7511F806C72719394da1Ad64"
     case NETWORK.BSC:
       return "0xa925646Cae3721731F9a8C886E5D1A7B123151B9"
     case NETWORK.XDAI:
@@ -107,8 +103,6 @@ export function getFinder(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0x40f941E48A552bF496B154Af6bf55725f18D77c3"
-    case NETWORK.RINKEBY:
-      return "0xbb6206fb01fAad31e8aaFc3AD303cEA89D8c8157"
     case NETWORK.POLYGON:
       return "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64"
     case NETWORK.GOERLI:
@@ -136,8 +130,6 @@ function getUSDCAddress(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-    case NETWORK.RINKEBY:
-      return "0xeb8f08a975Ab53E34D8a0330E0D34de942C95926"
     case NETWORK.POLYGON:
       return "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
     case NETWORK.GOERLI:
@@ -150,8 +142,6 @@ function getWETHAddress(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-    case NETWORK.RINKEBY:
-      return "0xc778417E063141139Fce010982780140Aa0cD5Ab"
     case NETWORK.POLYGON:
       return "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
     case NETWORK.GOERLI:
@@ -165,14 +155,6 @@ function getKlerosAddress(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0xf72cfd1b34a91a64f9a98537fe63fbab7530adca"
-    case NETWORK.RINKEBY:
-      return "0xe27768bdb76a9b742b7ddcfe1539fadaf3b89bc7"
-    case NETWORK.BSC:
-      return ""
-    case NETWORK.XDAI:
-      return ""
-    case NETWORK.POLYGON:
-      return ""
   }
   return ""
 }
@@ -190,13 +172,20 @@ export function getArbitrator(chainId: number, arbitratorOption: number): string
   return ""
 }
 
-export function deployTellorModule(safeAddress: string, chainId: number, args: TellorModuleParams) {
+export function deployTellorModule(
+  safeAddress: string,
+  chainId: number,
+  args: TellorModuleParams,
+) {
   const type = KnownContracts.TELLOR
   const { oracle, cooldown, expiration, executor } = args
   const provider = getProvider(chainId)
   const oracleAddress = oracle || getTellorOracle(chainId)
 
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } = deployAndSetUpModule(
+  const {
+    transaction: daoModuleDeploymentTx,
+    expectedModuleAddress: daoModuleExpectedAddress,
+  } = deployAndSetUpModule(
     type,
     {
       types: ["address", "address", "address", "uint32", "uint32"],
@@ -216,32 +205,48 @@ export function deployTellorModule(safeAddress: string, chainId: number, args: T
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
-    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [daoModuleExpectedAddress])
+    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
+      daoModuleExpectedAddress,
+    ])
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(safeAddress, chainId, daoModuleExpectedAddress)
+    const enableDaoModuleTransaction = enableModule(
+      safeAddress,
+      chainId,
+      daoModuleExpectedAddress,
+    )
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
 
   return daoModuleTransactions
 }
 
-export function deployDelayModule(safeAddress: string, chainId: number, args: DelayModuleParams) {
+export function deployDelayModule(
+  safeAddress: string,
+  chainId: number,
+  args: DelayModuleParams,
+) {
   const provider = getProvider(chainId)
   const { cooldown, expiration, executor } = args as unknown as DelayModuleParams
-  const { transaction: delayModuleDeploymentTx, expectedModuleAddress: delayModuleExpectedAddress } =
-    deployAndSetUpModule(
-      KnownContracts.DELAY,
-      {
-        types: ["address", "address", "address", "uint256", "uint256"],
-        values: [safeAddress, safeAddress, executor, cooldown, expiration],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
-  const enableDelayModuleTransaction = enableModule(safeAddress, chainId, delayModuleExpectedAddress)
+  const {
+    transaction: delayModuleDeploymentTx,
+    expectedModuleAddress: delayModuleExpectedAddress,
+  } = deployAndSetUpModule(
+    KnownContracts.DELAY,
+    {
+      types: ["address", "address", "address", "uint256", "uint256"],
+      values: [safeAddress, safeAddress, executor, cooldown, expiration],
+    },
+    provider,
+    chainId,
+    Date.now().toString(),
+  )
+  const enableDelayModuleTransaction = enableModule(
+    safeAddress,
+    chainId,
+    delayModuleExpectedAddress,
+  )
 
   return [
     {
@@ -252,7 +257,11 @@ export function deployDelayModule(safeAddress: string, chainId: number, args: De
   ]
 }
 
-export function deployBridgeModule(safeAddress: string, chainId: number, args: AMBModuleParams) {
+export function deployBridgeModule(
+  safeAddress: string,
+  chainId: number,
+  args: AMBModuleParams,
+) {
   const provider = getProvider(chainId)
   const { executor, controller, amb, chainId: ambChainId } = args
 
@@ -274,7 +283,11 @@ export function deployBridgeModule(safeAddress: string, chainId: number, args: A
     Date.now().toString(),
   )
 
-  const enableModuleTransaction = enableModule(safeAddress, chainId, expectedModuleAddress)
+  const enableModuleTransaction = enableModule(
+    safeAddress,
+    chainId,
+    expectedModuleAddress,
+  )
 
   return [
     {
@@ -297,15 +310,27 @@ export function deployCirculatingSupplyContract(
     : KnownContracts.CIRCULATING_SUPPLY_ERC20
 
   const provider = getProvider(chainId)
-  const { factory, module: circulatingSupplyContract } = getFactoryAndMasterCopy(type, provider, chainId)
+  const { factory, module: circulatingSupplyContract } = getFactoryAndMasterCopy(
+    type,
+    provider,
+    chainId,
+  )
 
   const encodedInitParams = new ethers.utils.AbiCoder().encode(
     ["address", "address", "address[]"],
     [safeAddress, token, [safeAddress]],
   )
-  const moduleSetupData = circulatingSupplyContract.interface.encodeFunctionData("setUp", [encodedInitParams])
+  const moduleSetupData = circulatingSupplyContract.interface.encodeFunctionData(
+    "setUp",
+    [encodedInitParams],
+  )
 
-  const expectedAddress = calculateProxyAddress(factory, circulatingSupplyContract.address, moduleSetupData, saltNonce)
+  const expectedAddress = calculateProxyAddress(
+    factory,
+    circulatingSupplyContract.address,
+    moduleSetupData,
+    saltNonce,
+  )
 
   const deployData = factory.interface.encodeFunctionData("deployModule", [
     circulatingSupplyContract.address,
@@ -324,7 +349,11 @@ export function deployCirculatingSupplyContract(
   }
 }
 
-export async function deployExitModule(safeAddress: string, chainId: number, args: ExitModuleParams) {
+export async function deployExitModule(
+  safeAddress: string,
+  chainId: number,
+  args: ExitModuleParams,
+) {
   const provider = getProvider(chainId)
   const txs: Transaction[] = []
   const { executor, tokenContract } = args
@@ -337,8 +366,16 @@ export async function deployExitModule(safeAddress: string, chainId: number, arg
     console.warn("deployExitModule: error determining token type")
   }
 
-  const { transaction: deployCirculationSupplyTx, expectedAddress: circulatingSupplyAddress } =
-    deployCirculatingSupplyContract(safeAddress, chainId, tokenContract, Date.now().toString(), isERC721)
+  const {
+    transaction: deployCirculationSupplyTx,
+    expectedAddress: circulatingSupplyAddress,
+  } = deployCirculatingSupplyContract(
+    safeAddress,
+    chainId,
+    tokenContract,
+    Date.now().toString(),
+    isERC721,
+  )
 
   txs.push(deployCirculationSupplyTx)
 
@@ -348,7 +385,13 @@ export async function deployExitModule(safeAddress: string, chainId: number, arg
     type,
     {
       types: ["address", "address", "address", "address", "address"],
-      values: [safeAddress, safeAddress, executor, tokenContract, circulatingSupplyAddress],
+      values: [
+        safeAddress,
+        safeAddress,
+        executor,
+        tokenContract,
+        circulatingSupplyAddress,
+      ],
     },
     provider,
     chainId,
@@ -359,7 +402,11 @@ export async function deployExitModule(safeAddress: string, chainId: number, arg
     value: transaction.value.toString(),
   })
 
-  const enableModuleTransaction = enableModule(safeAddress, chainId, expectedModuleAddress)
+  const enableModuleTransaction = enableModule(
+    safeAddress,
+    chainId,
+    expectedModuleAddress,
+  )
   txs.push(enableModuleTransaction)
 
   return txs
@@ -378,7 +425,11 @@ export function enableModule(safeAddress: string, chainId: number, module: strin
   return buildTransaction(safe, "enableModule", [module])
 }
 
-export async function disableModule(safeAddress: string, chainId: number, module: string) {
+export async function disableModule(
+  safeAddress: string,
+  chainId: number,
+  module: string,
+) {
   const provider = getProvider(chainId)
   const modules = await fetchSafeModulesAddress(safeAddress, chainId)
   if (!modules.length) throw new Error("Safe does not have enabled modules")
@@ -406,11 +457,18 @@ export const callContract = (
   return contract.functions[method](...data)
 }
 
-export async function fetchSafeTransactions(chainId: number, safeAddress: string, params: Record<string, string>) {
+export async function fetchSafeTransactions(
+  chainId: number,
+  safeAddress: string,
+  params: Record<string, string>,
+) {
   const network = getNetworkExplorerInfo(chainId)
   if (!network) return []
 
-  const url = new URL(`api/v1/safes/${safeAddress}/transactions`, network.safeTransactionApi)
+  const url = new URL(
+    `api/v1/safes/${safeAddress}/transactions`,
+    network.safeTransactionApi,
+  )
 
   Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value))
 
@@ -431,21 +489,31 @@ export async function fetchSafeInfo(chainId: number, safeAddress: string) {
   return response as SafeInfo
 }
 
-export function deployRolesModifier(safeAddress: string, chainId: number, args: RolesModifierParams) {
+export function deployRolesModifier(
+  safeAddress: string,
+  chainId: number,
+  args: RolesModifierParams,
+) {
   const provider = getProvider(chainId)
   const { target } = args
-  const { transaction: rolesModifierDeploymentTx, expectedModuleAddress: rolesModifierExpectedAddress } =
-    deployAndSetUpModule(
-      KnownContracts.ROLES,
-      {
-        types: ["address", "address", "address"],
-        values: [safeAddress, safeAddress, target],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
-  const enableRolesModifierTransaction = enableModule(safeAddress, chainId, rolesModifierExpectedAddress)
+  const {
+    transaction: rolesModifierDeploymentTx,
+    expectedModuleAddress: rolesModifierExpectedAddress,
+  } = deployAndSetUpModule(
+    KnownContracts.ROLES,
+    {
+      types: ["address", "address", "address"],
+      values: [safeAddress, safeAddress, target],
+    },
+    provider,
+    chainId,
+    Date.now().toString(),
+  )
+  const enableRolesModifierTransaction = enableModule(
+    safeAddress,
+    chainId,
+    rolesModifierExpectedAddress,
+  )
 
   return [
     {
@@ -468,7 +536,10 @@ export function deployOptimisticGovernorModule(
 
   const scaledBond = scaleBondDecimals(collateral, bond).toString()
 
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } = deployAndSetUpModule(
+  const {
+    transaction: daoModuleDeploymentTx,
+    expectedModuleAddress: daoModuleExpectedAddress,
+  } = deployAndSetUpModule(
     type,
     {
       types: ["address", "address", "uint256", "string", "bytes32", "uint64"],
@@ -488,11 +559,17 @@ export function deployOptimisticGovernorModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
-    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [daoModuleExpectedAddress])
+    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
+      daoModuleExpectedAddress,
+    ])
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(safeAddress, chainId, daoModuleExpectedAddress)
+    const enableDaoModuleTransaction = enableModule(
+      safeAddress,
+      chainId,
+      daoModuleExpectedAddress,
+    )
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
 

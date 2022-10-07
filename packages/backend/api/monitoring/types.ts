@@ -15,7 +15,6 @@ export interface Body {
 
 export type Network =
   | "mainnet"
-  | "rinkeby"
   | "ropsten"
   | "kovan"
   | "goerli"
@@ -37,7 +36,6 @@ export type Network =
   | "optimism-kovan"
   | "optimism-goerli"
   | "arbitrum"
-  | "arbitrum-rinkeby"
   | "arbitrum-goerli"
   | "celo"
   | "alfajores"

@@ -1,60 +1,52 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
-import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
-import { getCollateral, COLLATERAL_OPTIONS } from "../../services";
-import { NETWORK } from "../../utils/networks";
+import React, { useEffect, useState } from "react"
+import { Box, Grid, InputLabel, makeStyles, MenuItem, Select } from "@material-ui/core"
+import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg"
+import { getCollateral, COLLATERAL_OPTIONS } from "../../services"
+import { NETWORK } from "../../utils/networks"
 
 export const collateralOptions = {
   USDC: "USDC",
   WETH: "WETH",
-};
+}
 
 export function scaleBondDecimals(collateralAddress: string, bond: string): number {
   switch (collateralAddress) {
     case "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48":
-      return Number(bond) * Math.pow(10, 6);
+      return Number(bond) * Math.pow(10, 6)
     case "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174":
-      return Number(bond) * Math.pow(10, 6);
+      return Number(bond) * Math.pow(10, 6)
     case "0xeb8f08a975Ab53E34D8a0330E0D34de942C95926":
-      return Number(bond) * Math.pow(10, 6);
+      return Number(bond) * Math.pow(10, 6)
     case "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2":
-      return Number(bond) * Math.pow(10, 18);
+      return Number(bond) * Math.pow(10, 18)
     case "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619":
-      return Number(bond) * Math.pow(10, 18);
+      return Number(bond) * Math.pow(10, 18)
     case "0xc778417E063141139Fce010982780140Aa0cD5Ab":
-      return Number(bond) * Math.pow(10, 18);
+      return Number(bond) * Math.pow(10, 18)
     case "0x07865c6E87B9F70255377e024ace6630C1Eaa37F":
-      return Number(bond) * Math.pow(10, 6);
+      return Number(bond) * Math.pow(10, 6)
     case "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6":
-      return Number(bond) * Math.pow(10, 18);
+      return Number(bond) * Math.pow(10, 18)
   }
-  return 18;
+  return 18
 }
 
 // List of chain IDs where OG is available.
 const optimisticGovernorAvailability: number[] = [
   NETWORK.MAINNET,
-  NETWORK.RINKEBY,
   NETWORK.POLYGON,
   NETWORK.GOERLI,
-];
+]
 
-type Option = keyof typeof collateralOptions;
+type Option = keyof typeof collateralOptions
 
 interface CollateralSelectProps {
-  defaultAddress?: string;
-  defaultOption?: string;
-  label: string;
-  chainId: number;
+  defaultAddress?: string
+  defaultOption?: string
+  label: string
+  chainId: number
 
-  onChange(collateral: string): void;
+  onChange(collateral: string): void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -117,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
     borderTopStyle: "solid",
     marginTop: -1,
   },
-}));
+}))
 
 export const CollateralSelect = ({
   onChange,
@@ -125,36 +117,33 @@ export const CollateralSelect = ({
   label,
   chainId,
 }: CollateralSelectProps) => {
-  const classes = useStyles();
-  const [option, setOption] = useState<string>(defaultOption);
+  const classes = useStyles()
+  const [option, setOption] = useState<string>(defaultOption)
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false)
+  const handleOpen = () => setOpen(true)
 
-  const selectRef = React.useRef<HTMLDivElement>(null);
+  const selectRef = React.useRef<HTMLDivElement>(null)
 
   const handleCollateralOptionChange = (newOption: string) => {
-    handleClose();
+    handleClose()
     const newOptionKey = Object.keys(collateralOptions).find(
-      (k) => collateralOptions[`${k}` as Option] === newOption
-    ) as Option;
-    setOption(newOption);
-    const newCollateral = getCollateral(
-      chainId,
-      COLLATERAL_OPTIONS[newOptionKey]
-    );
-    onChange(newCollateral);
-  };
+      (k) => collateralOptions[`${k}` as Option] === newOption,
+    ) as Option
+    setOption(newOption)
+    const newCollateral = getCollateral(chainId, COLLATERAL_OPTIONS[newOptionKey])
+    onChange(newCollateral)
+  }
 
   useEffect(() => {
     if (selectRef.current) {
       selectRef.current.addEventListener("keyup", (event) => {
-        if (event.code === "Tab") handleOpen();
-      });
+        if (event.code === "Tab") handleOpen()
+      })
     }
-  }, [selectRef]);
+  }, [selectRef])
 
   return (
     <div>
@@ -186,16 +175,14 @@ export const CollateralSelect = ({
               },
             }}
             renderValue={(value) => value as string}
-            onChange={(evt) =>
-              handleCollateralOptionChange(evt.target.value as string)
-            }
+            onChange={(evt) => handleCollateralOptionChange(evt.target.value as string)}
           >
             {Object.keys(collateralOptions).map((optionKey) => {
               if (
                 !optimisticGovernorAvailability.includes(chainId) &&
                 optionKey === "WETH"
               ) {
-                return null;
+                return null
               }
               return (
                 <MenuItem
@@ -207,11 +194,11 @@ export const CollateralSelect = ({
                   <Box className="show-if-selected" flexGrow={1} />
                   <CheckmarkIcon className="show-if-selected" />
                 </MenuItem>
-              );
+              )
             })}
           </Select>
         </Grid>
       </Grid>
     </div>
-  );
-};
+  )
+}

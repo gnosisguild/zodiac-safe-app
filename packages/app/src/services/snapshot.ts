@@ -1,12 +1,16 @@
 import snapshot from "@snapshot-labs/snapshot.js"
 import * as R from "ramda"
+import { NETWORK } from "utils/networks"
 
 const SNAPSHOT_HUB = process.env.REACT_APP_SNAPSHOT_HUB
+const SNAPSHOT_HUB_GOERLI = process.env.REACT_APP_SNAPSHOT_HUB_GOERLI
+const SNAPSHOT_SPACE = process.env.REACT_APP_SNAPSHOT_SPACE
+const SNAPSHOT_SPACE_GOERLI = process.env.REACT_APP_SNAPSHOT_SPACE_GOERLI
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
-export const getSnapshotSpaceSettings = async (ensName: string) => {
-  await updateSnapshotCache(ensName) // make sure that the returned snapshot space settings is the newest version
-  const res = await fetch(`${SNAPSHOT_HUB}/api/spaces/${ensName}`)
+export const getSnapshotSpaceSettings = async (ensName: string, chainId: number) => {
+  await updateSnapshotCache(ensName, chainId) // make sure that the returned snapshot space settings is the newest version
+  const res = await fetch(`${getHubUrl(chainId)}/api/spaces/${ensName}`)
   if (res.ok) {
     try {
       return await res.json()
@@ -21,8 +25,8 @@ export const getSnapshotSpaceSettings = async (ensName: string) => {
 export const validateSchema = (spaceSettings: any) =>
   snapshot.utils.validateSchema(snapshot.schemas.space, spaceSettings)
 
-export const updateSnapshotCache = async (ensName: string) =>
-  fetch(`${SNAPSHOT_HUB}/api/spaces/${ensName}/poke`)
+export const updateSnapshotCache = async (ensName: string, chainId: number) =>
+  fetch(`${getHubUrl(chainId)}/api/spaces/${ensName}/poke`)
 
 export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: any) =>
   R.and(
@@ -35,3 +39,9 @@ export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: an
     // we must be strict here, if not a truthy error value can be returned
     validateSchema(newSettings) === true,
   )
+
+const getHubUrl = (chainId: number) =>
+  chainId === NETWORK.GOERLI ? SNAPSHOT_HUB_GOERLI : SNAPSHOT_HUB
+
+export const getSnapshotSpaceUrl = (chainId: number, ensName: string) =>
+  (chainId === NETWORK.GOERLI ? SNAPSHOT_SPACE_GOERLI : SNAPSHOT_SPACE) + `/#/${ensName}`

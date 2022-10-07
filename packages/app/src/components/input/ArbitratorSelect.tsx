@@ -1,36 +1,29 @@
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Grid,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-} from "@material-ui/core";
-import { ParamInput } from "../../components/ethereum/ParamInput";
-import { ParamType } from "@ethersproject/abi";
-import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg";
-import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services";
-import { NETWORK } from "../../utils/networks";
+import React, { useEffect, useState } from "react"
+import { Box, Grid, InputLabel, makeStyles, MenuItem, Select } from "@material-ui/core"
+import { ParamInput } from "../../components/ethereum/ParamInput"
+import { ParamType } from "@ethersproject/abi"
+import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg"
+import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services"
+import { NETWORK } from "../../utils/networks"
 
 export const arbitratorOptions = {
   NO_ARBITRATOR: "No arbitration (highest bond wins)",
   KLEROS: "Kleros",
   OTHER: "Other (custom address)",
-};
+}
 
 // List of chain IDs where Kleros is available.
-const klerosAvailability: number[] = [NETWORK.MAINNET, NETWORK.RINKEBY];
+const klerosAvailability: number[] = [NETWORK.MAINNET]
 
-type Option = keyof typeof arbitratorOptions;
+type Option = keyof typeof arbitratorOptions
 
 interface ArbitratorSelectProps {
-  defaultAddress?: string;
-  defaultOption?: string;
-  label: string;
-  chainId: number;
+  defaultAddress?: string
+  defaultOption?: string
+  label: string
+  chainId: number
 
-  onChange(arbitrator: string): void;
+  onChange(arbitrator: string): void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -93,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     borderTopStyle: "solid",
     marginTop: -1,
   },
-}));
+}))
 
 export const ArbitratorSelect = ({
   onChange,
@@ -102,54 +95,51 @@ export const ArbitratorSelect = ({
   label,
   chainId,
 }: ArbitratorSelectProps) => {
-  const classes = useStyles();
-  const [option, setOption] = useState<string>(defaultOption);
-  const [arbitrator, setArbitrator] = useState(defaultAddress);
+  const classes = useStyles()
+  const [option, setOption] = useState<string>(defaultOption)
+  const [arbitrator, setArbitrator] = useState(defaultAddress)
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  const handleClose = () => setOpen(false);
-  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false)
+  const handleOpen = () => setOpen(true)
 
-  const selectRef = React.useRef<HTMLDivElement>(null);
+  const selectRef = React.useRef<HTMLDivElement>(null)
 
   const handleArbitratorChange = (_arbitrator: string, valid?: boolean) => {
     try {
       if (valid === true) {
-        setArbitrator(_arbitrator);
-        onChange(_arbitrator);
+        setArbitrator(_arbitrator)
+        onChange(_arbitrator)
       }
     } catch (err) {
-      console.warn("invalid arbitrator option");
+      console.warn("invalid arbitrator option")
     }
-  };
+  }
 
   const handleArbitratorOptionChange = (newOption: string) => {
-    handleClose();
+    handleClose()
     const newOptionKey = Object.keys(arbitratorOptions).find(
-      (k) => arbitratorOptions[`${k}` as Option] === newOption
-    ) as Option;
-    setOption(newOption);
+      (k) => arbitratorOptions[`${k}` as Option] === newOption,
+    ) as Option
+    setOption(newOption)
     if (newOptionKey === "OTHER") {
-      setArbitrator("");
-      onChange("");
+      setArbitrator("")
+      onChange("")
     } else {
-      const newArbitrator = getArbitrator(
-        chainId,
-        ARBITRATOR_OPTIONS[newOptionKey]
-      );
-      setArbitrator(newArbitrator);
-      onChange(newArbitrator);
+      const newArbitrator = getArbitrator(chainId, ARBITRATOR_OPTIONS[newOptionKey])
+      setArbitrator(newArbitrator)
+      onChange(newArbitrator)
     }
-  };
+  }
 
   useEffect(() => {
     if (selectRef.current) {
       selectRef.current.addEventListener("keyup", (event) => {
-        if (event.code === "Tab") handleOpen();
-      });
+        if (event.code === "Tab") handleOpen()
+      })
     }
-  }, [selectRef]);
+  }, [selectRef])
 
   return (
     <div>
@@ -181,16 +171,11 @@ export const ArbitratorSelect = ({
               },
             }}
             renderValue={(value) => value as string}
-            onChange={(evt) =>
-              handleArbitratorOptionChange(evt.target.value as string)
-            }
+            onChange={(evt) => handleArbitratorOptionChange(evt.target.value as string)}
           >
             {Object.keys(arbitratorOptions).map((optionKey) => {
-              if (
-                !klerosAvailability.includes(chainId) &&
-                optionKey === "KLEROS"
-              ) {
-                return null;
+              if (!klerosAvailability.includes(chainId) && optionKey === "KLEROS") {
+                return null
               }
               return (
                 <MenuItem
@@ -202,7 +187,7 @@ export const ArbitratorSelect = ({
                   <Box className="show-if-selected" flexGrow={1} />
                   <CheckmarkIcon className="show-if-selected" />
                 </MenuItem>
-              );
+              )
             })}
           </Select>
         </Grid>
@@ -222,5 +207,5 @@ export const ArbitratorSelect = ({
         </Grid>
       )}
     </div>
-  );
-};
+  )
+}

@@ -21,7 +21,10 @@ import { SectionProps } from "views/AddModule/wizards/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import ProposalStatus from "./components/ProposalStatus"
 import * as snapshot from "services/snapshot"
-import { handleProposalStatus, handleProposalStatusMessage } from "utils/proposalValidation"
+import {
+  handleProposalStatus,
+  handleProposalStatusMessage,
+} from "utils/proposalValidation"
 import { Loader } from "@gnosis.pm/safe-react-components"
 import DoneIcon from "@material-ui/icons/Done"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
@@ -112,7 +115,11 @@ export type ProposalSectionData = {
   ensName: string
 }
 
-export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack, setupData }) => {
+export const ProposalSection: React.FC<SectionProps> = ({
+  handleNext,
+  handleBack,
+  setupData,
+}) => {
   const { safe } = useSafeAppsSDK()
   const provider = getProvider(safe.chainId)
   const classes = useStyles()
@@ -154,7 +161,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   const validEns = async () => {
     const address = await provider.resolveName(ensName)
     if (address) {
-      const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName)
+      const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName, safe.chainId)
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress)
       const isController = await checkIfIsController(provider, ensName, safe.safeAddress)
       // console.log(snapshotSpace)
@@ -212,14 +219,19 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
             </Grid>
             <Grid item>
               <Typography>
-                Add your preferred proposal type below to get started. If you&apos;re unsure, we recommend starting with
-                Snapshot.
+                Add your preferred proposal type below to get started. If you&apos;re
+                unsure, we recommend starting with Snapshot.
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
                 Don&apos;t have a snapshot space setup yet?{` `}
-                <Link underline="always" href="https://snapshot.com" target={"_blank"} color="inherit">
+                <Link
+                  underline="always"
+                  href="https://snapshot.com"
+                  target={"_blank"}
+                  color="inherit"
+                >
                   Get started here.
                 </Link>
               </Typography>
@@ -242,8 +254,8 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
                 you&apos;d prefer to provide a custom proposal integration,
                 select Custom and provide the appropriate URL where the
                 proposals can be viewed publicly. */}
-                Enter your snapshot space ENS domain below to get started. The Safe must be the controller of this ENS
-                domain.
+                Enter your snapshot space ENS domain below to get started. The Safe must
+                be the controller of this ENS domain.
               </Typography>
             </Grid>
             {/* For now we're only use snapshot space */}
@@ -292,7 +304,9 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
                 placeholder="ex: gnosis.eth"
                 borderStyle="double"
                 className={`${classes.textFieldSmall} ${
-                  ensName.includes(".eth") && !loading && (!validSnapshot || !isController || !isOwner)
+                  ensName.includes(".eth") &&
+                  !loading &&
+                  (!validSnapshot || !isController || !isOwner)
                     ? classes.inputError
                     : classes.input
                 }`}
@@ -303,12 +317,16 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
                         <Loader size="sm" className={classes.spinner} />
                       </Box>
                     )}
-                    {ensName.includes(".eth") && !loading && (!validSnapshot || !isController || !isOwner) && (
-                      <ErrorOutlineIcon className={classes.errorIcon} />
-                    )}
-                    {ensName.includes(".eth") && !loading && validSnapshot && isController && isOwner && (
-                      <DoneIcon className={classes.doneIcon} />
-                    )}
+                    {ensName.includes(".eth") &&
+                      !loading &&
+                      (!validSnapshot || !isController || !isOwner) && (
+                        <ErrorOutlineIcon className={classes.errorIcon} />
+                      )}
+                    {ensName.includes(".eth") &&
+                      !loading &&
+                      validSnapshot &&
+                      isController &&
+                      isOwner && <DoneIcon className={classes.doneIcon} />}
                   </>
                 }
               />
@@ -319,23 +337,75 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
                 <>
                   <ProposalStatus
                     type="snapshot"
-                    status={handleProposalStatus("snapshot", loading, false, false, validSnapshot, false)}
-                    message={handleProposalStatusMessage("snapshot", false, false, validSnapshot, false)}
+                    status={handleProposalStatus(
+                      "snapshot",
+                      loading,
+                      false,
+                      false,
+                      validSnapshot,
+                      false,
+                    )}
+                    message={handleProposalStatusMessage(
+                      "snapshot",
+                      false,
+                      false,
+                      validSnapshot,
+                      false,
+                    )}
                   />
                   <ProposalStatus
                     type="safesnap"
-                    status={handleProposalStatus("safesnap", loading, false, false, false, isSafesnapInstalled)}
-                    message={handleProposalStatusMessage("safesnap", false, false, false, isSafesnapInstalled)}
+                    status={handleProposalStatus(
+                      "safesnap",
+                      loading,
+                      false,
+                      false,
+                      false,
+                      isSafesnapInstalled,
+                    )}
+                    message={handleProposalStatusMessage(
+                      "safesnap",
+                      false,
+                      false,
+                      false,
+                      isSafesnapInstalled,
+                    )}
                   />
                   <ProposalStatus
                     type="controller"
-                    status={handleProposalStatus("controller", loading, isController, false, false, false)}
-                    message={handleProposalStatusMessage("controller", isController, false, false, false)}
+                    status={handleProposalStatus(
+                      "controller",
+                      loading,
+                      isController,
+                      false,
+                      false,
+                      false,
+                    )}
+                    message={handleProposalStatusMessage(
+                      "controller",
+                      isController,
+                      false,
+                      false,
+                      false,
+                    )}
                   />
                   <ProposalStatus
                     type="owner"
-                    status={handleProposalStatus("owner", loading, false, isOwner, false, false)}
-                    message={handleProposalStatusMessage("owner", false, isOwner, false, false)}
+                    status={handleProposalStatus(
+                      "owner",
+                      loading,
+                      false,
+                      isOwner,
+                      false,
+                      false,
+                    )}
+                    message={handleProposalStatusMessage(
+                      "owner",
+                      false,
+                      isOwner,
+                      false,
+                      false,
+                    )}
                     address={ensAddress}
                   />
                   {/* {ensAddress && !isOwner && handleProposalStatus("owner") === "error" && (
