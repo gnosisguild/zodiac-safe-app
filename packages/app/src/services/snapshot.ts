@@ -2,10 +2,10 @@ import snapshot from "@snapshot-labs/snapshot.js"
 import * as R from "ramda"
 import { NETWORK } from "utils/networks"
 
-const SNAPSHOT_HUB = process.env.REACT_APP_SNAPSHOT_HUB
-const SNAPSHOT_HUB_GOERLI = process.env.REACT_APP_SNAPSHOT_HUB_GOERLI
-const SNAPSHOT_SPACE = process.env.REACT_APP_SNAPSHOT_SPACE
-const SNAPSHOT_SPACE_GOERLI = process.env.REACT_APP_SNAPSHOT_SPACE_GOERLI
+const SNAPSHOT_HUB = "https://snapshot.org"
+const SNAPSHOT_HUB_GOERLI = "https://testnet.snapshot.org"
+const SNAPSHOT_SPACE = "https://snapshot.org"
+const SNAPSHOT_SPACE_GOERLI = "https://demo.snapshot.org"
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
 export const getSnapshotSpaceSettings = async (ensName: string, chainId: number) => {
