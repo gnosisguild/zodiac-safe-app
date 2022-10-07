@@ -5,6 +5,8 @@ import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.sv
 import { TextField } from "./TextField"
 import { colors } from "zodiac-ui-components"
 import useKeyPress from "hooks/useKeyPress"
+import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
+import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined"
 
 export const unitConversion = {
   seconds: 1,
@@ -22,7 +24,8 @@ interface TimeSelectProps {
   value?: string
   valueUnit?: Unit
   label: string
-  variant?: "primary" | "secondary"
+  variant?: "primary" | "secondary" | "error"
+  alertType?: "error" | "warning"
   onChange(time: string, unit: Unit): void
 }
 
@@ -74,6 +77,13 @@ const useStyles = makeStyles((theme) => ({
   secondary: {
     borderColor: colors.tan[300],
   },
+  error: {
+    background: "rgba(244, 67, 54, 0.1)",
+    borderColor: "rgba(244, 67, 54, 0.3)",
+  },
+  errorIcon: {
+    fill: "rgba(244, 67, 54, 1)",
+  },
 }))
 
 function calculateTime(amount: string, unit: Unit): BigNumber {
@@ -89,11 +99,14 @@ export const TimeSelect = ({
   label,
   variant = "primary",
   tooltipMsg,
+  alertType,
 }: TimeSelectProps) => {
   const classes = useStyles()
   const tabPress = useKeyPress("Tab")
   const [unit, setUnit] = useState<Unit>(defaultUnit)
-  const [amount, setAmount] = useState(BigNumber.from(defaultValue).div(unitConversion[unit]).toString())
+  const [amount, setAmount] = useState(
+    BigNumber.from(defaultValue).div(unitConversion[unit]).toString(),
+  )
 
   const [open, setOpen] = useState(false)
 
@@ -109,6 +122,32 @@ export const TimeSelect = ({
       onChange(newAmount.toString(), unit)
     } catch (err) {
       console.warn("invalid time")
+    }
+  }
+
+  const handleAdornment = () => {
+    if (alertType) {
+      switch (alertType) {
+        case "error":
+          return <ErrorOutlineIcon className={classes.errorIcon} />
+
+        case "warning":
+          return <ReportProblemOutlinedIcon className={classes.errorIcon} />
+      }
+    }
+    return null
+  }
+
+  const handleRoot = () => {
+    switch (variant) {
+      case "primary":
+        return classes.primary
+
+      case "secondary":
+        return classes.secondary
+
+      case "error":
+        return classes.error
     }
   }
 
@@ -134,10 +173,10 @@ export const TimeSelect = ({
 
   useEffect(() => {
     if (value && valueUnit) {
-      if (amount === "0" && value !== amount) {
+      if (["0", "172800", "86400"].includes(amount) && value !== amount) {
         setAmount(BigNumber.from(value).div(unitConversion[valueUnit]).toString())
       }
-      if (unit === "hours" && valueUnit !== unit) {
+      if (["hours", "days"].includes(unit) && valueUnit !== unit) {
         setUnit(valueUnit)
       }
     }
@@ -152,9 +191,10 @@ export const TimeSelect = ({
         value: amount,
         placeholder: "24",
         classes: {
-          root: variant === "primary" ? classes.primary : classes.secondary,
+          root: handleRoot(),
         },
         onChange: (evt) => handleAmountChange(evt.target.value),
+        startAdornment: handleAdornment(),
       }}
       AppendProps={{
         className: classes.dropdownContainer,
@@ -167,7 +207,9 @@ export const TimeSelect = ({
           ref={selectRef}
           onOpen={handleOpen}
           onClose={handleClose}
-          className={`${classes.select} ${variant === "primary" ? classes.primary : classes.secondary}`}
+          className={`${classes.select} ${
+            variant === "primary" ? classes.primary : classes.secondary
+          }`}
           MenuProps={{
             anchorOrigin: {
               vertical: "bottom",
