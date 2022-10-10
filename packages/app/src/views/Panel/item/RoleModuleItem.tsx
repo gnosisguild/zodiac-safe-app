@@ -45,8 +45,6 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
 
-  console.log(window.location.href)
-
   // https://gnosis-safe.io/app/gor:0x69D196E3498EBC1752647dC05A6D12adb91472e8/apps?appUrl=https://localhost:3001/
   const handleClick = () => {
     const chainId = safe.chainId as number

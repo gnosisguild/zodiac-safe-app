@@ -25,7 +25,7 @@ export const getSnapshotSpaceSettings = async (ensName: string, chainId: number)
 export const validateSchema = (spaceSettings: any) =>
   snapshot.utils.validateSchema(snapshot.schemas.space, spaceSettings)
 
-export const updateSnapshotCache = async (ensName: string, chainId: number) =>
+export const updateSnapshotCache = (ensName: string, chainId: number) =>
   fetch(`${getHubUrl(chainId)}/api/spaces/${ensName}/poke`)
 
 export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: any) =>
