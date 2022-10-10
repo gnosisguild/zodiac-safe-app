@@ -1,7 +1,7 @@
 import { makeStyles, Typography } from "@material-ui/core"
-import React from "react"
+import React, { useEffect } from "react"
 import { Module } from "../../store/modules/models"
-import { setCurrentModule } from "../../store/modules"
+import { fetchModulesList, setCurrentModule } from "../../store/modules"
 import { useRootDispatch, useRootSelector } from "../../store"
 import {
   getCurrentModule,
@@ -19,6 +19,7 @@ import { PendingModuleStates } from "./PendingModuleStates"
 import { Column } from "../../components/layout/Column"
 import { isPendingModule } from "../../store/modules/helpers"
 import { ReactComponent as ModuleStackIcon } from "../../assets/icons/module-inherit.svg"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 
 interface ModuleListProps {
   modules: Module[]
@@ -61,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles()
+  const { safe, sdk } = useSafeAppsSDK()
 
   const dispatch = useRootDispatch()
   const currentModule = useRootSelector(getCurrentModule)
@@ -74,6 +76,32 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
     dispatch(resetNewTransaction())
   }
 
+  const [intervalId, setIntervalId] = React.useState<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    if (intervalId == null) {
+      const exec = () => {
+        dispatch(
+          fetchModulesList({
+            safeSDK: sdk,
+            chainId: safe.chainId,
+            safeAddress: safe.safeAddress,
+          }),
+        )
+      }
+
+      const intervalId = setInterval(exec, 10000)
+
+      setIntervalId(intervalId)
+      exec()
+    }
+    return () => {
+      if (intervalId != null) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [sdk, dispatch, safe, intervalId])
+
   if (modulesLoading) {
     return (
       <PanelItem image={<Skeleton variant="circle" width={50} height={50} />}>
@@ -85,8 +113,12 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (!modules.length && !pendingModules.length) {
     return (
-      <PanelItem image={<AvatarEmptyIcon className={classes.emptyImage} height={50} width={50} />}>
-        <Typography className={classes.emptyModulesText}>Modules will appear here once added</Typography>
+      <PanelItem
+        image={<AvatarEmptyIcon className={classes.emptyImage} height={50} width={50} />}
+      >
+        <Typography className={classes.emptyModulesText}>
+          Modules will appear here once added
+        </Typography>
       </PanelItem>
     )
   }
@@ -114,10 +146,17 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
       const subModulesHeight = subModulesCount * PANEL_ITEM_HEIGHT
 
       const height =
-        1 + subModulesHeight + PANEL_ITEM_HEIGHT * (index + 1) + PANEL_ITEM_MARGIN * index - PANEL_ITEM_HEIGHT / 2 + 6
+        1 +
+        subModulesHeight +
+        PANEL_ITEM_HEIGHT * (index + 1) +
+        PANEL_ITEM_MARGIN * index -
+        PANEL_ITEM_HEIGHT / 2 +
+        6
       return <div key={index} className={classes.line} style={{ height }} />
     })
-    const arrow = modules.length ? <ModuleStackIcon className={classes.moduleStackIcon} /> : null
+    const arrow = modules.length ? (
+      <ModuleStackIcon className={classes.moduleStackIcon} />
+    ) : null
     return (
       <div className={classes.subModules}>
         {content}

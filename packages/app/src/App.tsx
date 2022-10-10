@@ -1,8 +1,5 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { AppLayout } from "./components/layout/AppLayout"
-import { fetchModulesList } from "./store/modules"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { useRootDispatch } from "./store"
 import Panel from "./views/Panel"
 import { Views } from "./View"
 import Header from "./views/Header"
@@ -24,25 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const App: React.FC = () => {
-  const dispatch = useRootDispatch()
-  const { safe, sdk } = useSafeAppsSDK()
   const classes = useStyles()
-
-  useEffect(() => {
-    const exec = () => {
-      dispatch(
-        fetchModulesList({
-          safeSDK: sdk,
-          chainId: safe.chainId,
-          safeAddress: safe.safeAddress,
-        }),
-      )
-    }
-    setInterval(() => {
-      exec()
-    }, 5000)
-    exec()
-  }, [sdk, dispatch, safe])
 
   return (
     <div className={classes.root}>
