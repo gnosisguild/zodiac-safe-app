@@ -1,6 +1,6 @@
 import { getProvider } from "."
 import { Contract } from "ethers"
-import { Coin, getNetworkNativeAsset } from "../utils/networks"
+import { Coin, NETWORK, NETWORKS } from "../utils/networks"
 
 const REALITY_ETH_ERC20_CONTRACT_ABI = ["function token() view returns (address)"]
 
@@ -10,7 +10,9 @@ const ERC20_CONTRACT_ABI = [
   "function decimals() public view returns (uint8)",
 ]
 
-export const ERC721_CONTRACT_ABI = ["function supportsInterface(bytes4 interfaceID) external view returns (bool)"]
+export const ERC721_CONTRACT_ABI = [
+  "function supportsInterface(bytes4 interfaceID) external view returns (bool)",
+]
 
 export async function getArbitratorBondToken(
   address: string,
@@ -18,7 +20,11 @@ export async function getArbitratorBondToken(
 ): Promise<{ isERC20: boolean; coin: Coin }> {
   const provider = getProvider(chainId)
   try {
-    const realityEthErc20Contract = new Contract(address, REALITY_ETH_ERC20_CONTRACT_ABI, provider)
+    const realityEthErc20Contract = new Contract(
+      address,
+      REALITY_ETH_ERC20_CONTRACT_ABI,
+      provider,
+    )
     const tokenAddress: string = await realityEthErc20Contract.token()
     const tokenContract = new Contract(tokenAddress, ERC20_CONTRACT_ABI, provider)
     const coin: Coin = {
@@ -29,7 +35,7 @@ export async function getArbitratorBondToken(
   } catch (err) {
     return {
       isERC20: false,
-      coin: getNetworkNativeAsset(chainId),
+      coin: NETWORKS[chainId as NETWORK].nativeAsset,
     }
   }
 }

@@ -25,16 +25,6 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
     rpcUrl: `https://mainnet.infura.io/v3/${REACT_APP_INFURA_ID}`,
   },
-  [NETWORK.RINKEBY]: {
-    networkExplorerName: "Etherscan",
-    networkExplorerUrl: "https://rinkeby.etherscan.io",
-    networkExplorerApiUrl: "https://api-rinkeby.etherscan.io/api",
-    safeTransactionApi: "https://safe-transaction.rinkeby.gnosis.io/",
-    safeUrl: "https://gnosis-safe.io/app/rin:",
-    verifyContractUrl: "https://rinkeby.etherscan.io/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
-    rpcUrl: `https://rinkeby.infura.io/v3/${REACT_APP_INFURA_ID}`,
-  },
   [NETWORK.GOERLI]: {
     networkExplorerName: "Etherscan",
     networkExplorerUrl: "https://goerli.etherscan.io",
@@ -45,7 +35,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
     rpcUrl: `https://goerli.infura.io/v3/${REACT_APP_INFURA_ID}`,
   },
-  [NETWORK.XDAI]: {
+  [NETWORK.GNOSIS_CHAIN]: {
     networkExplorerName: "Blockscout",
     networkExplorerUrl: "https://blockscout.com/poa/xdai",
     networkExplorerApiUrl: "https://blockscout.com/xdai/mainnet/api",

@@ -1,8 +1,6 @@
 export enum NETWORK {
   MAINNET = 1,
-  RINKEBY = 4,
   GOERLI = 5,
-  XDAI = 100,
   BSC = 56,
   GNOSIS_CHAIN = 100,
   POLYGON = 137,
@@ -13,6 +11,13 @@ export interface Coin {
   decimals: number
 }
 
+interface Network {
+  chainId: number
+  name: string
+  shortName: string
+  nativeAsset: Coin
+}
+
 export const NATIVE_ASSET: Record<string, Coin> = {
   ETH: { symbol: "ETH", decimals: 18 },
   XDAI: { symbol: "xDai", decimals: 18 },
@@ -20,43 +25,43 @@ export const NATIVE_ASSET: Record<string, Coin> = {
   BNB: { symbol: "BNB", decimals: 18 },
 }
 
+export const NETWORKS: Record<NETWORK, Network> = {
+  [NETWORK.MAINNET]: {
+    chainId: NETWORK.MAINNET,
+    name: "mainnet",
+    shortName: "eth",
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
+  [NETWORK.GOERLI]: {
+    chainId: NETWORK.GOERLI,
+    name: "goerli",
+    shortName: "gor",
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
+  [NETWORK.GNOSIS_CHAIN]: {
+    chainId: NETWORK.GNOSIS_CHAIN,
+    name: "gnosis_chain",
+    shortName: "gno",
+    nativeAsset: NATIVE_ASSET.XDAI,
+  },
+  [NETWORK.BSC]: {
+    chainId: NETWORK.BSC,
+    name: "binance_smart_chain",
+    shortName: "bnb",
+    nativeAsset: NATIVE_ASSET.BNB,
+  },
+  [NETWORK.POLYGON]: {
+    chainId: NETWORK.POLYGON,
+    name: "polygon",
+    shortName: "matic",
+    nativeAsset: NATIVE_ASSET.MATIC,
+  },
+}
+
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.MAINNET]: NATIVE_ASSET.ETH,
-  [NETWORK.RINKEBY]: NATIVE_ASSET.ETH,
   [NETWORK.GOERLI]: NATIVE_ASSET.ETH,
-  [NETWORK.XDAI]: NATIVE_ASSET.XDAI,
+  [NETWORK.GNOSIS_CHAIN]: NATIVE_ASSET.XDAI,
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
-}
-
-export enum ChainNames {
-  MAINNET = "mainnet",
-  RINKEBY = "rinkeby",
-  GNOSIS_CHAIN = "gnosis_chain",
-  GOERLI = "goerli",
-  POLYGON = "polygon",
-  ARBITRUM = "arbitrum",
-  OPTIMISM = "optimism",
-  OPTIMISM_ON_GNOSIS_CHAIN = "optimism_on_gnosis_chain",
-}
-
-export const chainIdToChainName = (chainId: number) => {
-  switch (chainId) {
-    case NETWORK.MAINNET:
-      return ChainNames.MAINNET
-    case NETWORK.RINKEBY:
-      return ChainNames.RINKEBY
-    case NETWORK.GNOSIS_CHAIN:
-      return ChainNames.GNOSIS_CHAIN
-    case NETWORK.GOERLI:
-      return ChainNames.GOERLI
-    case NETWORK.POLYGON:
-      return ChainNames.POLYGON
-    default:
-      return ChainNames.MAINNET
-  }
-}
-
-export function getNetworkNativeAsset(network: NETWORK) {
-  return NETWORK_NATIVE_ASSET[network]
 }
