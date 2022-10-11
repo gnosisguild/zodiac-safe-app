@@ -10,7 +10,7 @@ interface RequestType {
 }
 
 interface Responds {
-  cidV1: string
+  cidV0: string
 }
 
 export const pinSnapshotSpace: (request: RequestType) => Promise<Responds> = async (
