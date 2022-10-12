@@ -80,7 +80,7 @@ export const setup = async (
   const txs = [...deploymentRealityModuleTxsMm.txs, ...addSafeToSnapshotTxsMm.txs]
 
   statusCallback("Setting up monitoring with OZ Defender")
-  setUpMonitoring(
+  await setUpMonitoring(
     NETWORKS[safeInfo.chainId as NETWORK].name,
     realityModuleAddress,
     setupData.monitoring,
