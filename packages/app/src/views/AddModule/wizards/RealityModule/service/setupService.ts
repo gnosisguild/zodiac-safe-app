@@ -26,35 +26,72 @@ export const setup = async (
   safeInfo: SafeInfo,
   executorAddress: string,
   setupData: SetupData,
+  statusCallback: (currentStatus: string, error?: any) => void,
 ) => {
+  statusCallback("Setting up Reality Module deployment transactions")
   const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
     safeInfo.chainId,
     safeInfo.safeAddress,
     executorAddress,
     setupData,
-  )
-  const realityModuleAddress = deploymentRealityModuleTxsMm.meta?.expectedModuleAddress
-  console.log("realityModuleAddress calculated:", realityModuleAddress)
-  if (realityModuleAddress == null) {
-    throw new Error("Unable to calculate the Reality Module future address.")
+  ).catch((e) => {
+    statusCallback("Error while setting up Reality Module deployment transactions", e)
+  })
+
+  if (deploymentRealityModuleTxsMm == null) {
+    throw new Error(
+      "The creation of transactions failed. IT SHOULD NOT BE POSSIBLE TO REACH THIS STATE. Should be handled in the 'statusCallback' function.",
+    )
   }
+
+  const realityModuleAddress = deploymentRealityModuleTxsMm.meta?.expectedModuleAddress
+  if (realityModuleAddress == null) {
+    const error = new Error("Unable to calculate the Reality Module future address.")
+    statusCallback(error.message, error)
+  }
+
+  if (realityModuleAddress == null) {
+    throw new Error(
+      "The calculated reality module address is 'null'. This should be handled in the 'statusCallback' function.",
+    )
+  }
+
+  statusCallback(
+    "Setting up transaction for adding the new snapshot space to the ENS record",
+  )
   const addSafeToSnapshotTxsMm = await addSafeSnapToSnapshotSpaceTxs(
     provider,
     setupData.proposal.ensName,
     realityModuleAddress,
     safeInfo.chainId,
-  )
+  ).catch((e) => {
+    statusCallback(
+      "Error when setting up transactions to add SafeSnap to the Snapshot Space",
+      e,
+    )
+  })
+
+  if (deploymentRealityModuleTxsMm == null || addSafeToSnapshotTxsMm == null) {
+    throw new Error(
+      "The creation of transactions failed. IT SHOULD NOT BE POSSIBLE TO REACH THIS STATE.",
+    )
+  }
 
   const txs = [...deploymentRealityModuleTxsMm.txs, ...addSafeToSnapshotTxsMm.txs]
 
-  await Promise.all([
-    safeSdk.txs.send({ txs }),
-    setUpMonitoring(
-      NETWORKS[safeInfo.chainId as NETWORK].name,
-      realityModuleAddress,
-      setupData.monitoring,
-    ),
-  ])
+  statusCallback("Setting up monitoring with OZ Defender")
+  setUpMonitoring(
+    NETWORKS[safeInfo.chainId as NETWORK].name,
+    realityModuleAddress,
+    setupData.monitoring,
+  ).catch((e) => {
+    statusCallback("Error when setting up monitoring.", e)
+  })
+
+  statusCallback("Proposing transactions to the Safe")
+  await safeSdk.txs.send({ txs }).catch((e) => {
+    statusCallback("Error when proposing transactions to the Safe", e)
+  })
 
   // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
 }
@@ -87,9 +124,6 @@ const deployRealityModuleTxs = async (
     arbitrator: getArbitrator(chainId, setupData.oracle.arbitratorData.arbitratorOption),
     oracle: setupData.oracle.instanceData.instanceAddress,
   }
-  console.log("moduleDeploymentParameters:", moduleDeploymentParameters)
-  console.log("safeAddress", safeAddress)
-  console.log("chainId", chainId)
   return await deployRealityModule(
     safeAddress,
     DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
@@ -139,17 +173,21 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     throw new Error("The new settings file is changed in unexpected ways")
   }
 
-  console.log("original space", originalSpaceSettings)
-  console.log("new space", newSpaceSettings)
-
   // 3. Deploy the modified settings file to IPFS.
   const cidV0Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV0().toString()
   // 4. Pin the new file
-
-  const { cidV0: cidV0FromPinning } = await pinSnapshotSpace({
-    snapshotSpaceEnsName: ensName,
-    snapshotSpaceSettings: newSpaceSettings,
-  })
+  let cidV0FromPinning = ""
+  try {
+    const { cidV0 } = await pinSnapshotSpace({
+      snapshotSpaceEnsName: ensName,
+      snapshotSpaceSettings: newSpaceSettings,
+    })
+    cidV0FromPinning = cidV0
+  } catch (e) {
+    throw new Error(
+      "Failed to pin the new snapshot space settings file. Error from backend: " + e,
+    )
+  }
 
   if (cidV0Locale != null && cidV0Locale !== cidV0FromPinning) {
     throw new Error(

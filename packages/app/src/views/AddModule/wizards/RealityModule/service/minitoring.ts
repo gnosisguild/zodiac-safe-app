@@ -23,11 +23,11 @@ export const setUpMonitoring = async (
   realityModuleAddress: string,
   data: MonitoringSectionData,
 ) => {
+  console.log()
   if ((data.apiKey ?? "") === "" || (data.secretKey ?? "") === "") {
-    console.log(
-      "Warning: api keys for monitoring service missing. Monitoring will NOT be set up.",
+    throw new Error(
+      "API keys for monitoring service missing. Monitoring will NOT be set up.",
     )
-    return
   }
   if (
     (data.discordKey ?? "") === "" &&
@@ -36,10 +36,9 @@ export const setUpMonitoring = async (
     (data.telegram.botToken ?? "") === "" &&
     (data.telegram.chatID ?? "")
   ) {
-    console.log(
-      "Warning: no notification channel(s) specified. Monitoring will NOT be set up.",
+    throw new Error(
+      "No notification channel(s) specified. Monitoring will NOT be set up.",
     )
-    return
   }
 
   const notificationChannels: NotificationChannels[] = []
@@ -85,8 +84,6 @@ export const setUpMonitoring = async (
     realityModuleAddress,
     notificationChannels,
   }
-
-  console.log("requestBody", requestBody)
 
   return fetch(BACKEND_API_URL + "/monitoring/notification", {
     method: "POST",

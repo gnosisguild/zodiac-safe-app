@@ -159,9 +159,17 @@ export const RealityModule: React.FC = () => {
       delayModuleExecutor !== "" || delayModuleExecutor == null
         ? safeInfo.safeAddress
         : delayModuleExecutor
+
+    const statusLogger = (currentStatus: string, error: any) => {
+      if (error != null) {
+        console.error("statusLogger - ERROR: " + error)
+        throw error
+      } else {
+        console.log("statusLogger: " + currentStatus)
+      }
+    }
     try {
-      await setup(provider, safeSdk, safeInfo, executorAddress, setupData)
-      console.log("TODO: call the monitoring setup worker")
+      await setup(provider, safeSdk, safeInfo, executorAddress, setupData, statusLogger)
     } catch (error) {
       console.error(error)
       setLoading(false)
