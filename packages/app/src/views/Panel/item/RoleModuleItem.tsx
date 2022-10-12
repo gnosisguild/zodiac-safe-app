@@ -2,6 +2,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Link, makeStyles, Typography } from "@material-ui/core"
 import { Address } from "components/ethereum/Address"
 import { Row } from "components/layout/Row"
+import * as safeAppLink from "utils/safeAppLink"
 
 import React from "react"
 import { Module } from "store/modules/models"
@@ -45,14 +46,16 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
 
-  // https://gnosis-safe.io/app/gor:0x69D196E3498EBC1752647dC05A6D12adb91472e8/apps?appUrl=https://localhost:3001/
   const handleClick = () => {
     const chainId = safe.chainId as number
     const currentChainShortName = NETWORKS[chainId as NETWORK].shortName
-    const prevUrl = window.location.ancestorOrigins[0]
-    console.log(prevUrl)
-    if (prevUrl) {
-      const newUrl = `${prevUrl}/app/${currentChainShortName}:${safe.safeAddress}/apps?appUrl=https://roles.gnosisguild.org/%23/${currentChainShortName}:${module.owner}`
+    const newUrl = safeAppLink.getLink(
+      safe.chainId,
+      safe.safeAddress,
+      `https://roles.gnosisguild.org/%23/${currentChainShortName}:${module.owner}`,
+    )
+
+    if (newUrl != null) {
       window.open(newUrl, "_blank")
     }
   }
