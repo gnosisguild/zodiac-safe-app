@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@material-ui/core"
 
+import * as safeAppLink from "utils/safeAppLink"
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { getProvider } from "services"
@@ -228,7 +229,11 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
                   underline="always"
-                  href="https://snapshot.com"
+                  href={safeAppLink.getLink(
+                    safe.chainId,
+                    safe.safeAddress,
+                    `https://snapshot.org/#/setup?step=1`,
+                  )}
                   target={"_blank"}
                   color="inherit"
                 >
