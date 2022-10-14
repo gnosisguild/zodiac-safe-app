@@ -118,7 +118,7 @@ export const RealityModule: React.FC = () => {
   const dispatch = useRootDispatch()
   const modulesList = useRootSelector(getModulesList)
   const [modules, setModules] = useState<number>(modulesList.length)
-  const [activeStep, setActiveStep] = useState<number>(2)
+  const [activeStep, setActiveStep] = useState<number>(0)
   const [completed, setCompleted] = useState({
     proposal: false,
     oracle: false,
