@@ -74,12 +74,6 @@ export async function deployRealityModule(
     ],
   }
 
-  console.log(oracleType)
-  console.log(initData)
-  console.log(provider)
-  console.log(chainId)
-  console.log(saltNonce)
-
   const { transaction: daoModuleDeploymentTx, expectedModuleAddress } =
     deployAndSetUpModule(oracleType, initData, provider, chainId, saltNonce)
 
