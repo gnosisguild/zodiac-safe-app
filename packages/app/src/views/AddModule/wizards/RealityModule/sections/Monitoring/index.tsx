@@ -410,6 +410,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                 variant="contained"
                 type="submit"
                 disabled={isInvalidForm()}
+                onClick={() => handleNext(monitoringData)}
               >
                 Next
               </Button>

@@ -88,11 +88,11 @@ const SECTIONS = [
     number: 2,
     section: 1,
   },
-  // {
-  //   label: "Monitoring",
-  //   number: 3,
-  //   section: 2,
-  // },
+  {
+    label: "Monitoring",
+    number: 3,
+    section: 2,
+  },
 ]
 
 export const ReviewSection: React.FC<ReviewSectionProps> = ({
@@ -107,10 +107,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   const { safe } = useSafeAppsSDK()
   const [snapshopSpace, setSnapshotSpace] = useState<string>()
   const [oracleData, setOracleData] = useState<OracleSectionData | undefined>(undefined)
-
   const [delayModule, setDelayModule] = useState<string>(
     delayModules.length === 1 ? delayModules[0].address : "",
   )
+  const monitoring = setupData && setupData.monitoring
 
   useEffect(() => {
     if (setupData && setupData.proposal) {
@@ -266,18 +266,59 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               </Grid>
             )}
 
-            {/* {item.label === "Monitoring" && (
+            {item.label === "Monitoring" && monitoring && (
               <Grid item>
-                <Typography>Monitoring:</Typography>
-                <Link
-                  color='inherit'
-                  href='https://tenderly.com/#/3290ihfdajka'
-                  target='_blank'
-                  className={classes.link}>
-                  tenderly.com/#/3290ihfdajka
-                </Link>
+                <Grid container spacing={2} direction="column">
+                  <Grid item>
+                    <Typography>Api Key:</Typography>
+                    <Typography className={classes.label}>{monitoring.apiKey}</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography>Api Secret:</Typography>
+                    <Typography className={classes.label}>
+                      {monitoring.secretKey}
+                    </Typography>
+                  </Grid>
+                  {monitoring.email.length > 0 && (
+                    <Grid item>
+                      <Typography>Emails:</Typography>
+                      {monitoring.email.map((email, index) => (
+                        <Typography className={classes.label} key={index}>
+                          - {email}
+                        </Typography>
+                      ))}
+                    </Grid>
+                  )}
+                  {monitoring.discordKey !== "" && (
+                    <Grid item>
+                      <Typography>Discord:</Typography>
+                      <Typography className={classes.label}>
+                        {monitoring.discordKey}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {monitoring.telegram.botToken !== "" && (
+                    <Grid item>
+                      <Typography>Telegram:</Typography>
+                      <Typography className={classes.label}>
+                        Bot token: {monitoring.telegram.botToken}
+                      </Typography>
+                      <Typography className={classes.label}>
+                        Chat ID: {monitoring.telegram.chatID}
+                      </Typography>
+                    </Grid>
+                  )}
+                  {monitoring.slackKey !== "" && (
+                    <Grid item>
+                      <Typography>Slack:</Typography>
+                      <Typography className={classes.label}>
+                        {monitoring.slackKey}
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
               </Grid>
-            )} */}
+            )}
 
             <Grid item>
               <Divider />
