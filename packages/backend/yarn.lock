@@ -633,10 +633,10 @@ defender-base-client@1.31.1:
     lodash "^4.17.19"
     node-fetch "^2.6.0"
 
-defender-sentinel-client@^1.32.0:
-  version "1.32.0"
-  resolved "https://registry.yarnpkg.com/defender-sentinel-client/-/defender-sentinel-client-1.32.0.tgz#6db9752d2ed67a2481204c62aa2a4c557b0d2aa9"
-  integrity sha512-3i3vmPE8SZaYfCdG3c66BYVwtAnZ5QVrCAQ3IWpjYp+45Tpjm0KvqnIaDIVYSHSRHJVh3JcGHH/8cgWLFpVUgw==
+defender-sentinel-client@^1.33.0:
+  version "1.33.0"
+  resolved "https://registry.yarnpkg.com/defender-sentinel-client/-/defender-sentinel-client-1.33.0.tgz#77465dd7254216e5c856a96fe0c70d48188d755c"
+  integrity sha512-0vDHiBnrNPN0Gp705kWmKefdGL8lJ42UTIQ4VLTSAcxyIkJyZyG/IHkK9v8p/aQaMfYK/dEPXZv9eQty1Fwk+Q==
   dependencies:
     "@ethersproject/abi" "^5.6.3"
     axios "^0.21.2"

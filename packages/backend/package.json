@@ -12,7 +12,7 @@
   "dependencies": {
     "@snapshot-labs/snapshot.js": "^0.4.36",
     "@vercel/node": "^2.5.21",
-    "defender-sentinel-client": "^1.32.0",
+    "defender-sentinel-client": "^1.33.0",
     "node-fetch": "2",
     "ramda": "^0.28.0"
   },
