@@ -6,13 +6,16 @@ if (BACKEND_API_URL == null) {
   throw new Error("BACKEND_API_URL not set")
 }
 
+interface MonitoringCredentials {
+  apiKey: string
+  apiSecret: string
+}
+
 interface NotificationChannels {
   channel: string
   config: any
 }
-interface RequestType {
-  apiKey: string
-  apiSecret: string
+interface RequestType extends MonitoringCredentials {
   network: string
   realityModuleAddress: string
   notificationChannels: NotificationChannels[]
@@ -93,4 +96,19 @@ export const setUpMonitoring = async (
     },
     body: JSON.stringify(requestBody),
   })
+}
+
+export const validationCredentials = async (query: MonitoringCredentials) => {
+  const { apiKey, apiSecret } = query
+  return fetch(
+    `${BACKEND_API_URL}/monitoring/validation?apiKey=${apiKey}&apiSecret=${apiSecret}`,
+    {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    },
+  )
 }

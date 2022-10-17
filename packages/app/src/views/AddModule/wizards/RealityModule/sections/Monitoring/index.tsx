@@ -1,9 +1,12 @@
 import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
 import { MultiSelect, MultiSelectValues } from "components/MultiSelect"
 import { Link } from "components/text/Link"
+import usePrevious from "hooks/usePrevious"
 import React, { ChangeEvent, useEffect, useState } from "react"
 import { SectionProps } from "views/AddModule/wizards/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
+import { useMonitoringValidation } from "../../hooks/useMonitoringValidation"
+import { MonitoringStatus } from "./components/MonitoringStatus"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -18,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
   textSubdued: {
     color: "rgba(255 255 255 / 70%)",
   },
-
   inputContainer: {
     width: "50%",
   },
@@ -27,6 +29,15 @@ const useStyles = makeStyles((theme) => ({
       borderColor: colors.tan[300],
       "&::before": {
         borderColor: colors.tan[300],
+      },
+    },
+  },
+  inputError: {
+    "& .MuiInputBase-root": {
+      borderColor: "rgba(244, 67, 54, 0.3)",
+      background: "rgba(244, 67, 54, 0.1)",
+      "&::before": {
+        borderColor: "rgba(244, 67, 54, 0.3)",
       },
     },
   },
@@ -39,6 +50,11 @@ const useStyles = makeStyles((theme) => ({
         borderColor: colors.tan[300],
       },
     },
+  },
+  spinner: {
+    width: "8px !important",
+    height: "8px !important",
+    color: `${colors.tan[300]} !important`,
   },
 }))
 
@@ -69,11 +85,21 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   setupData,
 }) => {
   const classes = useStyles()
+  const {
+    loading,
+    execute: validateCredentials,
+    error: invalidCredentials,
+  } = useMonitoringValidation()
   const monitoring = setupData?.monitoring
   const [monitoringData, setMonitoringData] = useState<MonitoringSectionData>(
     monitoring ?? INITIAL_DATA,
   )
   const [emailValues, setEmailValues] = useState<MultiSelectValues[]>([])
+  const [loadValidations, setLoadValidations] = useState<boolean>(false)
+
+  const { apiKey, secretKey, email, discordKey, slackKey, telegram } = monitoringData
+  const previousApiKey = usePrevious(apiKey)
+  const previousSecretKey = usePrevious(secretKey)
 
   useEffect(() => {
     if (monitoring && monitoring.email.length) {
@@ -84,6 +110,25 @@ export const MonitoringSection: React.FC<SectionProps> = ({
       setEmailValues(emails)
     }
   }, [monitoring])
+
+  useEffect(() => {
+    if (!loading && ![apiKey, secretKey].includes("") && !loadValidations) {
+      setLoadValidations(true)
+      const executeValidations = async () => {
+        await validateCredentials(apiKey, secretKey)
+      }
+      executeValidations()
+    }
+  }, [apiKey, secretKey, loading, loadValidations, validateCredentials])
+
+  useEffect(() => {
+    if (
+      (previousApiKey !== apiKey || previousSecretKey !== secretKey) &&
+      loadValidations
+    ) {
+      setLoadValidations(false)
+    }
+  }, [apiKey, secretKey, previousApiKey, previousSecretKey, loadValidations])
 
   const updateForm = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -106,6 +151,42 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     const list = value.map((item: MultiSelectValues) => item.value)
     setEmailValues(value)
     setMonitoringData({ ...monitoringData, email: list })
+  }
+
+  const handleStatusMessage = (): string | null => {
+    if (loading) return "Validating API credentials..."
+    if (invalidCredentials)
+      return "The API credentials that you have provided are not valid. Please verify that you have the correct information."
+    if (!invalidCredentials && typeof invalidCredentials === "boolean")
+      return "API credentials are valid."
+    return null
+  }
+
+  const handleStatus = (): "loading" | "error" | "success" | null => {
+    if (loading) return "loading"
+    if (invalidCredentials) return "error"
+    if (!invalidCredentials && typeof invalidCredentials === "boolean") return "success"
+    return null
+  }
+
+  const isInvalidForm = (): boolean => {
+    const { botToken, chatID } = telegram
+    if (loading || invalidCredentials) {
+      return true
+    }
+    if ((botToken === "" && chatID !== "") || (botToken !== "" && chatID === "")) {
+      return true
+    }
+    if (
+      botToken === "" &&
+      chatID === "" &&
+      discordKey === "" &&
+      slackKey === "" &&
+      email.length === 0
+    ) {
+      return true
+    }
+    return false
   }
 
   return (
@@ -166,7 +247,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                 borderStyle="double"
                 value={monitoringData.apiKey}
                 onChange={(e) => updateForm(e, "apiKey")}
-                className={classes.input}
+                className={invalidCredentials ? classes.inputError : classes.input}
               />
             </Grid>
             <Grid item>
@@ -176,8 +257,11 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                 value={monitoringData.secretKey}
                 onChange={(e) => updateForm(e, "secretKey")}
                 borderStyle="double"
-                className={classes.input}
+                className={invalidCredentials ? classes.inputError : classes.input}
               />
+            </Grid>
+            <Grid item>
+              <MonitoringStatus status={handleStatus()} message={handleStatusMessage()} />
             </Grid>
           </Grid>
         </Grid>
@@ -324,6 +408,8 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
+                type="submit"
+                disabled={isInvalidForm()}
                 onClick={() => handleNext(monitoringData)}
               >
                 Next

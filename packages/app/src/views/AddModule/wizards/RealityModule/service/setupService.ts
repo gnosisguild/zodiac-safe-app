@@ -8,7 +8,7 @@ import { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 import { SetupData } from ".."
 import * as snapshot from "../../../../../services/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
-import { setUpMonitoring } from "./minitoring"
+import { setUpMonitoring } from "./monitoring"
 import { pinSnapshotSpace } from "./snapshot-space-pinning"
 
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT

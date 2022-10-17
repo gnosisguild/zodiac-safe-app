@@ -1,5 +1,9 @@
 import { NotificationType } from "defender-sentinel-client"
 
+export interface Query {
+  apiKey: string
+  apiSecret: string
+}
 export interface Body {
   apiKey: string
   apiSecret: string
