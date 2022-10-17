@@ -177,15 +177,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                     <Typography>Template question preview:</Typography>
                     <ZodiacPaper className={classes.paperTemplateContainer}>
                       <Typography>
-                        Did the Snapshot proposal with the id %s in the
-                        {setupData.proposal.ensName} space pass the execution of the array
-                        of Module transactions that have the hash 0x%s and does it meet
-                        the requirements of the document referenced in the dao
-                        requirements record at {setupData.proposal.ensName}? The hash is
-                        the keccak of the concatenation of the individual EIP-712 hashes
-                        of the Module transactions. If this question was asked before the
-                        corresponding Snapshot proposal was resolved, it should ALWAYS be
-                        resolved to INVALID!
+                        {setupData.oracle.templateData.templateQuestion}
                       </Typography>
                     </ZodiacPaper>
                   </Grid>

@@ -2,7 +2,10 @@ import { Box, Button, Divider, Grid, makeStyles, Typography } from "@material-ui
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { ZodiacModal, ZodiacPaper } from "zodiac-ui-components"
-import OracleTemplate, { Data as OracleTemplateData } from "./components/OracleTemplate"
+import OracleTemplate, {
+  Data as OracleTemplateData,
+  getDefaultTemplateQuestion,
+} from "./components/OracleTemplate"
 import OracleInstance, { Data as OracleInstanceData } from "./components/OracleInstance"
 import OracleDelay, {
   Data as OracleDelayData,
@@ -94,11 +97,14 @@ export const OracleSection: React.FC<SectionProps> = ({
   const { safe } = useSafeAppsSDK()
   const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTION : ORACLE_TEST_OPTION
   const [showModal, setShowModal] = useState<boolean>(false)
+  if (setupData?.proposal.ensName == null) {
+    throw new Error("ENS name is not set")
+  }
   const [templateData, setTemplateData] = useState<OracleTemplateData>({
     templateType: "default",
     language: "english",
     category: "DAO proposal",
-    templateQuestion: "",
+    templateQuestion: getDefaultTemplateQuestion(setupData?.proposal.ensName),
   })
 
   const [instanceData, setInstanceData] = useState<OracleInstanceData>({
