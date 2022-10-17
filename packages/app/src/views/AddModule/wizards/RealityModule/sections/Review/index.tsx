@@ -270,14 +270,8 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
               <Grid item>
                 <Grid container spacing={2} direction="column">
                   <Grid item>
-                    <Typography>Api Key:</Typography>
-                    <Typography className={classes.label}>{monitoring.apiKey}</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography>Api Secret:</Typography>
-                    <Typography className={classes.label}>
-                      {monitoring.secretKey}
-                    </Typography>
+                    <Typography>API key/secret:</Typography>
+                    <Typography className={classes.label}>Valid</Typography>
                   </Grid>
                   {monitoring.email.length > 0 && (
                     <Grid item>
