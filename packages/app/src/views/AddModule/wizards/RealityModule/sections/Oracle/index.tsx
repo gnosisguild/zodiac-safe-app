@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const ORACLE_MAINNET_OPTION = [
+export const ORACLE_MAINNET_OPTIONS = [
   {
     label: "ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c",
     value: "ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c",
@@ -67,10 +67,10 @@ export const ORACLE_MAINNET_OPTION = [
   // { label: "Add Custom Instance", value: "custom" },
 ]
 
-export const ORACLE_TEST_OPTION = [
+export const ORACLE_GOERLI_OPTIONS = [
   {
-    label: "ETH-0xDf33060F476511F806C72719394da1Ad64",
-    value: "ETH-0xDf33060F476511F806C72719394da1Ad64",
+    label: "ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f",
+    value: "ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f",
   },
   // { label: "Add Custom Instance", value: "custom" },
 ]
@@ -95,7 +95,7 @@ export const OracleSection: React.FC<SectionProps> = ({
 }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
-  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTION : ORACLE_TEST_OPTION
+  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_GOERLI_OPTIONS
   const [showModal, setShowModal] = useState<boolean>(false)
   if (setupData?.proposal.ensName == null) {
     throw new Error("ENS name is not set")

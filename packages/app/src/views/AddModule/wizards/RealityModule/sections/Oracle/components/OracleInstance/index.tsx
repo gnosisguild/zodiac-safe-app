@@ -3,7 +3,7 @@ import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { Dropdown } from "components/Dropdown"
 import React, { useEffect, useState } from "react"
 import { colors, ZodiacTextField } from "zodiac-ui-components"
-import { InputPartProps, ORACLE_MAINNET_OPTION, ORACLE_TEST_OPTION } from "../.."
+import { InputPartProps, ORACLE_MAINNET_OPTIONS, ORACLE_GOERLI_OPTIONS } from "../.."
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -32,12 +32,14 @@ export type Data = {
 export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
-  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTION : ORACLE_TEST_OPTION
+  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_GOERLI_OPTIONS
   const [selectedOracle, setSelectedOracle] = useState<string>("")
 
   useEffect(() => {
     if (data && options.length && selectedOracle === "") {
-      const item = options.filter((element) => element.label.includes(data.instanceAddress))
+      const item = options.filter((element) =>
+        element.label.includes(data.instanceAddress),
+      )
       setSelectedOracle(item[0].value)
     }
   }, [data, options, selectedOracle])
@@ -69,9 +71,10 @@ export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
           </Grid>
           <Grid item>
             <Typography variant="body2" className={classes.textSubdued}>
-              The oracle instance sets the appropriate bond token. It&apos;s recommended to use the default (ETH) oracle
-              instance unless you have a specific reason to use something like a native token which can potentially be
-              more prone to price manipulation.
+              The oracle instance sets the appropriate bond token. It&apos;s recommended
+              to use the default (ETH) oracle instance unless you have a specific reason
+              to use something like a native token which can potentially be more prone to
+              price manipulation.
             </Typography>
           </Grid>
         </Grid>
