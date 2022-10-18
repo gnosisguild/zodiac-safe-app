@@ -1,7 +1,7 @@
 import snapshot from "@snapshot-labs/snapshot.js"
 import * as R from "ramda"
 import fetch from "node-fetch"
-import { getEnv } from "../util"
+import { getEnv } from "./util"
 
 const SNAPSHOT_HUB = getEnv("SNAPSHOT_HUB")
 

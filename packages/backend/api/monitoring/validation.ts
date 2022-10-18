@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 import { SentinelClient } from "defender-sentinel-client"
-import { Query } from "./types"
+import { Query } from "../../lib/types"
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Credentials", "true")

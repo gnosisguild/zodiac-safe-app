@@ -4,7 +4,7 @@ import {
   NotificationType,
   SentinelClient,
 } from "defender-sentinel-client"
-import { Network, Body } from "./types"
+import { Network, Body } from "../../lib/types"
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   response.setHeader("Access-Control-Allow-Origin", "*")

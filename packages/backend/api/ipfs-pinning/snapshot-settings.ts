@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
-import * as snapshot from "./snapshot"
+import * as snapshot from "../../lib/snapshot"
 import fetch from "node-fetch"
-import { getEnv } from "../util"
+import { getEnv } from "../../lib/util"
 
 const PINATA_BASE_URL = getEnv("PINATA_BASE_URL")
 const PINATA_API_KEY = getEnv("PINATA_API_KEY")
