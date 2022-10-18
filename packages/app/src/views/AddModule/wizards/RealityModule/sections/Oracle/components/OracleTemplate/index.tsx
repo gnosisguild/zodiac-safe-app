@@ -5,7 +5,7 @@ import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { HelpOutline } from "@material-ui/icons"
 import { InputPartProps } from "../.."
 
-const getDefaultTemplateQuestion = (ensName: string) =>
+export const getDefaultTemplateQuestion = (ensName: string) =>
   `Did the Snapshot proposal with the id {%s} in the ${ensName} space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at ${ensName}?  The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`
 
 const CUSTOM_TEMPLATE_QUESTION = `Provide a custom question here. Use %s as a variable for the proposal id.`
@@ -86,7 +86,11 @@ interface OracleTemplateProps extends InputPartProps {
   ensName: string
 }
 
-export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, ensName }) => {
+export const OracleTemplate: React.FC<OracleTemplateProps> = ({
+  data,
+  setData,
+  ensName,
+}) => {
   const classes = useStyles()
 
   const set = (key: keyof Data) => (value: any) => setData({ ...data, [key]: value })
@@ -95,7 +99,11 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, e
 
   const setTemplateType = (templateType: "default" | "custom") => {
     if (templateType === "default") {
-      setData({ ...data, templateQuestion: getDefaultTemplateQuestion(ensName), templateType: templateType })
+      setData({
+        ...data,
+        templateQuestion: getDefaultTemplateQuestion(ensName),
+        templateType: templateType,
+      })
     } else {
       setData({ ...data, templateQuestion: "", templateType: templateType })
     }
@@ -112,8 +120,9 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, e
           </Grid>
           <Grid item>
             <Typography variant="body2" className={classes.textSubdued}>
-              The oracle template creates an appropriate question based on the data of the proposal. We highly recommend
-              using the default Zodiac Reality Module template
+              The oracle template creates an appropriate question based on the data of the
+              proposal. We highly recommend using the default Zodiac Reality Module
+              template
             </Typography>
           </Grid>
         </Grid>
@@ -124,7 +133,9 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, e
             <Dropdown
               value={get("templateType")}
               options={ORACLE_TEMPLATE_OPTIONS}
-              onChange={(evt) => setTemplateType(evt.target.value as "default" | "custom")}
+              onChange={(evt) =>
+                setTemplateType(evt.target.value as "default" | "custom")
+              }
               label="Select template:"
               tooltipMsg="The Zodiac Reality Module type has defaults set for connecting the Reality Module to Safesnap. If you need a more specific setup, use the ‘Custom’ type."
             />
@@ -153,12 +164,16 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({ data, setData, e
                 <ZodiacTextField
                   className={classes.templateQuestion}
                   value={get("templateQuestion")}
-                  onChange={({ target }) => set("templateQuestion")(target.value as string)}
+                  onChange={({ target }) =>
+                    set("templateQuestion")(target.value as string)
+                  }
                   multiline
                   rows={5}
                   disabled={get("templateType") === "default"}
                   placeholder={
-                    get("templateType") === "default" ? getDefaultTemplateQuestion(ensName) : CUSTOM_TEMPLATE_QUESTION
+                    get("templateType") === "default"
+                      ? getDefaultTemplateQuestion(ensName)
+                      : CUSTOM_TEMPLATE_QUESTION
                   }
                 />
               </ZodiacPaper>
