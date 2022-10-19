@@ -6,9 +6,11 @@ import { HelpOutline } from "@material-ui/icons"
 import { InputPartProps } from "../.."
 
 export const getDefaultTemplateQuestion = (ensName: string) =>
-  `Did the Snapshot proposal with the id {%s} in the ${ensName} space pass the execution of the array of Module transactions that have the hash 0x{%s} and does it meet the requirements of the document referenced in the dao requirements record at ${ensName}?  The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`
+  `Did the Snapshot proposal with the id %s in the ${ensName} space pass the execution of the array of Module transactions that have the hash 0x%s and does it meet the requirements of the document referenced in the dao requirements record at ${ensName}?  The hash is the keccak of the concatenation of the individual EIP-712 hashes of the Module transactions. If this question was asked before the corresponding Snapshot proposal was resolved, it should ALWAYS be resolved to INVALID!`
 
-const CUSTOM_TEMPLATE_QUESTION = `Provide a custom question here. Use %s as a variable for the proposal id.`
+const TEMPLATE_QUESTION_HELP = `Provide a question. This must include two %s placeholders.
+The first placeholder is for the id of the proposal (e.g., an IPFS hash).
+The second is the hash of the concatenation of the EIP-712 transaction hashes.`
 
 const ORACLE_TEMPLATE_OPTIONS = [
   { label: "Zodiac Reality Module (default)", value: "default" },
@@ -155,7 +157,7 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({
               <Grid container justifyContent="space-between" alignItems="center">
                 <Typography>Template question preview:</Typography>
 
-                <Tooltip title="Templates use %s as a variable for the proposal id.">
+                <Tooltip title={TEMPLATE_QUESTION_HELP}>
                   <HelpOutline className={classes.tooltipIcon} />
                 </Tooltip>
               </Grid>
@@ -173,7 +175,7 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({
                   placeholder={
                     get("templateType") === "default"
                       ? getDefaultTemplateQuestion(ensName)
-                      : CUSTOM_TEMPLATE_QUESTION
+                      : TEMPLATE_QUESTION_HELP
                   }
                 />
               </ZodiacPaper>
