@@ -8,6 +8,7 @@ env:
   REACT_APP_ETHERSCAN_KEY: ${{ secrets.REACT_APP_ETHERSCAN_KEY }}
   REACT_APP_INFURA_ID: ${{ secrets.REACT_APP_INFURA_ID }}
   REACT_APP_MULTI_SEND_CONTRACT: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
+  REACT_APP_BACKEND_API_URL: "https://api.zodiac.gnosisguild.org/api"
 
 jobs:
   deploy:
@@ -80,3 +81,14 @@ jobs:
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: packages/app/build
+
+      # Deploys a production instance of the backend api to vercel
+      - name: Deploy to Vercel Action
+        uses: BetaHuhn/deploy-to-vercel-action@v1
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_SCOPE: "gnosis-guild"
+          PRODUCTION: true
