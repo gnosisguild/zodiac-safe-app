@@ -61,7 +61,7 @@ export async function deployRealityModule(
       "address",
     ],
     values: [
-      deterministicDeploymentHelperAddress, // this is the owner, this needs to be replaced with the new DeterministicDeploymentHelper
+      deterministicDeploymentHelperAddress,
       safeAddress,
       executor,
       oracleAddress,
