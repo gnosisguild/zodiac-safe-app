@@ -1,9 +1,8 @@
-import { Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { TimeSelect, unitConversion } from "components/input/TimeSelect"
 import React from "react"
 import { isValidOracleDelay } from "utils/oracleValidations"
 import { InputPartProps } from "../.."
-import { OracleAlert } from "../OracleAlert"
 import { OracleDelayValidation } from "../OracleDelayValidation"
 
 const useStyles = makeStyles(() => ({

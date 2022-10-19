@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { ZodiacModal, ZodiacPaper } from "zodiac-ui-components"
@@ -22,10 +22,7 @@ import {
   DEFAULT_EXPIRATION,
   DEFAULT_TIMEOUT,
   isValidOracleDelay,
-  MIN_COOLDOWN,
-  MIN_TIMEOUT,
   warningOracleDelay,
-  WARNING_TIMEOUT,
 } from "utils/oracleValidations"
 import { OracleDelayValidation } from "./components/OracleDelayValidation"
 
