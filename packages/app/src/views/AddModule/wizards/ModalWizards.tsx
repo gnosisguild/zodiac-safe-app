@@ -7,6 +7,7 @@ import { CustomModuleModal } from "./CustomModule/CustomModuleModal"
 import { AMBModuleModal } from "./AMBModuleModal/AMBModuleModal"
 import { ExitModuleModal } from "./ExitModule/ExitModuleModal"
 import { RolesModifierModal } from "./RolesModifier/RolesModifierModal"
+import { RealityModuleOldModal } from "./RealityModuleOld/RealityModuleOldModal"
 
 /**
  * All wizards that use a Modal must be added here.
@@ -53,6 +54,12 @@ export const ModuleModals = ({ selected, onClose, onSubmit }: ModuleModalsProps)
         onClose={onClose}
         onSubmit={() => onSubmit && onSubmit(ModuleType.DELAY)}
       />
+      <RealityModuleOldModal
+        open={selected === ModuleType.REALITY_ETH}
+        onClose={onClose}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.REALITY_ETH)}
+      />
+
       <CustomModuleModal
         open={selected === ModuleType.UNKNOWN}
         onClose={onClose}

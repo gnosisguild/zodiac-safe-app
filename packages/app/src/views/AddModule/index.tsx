@@ -6,8 +6,13 @@ import { useRootDispatch, useRootSelector } from "../../store"
 import { getModulesList } from "../../store/modules/selectors"
 import { ModuleModals } from "./wizards/ModalWizards"
 import { ModuleType } from "../../store/modules/models"
-import { fetchPendingModules, setModuleAdded, setRealityModuleScreen } from "../../store/modules"
+import {
+  fetchPendingModules,
+  setModuleAdded,
+  setRealityModuleScreen,
+} from "../../store/modules"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { NETWORK } from "utils/networks"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,8 +66,9 @@ export const AddModulesView = () => {
               {title}
             </Typography>
             <Typography variant="body2">
-              Built according to an open standard, the Zodiac collection of tools are mods that support, expand, and
-              transform how organizations operate. Learn more about Zodiac in{" "}
+              Built according to an open standard, the Zodiac collection of tools are mods
+              that support, expand, and transform how organizations operate. Learn more
+              about Zodiac in{" "}
               <a
                 href="https://gnosisguild.mirror.xyz/OuhG5s2X5uSVBx1EK4tKPhnUc91Wh9YM0fwSnC8UNcg"
                 target="_blank"
@@ -113,14 +119,21 @@ export const AddModulesView = () => {
           icon="roles"
           onClick={() => setModule(ModuleType.ROLES)}
         />
-
-        <ModuleButton
-          title="Reality Module"
-          description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
-          icon="reality"
-          onClick={() => dispatch(setRealityModuleScreen(true))}
-        />
-
+        {[NETWORK.MAINNET, NETWORK.GOERLI].includes(safe.chainId) ? (
+          <ModuleButton
+            title="Reality Module"
+            description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
+            icon="reality"
+            onClick={() => dispatch(setRealityModuleScreen(true))}
+          />
+        ) : (
+          <ModuleButton
+            title="Reality Module"
+            description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
+            icon="reality"
+            onClick={() => setModule(ModuleType.REALITY_ETH)}
+          />
+        )}
         <ModuleButton
           title="Tellor Module"
           description="Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle"
@@ -143,7 +156,11 @@ export const AddModulesView = () => {
         />
       </div>
 
-      <ModuleModals selected={module} onClose={() => setModule(undefined)} onSubmit={handleSubmit} />
+      <ModuleModals
+        selected={module}
+        onClose={() => setModule(undefined)}
+        onSubmit={handleSubmit}
+      />
     </div>
   )
 }
