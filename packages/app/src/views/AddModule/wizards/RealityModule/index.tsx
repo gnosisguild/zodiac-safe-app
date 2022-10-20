@@ -28,6 +28,7 @@ import { setup } from "./service/setupService"
 import { getProvider } from "services"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { getDelayModules, getModulesList } from "store/modules/selectors"
+import { StatusLog } from "./sections/Review/components/SubmittingStatus"
 
 export interface SectionProps {
   handleNext: (
@@ -118,6 +119,7 @@ export const RealityModule: React.FC = () => {
   const dispatch = useRootDispatch()
   const modulesList = useRootSelector(getModulesList)
   const [modules, setModules] = useState<number>(modulesList.length)
+  const [statusLog, setStatusLog] = useState<StatusLog[]>([])
   const [activeStep, setActiveStep] = useState<number>(0)
   const [completed, setCompleted] = useState({
     proposal: false,
@@ -149,6 +151,7 @@ export const RealityModule: React.FC = () => {
   }
 
   const handleDone = async (delayModuleExecutor?: string) => {
+    const logger: StatusLog[] = []
     const provider = getProvider(safeInfo.chainId)
     setLoading(true)
     if (setupData == null) {
@@ -162,17 +165,19 @@ export const RealityModule: React.FC = () => {
 
     const statusLogger = (currentStatus: string, error: any) => {
       if (error != null) {
-        console.error("statusLogger - ERROR: " + error)
+        logger.push({ error: true, msg: error })
         throw error
       } else {
-        console.log("statusLogger: " + currentStatus)
+        logger.push({ error: false, msg: currentStatus })
       }
+      setStatusLog(logger)
     }
+
     try {
       await setup(provider, safeSdk, safeInfo, executorAddress, setupData, statusLogger)
     } catch (error) {
-      console.error(error)
       setLoading(false)
+      console.error(error)
     }
     dispatch(fetchPendingModules(safeInfo))
     dispatch(setModuleAdded(true))
@@ -294,6 +299,7 @@ export const RealityModule: React.FC = () => {
                           setupData={setupData}
                           delayModules={delayModules}
                           loading={loading}
+                          statusLog={statusLog}
                         />
                       </>
                     )}

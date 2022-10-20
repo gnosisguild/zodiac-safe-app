@@ -90,7 +90,7 @@ export const setup = async (
 
   statusCallback("Proposing transactions to the Safe")
   await safeSdk.txs.send({ txs }).catch((e) => {
-    statusCallback("Error when proposing transactions to the Safe", e)
+    statusCallback("Error when proposing transactions to the Safe", e.message ?? "")
   })
 
   // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
