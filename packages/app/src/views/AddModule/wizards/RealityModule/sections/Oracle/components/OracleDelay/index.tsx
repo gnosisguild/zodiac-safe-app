@@ -1,7 +1,7 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { TimeSelect, unitConversion } from "components/input/TimeSelect"
 import React from "react"
-import { isValidOracleDelay } from "utils/oracleValidations"
+import { isValidOracleDelay } from "views/AddModule/wizards/RealityModule/utils/oracleValidations"
 import { InputPartProps } from "../.."
 import { OracleDelayValidation } from "../OracleDelayValidation"
 
@@ -90,7 +90,7 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
               label="Expiration"
               tooltipMsg="Duration that a transaction is valid in seconds (or 0 if valid forever) after the cooldown (note this applies to all proposals on this module)."
               valueUnit={get("expirationUnit")}
-              value={expiration}
+              value={expiration ?? 0}
               onChange={(value, unit) => {
                 setData({ ...data, expiration: value, expirationUnit: unit })
               }}

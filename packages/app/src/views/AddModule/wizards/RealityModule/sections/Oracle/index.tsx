@@ -23,7 +23,7 @@ import {
   DEFAULT_TIMEOUT,
   isValidOracleDelay,
   warningOracleDelay,
-} from "utils/oracleValidations"
+} from "views/AddModule/wizards/RealityModule/utils/oracleValidations"
 import { OracleDelayValidation } from "./components/OracleDelayValidation"
 
 const useStyles = makeStyles((theme) => ({
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 8,
   },
   warningModal: {
-    maxWidth: 580,
+    maxWidth: 650,
   },
   errorPaperContainer: {
     width: "100%",

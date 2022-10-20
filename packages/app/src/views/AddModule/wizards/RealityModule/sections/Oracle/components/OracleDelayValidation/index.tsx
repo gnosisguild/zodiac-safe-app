@@ -1,19 +1,15 @@
 import { Grid } from "@material-ui/core"
-import React, { Fragment } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import {
   COOLDOWN_ERROR_MSG,
   COOLDOWN_WARNING_MSG,
   EXPIRATION_ERROR_MSG,
   EXPIRATION_WARNING_MSG,
-  MIN_COOLDOWN,
-  MIN_EXPIRATION,
-  MIN_TIMEOUT,
+  isValidOracleDelay,
   TIMEOUT_ERROR_MSG,
   TIMEOUT_WARNING_MSG,
-  WARNING_COOLDOWN,
-  WARNING_EXPIRATION,
-  WARNING_TIMEOUT,
-} from "utils/oracleValidations"
+  warningOracleDelay,
+} from "views/AddModule/wizards/RealityModule/utils/oracleValidations"
 import { OracleAlert } from "../OracleAlert"
 
 export interface OracleDelayValidationProps {
@@ -21,72 +17,83 @@ export interface OracleDelayValidationProps {
   delayValue: string | number
   dependsDelayValue?: string | number
 }
+interface OracleAlertType {
+  type: "error" | "warning"
+  message: string
+}
 
 export const OracleDelayValidation: React.FC<OracleDelayValidationProps> = ({
   type,
   delayValue,
   dependsDelayValue,
 }) => {
-  const isValidOracleDelay = (
-    type: "timeout" | "cooldown" | "expiration",
-  ): {
-    valid: boolean
-    type?: "error" | "warning"
-    msg?: string
-  } => {
-    const value = parseInt(delayValue as string)
-    const depends = parseInt(dependsDelayValue as string)
-    switch (type) {
-      case "timeout": {
-        if (value < MIN_TIMEOUT) {
-          return { valid: false, type: "error", msg: TIMEOUT_ERROR_MSG }
-        }
-        if (value >= MIN_TIMEOUT && value < WARNING_TIMEOUT) {
-          return { valid: false, type: "warning", msg: TIMEOUT_WARNING_MSG }
-        }
-        break
-      }
-      case "cooldown": {
-        if (value <= MIN_COOLDOWN) {
-          return { valid: false, type: "error", msg: COOLDOWN_ERROR_MSG }
-        }
-        if (value >= MIN_COOLDOWN && value < WARNING_COOLDOWN) {
-          return { valid: false, type: "warning", msg: COOLDOWN_WARNING_MSG }
-        }
-        break
-      }
-      case "expiration": {
-        if (dependsDelayValue && value < depends + MIN_EXPIRATION) {
-          return { valid: false, type: "error", msg: EXPIRATION_ERROR_MSG }
-        }
-        if (value >= MIN_EXPIRATION && delayValue < WARNING_EXPIRATION) {
-          return { valid: false, type: "warning", msg: EXPIRATION_WARNING_MSG }
-        }
-        break
-      }
-    }
-    return { valid: true }
-  }
+  const timeoutError = isValidOracleDelay("timeout", parseInt(delayValue as string))
+  const cooldownError = isValidOracleDelay("cooldown", parseInt(delayValue as string))
+  const expirationError = isValidOracleDelay(
+    "expiration",
+    parseInt(delayValue as string),
+    dependsDelayValue,
+  )
+  const timeoutWarning = warningOracleDelay("timeout", parseInt(delayValue as string))
+  const cooldownWarning = warningOracleDelay("cooldown", parseInt(delayValue as string))
+  const expirationWarning = warningOracleDelay(
+    "expiration",
+    parseInt(delayValue as string),
+  )
 
-  const timeout = isValidOracleDelay("timeout")
-  const cooldown = isValidOracleDelay("cooldown")
-  const expiration = isValidOracleDelay("expiration")
+  const [timeoutAlert, setTimeoutAlert] = useState<OracleAlertType | undefined>(undefined)
+  const [cooldownAlert, setCooldownAlert] = useState<OracleAlertType | undefined>(
+    undefined,
+  )
+  const [expirationAlert, setExpirationAlert] = useState<OracleAlertType | undefined>(
+    undefined,
+  )
+
+  useEffect(() => {
+    if (!timeoutError) {
+      return setTimeoutAlert({ type: "error", message: TIMEOUT_ERROR_MSG })
+    }
+    if (!timeoutWarning) {
+      return setTimeoutAlert({ type: "warning", message: TIMEOUT_WARNING_MSG })
+    }
+    setTimeoutAlert(undefined)
+  }, [timeoutError, timeoutWarning])
+
+  useEffect(() => {
+    if (!cooldownError) {
+      return setCooldownAlert({ type: "error", message: COOLDOWN_ERROR_MSG })
+    }
+    if (!cooldownWarning) {
+      return setCooldownAlert({ type: "warning", message: COOLDOWN_WARNING_MSG })
+    }
+    setCooldownAlert(undefined)
+  }, [cooldownError, cooldownWarning])
+
+  useEffect(() => {
+    if (!expirationError) {
+      return setExpirationAlert({ type: "error", message: EXPIRATION_ERROR_MSG })
+    }
+    if (!expirationWarning) {
+      return setExpirationAlert({ type: "warning", message: EXPIRATION_WARNING_MSG })
+    }
+    setExpirationAlert(undefined)
+  }, [expirationError, expirationWarning])
 
   return (
     <Fragment>
-      {type === "timeout" && !timeout.valid && timeout.type && (
+      {type === "timeout" && timeoutAlert && (
         <Grid item>
-          <OracleAlert type={timeout.type} message={timeout.msg ?? ""} />
+          <OracleAlert type={timeoutAlert.type} message={timeoutAlert.message} />
         </Grid>
       )}
-      {type === "cooldown" && !cooldown.valid && cooldown.type && (
+      {type === "cooldown" && cooldownAlert && (
         <Grid item>
-          <OracleAlert type={cooldown.type} message={cooldown.msg ?? ""} />
+          <OracleAlert type={cooldownAlert.type} message={cooldownAlert.message} />
         </Grid>
       )}
-      {type === "expiration" && !expiration.valid && expiration.type && (
+      {type === "expiration" && expirationAlert && (
         <Grid item>
-          <OracleAlert type={expiration.type} message={expiration.msg ?? ""} />
+          <OracleAlert type={expirationAlert.type} message={expirationAlert.message} />
         </Grid>
       )}
     </Fragment>

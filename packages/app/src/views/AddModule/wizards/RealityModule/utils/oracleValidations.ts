@@ -39,7 +39,7 @@ export const isValidOracleDelay = (
       break
     case "expiration":
       if (value === 0) {
-        return false
+        return true
       }
       if (dependsDelayValue && value < depends + MIN_EXPIRATION) {
         return false
@@ -66,6 +66,9 @@ export const warningOracleDelay = (
       }
       break
     case "expiration":
+      if (value === 0) {
+        return false
+      }
       if (value >= MIN_EXPIRATION && value < WARNING_EXPIRATION) {
         return false
       }
