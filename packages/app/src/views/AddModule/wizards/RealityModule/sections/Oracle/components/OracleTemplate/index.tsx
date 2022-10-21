@@ -170,7 +170,7 @@ export const OracleTemplate: React.FC<OracleTemplateProps> = ({
                     set("templateQuestion")(target.value as string)
                   }
                   multiline
-                  rows={5}
+                  minRows={5}
                   disabled={get("templateType") === "default"}
                   placeholder={
                     get("templateType") === "default"

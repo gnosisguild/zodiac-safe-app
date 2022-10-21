@@ -399,7 +399,11 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={3} justifyContent="center" alignItems="center">
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button
+                size="medium"
+                variant="text"
+                onClick={() => handleBack(monitoringData)}
+              >
                 Back
               </Button>
             </Grid>

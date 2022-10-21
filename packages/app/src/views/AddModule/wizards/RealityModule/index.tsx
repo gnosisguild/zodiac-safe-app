@@ -33,7 +33,9 @@ export interface SectionProps {
   handleNext: (
     stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any,
   ) => void
-  handleBack: () => void
+  handleBack: (
+    stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any,
+  ) => void
   setupData: SetupData | undefined
 }
 
@@ -135,17 +137,12 @@ export const RealityModule: React.FC = () => {
     }
   }
 
-  const handleNext = (nextPage: number, step: keyof SetupData) => {
+  const navigate = (nextPage: number, step: keyof SetupData, stepCompleted: boolean) => {
     return (stepData: any) => {
       setActiveStep(nextPage)
-      setCompleted({ ...completed, [step]: true })
+      setCompleted({ ...completed, [step]: stepCompleted })
       setSetupData({ ...setupData, [step]: stepData } as SetupData)
     }
-  }
-
-  const handleBack = (nextPage: number, step: keyof SetupData) => {
-    setActiveStep(nextPage)
-    setCompleted({ ...completed, [step]: false })
   }
 
   const handleDone = async (delayModuleExecutor?: string) => {
@@ -266,36 +263,34 @@ export const RealityModule: React.FC = () => {
                   <StepContent>
                     {label === "proposal" && (
                       <ProposalSection
-                        handleNext={handleNext(index + 1, label)}
+                        handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setRealityModuleScreen(false))}
                         setupData={setupData}
                       />
                     )}
                     {label === "oracle" && (
                       <OracleSection
-                        handleNext={handleNext(index + 1, label)}
-                        handleBack={() => handleBack(activeStep - 1, label)}
+                        handleNext={navigate(index + 1, label, true)}
+                        handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
                     {label === "monitoring" && (
                       <MonitoringSection
-                        handleNext={handleNext(index + 1, label)}
-                        handleBack={() => handleBack(activeStep - 1, label)}
+                        handleNext={navigate(index + 1, label, true)}
+                        handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
                     {label === "review" && (
-                      <>
-                        <ReviewSection
-                          handleNext={handleDone} // this is where we would execute the transactions!!
-                          handleBack={() => handleBack(activeStep - 1, label)}
-                          goToStep={setActiveStep}
-                          setupData={setupData}
-                          delayModules={delayModules}
-                          loading={loading}
-                        />
-                      </>
+                      <ReviewSection
+                        handleNext={handleDone} // this is where we would execute the transactions!!
+                        handleBack={navigate(activeStep - 1, label, false)}
+                        goToStep={setActiveStep}
+                        setupData={setupData}
+                        delayModules={delayModules}
+                        loading={loading}
+                      />
                     )}
                   </StepContent>
                 </Step>

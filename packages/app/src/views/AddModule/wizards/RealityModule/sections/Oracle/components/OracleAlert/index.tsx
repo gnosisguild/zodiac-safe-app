@@ -2,14 +2,22 @@ import React from "react"
 import { Grid, Typography, makeStyles } from "@material-ui/core"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined"
+import { colors } from "zodiac-ui-components"
 
 const useStyles = makeStyles(() => ({
   errorIcon: {
     fill: "rgba(244, 67, 54, 1)",
   },
+  warningIcon: {
+    fill: colors.tan[800],
+  },
   message: {
     fontSize: 12,
     color: "rgba(244, 67, 54, 1)",
+  },
+  warningMessage: {
+    fontSize: 12,
+    color: colors.tan[800],
   },
 }))
 
@@ -28,12 +36,16 @@ export const OracleAlert: React.FC<{
 
       {type === "warning" && (
         <Grid item>
-          <ReportProblemOutlinedIcon className={classes.errorIcon} />
+          <ReportProblemOutlinedIcon className={classes.warningIcon} />
         </Grid>
       )}
 
       <Grid item>
-        <Typography className={classes.message}>{message}</Typography>
+        <Typography
+          className={type === "error" ? classes.message : classes.warningMessage}
+        >
+          {message}
+        </Typography>
       </Grid>
     </Grid>
   )

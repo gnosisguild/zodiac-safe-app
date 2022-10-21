@@ -1,7 +1,17 @@
-import React from "react";
-import { Box, Grid, makeStyles, MenuItem, Select, SelectProps, Tooltip, Typography } from "@material-ui/core";
-import { colors } from "zodiac-ui-components";
-import HelpOutline from "@material-ui/icons/HelpOutline";
+import React from "react"
+import {
+  Box,
+  Grid,
+  makeStyles,
+  MenuItem,
+  Select,
+  SelectProps,
+  Tooltip,
+  Typography,
+} from "@material-ui/core"
+import { colors } from "zodiac-ui-components"
+import HelpOutline from "@material-ui/icons/HelpOutline"
+import * as R from "ramda"
 
 const useStyles = makeStyles(() => ({
   label: {
@@ -18,21 +28,26 @@ const useStyles = makeStyles(() => ({
   icon: {
     fontSize: "1rem",
   },
-}));
+}))
 
 interface DropdownProps extends SelectProps {
-  label?: string;
-  options: { label: string; value: string | number }[];
-  tooltipMsg?: string;
+  label?: string
+  options: { label: string; value: string | number }[]
+  tooltipMsg?: string
 }
 
 export const Dropdown: React.FC<DropdownProps> = (props) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <Box>
       {props.label && (
-        <Grid container justifyContent='space-between' alignItems='center' className={classes.label}>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          className={classes.label}
+        >
           <Grid item>
             <Typography>{props.label}</Typography>
           </Grid>
@@ -47,15 +62,15 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
       )}
 
       <Box className={classes.selectContainer}>
-        <Select {...props} className={classes.select}>
+        <Select {...R.dissoc("tooltipMsg", props)} className={classes.select}>
           {props.options.map((item) => (
             <MenuItem key={item.value} value={item.value}>
               {item.label}
-              <Box className='show-if-selected' flexGrow={1} />
+              <Box className="show-if-selected" flexGrow={1} />
             </MenuItem>
           ))}
         </Select>
       </Box>
     </Box>
-  );
-};
+  )
+}
