@@ -75,7 +75,7 @@ export const SubmittingStatus: React.FC<SubmittingStatusProps> = ({ statusLog })
   return (
     <Grid container spacing={1} alignItems="center">
       {statusLog.map((item, index) => (
-        <Grid item xs={12}>
+        <Grid item xs={12} key={`status-${index}`}>
           <Grid container spacing={1} alignItems="center" key={index}>
             <Grid item>
               {statusLog.length > index + 1 && !item.error && (
