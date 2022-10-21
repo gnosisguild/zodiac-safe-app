@@ -26,7 +26,7 @@ export const setup = async (
   safeInfo: SafeInfo,
   executorAddress: string,
   setupData: SetupData,
-  statusCallback: (currentStatus: string, error?: any) => void,
+  statusCallback: (currentStatus: string, error?: Error) => void,
 ) => {
   statusCallback("Setting up Reality Module deployment transactions")
   const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
@@ -189,9 +189,15 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     )
   }
 
+  if (cidV0FromPinning === "" || cidV0FromPinning == null) {
+    throw new Error(
+      "Communication with the backend pinning service failed. No CID was returned.",
+    )
+  }
+
   if (cidV0Locale != null && cidV0Locale !== cidV0FromPinning) {
     throw new Error(
-      `The CID from the locale browser node (${cidV0Locale}) does not correspond with the CID from the pinning service (${cidV0FromPinning})`,
+      `The CID from the locale browser node (${cidV0Locale}) does not correspond the CID from the pinning service (${cidV0FromPinning})`,
     )
   }
 
