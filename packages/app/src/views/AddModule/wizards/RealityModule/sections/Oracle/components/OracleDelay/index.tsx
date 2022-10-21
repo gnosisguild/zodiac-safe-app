@@ -1,8 +1,9 @@
-import { Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { TimeSelect, unitConversion } from "components/input/TimeSelect"
 import React from "react"
+import { isValidOracleDelay } from "views/AddModule/wizards/RealityModule/utils/oracleValidations"
 import { InputPartProps } from "../.."
-import { OracleAlert } from "../OracleAlert"
+import { OracleDelayValidation } from "../OracleDelayValidation"
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -15,9 +16,6 @@ const useStyles = makeStyles(() => ({
 }))
 
 type Unit = keyof typeof unitConversion
-
-export const MIN_TIMEOUT = 86400
-export const MIN_COOLDOWN = 172800
 
 export type Data = {
   expiration: number
@@ -34,6 +32,9 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
   const timeout = get("timeout")
   const cooldown = get("cooldown")
   const expiration = get("expiration")
+  const isValidTimeout = isValidOracleDelay("timeout", timeout)
+  const isValidCooldown = isValidOracleDelay("cooldown", cooldown)
+  const isValidExpiration = isValidOracleDelay("expiration", expiration, cooldown)
 
   return (
     <Grid container spacing={2} className={classes.container}>
@@ -58,8 +59,8 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
         <Grid container spacing={6} alignItems="center" justifyContent="space-between">
           <Grid item xs={4}>
             <TimeSelect
-              variant={timeout < MIN_TIMEOUT ? "error" : "secondary"}
-              alertType={timeout < MIN_TIMEOUT ? "error" : undefined}
+              variant={!isValidTimeout ? "error" : "secondary"}
+              alertType={!isValidTimeout ? "error" : undefined}
               label="Timeout"
               tooltipMsg="Duration that answers can be submitted to the oracle (resets when a new answer is submitted)"
               valueUnit={get("timeoutUnit")}
@@ -71,8 +72,8 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
           </Grid>
           <Grid item xs={4}>
             <TimeSelect
-              variant={cooldown < MIN_COOLDOWN ? "error" : "secondary"}
-              alertType={cooldown < MIN_COOLDOWN ? "warning" : undefined}
+              variant={!isValidCooldown ? "error" : "secondary"}
+              alertType={!isValidCooldown ? "error" : undefined}
               label="Cooldown"
               tooltipMsg="Duration required before the transaction can be executed (after the timeout has expired)."
               valueUnit={get("cooldownUnit")}
@@ -84,11 +85,12 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
           </Grid>
           <Grid item xs={4}>
             <TimeSelect
-              variant="secondary"
+              variant={!isValidExpiration ? "error" : "secondary"}
+              alertType={!isValidExpiration ? "error" : undefined}
               label="Expiration"
               tooltipMsg="Duration that a transaction is valid in seconds (or 0 if valid forever) after the cooldown (note this applies to all proposals on this module)."
               valueUnit={get("expirationUnit")}
-              value={expiration}
+              value={expiration ?? 0}
               onChange={(value, unit) => {
                 setData({ ...data, expiration: value, expirationUnit: unit })
               }}
@@ -96,24 +98,13 @@ export const OracleDelay: React.FC<InputPartProps> = ({ data, setData }) => {
           </Grid>
         </Grid>
       </Grid>
-      {timeout < MIN_TIMEOUT && (
-        <Grid item>
-          <OracleAlert type="error" message="Your timeout delay must exceed 24 hours." />
-        </Grid>
-      )}
-      {timeout < MIN_TIMEOUT && cooldown < MIN_COOLDOWN && (
-        <Grid item>
-          <Divider />
-        </Grid>
-      )}
-      {cooldown < MIN_COOLDOWN && (
-        <Grid item>
-          <OracleAlert
-            type="warning"
-            message="We highly recommend that your cooldown delay exceeds 48 hours."
-          />
-        </Grid>
-      )}
+      <OracleDelayValidation type="timeout" delayValue={parseInt(timeout)} />
+      <OracleDelayValidation type="cooldown" delayValue={parseInt(cooldown)} />
+      <OracleDelayValidation
+        type="expiration"
+        delayValue={parseInt(expiration)}
+        dependsDelayValue={parseInt(cooldown)}
+      />
     </Grid>
   )
 }

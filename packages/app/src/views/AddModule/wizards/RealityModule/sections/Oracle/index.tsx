@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 import { ZodiacModal, ZodiacPaper } from "zodiac-ui-components"
@@ -7,11 +7,7 @@ import OracleTemplate, {
   getDefaultTemplateQuestion,
 } from "./components/OracleTemplate"
 import OracleInstance, { Data as OracleInstanceData } from "./components/OracleInstance"
-import OracleDelay, {
-  Data as OracleDelayData,
-  MIN_COOLDOWN,
-  MIN_TIMEOUT,
-} from "./components/OracleDelay"
+import OracleDelay, { Data as OracleDelayData } from "./components/OracleDelay"
 import OracleBond, { Data as OracleBondData, MIN_BOND } from "./components/OracleBond"
 import OracleArbitration, {
   Data as OracleArbitratorData,
@@ -21,6 +17,14 @@ import { ARBITRATOR_OPTIONS } from "services"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import { OracleAlert } from "./components/OracleAlert"
+import {
+  DEFAULT_COOLDOWN,
+  DEFAULT_EXPIRATION,
+  DEFAULT_TIMEOUT,
+  isValidOracleDelay,
+  warningOracleDelay,
+} from "views/AddModule/wizards/RealityModule/utils/oracleValidations"
+import { OracleDelayValidation } from "./components/OracleDelayValidation"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -41,7 +45,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 8,
     marginBottom: 8,
   },
-
+  warningModal: {
+    maxWidth: 650,
+  },
   errorPaperContainer: {
     width: "100%",
     padding: theme.spacing(1),
@@ -116,11 +122,11 @@ export const OracleSection: React.FC<SectionProps> = ({
   })
 
   const [delayData, setDelayData] = useState<OracleDelayData>({
-    timeout: 172800,
+    timeout: DEFAULT_TIMEOUT,
     timeoutUnit: "days",
-    cooldown: 172800,
+    cooldown: DEFAULT_COOLDOWN,
     cooldownUnit: "days",
-    expiration: 86400,
+    expiration: DEFAULT_EXPIRATION,
     expirationUnit: "days",
   })
 
@@ -128,8 +134,14 @@ export const OracleSection: React.FC<SectionProps> = ({
     bond: 0.1,
   })
 
-  const { timeout, cooldown } = delayData
+  const { timeout, cooldown, expiration } = delayData
   const { bond } = bondData
+  const isValidTimeout = isValidOracleDelay("timeout", timeout)
+  const isValidCooldown = isValidOracleDelay("cooldown", cooldown)
+  const isValidExpiration = isValidOracleDelay("expiration", expiration, cooldown)
+  const isWarningTimeout = warningOracleDelay("timeout", timeout)
+  const isWarningCooldown = warningOracleDelay("cooldown", cooldown)
+  const isWarningExpiration = warningOracleDelay("expiration", expiration)
 
   const [arbitratorData, setArbitratorData] = useState<OracleArbitratorData>({
     arbitratorOption: ARBITRATOR_OPTIONS.NO_ARBITRATOR,
@@ -144,7 +156,10 @@ export const OracleSection: React.FC<SectionProps> = ({
   })
 
   const validateOracle = () => {
-    if (timeout < MIN_TIMEOUT || cooldown < MIN_COOLDOWN || bond < MIN_BOND) {
+    if (
+      [isWarningTimeout, isWarningCooldown, isWarningExpiration].includes(false) ||
+      bond < MIN_BOND
+    ) {
       return setShowModal(true)
     }
     handleNext(collectData())
@@ -232,7 +247,11 @@ export const OracleSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={3} justifyContent="center" alignItems="center">
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button
+                size="medium"
+                variant="text"
+                onClick={() => handleBack(collectData())}
+              >
                 Back
               </Button>
             </Grid>
@@ -241,6 +260,9 @@ export const OracleSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
+                disabled={[isValidTimeout, isValidCooldown, isValidExpiration].includes(
+                  false,
+                )}
                 onClick={validateOracle}
               >
                 Next
@@ -250,6 +272,7 @@ export const OracleSection: React.FC<SectionProps> = ({
         </Grid>
       </Grid>
       <ZodiacModal
+        className={classes.warningModal}
         open={showModal}
         isOpen={showModal}
         onClose={() => setShowModal(!showModal)}
@@ -276,31 +299,20 @@ export const OracleSection: React.FC<SectionProps> = ({
 
             <Grid item>
               <ZodiacPaper borderStyle="single" className={classes.errorPaperContainer}>
-                {timeout < MIN_TIMEOUT && (
-                  <Box sx={{ marginTop: 4, marginBottom: 4 }}>
-                    <OracleAlert
-                      type="error"
-                      message="Your timeout delay must exceed 24 hours."
-                    />
-                  </Box>
-                )}
-                {timeout < MIN_TIMEOUT && cooldown < MIN_COOLDOWN && <Divider />}
-                {cooldown < MIN_COOLDOWN && (
-                  <Box sx={{ marginTop: 4, marginBottom: 4 }}>
-                    <OracleAlert
-                      type="warning"
-                      message="We recommend that your cooldown exceeds 48 hours."
-                    />
-                  </Box>
-                )}
-                {cooldown < MIN_COOLDOWN && bond < MIN_BOND && <Divider />}
+                <OracleDelayValidation type="timeout" delayValue={timeout} />
+                <OracleDelayValidation type="cooldown" delayValue={cooldown} />
+                <OracleDelayValidation
+                  type="expiration"
+                  delayValue={expiration}
+                  dependsDelayValue={cooldown}
+                />
                 {bond < MIN_BOND && (
-                  <Box sx={{ marginTop: 4, marginBottom: 4 }}>
+                  <Grid item>
                     <OracleAlert
-                      type="warning"
-                      message="We highly recommend that your bond exceeds 0.1 ETH."
+                      type={"warning"}
+                      message={"We highly recommend that your bond exceeds 0.1 ETH."}
                     />
-                  </Box>
+                  </Grid>
                 )}
               </ZodiacPaper>
             </Grid>
