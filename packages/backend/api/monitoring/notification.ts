@@ -14,8 +14,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
   )
   if (request.method === "OPTIONS") {
-    response.status(200).end()
-    return
+    return response.status(200).end()
   }
   try {
     console.log("Incoming request at ", request.url)
@@ -48,15 +47,23 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       realityModuleAddress,
     )
     console.log("Sentinel creation responds", sentinelCreationResponds)
-    // Recreate the response so you can modify the headers
     return response
       .status(200)
       .setHeader("content-type", "application/json;charset=UTF-8")
       .setHeader("Access-Control-Allow-Origin", "*")
-      .send("ok")
+      .send({
+        success: true,
+      })
   } catch (e) {
     console.error(e)
-    return response.status(500).send("error")
+
+    const { name, message } = e
+    // this is safe for we are requesting on behalf of the user (with their API key)
+    return response.status(500).send({
+      name,
+      message,
+      success: false,
+    })
   }
 }
 

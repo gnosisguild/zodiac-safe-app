@@ -34,7 +34,20 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       snapshotSpaceEnsName,
       chainId,
     )
-    snapshot.verifyNewSnapshotSettings(originalSpaceSettings, snapshotSpaceSettings)
+
+    if (originalSpaceSettings == null) {
+      throw new Error(
+        "Failed to get the original space settings. Most likely there is no configured space for this ENS name.",
+      )
+    }
+
+    if (
+      !snapshot.verifyNewSnapshotSettings(originalSpaceSettings, snapshotSpaceSettings)
+    ) {
+      throw new Error(
+        "The new Snapshot Space settings file is changed in unexpected ways, or the new Space settings file is not valid.",
+      )
+    }
 
     // upload to IPFS and pinning
     const pinataResponds = await fetch(PINATA_BASE_URL + "/pinning/pinJSONToIPFS", {
@@ -49,16 +62,19 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     }).then((res) => res.json())
 
     console.log("Pinata responds", pinataResponds)
+
+    if (pinataResponds == null || pinataResponds.IpfsHash == null) {
+      throw new Error("Failed to pin the new Snapshot Space settings to IPFS.")
+    }
+
     const { IpfsHash: cidV0 } = pinataResponds
     return response
       .status(200)
       .setHeader("content-type", "application/json;charset=UTF-8")
       .setHeader("Access-Control-Allow-Origin", "*")
-      .send(
-        JSON.stringify({
-          cidV0,
-        }),
-      )
+      .send({
+        cidV0,
+      })
   } catch (e) {
     console.error(e)
 
@@ -67,11 +83,9 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       .status(500)
       .setHeader("content-type", "application/json;charset=UTF-8")
       .setHeader("Access-Control-Allow-Origin", "*")
-      .send(
-        JSON.stringify({
-          name,
-          message,
-        }),
-      )
+      .send({
+        name,
+        message,
+      })
   }
 }
