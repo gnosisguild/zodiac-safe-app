@@ -434,7 +434,11 @@ export const ProposalSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={3} justifyContent="center" alignItems="center">
             <Grid item>
-              <Button size="medium" variant="text" onClick={handleBack}>
+              <Button
+                size="medium"
+                variant="text"
+                onClick={() => handleBack(collectSectionData())}
+              >
                 Cancel
               </Button>
             </Grid>
