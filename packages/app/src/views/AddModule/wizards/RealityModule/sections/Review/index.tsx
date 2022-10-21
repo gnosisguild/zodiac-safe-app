@@ -117,7 +117,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
-  const [snapshopSpace, setSnapshotSpace] = useState<string>()
+  const [snapshotSpace, setSnapshotSpace] = useState<string>()
   const [collapseSection, setCollapseSection] = useState<boolean>(false)
   const [oracleData, setOracleData] = useState<OracleSectionData | undefined>(undefined)
   const [delayModule, setDelayModule] = useState<string>(
@@ -155,7 +155,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                 </Grid>
               </Grid>
             </Grid>
-            
+
             <Grid item>
               <Divider />
             </Grid>
@@ -176,11 +176,11 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                     <Typography>Snapshot Space:</Typography>
                     <Link
                       color="inherit"
-                      href={snapshopSpace}
+                      href={snapshotSpace}
                       target="_blank"
                       className={classes.link}
                     >
-                      {snapshopSpace}
+                      {snapshotSpace}
                     </Link>
                   </Grid>
                 )}
