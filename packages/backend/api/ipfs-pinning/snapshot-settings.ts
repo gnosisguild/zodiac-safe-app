@@ -10,6 +10,7 @@ const PINATA_SECRET_API_KEY = getEnv("PINATA_SECRET_API_KEY")
 interface Body {
   snapshotSpaceEnsName: string
   snapshotSpaceSettings: any
+  chainId: number
 }
 
 export default async (request: VercelRequest, response: VercelResponse) => {
@@ -25,12 +26,13 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   try {
     console.log("Incoming request at ", request.url)
     console.log("Request body", request.body)
-    const { snapshotSpaceEnsName, snapshotSpaceSettings } = request.body as Body
+    const { snapshotSpaceEnsName, snapshotSpaceSettings, chainId } = request.body as Body
 
     // verification
     // this is done to prevent abuse of the pinning service
     const originalSpaceSettings = await snapshot.getSnapshotSpaceSettings(
       snapshotSpaceEnsName,
+      chainId,
     )
     snapshot.verifyNewSnapshotSettings(originalSpaceSettings, snapshotSpaceSettings)
 

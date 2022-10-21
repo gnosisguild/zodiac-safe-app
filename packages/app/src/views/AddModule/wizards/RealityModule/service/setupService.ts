@@ -181,6 +181,7 @@ const addSafeSnapToSnapshotSpaceTxs = async (
     const { cidV0 } = await pinSnapshotSpace({
       snapshotSpaceEnsName: ensName,
       snapshotSpaceSettings: newSpaceSettings,
+      chainId,
     })
     cidV0FromPinning = cidV0
   } catch (e) {

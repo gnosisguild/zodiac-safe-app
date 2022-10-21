@@ -7,6 +7,7 @@ if (BACKEND_API_URL == null) {
 interface RequestType {
   snapshotSpaceEnsName: string
   snapshotSpaceSettings: any
+  chainId: number
 }
 
 interface Responds {
