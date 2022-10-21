@@ -160,9 +160,9 @@ export const RealityModule: React.FC = () => {
         ? safeInfo.safeAddress
         : delayModuleExecutor
 
-    const statusLogger = (currentStatus: string, error: any) => {
+    const statusLogger = (currentStatus: string, error?: Error) => {
       if (error != null) {
-        logger.push({ error: true, msg: error })
+        logger.push({ error: true, msg: error.toString() })
         throw error
       } else {
         logger.push({ error: false, msg: currentStatus })
@@ -288,15 +288,15 @@ export const RealityModule: React.FC = () => {
                       />
                     )}
                     {label === "review" && (
-                        <ReviewSection
-                          handleNext={handleDone} // this is where we would execute the transactions!!
-                          handleBack={navigate(activeStep - 1, label, false)}
-                          goToStep={setActiveStep}
-                          setupData={setupData}
-                          delayModules={delayModules}
-                          loading={loading}
-                          statusLog={statusLog}
-                        />
+                      <ReviewSection
+                        handleNext={handleDone} // this is where we would execute the transactions!!
+                        handleBack={navigate(activeStep - 1, label, false)}
+                        goToStep={setActiveStep}
+                        setupData={setupData}
+                        delayModules={delayModules}
+                        loading={loading}
+                        statusLog={statusLog}
+                      />
                     )}
                   </StepContent>
                 </Step>

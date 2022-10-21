@@ -26,7 +26,7 @@ export const setup = async (
   safeInfo: SafeInfo,
   executorAddress: string,
   setupData: SetupData,
-  statusCallback: (currentStatus: string, error?: any) => void,
+  statusCallback: (currentStatus: string, error?: Error) => void,
 ) => {
   statusCallback("Setting up Reality Module deployment transactions")
   const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
@@ -90,7 +90,7 @@ export const setup = async (
 
   statusCallback("Proposing transactions to the Safe")
   await safeSdk.txs.send({ txs }).catch((e) => {
-    statusCallback("Error when proposing transactions to the Safe", e.message ?? "")
+    statusCallback("Error when proposing transactions to the Safe", e)
   })
 
   // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
