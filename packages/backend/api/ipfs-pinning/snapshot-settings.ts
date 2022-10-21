@@ -74,6 +74,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       .setHeader("Access-Control-Allow-Origin", "*")
       .send({
         cidV0,
+        success: true,
       })
   } catch (e) {
     console.error(e)
@@ -86,6 +87,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
       .send({
         name,
         message,
+        success: false,
       })
   }
 }
