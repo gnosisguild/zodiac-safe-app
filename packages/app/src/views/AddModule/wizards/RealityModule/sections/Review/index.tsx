@@ -146,7 +146,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         </Grid>
 
         {SECTIONS.map((item) => (
-          <>
+          <React.Fragment key={item.label}>
             <Grid item>
               <CircleStep
                 label={item.label}
@@ -309,7 +309,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
             <Grid item>
               <Divider />
             </Grid>
-          </>
+          </React.Fragment>
         ))}
 
         {delayModules.length >= 1 && (

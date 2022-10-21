@@ -283,16 +283,14 @@ export const RealityModule: React.FC = () => {
                       />
                     )}
                     {label === "review" && (
-                      <>
-                        <ReviewSection
-                          handleNext={handleDone} // this is where we would execute the transactions!!
-                          handleBack={navigate(activeStep - 1, label, false)}
-                          goToStep={setActiveStep}
-                          setupData={setupData}
-                          delayModules={delayModules}
-                          loading={loading}
-                        />
-                      </>
+                      <ReviewSection
+                        handleNext={handleDone} // this is where we would execute the transactions!!
+                        handleBack={navigate(activeStep - 1, label, false)}
+                        goToStep={setActiveStep}
+                        setupData={setupData}
+                        delayModules={delayModules}
+                        loading={loading}
+                      />
                     )}
                   </StepContent>
                 </Step>
