@@ -95,6 +95,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     monitoring ?? INITIAL_DATA,
   )
   const [emailValues, setEmailValues] = useState<MultiSelectValues[]>([])
+  const [invalidEmail, setInvalidEmail] = useState<boolean>(false)
   const [loadValidations, setLoadValidations] = useState<boolean>(false)
 
   const { apiKey, secretKey, email, discordKey, slackKey, telegram } = monitoringData
@@ -147,10 +148,20 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     setMonitoringData({ ...monitoringData, [fieldName]: event.target.value })
   }
 
-  const handleNewEmail = async (value: MultiSelectValues[]) => {
-    const list = value.map((item: MultiSelectValues) => item.value)
-    setEmailValues(value)
-    setMonitoringData({ ...monitoringData, email: list })
+  const isValidEmail = (email: string) => {
+    return /\S+@\S+\.\S+/.test(email)
+  }
+
+  const handleNewEmail = (values: MultiSelectValues[]) => {
+    const newestEmail = values[values.length - 1]?.value
+
+    if (isValidEmail(newestEmail) || newestEmail == null) {
+      setInvalidEmail(false)
+      setEmailValues(values)
+      setMonitoringData({ ...monitoringData, email: values.map((_) => _.value) })
+    } else {
+      setInvalidEmail(true)
+    }
   }
 
   const handleStatusMessage = (): string | null => {
@@ -278,6 +289,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <MultiSelect
+                invalidText={invalidEmail ? "Please provide a valid email" : undefined}
                 onChange={(values) => handleNewEmail(values as MultiSelectValues[])}
                 value={emailValues}
               />
@@ -296,7 +308,12 @@ export const MonitoringSection: React.FC<SectionProps> = ({
               <Typography>
                 To add a Discord integration, include the Discord channel&apos;s url
                 including key below. Find out more{" "}
-                <Link underline="always" href="" target={"_blank"} color="inherit">
+                <Link
+                  underline="always"
+                  href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
+                  target={"_blank"}
+                  color="inherit"
+                >
                   here.
                 </Link>
               </Typography>
@@ -325,7 +342,12 @@ export const MonitoringSection: React.FC<SectionProps> = ({
               <Typography>
                 To add a Telegram integration, include the telegram bot token and chat ID
                 below. Find out more{" "}
-                <Link underline="always" href="" target={"_blank"} color="inherit">
+                <Link
+                  underline="always"
+                  href="https://core.telegram.org/bots#6-botfather"
+                  target={"_blank"}
+                  color="inherit"
+                >
                   here.
                 </Link>
               </Typography>
@@ -374,7 +396,12 @@ export const MonitoringSection: React.FC<SectionProps> = ({
               <Typography>
                 To add a Slack integration, include the Slack channel&apos;s url including
                 key below. Find out more{" "}
-                <Link underline="always" href="" target={"_blank"} color="inherit">
+                <Link
+                  underline="always"
+                  href="https://docs.openzeppelin.com/defender/sentinel#notifications"
+                  target={"_blank"}
+                  color="inherit"
+                >
                   here.
                 </Link>
               </Typography>
