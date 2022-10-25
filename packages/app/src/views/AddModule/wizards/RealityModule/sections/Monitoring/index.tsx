@@ -152,27 +152,15 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     return /\S+@\S+\.\S+/.test(email)
   }
 
-  const handleNewEmail = async (value: MultiSelectValues[]) => {
-    const list: string[] = []
-    let invalid = false
-    value.forEach((item: MultiSelectValues) => {
-      if (isValidEmail(item.value)) {
-        list.push(item.value)
-        setInvalidEmail(false)
-        invalid = false
-        return
-      }
-      invalid = true
+  const handleNewEmail = (values: MultiSelectValues[]) => {
+    const newestEmail = values[values.length - 1]?.value
+
+    if (isValidEmail(newestEmail) || newestEmail == null) {
+      setInvalidEmail(false)
+      setEmailValues(values)
+      setMonitoringData({ ...monitoringData, email: values.map((_) => _.value) })
+    } else {
       setInvalidEmail(true)
-    })
-    if (!value.length) {
-      setEmailValues(value)
-      return
-    }
-    if (!invalid) {
-      setEmailValues(value)
-      setMonitoringData({ ...monitoringData, email: list })
-      return
     }
   }
 
