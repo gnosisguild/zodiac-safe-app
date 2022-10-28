@@ -75,6 +75,27 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
     rpcUrl: `https://goerli.infura.io/v3/${REACT_APP_INFURA_ID}`,
   },
+  [NETWORK.OPTIMISM]: {
+    networkExplorerName: "Optimistic",
+    networkExplorerUrl: "https://optimistic.etherscan.io/",
+    networkExplorerApiUrl: "https://api-optimistic.etherscan.io/api",
+    safeTransactionApi: "https://safe-transaction.optimism.gnosis.io/",
+    safeUrl: "https://gnosis-safe.io/app/oeth:",
+    verifyContractUrl: "https://optimistic.etherscan.io/verifyContract",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    rpcUrl: `https://optimism-mainnet.infura.io/v3/${REACT_APP_INFURA_ID}`,
+
+  },
+  [NETWORK.ARBITRUM]: {
+    networkExplorerName: "Arbiscan",
+    networkExplorerUrl: "https://arbiscan.io/",
+    networkExplorerApiUrl: "https://api.arbiscan.io/api",
+    safeTransactionApi: "https://safe-transaction.arbitrum.gnosis.io/",
+    safeUrl: "https://gnosis-safe.io/app/arb1:",
+    verifyContractUrl: "https://arbiscan.io/verifyContract",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${REACT_APP_INFURA_ID}`,
+  },
 }
 
 export const getNetworkExplorerInfo = (chainId: number) => {

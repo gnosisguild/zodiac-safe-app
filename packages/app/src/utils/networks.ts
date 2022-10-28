@@ -1,9 +1,11 @@
 export enum NETWORK {
   MAINNET = 1,
   GOERLI = 5,
+  OPTIMISM = 10,
   BSC = 56,
   GNOSIS_CHAIN = 100,
   POLYGON = 137,
+  ARBITRUM = 42161,
 }
 
 export interface Coin {
@@ -38,6 +40,12 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: "gor",
     nativeAsset: NATIVE_ASSET.ETH,
   },
+  [NETWORK.OPTIMISM]: {
+    chainId: NETWORK.OPTIMISM,
+    name: "optimism",
+    shortName: "oeth",
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
   [NETWORK.GNOSIS_CHAIN]: {
     chainId: NETWORK.GNOSIS_CHAIN,
     name: "gnosis_chain",
@@ -56,12 +64,20 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: "matic",
     nativeAsset: NATIVE_ASSET.MATIC,
   },
+  [NETWORK.ARBITRUM]: {
+    chainId: NETWORK.ARBITRUM,
+    name: "arbitrum",
+    shortName: "arb1",
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
 }
 
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.MAINNET]: NATIVE_ASSET.ETH,
   [NETWORK.GOERLI]: NATIVE_ASSET.ETH,
+  [NETWORK.OPTIMISM]: NATIVE_ASSET.ETH,
   [NETWORK.GNOSIS_CHAIN]: NATIVE_ASSET.XDAI,
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
+  [NETWORK.ARBITRUM]: NATIVE_ASSET.ETH,
 }
