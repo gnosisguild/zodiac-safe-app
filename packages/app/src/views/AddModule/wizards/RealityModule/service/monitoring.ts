@@ -18,12 +18,14 @@ interface NotificationChannels {
 interface RequestType extends MonitoringCredentials {
   network: string
   realityModuleAddress: string
+  oracleAddress: string
   notificationChannels: NotificationChannels[]
 }
 
 export const setUpMonitoring = async (
   network: string,
   realityModuleAddress: string,
+  oracleAddress: string,
   data: MonitoringSectionData,
 ) => {
   console.log()
@@ -84,6 +86,7 @@ export const setUpMonitoring = async (
     apiKey: data.apiKey,
     apiSecret: data.secretKey,
     network,
+    oracleAddress,
     realityModuleAddress,
     notificationChannels,
   }

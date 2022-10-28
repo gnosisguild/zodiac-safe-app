@@ -83,6 +83,7 @@ export const setup = async (
   await setUpMonitoring(
     NETWORKS[safeInfo.chainId as NETWORK].name,
     realityModuleAddress,
+    setupData.oracle.instanceData.instanceAddress,
     setupData.monitoring,
   ).catch((e) => {
     statusCallback("Error when setting up monitoring.", e)
