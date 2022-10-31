@@ -2,12 +2,12 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Link, makeStyles, Typography } from "@material-ui/core"
 import { Address } from "components/ethereum/Address"
 import { Row } from "components/layout/Row"
-import * as safeAppLink from "utils/safeAppLink"
 
 import React from "react"
 import { Module } from "store/modules/models"
 import { NETWORK, NETWORKS } from "utils/networks"
 import { PanelItemProps } from "./PanelItem"
+import { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 
 interface RoleModuleItemProps extends PanelItemProps {
   module: Module
@@ -42,23 +42,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module, ...rest }) => {
+export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles()
-  const { safe } = useSafeAppsSDK()
-
-  const handleClick = () => {
-    const chainId = safe.chainId as number
-    const currentChainShortName = NETWORKS[chainId as NETWORK].shortName
-    const newUrl = safeAppLink.getLink(
-      safe.chainId,
-      safe.safeAddress,
-      `https://localhost:3000/%23/${currentChainShortName}:${module.address}`,
-    )
-
-    if (newUrl != null) {
-      window.open(newUrl, "_blank")
-    }
-  }
+  const { safe: safeInfo } = useSafeAppsSDK()
+  const rolesAddress = module.address
 
   return (
     <div className={classes.root}>
@@ -80,7 +67,9 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module, ...rest 
           color="textPrimary"
           noWrap
           className={classes.link}
-          onClick={handleClick}
+          onClick={() => {
+            window.parent.location.href = embedRolesAppUrl(safeInfo, rolesAddress)
+          }}
           underline="always"
         >
           Open Roles App
@@ -88,4 +77,23 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module, ...rest 
       </Row>
     </div>
   )
+}
+
+function embedRolesAppUrl(safeInfo: SafeInfo, rolesAddress: string) {
+  const chainPrefix = NETWORKS[safeInfo.chainId as NETWORK].shortName
+  const hasAncestor =
+    Array.isArray(window.location.ancestorOrigins) &&
+    window.location.ancestorOrigins.length > 0
+
+  const origin = hasAncestor
+    ? window.location.ancestorOrigins[0]
+    : "https://gnosis-safe.io"
+
+  const pathname = `/app/${chainPrefix}:${safeInfo.safeAddress}/apps`
+
+  const params = new URLSearchParams({
+    appUrl: `https://roles.gnosisguild.org/#/${chainPrefix}:${rolesAddress}`,
+  })
+
+  return new URL(`${origin}${pathname}?${params}`).href
 }
