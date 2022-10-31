@@ -80,19 +80,14 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
 }
 
 function embedRolesAppUrl(safeInfo: SafeInfo, rolesAddress: string) {
-  const chainPrefix = NETWORKS[safeInfo.chainId as NETWORK].shortName
-  const hasAncestor =
-    Array.isArray(window.location.ancestorOrigins) &&
-    window.location.ancestorOrigins.length > 0
+  const chainName = NETWORKS[safeInfo.chainId as NETWORK].shortName
 
-  const origin = hasAncestor
-    ? window.location.ancestorOrigins[0]
-    : "https://gnosis-safe.io"
+  const origin = "https://gnosis-safe.io"
 
-  const pathname = `/app/${chainPrefix}:${safeInfo.safeAddress}/apps`
+  const pathname = `/app/${chainName}:${safeInfo.safeAddress}/apps`
 
   const params = new URLSearchParams({
-    appUrl: `https://roles.gnosisguild.org/#/${chainPrefix}:${rolesAddress}`,
+    appUrl: `https://roles.gnosisguild.org/#/${chainName}:${rolesAddress}`,
   })
 
   return new URL(`${origin}${pathname}?${params}`).href
