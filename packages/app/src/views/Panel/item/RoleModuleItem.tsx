@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
+export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module, ...rest }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
 
@@ -52,7 +52,7 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
     const newUrl = safeAppLink.getLink(
       safe.chainId,
       safe.safeAddress,
-      `https://roles.gnosisguild.org/%23/${currentChainShortName}:${module.owner}`,
+      `https://localhost:3000/%23/${currentChainShortName}:${module.address}`,
     )
 
     if (newUrl != null) {
