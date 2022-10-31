@@ -72,7 +72,7 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
           }}
           underline="always"
         >
-          Open Roles App
+          Edit Roles
         </Link>
       </Row>
     </div>
