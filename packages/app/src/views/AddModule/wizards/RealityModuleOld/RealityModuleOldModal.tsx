@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core"
 import { Grow } from "../../../../components/layout/Grow"
 import { ethers } from "ethers"
@@ -18,6 +17,7 @@ import { arbitratorOptions, ArbitratorSelect } from "components/input/Arbitrator
 import { AttachModuleForm } from "../components/AttachModuleForm"
 import { ModuleType } from "store/modules/models"
 import { deployRealityModule } from "./services/moduleDeploymentOld"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 const SECONDS_IN_DAY = 86400
 
@@ -56,7 +56,7 @@ export const RealityModuleOldModal = ({
   onSubmit,
 }: RealityModuleModalProps) => {
   const classes = useStyles()
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
   const delayModules = useRootSelector(getDelayModules)
   const [isERC20, setERC20] = useState(false)
   const [delayModule, setDelayModule] = useState<string>(
@@ -83,7 +83,7 @@ export const RealityModuleOldModal = ({
 
   useEffect(() => {
     if (params.oracle && ethers.utils.isAddress(params.oracle)) {
-      getArbitratorBondToken(params.oracle, safe.chainId)
+      getArbitratorBondToken(provider, params.oracle, safe.chainId)
         .then((response) => {
           setBondToken(response.coin)
           setERC20(response.isERC20)
@@ -93,7 +93,7 @@ export const RealityModuleOldModal = ({
           setERC20(false)
         })
     }
-  }, [params.oracle, safe.chainId])
+  }, [params.oracle, safe.chainId, provider])
 
   const onParamChange = <Field extends keyof RealityModuleParams>(
     field: Field,
@@ -119,7 +119,13 @@ export const RealityModuleOldModal = ({
         executor: delayModule || safe.safeAddress,
         bond: minimumBond.toString(),
       }
-      const txs = await deployRealityModule(safe.safeAddress, safe.chainId, args, isERC20)
+      const txs = await deployRealityModule(
+        provider,
+        safe.safeAddress,
+        safe.chainId,
+        args,
+        isERC20,
+      )
 
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()

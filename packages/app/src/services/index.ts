@@ -8,12 +8,14 @@ import {
 } from "@gnosis.pm/zodiac"
 import { AddressOne, buildTransaction, SafeAbi } from "./helpers"
 import { ContractInterface } from "@ethersproject/contracts"
-import { Transaction } from "@gnosis.pm/safe-apps-sdk"
+import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
 import { getNetworkExplorerInfo } from "../utils/explorers"
-import { SafeInfo, SafeTransaction } from "../store/modules/models"
+import { SafeTransaction, SafeStatusResponse } from "../store/modules/models"
 import { NETWORK } from "../utils/networks"
 import { ERC721_CONTRACT_ABI } from "./reality-eth"
 import { scaleBondDecimals } from "components/input/CollateralSelect"
+
+type JsonRpcProvider = ethers.providers.JsonRpcProvider
 
 export enum ARBITRATOR_OPTIONS {
   NO_ARBITRATOR,
@@ -22,7 +24,7 @@ export enum ARBITRATOR_OPTIONS {
 }
 
 export type TxWitMeta = {
-  txs: Transaction[]
+  txs: BaseTransaction[]
   meta?: { [key: string]: string }
 }
 
@@ -63,14 +65,6 @@ export interface AMBModuleParams {
 export interface ExitModuleParams {
   executor: string
   tokenContract: string
-}
-
-export function getProvider(chainId: NETWORK): ethers.providers.JsonRpcProvider {
-  const network = getNetworkExplorerInfo(chainId)
-  if (network) {
-    return new ethers.providers.JsonRpcProvider(network.rpcUrl, chainId)
-  }
-  return new ethers.providers.InfuraProvider(chainId, process.env.REACT_APP_INFURA_ID)
 }
 
 export function getTellorOracle(chainId: number): string {
@@ -173,13 +167,13 @@ export function getArbitrator(chainId: number, arbitratorOption: number): string
 }
 
 export function deployTellorModule(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: TellorModuleParams,
 ) {
   const type = KnownContracts.TELLOR
   const { oracle, cooldown, expiration, executor } = args
-  const provider = getProvider(chainId)
   const oracleAddress = oracle || getTellorOracle(chainId)
 
   const {
@@ -196,7 +190,7 @@ export function deployTellorModule(
     Date.now().toString(),
   )
 
-  const daoModuleTransactions: Transaction[] = [
+  const daoModuleTransactions: BaseTransaction[] = [
     {
       ...daoModuleDeploymentTx,
       value: daoModuleDeploymentTx.value.toString(),
@@ -212,6 +206,7 @@ export function deployTellorModule(
     daoModuleTransactions.push(addModuleTransaction)
   } else {
     const enableDaoModuleTransaction = enableModule(
+      provider,
       safeAddress,
       chainId,
       daoModuleExpectedAddress,
@@ -223,11 +218,11 @@ export function deployTellorModule(
 }
 
 export function deployDelayModule(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: DelayModuleParams,
 ) {
-  const provider = getProvider(chainId)
   const { cooldown, expiration, executor } = args as unknown as DelayModuleParams
   const {
     transaction: delayModuleDeploymentTx,
@@ -243,6 +238,7 @@ export function deployDelayModule(
     Date.now().toString(),
   )
   const enableDelayModuleTransaction = enableModule(
+    provider,
     safeAddress,
     chainId,
     delayModuleExpectedAddress,
@@ -258,11 +254,11 @@ export function deployDelayModule(
 }
 
 export function deployBridgeModule(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: AMBModuleParams,
 ) {
-  const provider = getProvider(chainId)
   const { executor, controller, amb, chainId: ambChainId } = args
 
   const { transaction, expectedModuleAddress } = deployAndSetUpModule(
@@ -284,6 +280,7 @@ export function deployBridgeModule(
   )
 
   const enableModuleTransaction = enableModule(
+    provider,
     safeAddress,
     chainId,
     expectedModuleAddress,
@@ -299,6 +296,7 @@ export function deployBridgeModule(
 }
 
 export function deployCirculatingSupplyContract(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   token: string,
@@ -309,7 +307,6 @@ export function deployCirculatingSupplyContract(
     ? KnownContracts.CIRCULATING_SUPPLY_ERC721
     : KnownContracts.CIRCULATING_SUPPLY_ERC20
 
-  const provider = getProvider(chainId)
   const { factory, module: circulatingSupplyContract } = getFactoryAndMasterCopy(
     type,
     provider,
@@ -350,12 +347,12 @@ export function deployCirculatingSupplyContract(
 }
 
 export async function deployExitModule(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: ExitModuleParams,
 ) {
-  const provider = getProvider(chainId)
-  const txs: Transaction[] = []
+  const txs: BaseTransaction[] = []
   const { executor, tokenContract } = args
 
   let isERC721 = false
@@ -370,6 +367,7 @@ export async function deployExitModule(
     transaction: deployCirculationSupplyTx,
     expectedAddress: circulatingSupplyAddress,
   } = deployCirculatingSupplyContract(
+    provider,
     safeAddress,
     chainId,
     tokenContract,
@@ -403,6 +401,7 @@ export async function deployExitModule(
   })
 
   const enableModuleTransaction = enableModule(
+    provider,
     safeAddress,
     chainId,
     expectedModuleAddress,
@@ -412,26 +411,33 @@ export async function deployExitModule(
   return txs
 }
 
-export async function fetchSafeModulesAddress(safeAddress: string, chainId: number) {
-  const provider = getProvider(chainId)
+export async function fetchSafeModulesAddress(
+  provider: JsonRpcProvider,
+  safeAddress: string,
+  chainId: number,
+) {
   const safe = new Contract(safeAddress, SafeAbi, provider)
   const [modules] = await safe.getModulesPaginated(AddressOne, 50)
   return modules as string[]
 }
 
-export function enableModule(safeAddress: string, chainId: number, module: string) {
-  const provider = getProvider(chainId)
+export function enableModule(
+  provider: JsonRpcProvider,
+  safeAddress: string,
+  chainId: number,
+  module: string,
+) {
   const safe = new Contract(safeAddress, SafeAbi, provider)
   return buildTransaction(safe, "enableModule", [module])
 }
 
 export async function disableModule(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   module: string,
 ) {
-  const provider = getProvider(chainId)
-  const modules = await fetchSafeModulesAddress(safeAddress, chainId)
+  const modules = await fetchSafeModulesAddress(provider, safeAddress, chainId)
   if (!modules.length) throw new Error("Safe does not have enabled modules")
   let prevModule = AddressOne
   const safe = new Contract(safeAddress, SafeAbi, provider)
@@ -447,13 +453,14 @@ export async function disableModule(
 }
 
 export const callContract = (
+  provider: JsonRpcProvider,
   chainId: number,
   address: string,
   abi: ContractInterface,
   method: string,
   data: any[] = [],
 ) => {
-  const contract = new Contract(address, abi, getProvider(chainId))
+  const contract = new Contract(address, abi, provider)
   return contract.functions[method](...data)
 }
 
@@ -478,7 +485,7 @@ export async function fetchSafeTransactions(
   return response.results as SafeTransaction[]
 }
 
-export async function fetchSafeInfo(chainId: number, safeAddress: string) {
+export async function fetchSafeStatusFromAPI(chainId: number, safeAddress: string) {
   const network = getNetworkExplorerInfo(chainId)
   if (!network) throw new Error("invalid network")
 
@@ -486,15 +493,15 @@ export async function fetchSafeInfo(chainId: number, safeAddress: string) {
 
   const request = await fetch(url.toString())
   const response = await request.json()
-  return response as SafeInfo
+  return response as SafeStatusResponse
 }
 
 export function deployRolesModifier(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: RolesModifierParams,
 ) {
-  const provider = getProvider(chainId)
   const { target } = args
   const {
     transaction: rolesModifierDeploymentTx,
@@ -510,6 +517,7 @@ export function deployRolesModifier(
     Date.now().toString(),
   )
   const enableRolesModifierTransaction = enableModule(
+    provider,
     safeAddress,
     chainId,
     rolesModifierExpectedAddress,
@@ -525,12 +533,12 @@ export function deployRolesModifier(
 }
 
 export function deployOptimisticGovernorModule(
+  provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: OptimisticGovernorModuleParams,
 ) {
   const type = KnownContracts.OPTIMISTIC_GOVERNOR
-  const provider = getProvider(chainId)
 
   const { executor, collateral, bond, rules, identifier, liveness } = args
 
@@ -550,7 +558,7 @@ export function deployOptimisticGovernorModule(
     Date.now().toString(),
   )
 
-  const daoModuleTransactions: Transaction[] = [
+  const daoModuleTransactions: BaseTransaction[] = [
     {
       ...daoModuleDeploymentTx,
       value: daoModuleDeploymentTx.value.toString(),
@@ -566,6 +574,7 @@ export function deployOptimisticGovernorModule(
     daoModuleTransactions.push(addModuleTransaction)
   } else {
     const enableDaoModuleTransaction = enableModule(
+      provider,
       safeAddress,
       chainId,
       daoModuleExpectedAddress,

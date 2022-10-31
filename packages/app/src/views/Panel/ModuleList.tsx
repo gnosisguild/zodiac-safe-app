@@ -19,7 +19,7 @@ import { PendingModuleStates } from "./PendingModuleStates"
 import { Column } from "../../components/layout/Column"
 import { isPendingModule } from "../../store/modules/helpers"
 import { ReactComponent as ModuleStackIcon } from "../../assets/icons/module-inherit.svg"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface ModuleListProps {
   modules: Module[]
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const classes = useStyles()
-  const { safe, sdk } = useSafeAppsSDK()
+  const { safe, sdk, provider } = useSafeAppsSDKWithProvider()
 
   const dispatch = useRootDispatch()
   const currentModule = useRootSelector(getCurrentModule)
@@ -83,6 +83,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
       const exec = () => {
         dispatch(
           fetchModulesList({
+            provider,
             safeSDK: sdk,
             chainId: safe.chainId,
             safeAddress: safe.safeAddress,
@@ -100,7 +101,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
         clearInterval(intervalId)
       }
     }
-  }, [sdk, dispatch, safe, intervalId])
+  }, [sdk, dispatch, safe, intervalId, provider])
 
   if (modulesLoading) {
     return (

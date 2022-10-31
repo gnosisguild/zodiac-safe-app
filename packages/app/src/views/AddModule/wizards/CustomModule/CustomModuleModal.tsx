@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { Interface, ParamType } from "@ethersproject/abi"
 import { enableModule } from "services"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { ActionButton } from "../../../../components/ActionButton"
 import { ReactComponent as AddIcon } from "../../../../assets/icons/add-icon.svg"
@@ -12,6 +11,7 @@ import { addTransaction } from "../../../../store/transactionBuilder"
 import { SafeAbi } from "../../../../services/helpers"
 import { serializeTransaction } from "../../../../store/transactionBuilder/helpers"
 import { ReactComponent as ArrowUpIcon } from "../../../../assets/icons/arrow-up-icon.svg"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface AddCustomModuleProps {
   open: boolean
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModuleProps) => {
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
   const classes = useStyles()
 
@@ -55,7 +55,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
   }
 
   const addModule = async () => {
-    const tx = enableModule(safe.safeAddress, safe.chainId, moduleAddress)
+    const tx = enableModule(provider, safe.safeAddress, safe.chainId, moduleAddress)
 
     try {
       await sdk.txs.send({ txs: [tx] })

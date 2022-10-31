@@ -3,9 +3,10 @@ import {
   getModuleInstance,
   KnownContracts,
 } from "@gnosis.pm/zodiac"
-import { enableModule, getDefaultOracle, getProvider } from "services"
-import { Transaction } from "@gnosis.pm/safe-apps-sdk"
+import { enableModule, getDefaultOracle } from "services"
+import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
 import { buildTransaction } from "services/helpers"
+import { ethers } from "ethers"
 
 interface RealityModuleParams {
   executor: string
@@ -19,6 +20,7 @@ interface RealityModuleParams {
 }
 
 export function deployRealityModule(
+  provider: ethers.providers.JsonRpcProvider,
   safeAddress: string,
   chainId: number,
   args: RealityModuleParams,
@@ -37,7 +39,6 @@ export function deployRealityModule(
     executor,
     arbitrator,
   } = args
-  const provider = getProvider(chainId)
   const oracleAddress = oracle || getDefaultOracle(chainId)
   const {
     transaction: daoModuleDeploymentTx,
@@ -75,7 +76,7 @@ export function deployRealityModule(
     Date.now().toString(),
   )
 
-  const daoModuleTransactions: Transaction[] = [
+  const daoModuleTransactions: BaseTransaction[] = [
     {
       ...daoModuleDeploymentTx,
       value: daoModuleDeploymentTx.value.toString(),
@@ -91,6 +92,7 @@ export function deployRealityModule(
     daoModuleTransactions.push(addModuleTransaction)
   } else {
     const enableDaoModuleTransaction = enableModule(
+      provider,
       safeAddress,
       chainId,
       daoModuleExpectedAddress,

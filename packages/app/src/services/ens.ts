@@ -1,5 +1,5 @@
 import { ethers } from "ethers"
-import { Transaction } from "@gnosis.pm/safe-apps-sdk"
+import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
 
 /**
  * This only works for domains using a resolver that conforms to the `abiPublicResolver` (like the PublicResolver).
@@ -26,7 +26,7 @@ export const setTextRecordTx = async (
   ensName: string,
   key: string,
   content: string,
-): Promise<Transaction> => {
+): Promise<BaseTransaction> => {
   const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, provider)
   const nameHash = ethers.utils.namehash(ensName)
   const ensResolver = await ensRegistryContract.resolver(nameHash)

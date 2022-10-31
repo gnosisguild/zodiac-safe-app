@@ -1,30 +1,27 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core";
-import { HashInfo } from "../../components/ethereum/HashInfo";
-import { ActionButton } from "../../components/ActionButton";
-import { Address } from "../../components/ethereum/Address";
-import { Module } from "../../store/modules/models";
-import { disableModule } from "services";
-import { useRootDispatch, useRootSelector } from "../../store";
-import { getPendingRemoveModuleTransactions } from "../../store/modules/selectors";
-import {
-  addTransaction,
-  openTransactionBuilder,
-} from "../../store/transactionBuilder";
+import React from "react"
+import { makeStyles } from "@material-ui/core"
+import { HashInfo } from "../../components/ethereum/HashInfo"
+import { ActionButton } from "../../components/ActionButton"
+import { Address } from "../../components/ethereum/Address"
+import { Module } from "../../store/modules/models"
+import { disableModule } from "services"
+import { useRootDispatch, useRootSelector } from "../../store"
+import { getPendingRemoveModuleTransactions } from "../../store/modules/selectors"
+import { addTransaction, openTransactionBuilder } from "../../store/transactionBuilder"
 import {
   getRemoveModuleTxId,
   serializeTransaction,
-} from "../../store/transactionBuilder/helpers";
-import { Transaction } from "../../store/transactionBuilder/models";
-import { SafeAbi } from "../../services/helpers";
-import { ReactComponent as RemoveIcon } from "../../assets/icons/delete-icon.svg";
-import { Interface } from "@ethersproject/abi";
-import { getTransactions } from "../../store/transactionBuilder/selectors";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grow } from "../../components/layout/Grow";
+} from "../../store/transactionBuilder/helpers"
+import { Transaction } from "../../store/transactionBuilder/models"
+import { SafeAbi } from "../../services/helpers"
+import { ReactComponent as RemoveIcon } from "../../assets/icons/delete-icon.svg"
+import { Interface } from "@ethersproject/abi"
+import { getTransactions } from "../../store/transactionBuilder/selectors"
+import { Grow } from "../../components/layout/Grow"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface ModuleDetailHeaderProps {
-  module: Module;
+  module: Module
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -47,56 +44,52 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
   },
   removeButton: {},
-}));
+}))
 
 export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
-  const classes = useStyles();
-  const dispatch = useRootDispatch();
-  const { safe } = useSafeAppsSDK();
+  const classes = useStyles()
+  const dispatch = useRootDispatch()
+  const { safe, provider } = useSafeAppsSDKWithProvider()
   const pendingRemoveModuleTransactions = useRootSelector(
-    getPendingRemoveModuleTransactions
-  );
-  const txBuildersTransaction = useRootSelector(getTransactions);
+    getPendingRemoveModuleTransactions,
+  )
+  const txBuildersTransaction = useRootSelector(getTransactions)
 
   const isRemoveTxOnQueue = txBuildersTransaction.some(
-    (tx) => tx.id === getRemoveModuleTxId(module)
-  );
+    (tx) => tx.id === getRemoveModuleTxId(module),
+  )
   const isModuleToBeRemoved = pendingRemoveModuleTransactions
     .map((pending) => pending.address)
-    .includes(module.address);
-  const disabledRemoveButton = isRemoveTxOnQueue || isModuleToBeRemoved;
+    .includes(module.address)
+  const disabledRemoveButton = isRemoveTxOnQueue || isModuleToBeRemoved
 
   const removeModule = async () => {
     try {
       const { params } = await disableModule(
+        provider,
         module.parentModule,
         safe.chainId,
-        module.address
-      );
-      const safeInterface = new Interface(SafeAbi);
-      const disableModuleFunc = safeInterface.getFunction("disableModule");
+        module.address,
+      )
+      const safeInterface = new Interface(SafeAbi)
+      const disableModuleFunc = safeInterface.getFunction("disableModule")
       const transaction: Transaction = {
         module,
         params,
         id: getRemoveModuleTxId(module),
         func: disableModuleFunc,
         to: module.parentModule,
-      };
-      dispatch(addTransaction(serializeTransaction(transaction)));
-      dispatch(openTransactionBuilder());
+      }
+      dispatch(addTransaction(serializeTransaction(transaction)))
+      dispatch(openTransactionBuilder())
     } catch (error) {
-      console.warn("could not remove module", error);
+      console.warn("could not remove module", error)
     }
-  };
+  }
 
   return (
     <div className={classes.header}>
-      <HashInfo
-        showAvatar
-        showHash={false}
-        avatarSize="lg"
-        hash={module.address}
-      />
+      <HashInfo showAvatar showHash={false} avatarSize="lg" hash={module.address} />
       <Address
         short
         address={module.address}
@@ -119,5 +112,5 @@ export const ModuleDetailHeader = ({ module }: ModuleDetailHeaderProps) => {
         Remove
       </ActionButton>
     </div>
-  );
-};
+  )
+}

@@ -1,31 +1,27 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { FunctionFragment } from "@ethersproject/abi";
-import { Box, makeStyles, Typography } from "@material-ui/core";
-import { Collapsable } from "../../../components/Collapsable";
-import classNames from "classnames";
-import { useContractQuery } from "../../../hooks/useContractQuery";
-import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
-import { ContractFunctionResult } from "./ContractFunctionResult";
-import { ContractFunctionHeader } from "./ContractFunctionHeader";
-import {
-  formatValue,
-  isBasicFunction,
-  isOneResult,
-} from "../../../utils/contracts";
-import { Row } from "../../../components/layout/Row";
-import { ContractFunctionError } from "./ContractFunctionError";
-import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg";
-import { ActionButton } from "../../../components/ActionButton";
-import { ParamInput } from "../../../components/ethereum/ParamInput";
-import { useRootSelector } from "../../../store";
-import { getReloadCount } from "../../../store/modules/selectors";
-import { ArrowIcon } from "../../../components/icons/ArrowIcon";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Grow } from "../../../components/layout/Grow";
+import React, { useCallback, useEffect, useState } from "react"
+import { FunctionFragment } from "@ethersproject/abi"
+import { Box, makeStyles, Typography } from "@material-ui/core"
+import { Collapsable } from "../../../components/Collapsable"
+import classNames from "classnames"
+import { useContractQuery } from "../../../hooks/useContractQuery"
+import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm"
+import { ContractFunctionResult } from "./ContractFunctionResult"
+import { ContractFunctionHeader } from "./ContractFunctionHeader"
+import { formatValue, isBasicFunction, isOneResult } from "../../../utils/contracts"
+import { Row } from "../../../components/layout/Row"
+import { ContractFunctionError } from "./ContractFunctionError"
+import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg"
+import { ActionButton } from "../../../components/ActionButton"
+import { ParamInput } from "../../../components/ethereum/ParamInput"
+import { useRootSelector } from "../../../store"
+import { getReloadCount } from "../../../store/modules/selectors"
+import { ArrowIcon } from "../../../components/icons/ArrowIcon"
+import { Grow } from "../../../components/layout/Grow"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface ContractFunctionBlockProps {
-  address: string;
-  func: FunctionFragment;
+  address: string
+  func: FunctionFragment
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -44,54 +40,51 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginRight: theme.spacing(1),
   },
-}));
+}))
 
 export const ContractFunctionQueryBlock = ({
   address,
   func,
 }: ContractFunctionBlockProps) => {
-  const classes = useStyles();
-  const reloadCount = useRootSelector(getReloadCount);
-  const { safe } = useSafeAppsSDK();
+  const classes = useStyles()
+  const reloadCount = useRootSelector(getReloadCount)
+  const { safe, provider } = useSafeAppsSDKWithProvider()
 
-  const [open, setOpen] = useState(false);
-  const [lastQueryDate, setLastQueryDate] = useState<Date>();
+  const [open, setOpen] = useState(false)
+  const [lastQueryDate, setLastQueryDate] = useState<Date>()
 
-  const { loading, result, fetch, error } = useContractQuery();
+  const { loading, result, fetch, error } = useContractQuery()
 
-  const isBasic = isBasicFunction(func);
-  const oneResult = isOneResult(func);
+  const isBasic = isBasicFunction(func)
+  const oneResult = isOneResult(func)
 
-  const baseType = oneResult && func.outputs ? func.outputs[0].baseType : "";
+  const baseType = oneResult && func.outputs ? func.outputs[0].baseType : ""
   const resultLength =
-    result === undefined || !oneResult
-      ? 0
-      : formatValue(baseType, result[0]).length;
+    result === undefined || !oneResult ? 0 : formatValue(baseType, result[0]).length
 
   const execQuery = useCallback(
     (params?: any[]) => {
-      setLastQueryDate(undefined);
-      fetch(safe.chainId, address, [func], func.name, params);
+      setLastQueryDate(undefined)
+      fetch(provider, safe.chainId, address, [func], func.name, params)
     },
-    [address, fetch, func, safe.chainId]
-  );
+    [address, fetch, func, safe.chainId, provider],
+  )
 
   useEffect(() => {
     if (!loading && result) {
-      setLastQueryDate(new Date());
+      setLastQueryDate(new Date())
     }
-  }, [loading, result]);
+  }, [loading, result])
 
   useEffect(() => {
     if (isBasic) {
-      execQuery();
+      execQuery()
     }
-  }, [execQuery, isBasic, reloadCount]);
+  }, [execQuery, isBasic, reloadCount])
 
-  const maxResultLength = 60;
-  const showResultOnHeader =
-    oneResult && resultLength < maxResultLength && !error;
-  const collapsable = !showResultOnHeader || !isBasic;
+  const maxResultLength = 60
+  const showResultOnHeader = oneResult && resultLength < maxResultLength && !error
+  const collapsable = !showResultOnHeader || !isBasic
 
   const content = (
     <>
@@ -122,7 +115,7 @@ export const ContractFunctionQueryBlock = ({
         )}
       </ContractQueryForm>
     </>
-  );
+  )
 
   return (
     <Collapsable open={open && collapsable} content={content}>
@@ -140,10 +133,8 @@ export const ContractFunctionQueryBlock = ({
           date={lastQueryDate}
           showResult={showResultOnHeader}
         />
-        {collapsable ? (
-          <ArrowIcon up={open} className={classes.expandIcon} />
-        ) : null}
+        {collapsable ? <ArrowIcon up={open} className={classes.expandIcon} /> : null}
       </Row>
     </Collapsable>
-  );
-};
+  )
+}

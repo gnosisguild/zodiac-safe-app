@@ -1,14 +1,7 @@
-import {
-  Contract as MultiCallContract,
-  Provider as MultiCallProvider,
-} from "ethcall";
-import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
-import {
-  CONTRACT_ADDRESSES,
-  getModuleInstance,
-  KnownContracts,
-} from "@gnosis.pm/zodiac";
-import { getModuleData } from "../../utils/contracts";
+import { Contract as MultiCallContract, Provider as MultiCallProvider } from "ethcall"
+import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
+import { CONTRACT_ADDRESSES, getModuleInstance, KnownContracts } from "@gnosis.pm/zodiac"
+import { getModuleData } from "../../utils/contracts"
 import {
   DataDecoded,
   DecodedTransaction,
@@ -23,50 +16,50 @@ import {
   PendingModule,
   RealityModule,
   SafeTransaction,
-} from "./models";
-import { Contract, ethers } from "ethers";
-import { getProvider } from "../../services";
-import { NETWORK } from "../../utils/networks";
+} from "./models"
+import { Contract, ethers } from "ethers"
+import { NETWORK } from "../../utils/networks"
 
-export const AddressOne = "0x0000000000000000000000000000000000000001";
+export const AddressOne = "0x0000000000000000000000000000000000000001"
 
 export function isDelayModule(module: Module): module is DelayModule {
-  return module.type === ModuleType.DELAY;
+  return module.type === ModuleType.DELAY
 }
 
 export function isRolesModule(module: Module): module is DelayModule {
-  return module.type === ModuleType.ROLES;
+  return module.type === ModuleType.ROLES
 }
 
 export function isRealityModule(module: Module): module is RealityModule {
   return (
-    module.type === ModuleType.REALITY_ETH ||
-    module.type === ModuleType.REALITY_ERC20
-  );
+    module.type === ModuleType.REALITY_ETH || module.type === ModuleType.REALITY_ERC20
+  )
 }
 
 export const sanitizeModule = async (
+  provider: ethers.providers.JsonRpcProvider,
   moduleAddress: string,
   sdk: SafeAppsSDK,
   chainId: number,
   parentModule: string,
-  parentModulesList: string[] = [moduleAddress]
+  parentModulesList: string[] = [moduleAddress],
 ): Promise<Module> => {
-  const module = await getModuleData(sdk, chainId, moduleAddress);
+  const module = await getModuleData(provider, sdk, chainId, moduleAddress)
 
   if (module.type === ModuleType.DELAY) {
-    return await fetchDelayModule(moduleAddress, sdk, chainId, parentModule);
+    return await fetchDelayModule(provider, moduleAddress, sdk, chainId, parentModule)
   }
 
   const subModules = await fetchSubModules(
+    provider,
     moduleAddress,
     module.abi,
     sdk,
     chainId,
-    parentModulesList
-  );
+    parentModulesList,
+  )
 
-  const owner = await fetchModuleOwner(moduleAddress, module.abi, chainId);
+  const owner = await fetchModuleOwner(provider, moduleAddress, module.abi, chainId)
 
   return {
     owner,
@@ -76,60 +69,57 @@ export const sanitizeModule = async (
     type: module.type,
     address: moduleAddress,
     parentModule: parentModule,
-  };
-};
+  }
+}
 
 export async function fetchDelayModule(
+  provider: ethers.providers.JsonRpcProvider,
   address: string,
   sdk: SafeAppsSDK,
   chainId: NETWORK,
-  parentModule: string
+  parentModule: string,
 ): Promise<DelayModule | Module> {
-  const provider = getProvider(chainId);
-  const delayModule = await getModuleInstance(
-    KnownContracts.DELAY,
-    address,
-    provider
-  );
-  const abi = delayModule.interface.fragments.map((frag) => frag);
+  const delayModule = await getModuleInstance(KnownContracts.DELAY, address, provider)
+  const abi = delayModule.interface.fragments.map((frag) => frag)
 
   try {
-    const moduleContract = new MultiCallContract(delayModule.address, abi);
+    const moduleContract = new MultiCallContract(delayModule.address, abi)
 
-    const ethCallProvider = new MultiCallProvider();
-    await ethCallProvider.init(provider);
+    const ethCallProvider = new MultiCallProvider()
+    await ethCallProvider.init(provider)
 
-    const txCooldown = moduleContract.txCooldown();
-    const txExpiration = moduleContract.txExpiration();
-    const modules = moduleContract.getModulesPaginated(AddressOne, 50);
+    const txCooldown = moduleContract.txCooldown()
+    const txExpiration = moduleContract.txExpiration()
+    const modules = moduleContract.getModulesPaginated(AddressOne, 50)
 
     let [cooldown, expiration, [subModules]] = await ethCallProvider.all([
       txCooldown,
       txExpiration,
       modules,
-    ]);
+    ])
 
     if (subModules) {
       const requests = (subModules as string[]).map(
         async (moduleAddress, index): Promise<Module> => {
           const subModule = await sanitizeModule(
+            provider,
             moduleAddress,
             sdk,
             chainId,
-            parentModule
-          );
+            parentModule,
+          )
           return {
             ...subModule,
             id: `${address}_${moduleAddress}_${index}`,
             parentModule: address,
-          };
-        }
-      );
-      requests.reverse();
-      subModules = await Promise.all(requests);
+          }
+        },
+      )
+      requests.reverse()
+      subModules = await Promise.all(requests)
     }
 
-    const owner = await fetchModuleOwner(address, abi, chainId);
+    const owner = await fetchModuleOwner(provider, address, abi, chainId)
 
     return {
       owner,
@@ -141,9 +131,9 @@ export async function fetchDelayModule(
       subModules: subModules || [],
       expiration: expiration.toString(),
       cooldown: cooldown.toString(),
-    };
+    }
   } catch (error) {
-    console.warn("Error fetching delay module", error);
+    console.warn("Error fetching delay module", error)
     return {
       address,
       parentModule,
@@ -151,92 +141,93 @@ export async function fetchDelayModule(
       name: "Delay Module",
       type: ModuleType.UNKNOWN,
       subModules: [],
-    };
+    }
   }
 }
 
 export async function fetchSubModules(
+  provider: ethers.providers.JsonRpcProvider,
   moduleAddress: string,
   abi: ModuleContract["abi"],
   sdk: SafeAppsSDK,
   chainId: number,
-  parentModulesList: string[] = []
+  parentModulesList: string[] = [],
 ): Promise<Module[]> {
   try {
-    if (!abi) return [];
-    const provider = getProvider(chainId);
-    const contract = new Contract(moduleAddress, abi, provider);
-    contract.interface.getFunction("getModulesPaginated(address,uint256)");
-    const [subModules] = await contract.getModulesPaginated(AddressOne, 50);
-    const modulesList = [...parentModulesList, ...subModules];
+    if (!abi) return []
+    const contract = new Contract(moduleAddress, abi, provider)
+    contract.interface.getFunction("getModulesPaginated(address,uint256)")
+    const [subModules] = await contract.getModulesPaginated(AddressOne, 50)
+    const modulesList = [...parentModulesList, ...subModules]
     return await Promise.all(
       subModules
         .filter((module: string) => !parentModulesList.includes(module))
         .map(async (subModuleAddress: string, index: number) => {
           const subModule = await sanitizeModule(
+            provider,
             subModuleAddress,
             sdk,
             chainId,
             moduleAddress,
-            modulesList
-          );
+            modulesList,
+          )
           return {
             ...subModule,
             id: `${moduleAddress}_${subModuleAddress}_${index}`,
             parentModule: moduleAddress,
-          };
-        })
-    );
+          }
+        }),
+    )
   } catch (e) {
-    return [];
+    return []
   }
 }
 
 export async function fetchModuleOwner(
+  provider: ethers.providers.JsonRpcProvider,
   moduleAddress: string,
   abi: ModuleContract["abi"],
-  chainId: NETWORK
+  chainId: NETWORK,
 ): Promise<string | undefined> {
   try {
-    if (!abi) return undefined;
-    const provider = getProvider(chainId);
-    const contract = new Contract(moduleAddress, abi, provider);
-    contract.interface.getFunction("owner()");
-    return await contract.owner();
+    if (!abi) return undefined
+    const contract = new Contract(moduleAddress, abi, provider)
+    contract.interface.getFunction("owner()")
+    return await contract.owner()
   } catch (e) {
-    return undefined;
+    return undefined
   }
 }
 
 export function isMultiSendDataEncoded(
-  dataEncoded: DataDecoded
+  dataEncoded: DataDecoded,
 ): dataEncoded is MultiSendDataDecoded {
-  return dataEncoded.method === "multiSend";
+  return dataEncoded.method === "multiSend"
 }
 
 export function getTransactionsFromSafeTransaction(
-  safeTransaction: SafeTransaction
+  safeTransaction: SafeTransaction,
 ): DecodedTransaction[] {
   if (
     safeTransaction.dataDecoded &&
     isMultiSendDataEncoded(safeTransaction.dataDecoded)
   ) {
-    return safeTransaction.dataDecoded.parameters[0].valueDecoded;
+    return safeTransaction.dataDecoded.parameters[0].valueDecoded
   }
-  return [safeTransaction];
+  return [safeTransaction]
 }
 
 export function getContractsModuleType(
   chainId: number,
-  masterCopyAddress: string
+  masterCopyAddress: string,
 ): ModuleType {
-  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId];
-  if (!masterCopyAddresses) return ModuleType.UNKNOWN;
+  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId]
+  if (!masterCopyAddresses) return ModuleType.UNKNOWN
   const entry = Object.entries(masterCopyAddresses).find(([, address]) => {
-    return address.toLowerCase() === masterCopyAddress.toLowerCase();
-  });
-  if (!entry) return ModuleType.UNKNOWN;
-  return MODULE_TYPES[entry[0]] || ModuleType.UNKNOWN;
+    return address.toLowerCase() === masterCopyAddress.toLowerCase()
+  })
+  if (!entry) return ModuleType.UNKNOWN
+  return MODULE_TYPES[entry[0]] || ModuleType.UNKNOWN
 }
 
 /**
@@ -247,10 +238,10 @@ export function getContractsModuleType(
  */
 export function getAddModuleTransactionModuleType(
   safeTransaction: SafeTransaction,
-  chainId: number
+  chainId: number,
 ): ModuleType | undefined {
-  const factoryAddress = CONTRACT_ADDRESSES[chainId]?.factory || "";
-  const transactions = getTransactionsFromSafeTransaction(safeTransaction);
+  const factoryAddress = CONTRACT_ADDRESSES[chainId]?.factory || ""
+  const transactions = getTransactionsFromSafeTransaction(safeTransaction)
 
   const masterCopyAddress = transactions
     .map((transaction): string | undefined => {
@@ -258,47 +249,41 @@ export function getAddModuleTransactionModuleType(
         if (!transaction.dataDecoded) {
           // Decode Proxy Factory data locally
           try {
-            const result = decodeProxyFactoryTransaction(transaction.data);
-            return result[0]; // return first parameter (masterCopy)
+            const result = decodeProxyFactoryTransaction(transaction.data)
+            return result[0] // return first parameter (masterCopy)
           } catch (err) {
-            console.warn(
-              "failed to decode proxy factory transaction: ",
-              transaction.data
-            );
-            return undefined;
+            console.warn("failed to decode proxy factory transaction: ", transaction.data)
+            return undefined
           }
         }
 
         if (transaction.dataDecoded.method === "deployModule") {
           const param = transaction.dataDecoded.parameters?.find(
-            (param) => param.name === "masterCopy"
-          );
-          if (param) return param.value;
+            (param) => param.name === "masterCopy",
+          )
+          if (param) return param.value
         }
       }
-      return undefined;
+      return undefined
     })
-    .find((x) => x);
+    .find((x) => x)
 
-  return getContractsModuleType(chainId, masterCopyAddress || "");
+  return getContractsModuleType(chainId, masterCopyAddress || "")
 }
 
 const MODULE_PROXY_FACTORY_ABI = [
   "function deployModule(address masterCopy, bytes initializer, uint256 saltNonce) returns (address proxy)",
-];
+]
 
 function decodeProxyFactoryTransaction(data: string) {
-  return new ethers.utils.Interface(
-    MODULE_PROXY_FACTORY_ABI
-  ).decodeFunctionData("deployModule", data);
+  return new ethers.utils.Interface(MODULE_PROXY_FACTORY_ABI).decodeFunctionData(
+    "deployModule",
+    data,
+  )
 }
 
-export function isSafeEnableModuleTransactionPending(
-  transaction: DecodedTransaction
-) {
-  return (
-    transaction.dataDecoded && transaction.dataDecoded.method === "enableModule"
-  );
+export function isSafeEnableModuleTransactionPending(transaction: DecodedTransaction) {
+  return transaction.dataDecoded && transaction.dataDecoded.method === "enableModule"
 }
 
 /**
@@ -307,112 +292,104 @@ export function isSafeEnableModuleTransactionPending(
  * @param {object} transaction - Transaction.
  */
 export function isRemoveModuleTransactionPending(
-  transaction: DecodedTransaction
+  transaction: DecodedTransaction,
 ): boolean {
-  return (
-    transaction.dataDecoded &&
-    transaction.dataDecoded.method === "disableModule"
-  );
+  return transaction.dataDecoded && transaction.dataDecoded.method === "disableModule"
 }
 
 export function getModulesToBeRemoved(
   modules: Module[],
-  transactions: SafeTransaction[]
+  transactions: SafeTransaction[],
 ): PendingModule[] {
   return transactions
     .flatMap(getTransactionsFromSafeTransaction)
     .filter(isRemoveModuleTransactionPending)
     .map((transaction) => {
       const param = transaction.dataDecoded.parameters.find(
-        (param) => param.name === "module"
-      );
-      const moduleAddress = param && param.value ? param.value : "";
-      const current = modules.find(
-        (module) => module.address === moduleAddress
-      );
+        (param) => param.name === "module",
+      )
+      const moduleAddress = param && param.value ? param.value : ""
+      const current = modules.find((module) => module.address === moduleAddress)
       return {
         address: moduleAddress,
         executor: transaction.to,
         operation: ModuleOperation.REMOVE,
         module: current ? current.type : ModuleType.UNKNOWN,
-      };
-    });
+      }
+    })
 }
 
 function getModuleTypeForAddTransactions(
   transactions: SafeTransaction[],
-  chainId: number
+  chainId: number,
 ): Record<string, ModuleType | undefined> {
   return transactions
     .map((safeTransaction) => {
       const enableModuleTx = getTransactionsFromSafeTransaction(safeTransaction)
         .reverse()
-        .find(isSafeEnableModuleTransactionPending);
+        .find(isSafeEnableModuleTransactionPending)
 
-      if (!enableModuleTx) return undefined;
+      if (!enableModuleTx) return undefined
 
-      const type = getAddModuleTransactionModuleType(safeTransaction, chainId);
+      const type = getAddModuleTransactionModuleType(safeTransaction, chainId)
       const param = enableModuleTx.dataDecoded.parameters?.find(
-        (param) => param.name === "module"
-      );
-      const moduleExpectedAddress = param?.value;
-      if (!type || !moduleExpectedAddress) return undefined;
-      return { address: moduleExpectedAddress, type };
+        (param) => param.name === "module",
+      )
+      const moduleExpectedAddress = param?.value
+      if (!type || !moduleExpectedAddress) return undefined
+      return { address: moduleExpectedAddress, type }
     })
     .reduce((obj, value): Record<string, ModuleType | undefined> => {
       if (value)
         return {
           ...obj,
           [value.address]: value.type,
-        };
-      return obj;
-    }, {});
+        }
+      return obj
+    }, {})
 }
 
 export function getPendingModulesToEnable(
   transactions: SafeTransaction[],
-  chainId: number
+  chainId: number,
 ): PendingModule[] {
   const modulesTypesByContractAddress = getModuleTypeForAddTransactions(
     transactions,
-    chainId
-  );
+    chainId,
+  )
 
   return transactions
     .flatMap(getTransactionsFromSafeTransaction)
     .filter((transaction) => isSafeEnableModuleTransactionPending(transaction))
     .map((transaction): PendingModule => {
-      const moduleAddress: string =
-        transaction.dataDecoded.parameters[0].value || "";
+      const moduleAddress: string = transaction.dataDecoded.parameters[0].value || ""
       const moduleType =
-        modulesTypesByContractAddress[moduleAddress] || ModuleType.UNKNOWN;
+        modulesTypesByContractAddress[moduleAddress] || ModuleType.UNKNOWN
       return {
         address: moduleAddress,
         executor: transaction.to,
         module: moduleType,
         operation: ModuleOperation.CREATE,
-      };
-    });
+      }
+    })
 }
 
 export function isModule(module: PendingModule | Module): module is Module {
-  return "subModules" in module;
+  return "subModules" in module
 }
 
 export function flatAllModules(modules: Module[]): Module[] {
-  const subModules = modules.flatMap((module) =>
-    flatAllModules(module.subModules)
-  );
-  return [...modules, ...subModules];
+  const subModules = modules.flatMap((module) => flatAllModules(module.subModules))
+  return [...modules, ...subModules]
 }
 
 export function isPendingModule(module: Module, pendingModule: PendingModule) {
   return (
     pendingModule.address === module.address &&
     pendingModule.executor === module.parentModule
-  );
+  )
 }
 
 export function getModuleName(type?: ModuleType): string {
-  return MODULE_NAMES[type || ModuleType.UNKNOWN];
+  return MODULE_NAMES[type || ModuleType.UNKNOWN]
 }

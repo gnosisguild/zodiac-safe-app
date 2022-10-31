@@ -3,10 +3,10 @@ import {
   FunctionFragment,
   Interface,
   ParamType,
-} from "@ethersproject/abi";
-import memoize from "lodash.memoize";
-import { getNetworkExplorerInfo } from "./explorers";
-import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk";
+} from "@ethersproject/abi"
+import memoize from "lodash.memoize"
+import { getNetworkExplorerInfo } from "./explorers"
+import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
 import {
   getGenericProxyMaster,
   getModuleContractMetadata,
@@ -14,116 +14,103 @@ import {
   getProxyMaster,
   isGenericProxy,
   isGnosisGenericProxy,
-} from "./modulesValidation";
-import { ModuleContract, ModuleType } from "../store/modules/models";
-import retry from "async-retry";
-import { BigNumber } from "ethers";
-import { ContractInterface } from "@ethersproject/contracts";
-import {
-  getContractsModuleType,
-  getModuleName,
-} from "../store/modules/helpers";
+} from "./modulesValidation"
+import { ModuleContract, ModuleType } from "../store/modules/models"
+import retry from "async-retry"
+import { BigNumber, ethers } from "ethers"
+import { ContractInterface } from "@ethersproject/contracts"
+import { getContractsModuleType, getModuleName } from "../store/modules/helpers"
 
 export function isWriteFunction(method: FunctionFragment) {
-  if (!method.stateMutability) return true;
-  return !["view", "pure"].includes(method.stateMutability);
+  if (!method.stateMutability) return true
+  return !["view", "pure"].includes(method.stateMutability)
 }
 
 export function isReadFunction(method: FunctionFragment) {
-  return !isWriteFunction(method);
+  return !isWriteFunction(method)
 }
 
 export function getReadFunction(abi: ContractInterface) {
-  const inter = abi instanceof Interface ? abi : new Interface(abi);
+  const inter = abi instanceof Interface ? abi : new Interface(abi)
   return inter.fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)
-    .filter(isReadFunction);
+    .filter(isReadFunction)
 }
 
 export function getWriteFunction(abi: ContractInterface) {
-  const inter = abi instanceof Interface ? abi : new Interface(abi);
+  const inter = abi instanceof Interface ? abi : new Interface(abi)
   return inter.fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)
-    .filter(isWriteFunction);
+    .filter(isWriteFunction)
 }
 
 export const fetchContractSourceCode = memoize(
   (chainId: number, contractAddress: string) =>
     retry(
       async (bail) => {
-        const network = getNetworkExplorerInfo(chainId);
+        const network = getNetworkExplorerInfo(chainId)
 
-        if (!network) throw new Error("Network data not found");
+        if (!network) throw new Error("Network data not found")
 
-        const { apiUrl, apiKey } = network;
+        const { apiUrl, apiKey } = network
 
         const urlParams: Record<string, string> = {
           module: "contract",
           action: "getsourcecode",
           address: contractAddress,
-        };
-
-        if (apiKey) {
-          urlParams.apiKey = apiKey;
         }
 
-        const params = new URLSearchParams(urlParams);
+        if (apiKey) {
+          urlParams.apiKey = apiKey
+        }
 
-        const response = await fetch(`${apiUrl}?${params}`);
+        const params = new URLSearchParams(urlParams)
 
-        if (!response.ok)
-          throw new Error("Could not fetch contract source code");
+        const response = await fetch(`${apiUrl}?${params}`)
 
-        const { status, result } = await response.json();
-        if (status === "0")
-          throw new Error("Could not fetch contract source code");
+        if (!response.ok) throw new Error("Could not fetch contract source code")
 
-        const data = result[0] as { ABI: string; ContractName: string };
+        const { status, result } = await response.json()
+        if (status === "0") throw new Error("Could not fetch contract source code")
 
-        if (!data.ContractName) bail(new Error("Contract is not verified"));
+        const data = result[0] as { ABI: string; ContractName: string }
 
-        return data;
+        if (!data.ContractName) bail(new Error("Contract is not verified"))
+
+        return data
       },
-      { retries: 4, minTimeout: 1000 }
+      { retries: 4, minTimeout: 1000 },
     ),
-  (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`
-);
+  (chainId: number, contractAddress: string) => `${chainId}_${contractAddress}`,
+)
 
 export function isBasicFunction(func: FunctionFragment) {
-  return !func.inputs.length;
+  return !func.inputs.length
 }
 
 export function isOneResult(func: FunctionFragment) {
   return (
-    func.outputs?.length === 1 &&
-    func.outputs &&
-    func.outputs[0]?.baseType !== "array"
-  );
+    func.outputs?.length === 1 && func.outputs && func.outputs[0]?.baseType !== "array"
+  )
 }
 
-export function validateFunctionParamValue(
-  param: ParamType,
-  value: any
-): boolean {
+export function validateFunctionParamValue(param: ParamType, value: any): boolean {
   try {
-    defaultAbiCoder.encode([param], [value]);
-    return true;
+    defaultAbiCoder.encode([param], [value])
+    return true
   } catch (error) {
-    return false;
+    return false
   }
 }
 
-export function validateFunctionParams(
-  func: FunctionFragment,
-  params: any[]
-): boolean {
+export function validateFunctionParams(func: FunctionFragment, params: any[]): boolean {
   try {
-    defaultAbiCoder.encode(func.inputs, params);
-    return true;
+    defaultAbiCoder.encode(func.inputs, params)
+    return true
   } catch (error) {
-    return false;
+    return false
   }
 }
 
@@ -133,20 +120,20 @@ export function validateFunctionParams(
  * @param value - Value.
  */
 export function formatParamValue(param: ParamType, value: string): any {
-  let _value = value;
+  let _value = value
   if (param.baseType === "array" || param.baseType === "tuple") {
     try {
-      _value = JSON.parse(_value);
+      _value = JSON.parse(_value)
     } catch (e) {
-      throw new Error("Input must be of type " + param.baseType);
+      throw new Error("Input must be of type " + param.baseType)
     }
   }
 
   if (!validateFunctionParamValue(param, _value)) {
-    throw new Error("Input must be of type " + param.type);
+    throw new Error("Input must be of type " + param.type)
   }
 
-  return _value;
+  return _value
 }
 
 /**
@@ -157,43 +144,46 @@ export function formatParamValue(param: ParamType, value: string): any {
 export function formatDisplayParamValue(param: ParamType, value: any): string {
   if (param.baseType === "array" || param.baseType === "tuple") {
     try {
-      return JSON.stringify(value);
+      return JSON.stringify(value)
     } catch (e) {
-      console.warn("formatDisplayParamValue: value is not an object", value, e);
+      console.warn("formatDisplayParamValue: value is not an object", value, e)
     }
   }
-  return value.toString();
+  return value.toString()
 }
 
 export const getModuleData = memoize(
   async (
+    provider: ethers.providers.JsonRpcProvider,
     safeSDK: SafeAppsSDK,
     chainId: number,
-    address: string
+    address: string,
   ): Promise<ModuleContract> => {
-    const bytecode = await safeSDK.eth.getCode([address]);
+    const bytecode = await safeSDK.eth.getCode([address])
 
     if (isGenericProxy(bytecode)) {
-      const masterAddress = getGenericProxyMaster(bytecode);
+      const masterAddress = getGenericProxyMaster(bytecode)
       const module: ModuleContract = await getModuleData(
+        provider,
         safeSDK,
         chainId,
-        masterAddress
-      );
-      return { ...module, address };
+        masterAddress,
+      )
+      return { ...module, address }
     }
 
     if (isGnosisGenericProxy(bytecode)) {
-      const masterAddress = await getProxyMaster(address, chainId);
+      const masterAddress = await getProxyMaster(provider, address, chainId)
       const module: ModuleContract = await getModuleData(
+        provider,
         safeSDK,
         chainId,
-        masterAddress
-      );
-      return { ...module, address };
+        masterAddress,
+      )
+      return { ...module, address }
     }
 
-    const type = getContractsModuleType(chainId, address);
+    const type = getContractsModuleType(chainId, address)
     if (type !== ModuleType.UNKNOWN) {
       return {
         type,
@@ -201,23 +191,20 @@ export const getModuleData = memoize(
         implAddress: address,
         name: getModuleName(type),
         ...getModuleContractMetadata(type),
-      };
+      }
     }
 
-    const standardContract = getModuleContractMetadataByBytecode(bytecode);
+    const standardContract = getModuleContractMetadataByBytecode(bytecode)
     if (standardContract) {
       return {
         address,
         implAddress: address,
         ...standardContract,
-      };
+      }
     }
 
     try {
-      const { ABI, ContractName } = await fetchContractSourceCode(
-        chainId,
-        address
-      );
+      const { ABI, ContractName } = await fetchContractSourceCode(chainId, address)
 
       return {
         address,
@@ -225,21 +212,21 @@ export const getModuleData = memoize(
         name: ContractName,
         abi: ABI,
         type: ModuleType.UNKNOWN,
-      };
+      }
     } catch (error) {
-      return { address, implAddress: address, type: ModuleType.UNKNOWN };
+      return { address, implAddress: address, type: ModuleType.UNKNOWN }
     }
   },
-  (sdk, chainId, address) => `${chainId}_${address}`
-);
+  (sdk, chainId, address, provider) => `${chainId}_${address}_${provider}`,
+)
 
 export function formatValue(
   baseType: string,
-  value: string | BigNumber | boolean
+  value: string | BigNumber | boolean,
 ): string {
   if (baseType === "array" || baseType === "tuple") {
-    value = JSON.stringify(value);
+    value = JSON.stringify(value)
   }
 
-  return value.toString();
+  return value.toString()
 }

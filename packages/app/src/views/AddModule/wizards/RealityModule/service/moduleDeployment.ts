@@ -1,16 +1,11 @@
 import { ethers } from "ethers"
-import {
-  enableModule,
-  getDefaultOracle,
-  getProvider,
-  TxWitMeta,
-} from "../../../../../services"
+import { enableModule, getDefaultOracle, TxWitMeta } from "../../../../../services"
 import {
   deployAndSetUpModule,
   getModuleInstance,
   KnownContracts,
 } from "@gnosis.pm/zodiac"
-import { Transaction } from "@gnosis.pm/safe-apps-sdk"
+import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
 import { buildTransaction } from "services/helpers"
 import { Data as OracleTemplateData } from "../sections/Oracle/components/OracleTemplate"
 import DETERMINISTIC_DEPLOYMENT_HELPER_META from "../../../../../contracts/DeterministicDeploymentHelper.json"
@@ -27,6 +22,7 @@ export interface RealityModuleParams {
 // TODO: Add support for Reality.ETH oracles that is not known (for instance deployed by the caller)
 // using `deployAndSetUpCustomModule` instead of `deployAndSetUpModule`
 export async function deployRealityModule(
+  provider: ethers.providers.JsonRpcProvider,
   safeAddress: string,
   deterministicDeploymentHelperAddress: string,
   chainId: number,
@@ -38,7 +34,6 @@ export async function deployRealityModule(
     ? KnownContracts.REALITY_ERC20
     : KnownContracts.REALITY_ETH
   const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
-  const provider = getProvider(chainId)
   const oracleAddress =
     oracle != null && ethers.utils.isAddress(oracle) ? oracle : getDefaultOracle(chainId)
   if (oracleAddress == null) {
@@ -77,7 +72,7 @@ export async function deployRealityModule(
   const { transaction: daoModuleDeploymentTx, expectedModuleAddress } =
     deployAndSetUpModule(oracleType, initData, provider, chainId, saltNonce)
 
-  const daoModuleTransactions: Transaction[] = [
+  const daoModuleTransactions: BaseTransaction[] = [
     {
       ...daoModuleDeploymentTx,
       value: daoModuleDeploymentTx.value.toString(),
@@ -93,6 +88,7 @@ export async function deployRealityModule(
     daoModuleTransactions.push(addModuleTransaction)
   } else {
     const enableDaoModuleTransaction = enableModule(
+      provider,
       safeAddress,
       chainId,
       expectedModuleAddress,

@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { ContractInteractions } from "./contract/ContractInteractions";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getModuleData } from "../../utils/contracts";
-import { Module } from "../../store/modules/models";
-import { ModuleNoAvailable } from "./ModuleNoAvailable";
-import { Skeleton } from "@material-ui/lab";
-import { ContractInterface } from "@ethersproject/contracts";
+import React, { useEffect, useState } from "react"
+import { ContractInteractions } from "./contract/ContractInteractions"
+import { getModuleData } from "../../utils/contracts"
+import { Module } from "../../store/modules/models"
+import { ModuleNoAvailable } from "./ModuleNoAvailable"
+import { Skeleton } from "@material-ui/lab"
+import { ContractInterface } from "@ethersproject/contracts"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface ModuleInteractionsProps {
-  module: Module;
+  module: Module
 }
 
 export const ModuleInteractions = ({ module }: ModuleInteractionsProps) => {
-  const { safe, sdk } = useSafeAppsSDK();
-  const [loading, setLoading] = useState(true);
-  const [abi, setABI] = useState<ContractInterface>();
+  const { safe, sdk, provider } = useSafeAppsSDKWithProvider()
+  const [loading, setLoading] = useState(true)
+  const [abi, setABI] = useState<ContractInterface>()
 
   useEffect(() => {
-    setLoading(true);
-    setABI(undefined);
-    getModuleData(sdk, safe.chainId, module.address)
+    setLoading(true)
+    setABI(undefined)
+    getModuleData(provider, sdk, safe.chainId, module.address)
       .then(({ abi }) => setABI(abi))
       .catch((error) => console.warn("getModuleABI", error))
-      .finally(() => setLoading(false));
-  }, [module, safe, sdk]);
+      .finally(() => setLoading(false))
+  }, [module, safe, sdk, provider])
 
-  if (loading) return <Skeleton variant="rect" width={300} height={48} />;
+  if (loading) return <Skeleton variant="rect" width={300} height={48} />
 
-  if (!abi) return <ModuleNoAvailable />;
+  if (!abi) return <ModuleNoAvailable />
 
-  return <ContractInteractions address={module.address} abi={abi} />;
-};
+  return <ContractInteractions address={module.address} abi={abi} />
+}

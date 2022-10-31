@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import {
   Box,
   Button,
@@ -15,7 +14,6 @@ import {
 import * as safeAppLink from "utils/safeAppLink"
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
-import { getProvider } from "services"
 // import useSpace from "services/snapshot/hooks/useSpace"
 import { checkIfIsController, checkIfIsOwner } from "services/ens"
 import { SectionProps } from "views/AddModule/wizards/RealityModule"
@@ -29,6 +27,7 @@ import {
 import { Loader } from "@gnosis.pm/safe-react-components"
 import DoneIcon from "@material-ui/icons/Done"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -121,8 +120,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
   handleBack,
   setupData,
 }) => {
-  const { safe } = useSafeAppsSDK()
-  const provider = getProvider(safe.chainId)
+  const { safe, provider } = useSafeAppsSDKWithProvider()
   const classes = useStyles()
   // const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
   //   "snapshot"

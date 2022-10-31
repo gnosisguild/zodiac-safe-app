@@ -1,8 +1,11 @@
 import React, { useState } from "react"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { AddModuleModal } from "../components/AddModuleModal"
-import { deployOptimisticGovernorModule, getFinder, getCollateral } from "../../../../services"
+import {
+  deployOptimisticGovernorModule,
+  getFinder,
+  getCollateral,
+} from "../../../../services"
 import { useRootSelector } from "../../../../store"
 import { AttachModuleForm } from "../components/AttachModuleForm"
 import { getDelayModules } from "../../../../store/modules/selectors"
@@ -10,7 +13,11 @@ import { TimeSelect } from "../../../../components/input/TimeSelect"
 import { ModuleType } from "../../../../store/modules/models"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
-import { collateralOptions, CollateralSelect } from "../../../../components/input/CollateralSelect"
+import {
+  collateralOptions,
+  CollateralSelect,
+} from "../../../../components/input/CollateralSelect"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface OptimisticGovernorModuleModalProps {
   open: boolean
@@ -45,12 +52,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: OptimisticGovernorModuleModalProps) => {
+export const OptimisticGovernorModuleModal = ({
+  open,
+  onClose,
+  onSubmit,
+}: OptimisticGovernorModuleModalProps) => {
   const classes = useStyles()
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
   const delayModules = useRootSelector(getDelayModules)
-  const [delayModule, setDelayModule] = useState<string>(delayModules.length === 1 ? delayModules[0].address : "")
+  const [delayModule, setDelayModule] = useState<string>(
+    delayModules.length === 1 ? delayModules[0].address : "",
+  )
   const [params, setParams] = useState<OptimisticGovernorModuleParams>({
     finder: getFinder(safe.chainId),
     owner: safe.safeAddress,
@@ -95,7 +108,12 @@ export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: Optim
         owner: safe.safeAddress,
         executor: delayModule || safe.safeAddress,
       }
-      const txs = deployOptimisticGovernorModule(safe.safeAddress, safe.chainId, args)
+      const txs = deployOptimisticGovernorModule(
+        provider,
+        safe.safeAddress,
+        safe.chainId,
+        args,
+      )
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()
       if (onClose) onClose()
@@ -107,8 +125,9 @@ export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: Optim
   const description = (
     <Typography variant="body2">
       This will add a timedelay to any transactions created by this module.{" "}
-      <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both are set to 24 hours, the
-      cumulative delay before the transaction can be executed will be 48 hours).
+      <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both
+      are set to 24 hours, the cumulative delay before the transaction can be executed
+      will be 48 hours).
     </Typography>
   )
 
@@ -119,7 +138,7 @@ export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: Optim
       open={open}
       onClose={onClose}
       title="UMA Optimistic Governor Module"
-      description="Allows successful Snapshot proposals to 
+      description="Allows successful Snapshot proposals to
       execute transactions using UMA's optimistic oracle."
       icon="optimisticGov"
       tags={["From Outcome Finance"]}
@@ -148,9 +167,11 @@ export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: Optim
             onChange={(value, valid) => onParamChange("bond", value, valid)}
           />
           <Typography className={classes.errorMessage}>
-            {Number(params.bond) < 1500 && params.collateral === getCollateral(safe.chainId, 1)
+            {Number(params.bond) < 1500 &&
+            params.collateral === getCollateral(safe.chainId, 1)
               ? "Warning: A minimum bond of 1,500 is recommended for USDC"
-              : Number(params.bond) < 1 && params.collateral === getCollateral(safe.chainId, 0)
+              : Number(params.bond) < 1 &&
+                params.collateral === getCollateral(safe.chainId, 0)
               ? "Warning: A minimum bond of 1 is recommended for WETH"
               : null}
           </Typography>
@@ -163,7 +184,9 @@ export const OptimisticGovernorModuleModal = ({ open, onClose, onSubmit }: Optim
             onChange={(value) => onParamChange("liveness", value)}
           />
           <Typography className={classes.errorMessage}>
-            {Number(params.liveness) < 21600 ? "Warning: The minimum recommended liveness period is 6 hours." : null}
+            {Number(params.liveness) < 21600
+              ? "Warning: The minimum recommended liveness period is 6 hours."
+              : null}
           </Typography>
         </Grid>
         <Grid item xs={12}>
