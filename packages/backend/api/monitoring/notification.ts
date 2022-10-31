@@ -7,7 +7,7 @@ import {
   createAutotask,
   setupAutotaskClient,
 } from "../../lib/defender"
-import { Network } from "../../lib/types"
+import { Network } from "defender-base-client"
 
 export interface Body {
   apiKey: string
