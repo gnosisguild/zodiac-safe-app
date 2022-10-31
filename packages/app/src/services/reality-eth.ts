@@ -1,5 +1,4 @@
-import { getProvider } from "."
-import { Contract } from "ethers"
+import { Contract, ethers } from "ethers"
 import { Coin, NETWORK, NETWORKS } from "../utils/networks"
 
 const REALITY_ETH_ERC20_CONTRACT_ABI = ["function token() view returns (address)"]
@@ -15,10 +14,10 @@ export const ERC721_CONTRACT_ABI = [
 ]
 
 export async function getArbitratorBondToken(
+  provider: ethers.providers.JsonRpcProvider,
   address: string,
   chainId: number,
 ): Promise<{ isERC20: boolean; coin: Coin }> {
-  const provider = getProvider(chainId)
   try {
     const realityEthErc20Contract = new Contract(
       address,

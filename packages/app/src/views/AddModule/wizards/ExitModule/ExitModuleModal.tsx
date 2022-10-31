@@ -1,10 +1,10 @@
 import React, { useState } from "react"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { deployExitModule, ExitModuleParams } from "../../../../services"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface ExitModuleModalProps {
   open: boolean
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProps) => {
   const classes = useStyles()
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
   const [errors, setErrors] = useState<Record<keyof ExitModuleParamsInput, boolean>>({
     tokenContract: false,
@@ -55,7 +55,7 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
 
   const handleAddExitModule = async () => {
     try {
-      const txs = await deployExitModule(safe.safeAddress, safe.chainId, {
+      const txs = await deployExitModule(provider, safe.safeAddress, safe.chainId, {
         ...params,
         executor: safe.safeAddress,
       })

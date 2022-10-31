@@ -25,10 +25,9 @@ import ReviewSection from "./sections/Review"
 import classnames from "classnames"
 import MonitoringSection, { MonitoringSectionData } from "./sections/Monitoring"
 import { setup } from "./service/setupService"
-import { getProvider } from "services"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { getDelayModules, getModulesList } from "store/modules/selectors"
 import { StatusLog } from "./sections/Review/components/SubmittingStatus"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 export interface SectionProps {
   handleNext: (
@@ -116,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const RealityModule: React.FC = () => {
   const classes = useStyles()
-  const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDK()
+  const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const delayModules = useRootSelector(getDelayModules)
   const dispatch = useRootDispatch()
   const modulesList = useRootSelector(getModulesList)
@@ -149,7 +148,6 @@ export const RealityModule: React.FC = () => {
 
   const handleDone = async (delayModuleExecutor?: string) => {
     const logger: StatusLog[] = []
-    const provider = getProvider(safeInfo.chainId)
     setLoading(true)
     if (setupData == null) {
       setLoading(false)

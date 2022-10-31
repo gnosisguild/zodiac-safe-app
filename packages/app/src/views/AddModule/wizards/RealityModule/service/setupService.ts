@@ -4,8 +4,8 @@ import { NETWORK, NETWORKS } from "../../../../../utils/networks"
 import * as ipfs from "../../../../../services/ipfs"
 import * as R from "ramda"
 import { setTextRecordTx } from "services/ens"
-import { SdkInstance, SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 import { SetupData } from ".."
+import SafeAppsSDK, { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 import * as snapshot from "../../../../../services/snapshot"
 import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
 import { setUpMonitoring } from "./monitoring"
@@ -22,7 +22,7 @@ const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS =
  */
 export const setup = async (
   provider: ethers.providers.JsonRpcProvider,
-  safeSdk: SdkInstance,
+  safeSdk: SafeAppsSDK,
   safeInfo: SafeInfo,
   executorAddress: string,
   setupData: SetupData,
@@ -30,6 +30,7 @@ export const setup = async (
 ) => {
   statusCallback("Setting up Reality Module deployment transactions")
   const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
+    provider,
     safeInfo.chainId,
     safeInfo.safeAddress,
     executorAddress,
@@ -108,6 +109,7 @@ export const setup = async (
  * @returns transaction array
  */
 const deployRealityModuleTxs = async (
+  provider: ethers.providers.JsonRpcProvider,
   chainId: number,
   safeAddress: string,
   executorAddress: string,
@@ -126,6 +128,7 @@ const deployRealityModuleTxs = async (
     oracle: setupData.oracle.instanceData.instanceAddress,
   }
   return await deployRealityModule(
+    provider,
     safeAddress,
     DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
     chainId,

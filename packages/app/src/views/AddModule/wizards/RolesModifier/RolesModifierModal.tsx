@@ -1,10 +1,10 @@
 import React, { useState } from "react"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { deployRolesModifier, RolesModifierParams } from "services"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface RolesModifierModalProps {
   open: boolean
@@ -23,10 +23,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const RolesModifierModal = ({ open, onClose, onSubmit }: RolesModifierModalProps) => {
+export const RolesModifierModal = ({
+  open,
+  onClose,
+  onSubmit,
+}: RolesModifierModalProps) => {
   const classes = useStyles()
 
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
   const [errors, setErrors] = useState<Record<keyof RolesModifierParams, boolean>>({
     target: true,
@@ -51,7 +55,7 @@ export const RolesModifierModal = ({ open, onClose, onSubmit }: RolesModifierMod
 
   const handleAddRolesModifier = async () => {
     try {
-      const txs = deployRolesModifier(safe.safeAddress, safe.chainId, params)
+      const txs = deployRolesModifier(provider, safe.safeAddress, safe.chainId, params)
 
       await sdk.txs.send({ txs })
 

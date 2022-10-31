@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { TimeSelect } from "../../../../components/input/TimeSelect"
 import { deployDelayModule } from "services"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface DelayModuleModalProps {
   open: boolean
@@ -30,14 +30,17 @@ const useStyles = makeStyles((theme) => ({
 export const DelayModuleModal = ({ open, onClose, onSubmit }: DelayModuleModalProps) => {
   const classes = useStyles()
 
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
   const [params, setParams] = useState<DelayModuleParams>({
     expiration: "86400",
     cooldown: "86400",
   })
 
-  const onParamChange = <Field extends keyof DelayModuleParams>(field: Field, value: DelayModuleParams[Field]) => {
+  const onParamChange = <Field extends keyof DelayModuleParams>(
+    field: Field,
+    value: DelayModuleParams[Field],
+  ) => {
     setParams({
       ...params,
       [field]: value,
@@ -46,7 +49,7 @@ export const DelayModuleModal = ({ open, onClose, onSubmit }: DelayModuleModalPr
 
   const handleAddDelayModule = async () => {
     try {
-      const txs = deployDelayModule(safe.safeAddress, safe.chainId, {
+      const txs = deployDelayModule(provider, safe.safeAddress, safe.chainId, {
         executor: safe.safeAddress,
         cooldown: params.cooldown,
         expiration: params.expiration,

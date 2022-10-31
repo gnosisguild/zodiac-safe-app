@@ -3,10 +3,16 @@ import { Badge, Fade, makeStyles, Modal, Typography } from "@material-ui/core"
 import { Interface } from "@ethersproject/abi"
 import { ActionButton } from "../../components/ActionButton"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { Transaction } from "@gnosis.pm/safe-apps-sdk"
+import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
 import { useRootDispatch, useRootSelector } from "../../store"
-import { getTransactionBuilderOpen, getTransactions } from "../../store/transactionBuilder/selectors"
-import { closeTransactionBuilder, resetTransactions } from "../../store/transactionBuilder"
+import {
+  getTransactionBuilderOpen,
+  getTransactions,
+} from "../../store/transactionBuilder/selectors"
+import {
+  closeTransactionBuilder,
+  resetTransactions,
+} from "../../store/transactionBuilder"
 import { fetchPendingModules } from "../../store/modules"
 import { TransactionBuilderList } from "./components/TransactionBuilderList"
 import { TransactionBuilderEmptyList } from "./components/TransactionBuilderEmptyList"
@@ -96,7 +102,7 @@ export const TransactionBuilder = () => {
 
   const handleSubmitTransaction = async () => {
     try {
-      const txs = transactions.map((tx): Transaction => {
+      const txs = transactions.map((tx): BaseTransaction => {
         const encoder = new Interface([tx.func])
         return {
           to: tx.to,
@@ -129,12 +135,20 @@ export const TransactionBuilder = () => {
       }}
     >
       <Fade in={open}>
-        <ZodiacPaper borderStyle="double" className={classNames(classes.fullWindow, classes.content)} elevation={2}>
+        <ZodiacPaper
+          borderStyle="double"
+          className={classNames(classes.fullWindow, classes.content)}
+          elevation={2}
+        >
           <ZodiacPaper rounded="right" className={classes.header}>
             <Typography variant="h5">Bundle Transactions</Typography>
             <Grow />
 
-            <ZodiacPaper rounded="full" variant="outlined" className={classes.circleIconContainer}>
+            <ZodiacPaper
+              rounded="full"
+              variant="outlined"
+              className={classes.circleIconContainer}
+            >
               <Badge
                 showZero
                 badgeContent={transactions.length}

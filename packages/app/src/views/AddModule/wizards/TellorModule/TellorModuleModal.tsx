@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { deployTellorModule, getTellorOracle } from "../../../../services"
@@ -10,6 +9,7 @@ import { TimeSelect } from "../../../../components/input/TimeSelect"
 import { ModuleType } from "../../../../store/modules/models"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 interface TellorModuleModalProps {
   open: boolean
@@ -34,12 +34,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const TellorModuleModal = ({ open, onClose, onSubmit }: TellorModuleModalProps) => {
+export const TellorModuleModal = ({
+  open,
+  onClose,
+  onSubmit,
+}: TellorModuleModalProps) => {
   const classes = useStyles()
-  const { sdk, safe } = useSafeAppsSDK()
+  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
   const delayModules = useRootSelector(getDelayModules)
-  const [delayModule, setDelayModule] = useState<string>(delayModules.length === 1 ? delayModules[0].address : "")
+  const [delayModule, setDelayModule] = useState<string>(
+    delayModules.length === 1 ? delayModules[0].address : "",
+  )
   const [params, setParams] = useState<TellorModuleParams>({
     oracle: getTellorOracle(safe.chainId),
     cooldown: "86400",
@@ -72,7 +78,7 @@ export const TellorModuleModal = ({ open, onClose, onSubmit }: TellorModuleModal
         ...params,
         executor: delayModule || safe.safeAddress,
       }
-      const txs = deployTellorModule(safe.safeAddress, safe.chainId, args)
+      const txs = deployTellorModule(provider, safe.safeAddress, safe.chainId, args)
 
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()
@@ -85,8 +91,9 @@ export const TellorModuleModal = ({ open, onClose, onSubmit }: TellorModuleModal
   const description = (
     <Typography variant="body2">
       This will add a timedelay to any transactions created by this module.{" "}
-      <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both are set to 24 hours, the
-      cumulative delay before the transaction can be executed will be 48 hours).
+      <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both
+      are set to 24 hours, the cumulative delay before the transaction can be executed
+      will be 48 hours).
     </Typography>
   )
 
