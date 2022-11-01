@@ -2,12 +2,11 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { Link, makeStyles, Typography } from "@material-ui/core"
 import { Address } from "components/ethereum/Address"
 import { Row } from "components/layout/Row"
-import * as safeAppLink from "utils/safeAppLink"
 
 import React from "react"
 import { Module } from "store/modules/models"
-import { NETWORK, NETWORKS } from "utils/networks"
 import { PanelItemProps } from "./PanelItem"
+import { rolesAppUrl } from "utils/url"
 
 interface RoleModuleItemProps extends PanelItemProps {
   module: Module
@@ -44,21 +43,8 @@ const useStyles = makeStyles((theme) => ({
 
 export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles()
-  const { safe } = useSafeAppsSDK()
-
-  const handleClick = () => {
-    const chainId = safe.chainId as number
-    const currentChainShortName = NETWORKS[chainId as NETWORK].shortName
-    const newUrl = safeAppLink.getLink(
-      safe.chainId,
-      safe.safeAddress,
-      `https://roles.gnosisguild.org/%23/${currentChainShortName}:${module.owner}`,
-    )
-
-    if (newUrl != null) {
-      window.open(newUrl, "_blank")
-    }
-  }
+  const { safe: safeInfo } = useSafeAppsSDK()
+  const rolesAddress = module.address
 
   return (
     <div className={classes.root}>
@@ -80,10 +66,12 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
           color="textPrimary"
           noWrap
           className={classes.link}
-          onClick={handleClick}
+          onClick={() => {
+            window.location.href = rolesAppUrl(safeInfo, rolesAddress)
+          }}
           underline="always"
         >
-          Open Roles App
+          Edit Roles
         </Link>
       </Row>
     </div>
