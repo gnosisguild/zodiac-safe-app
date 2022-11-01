@@ -5,9 +5,8 @@ import { Row } from "components/layout/Row"
 
 import React from "react"
 import { Module } from "store/modules/models"
-import { NETWORK, NETWORKS } from "utils/networks"
 import { PanelItemProps } from "./PanelItem"
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
+import { rolesAppUrl } from "utils/url"
 
 interface RoleModuleItemProps extends PanelItemProps {
   module: Module
@@ -68,7 +67,7 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
           noWrap
           className={classes.link}
           onClick={() => {
-            window.parent.location.href = embedRolesAppUrl(safeInfo, rolesAddress)
+            window.location.href = rolesAppUrl(safeInfo, rolesAddress)
           }}
           underline="always"
         >
@@ -77,18 +76,4 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
       </Row>
     </div>
   )
-}
-
-function embedRolesAppUrl(safeInfo: SafeInfo, rolesAddress: string) {
-  const chainName = NETWORKS[safeInfo.chainId as NETWORK].shortName
-
-  const origin = "https://gnosis-safe.io"
-
-  const pathname = `/app/${chainName}:${safeInfo.safeAddress}/apps`
-
-  const params = new URLSearchParams({
-    appUrl: `https://roles.gnosisguild.org/#/${chainName}:${rolesAddress}`,
-  })
-
-  return new URL(`${origin}${pathname}?${params}`).href
 }

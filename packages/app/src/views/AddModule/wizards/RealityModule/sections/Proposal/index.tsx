@@ -11,7 +11,6 @@ import {
   Typography,
 } from "@material-ui/core"
 
-import * as safeAppLink from "utils/safeAppLink"
 import { Link } from "components/text/Link"
 import React, { useEffect, useState } from "react"
 // import useSpace from "services/snapshot/hooks/useSpace"
@@ -28,6 +27,7 @@ import { Loader } from "@gnosis.pm/safe-react-components"
 import DoneIcon from "@material-ui/icons/Done"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import { safeAppUrl } from "utils/url"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -226,11 +226,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
                   underline="always"
-                  href={safeAppLink.getLink(
-                    safe.chainId,
-                    safe.safeAddress,
-                    `https://snapshot.org/#/setup?step=1`,
-                  )}
+                  href={safeAppUrl(safe, `https://snapshot.org/#/setup?step=1`)}
                   target={"_blank"}
                   color="inherit"
                 >
