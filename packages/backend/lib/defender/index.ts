@@ -5,7 +5,7 @@ import {
 } from "defender-sentinel-client"
 import { AutotaskClient } from "defender-autotask-client"
 import { CreateAutotaskRequest } from "defender-autotask-client"
-import { Network } from "../../lib/types"
+import { Network } from "defender-base-client"
 import { packageCode, readFileAndReplace } from "../util"
 
 export { NotificationType } from "defender-sentinel-client"
