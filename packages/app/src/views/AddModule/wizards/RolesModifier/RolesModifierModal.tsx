@@ -23,6 +23,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const MULTISEND_ADDRESS = "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
+
 export const RolesModifierModal = ({
   open,
   onClose,
@@ -34,9 +36,11 @@ export const RolesModifierModal = ({
 
   const [errors, setErrors] = useState<Record<keyof RolesModifierParams, boolean>>({
     target: true,
+    multisend: true,
   })
   const [params, setParams] = useState<RolesModifierParams>({
     target: safe.safeAddress,
+    multisend: MULTISEND_ADDRESS,
   })
 
   const isValid = Object.values(errors).every((field) => field)
@@ -87,6 +91,15 @@ export const RolesModifierModal = ({
             color="secondary"
             value={params.target}
             label="Target Address"
+            onChange={(value, valid) => onParamChange("target", value, valid)}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <ParamInput
+            param={ParamType.from("address")}
+            color="secondary"
+            value={params.multisend}
+            label="Multisend Address"
             onChange={(value, valid) => onParamChange("target", value, valid)}
           />
         </Grid>

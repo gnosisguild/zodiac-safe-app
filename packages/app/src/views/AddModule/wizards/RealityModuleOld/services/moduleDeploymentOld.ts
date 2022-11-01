@@ -85,18 +85,16 @@ export function deployRealityModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
-    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
-      daoModuleExpectedAddress,
-    ])
+    const addModuleTransaction = buildTransaction(
+      delayModule.interface,
+      delayModule.address,
+      "enableModule",
+      [daoModuleExpectedAddress],
+    )
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(
-      provider,
-      safeAddress,
-      chainId,
-      daoModuleExpectedAddress,
-    )
+    const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
 
