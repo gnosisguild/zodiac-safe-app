@@ -58,15 +58,6 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     verifyContractUrl: "https://bscscan.com/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
-  [NETWORK.GOERLI]: {
-    networkExplorerName: "Etherscan",
-    networkExplorerUrl: "https://goerli.etherscan.io",
-    networkExplorerApiUrl: "https://api-goerli.etherscan.io/api",
-    safeTransactionApi: "https://safe-transaction.goerli.gnosis.io/",
-    safeUrl: "https://gnosis-safe.io/app/gor:",
-    verifyContractUrl: "https://goerli.etherscan.io/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
-  },
   [NETWORK.OPTIMISM]: {
     networkExplorerName: "Optimistic",
     networkExplorerUrl: "https://optimistic.etherscan.io/",
