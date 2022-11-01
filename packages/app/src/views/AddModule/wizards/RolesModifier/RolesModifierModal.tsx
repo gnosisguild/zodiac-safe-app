@@ -5,6 +5,11 @@ import { deployRolesModifier, RolesModifierParams } from "services"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
+import {
+  networkAddresses as multisendNetworkAddresses,
+  defaultAddress as defaultMultisendAddress,
+} from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json"
 
 interface RolesModifierModalProps {
   open: boolean
@@ -23,8 +28,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const MULTISEND_ADDRESS = "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
-
 export const RolesModifierModal = ({
   open,
   onClose,
@@ -40,7 +43,7 @@ export const RolesModifierModal = ({
   })
   const [params, setParams] = useState<RolesModifierParams>({
     target: safe.safeAddress,
-    multisend: MULTISEND_ADDRESS,
+    multisend: defaultMultisend(safe),
   })
 
   const isValid = Object.values(errors).every((field) => field)
@@ -106,4 +109,10 @@ export const RolesModifierModal = ({
       </Grid>
     </AddModuleModal>
   )
+}
+
+function defaultMultisend(safeInfo: SafeInfo) {
+  const address = (multisendNetworkAddresses as Record<string, string>)[safeInfo.chainId]
+
+  return address || defaultMultisendAddress
 }
