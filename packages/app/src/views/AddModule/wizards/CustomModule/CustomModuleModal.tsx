@@ -11,7 +11,7 @@ import { addTransaction } from "../../../../store/transactionBuilder"
 import { SafeAbi } from "../../../../services/helpers"
 import { serializeTransaction } from "../../../../store/transactionBuilder/helpers"
 import { ReactComponent as ArrowUpIcon } from "../../../../assets/icons/arrow-up-icon.svg"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 
 interface AddCustomModuleProps {
   open: boolean
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModuleProps) => {
-  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
+  const { sdk, safe } = useSafeAppsSDK()
   const dispatch = useRootDispatch()
   const classes = useStyles()
 
@@ -55,7 +55,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
   }
 
   const addModule = async () => {
-    const tx = enableModule(provider, safe.safeAddress, safe.chainId, moduleAddress)
+    const tx = enableModule(safe.safeAddress, moduleAddress)
 
     try {
       await sdk.txs.send({ txs: [tx] })

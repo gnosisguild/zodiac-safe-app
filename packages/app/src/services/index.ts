@@ -1,4 +1,5 @@
 import { BigNumber, Contract, ethers } from "ethers"
+import { Interface } from "@ethersproject/abi"
 import {
   calculateProxyAddress,
   deployAndSetUpModule,
@@ -53,6 +54,7 @@ interface DelayModuleParams {
 
 export interface RolesModifierParams {
   target: string
+  multisend: string
 }
 
 export interface AMBModuleParams {
@@ -199,18 +201,16 @@ export function deployTellorModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
-    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
-      daoModuleExpectedAddress,
-    ])
+    const addModuleTransaction = buildTransaction(
+      delayModule.interface,
+      delayModule.address,
+      "enableModule",
+      [daoModuleExpectedAddress],
+    )
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(
-      provider,
-      safeAddress,
-      chainId,
-      daoModuleExpectedAddress,
-    )
+    const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
 
@@ -238,9 +238,7 @@ export function deployDelayModule(
     Date.now().toString(),
   )
   const enableDelayModuleTransaction = enableModule(
-    provider,
     safeAddress,
-    chainId,
     delayModuleExpectedAddress,
   )
 
@@ -279,12 +277,7 @@ export function deployBridgeModule(
     Date.now().toString(),
   )
 
-  const enableModuleTransaction = enableModule(
-    provider,
-    safeAddress,
-    chainId,
-    expectedModuleAddress,
-  )
+  const enableModuleTransaction = enableModule(safeAddress, expectedModuleAddress)
 
   return [
     {
@@ -400,12 +393,7 @@ export async function deployExitModule(
     value: transaction.value.toString(),
   })
 
-  const enableModuleTransaction = enableModule(
-    provider,
-    safeAddress,
-    chainId,
-    expectedModuleAddress,
-  )
+  const enableModuleTransaction = enableModule(safeAddress, expectedModuleAddress)
   txs.push(enableModuleTransaction)
 
   return txs
@@ -421,14 +409,8 @@ export async function fetchSafeModulesAddress(
   return modules as string[]
 }
 
-export function enableModule(
-  provider: JsonRpcProvider,
-  safeAddress: string,
-  chainId: number,
-  module: string,
-) {
-  const safe = new Contract(safeAddress, SafeAbi, provider)
-  return buildTransaction(safe, "enableModule", [module])
+export function enableModule(safeAddress: string, module: string) {
+  return buildTransaction(new Interface(SafeAbi), safeAddress, "enableModule", [module])
 }
 
 export async function disableModule(
@@ -440,7 +422,6 @@ export async function disableModule(
   const modules = await fetchSafeModulesAddress(provider, safeAddress, chainId)
   if (!modules.length) throw new Error("Safe does not have enabled modules")
   let prevModule = AddressOne
-  const safe = new Contract(safeAddress, SafeAbi, provider)
   if (modules.length > 1) {
     const moduleIndex = modules.findIndex((m) => m.toLowerCase() === module.toLowerCase())
     if (moduleIndex > 0) prevModule = modules[moduleIndex - 1]
@@ -448,7 +429,7 @@ export async function disableModule(
   const params = [prevModule, module]
   return {
     params,
-    ...buildTransaction(safe, "disableModule", params),
+    ...buildTransaction(new Interface(SafeAbi), safeAddress, "disableModule", params),
   }
 }
 
@@ -502,33 +483,40 @@ export function deployRolesModifier(
   chainId: number,
   args: RolesModifierParams,
 ) {
-  const { target } = args
-  const {
-    transaction: rolesModifierDeploymentTx,
-    expectedModuleAddress: rolesModifierExpectedAddress,
-  } = deployAndSetUpModule(
+  const { target, multisend } = args
+  const { transaction: deployAndSetupTx, expectedModuleAddress: expectedRolesAddress } =
+    deployAndSetUpModule(
+      KnownContracts.ROLES,
+      {
+        types: ["address", "address", "address"],
+        values: [safeAddress, safeAddress, target],
+      },
+      provider,
+      chainId,
+      Date.now().toString(),
+    )
+  const enableModuleTx = enableModule(safeAddress, expectedRolesAddress)
+
+  const rolesContract = getModuleInstance(
     KnownContracts.ROLES,
-    {
-      types: ["address", "address", "address"],
-      values: [safeAddress, safeAddress, target],
-    },
+    expectedRolesAddress,
     provider,
-    chainId,
-    Date.now().toString(),
   )
-  const enableRolesModifierTransaction = enableModule(
-    provider,
-    safeAddress,
-    chainId,
-    rolesModifierExpectedAddress,
+
+  const setMultisendTx = buildTransaction(
+    rolesContract.interface,
+    rolesContract.address,
+    "setMultisend",
+    [multisend],
   )
 
   return [
     {
-      ...rolesModifierDeploymentTx,
-      value: rolesModifierDeploymentTx.value.toString(),
+      ...deployAndSetupTx,
+      value: String(deployAndSetupTx.value),
     },
-    enableRolesModifierTransaction,
+    enableModuleTx,
+    setMultisendTx,
   ]
 }
 
@@ -567,18 +555,16 @@ export function deployOptimisticGovernorModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
-    const addModuleTransaction = buildTransaction(delayModule, "enableModule", [
-      daoModuleExpectedAddress,
-    ])
+    const addModuleTransaction = buildTransaction(
+      delayModule.interface,
+      delayModule.address,
+      "enableModule",
+      [daoModuleExpectedAddress],
+    )
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(
-      provider,
-      safeAddress,
-      chainId,
-      daoModuleExpectedAddress,
-    )
+    const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
 
