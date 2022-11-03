@@ -1,10 +1,4 @@
-import React, { useEffect, useState } from "react"
-import { useRootDispatch, useRootSelector } from "store"
-import {
-  fetchPendingModules,
-  setModuleAdded,
-  setRealityModuleScreen,
-} from "../../../../store/modules"
+import React, { useState } from "react"
 import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components"
 import {
   Button,
@@ -17,41 +11,27 @@ import {
   Stepper,
   Typography,
 } from "@material-ui/core"
-import { TagList } from "components/list/TagList"
 import { Link } from "components/text/Link"
-import OracleSection, { OracleSectionData } from "./sections/Oracle"
-import ProposalSection, { ProposalSectionData } from "./sections/Proposal"
-import ReviewSection from "./sections/Review"
 import classnames from "classnames"
-import MonitoringSection, { MonitoringSectionData } from "./sections/Monitoring"
-import { setup } from "./service/setupService"
-import { getDelayModules, getModulesList } from "store/modules/selectors"
-import { StatusLog } from "./sections/Review/components/SubmittingStatus"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import { useRootSelector, useRootDispatch } from "store"
+import { setOzGovernorModuleScreen } from "store/modules"
+import { getDelayModules } from "store/modules/selectors"
+import TokenSection from "./sections/Token"
 
 export interface SectionProps {
-  handleNext: (
-    stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any,
-  ) => void
-  handleBack: (
-    stepData: ProposalSectionData | OracleSectionData | MonitoringSectionData | any,
-  ) => void
+  handleNext: (stepData: any) => void
+  handleBack: (stepData: any) => void
   setupData: SetupData | undefined
 }
 
 export type SetupData = {
-  proposal: ProposalSectionData
-  oracle: OracleSectionData
-  monitoring: MonitoringSectionData
+  token: any
+  governor: any
   review: any
 }
 
-const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
-  "proposal",
-  "oracle",
-  "monitoring",
-  "review",
-]
+const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = ["token", "governor", "review"]
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -113,22 +93,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const RealityModule: React.FC = () => {
+export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
-  const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
+  // const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const delayModules = useRootSelector(getDelayModules)
   const dispatch = useRootDispatch()
-  const modulesList = useRootSelector(getModulesList)
-  const [modules, setModules] = useState<number>(modulesList.length)
-  const [statusLog, setStatusLog] = useState<StatusLog[]>([])
+  // const modulesList = useRootSelector(getModulesList)
+  // const [modules, setModules] = useState<number>(modulesList.length)
+  // const [statusLog, setStatusLog] = useState<StatusLog[]>([])
   const [activeStep, setActiveStep] = useState<number>(0)
   const [completed, setCompleted] = useState({
-    proposal: false,
-    oracle: false,
-    monitoring: false,
+    token: false,
+    governor: false,
     review: false,
   })
-  const [loading, setLoading] = useState<boolean>(false)
+  // const [loading, setLoading] = useState<boolean>(false)
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
   const [setupData, setSetupData] = useState<SetupData>()
 
@@ -146,45 +125,45 @@ export const RealityModule: React.FC = () => {
     }
   }
 
-  const handleDone = async (delayModuleExecutor?: string) => {
-    const logger: StatusLog[] = []
-    setLoading(true)
-    if (setupData == null) {
-      setLoading(false)
-      throw new Error("No setup data")
-    }
-    const executorAddress =
-      delayModuleExecutor !== "" || delayModuleExecutor == null
-        ? safeInfo.safeAddress
-        : delayModuleExecutor
+  // const handleDone = async (delayModuleExecutor?: string) => {
+  //   const logger: StatusLog[] = []
+  //   setLoading(true)
+  //   if (setupData == null) {
+  //     setLoading(false)
+  //     throw new Error("No setup data")
+  //   }
+  //   const executorAddress =
+  //     delayModuleExecutor !== "" || delayModuleExecutor == null
+  //       ? safeInfo.safeAddress
+  //       : delayModuleExecutor
 
-    const statusLogger = (currentStatus: string, error?: Error) => {
-      if (error != null) {
-        logger.push({ error: true, msg: error.toString() })
-        throw error
-      } else {
-        logger.push({ error: false, msg: currentStatus })
-      }
-      setStatusLog(logger)
-    }
+  //   const statusLogger = (currentStatus: string, error?: Error) => {
+  //     if (error != null) {
+  //       logger.push({ error: true, msg: error.toString() })
+  //       throw error
+  //     } else {
+  //       logger.push({ error: false, msg: currentStatus })
+  //     }
+  //     setStatusLog(logger)
+  //   }
 
-    try {
-      await setup(provider, safeSdk, safeInfo, executorAddress, setupData, statusLogger)
-    } catch (error) {
-      setLoading(false)
-      console.error(error)
-    }
-    dispatch(fetchPendingModules(safeInfo))
-    dispatch(setModuleAdded(true))
-  }
+  //   try {
+  //     await setup(provider, safeSdk, safeInfo, executorAddress, setupData, statusLogger)
+  //   } catch (error) {
+  //     setLoading(false)
+  //     console.error(error)
+  //   }
+  //   dispatch(fetchPendingModules(safeInfo))
+  //   dispatch(setModuleAdded(true))
+  // }
 
-  useEffect(() => {
-    if (loading && modulesList.length > modules) {
-      setModules(modulesList.length)
-      setLoading(false)
-      dispatch(setRealityModuleScreen(false))
-    }
-  }, [dispatch, loading, modules, modulesList])
+  // useEffect(() => {
+  //   if (loading && modulesList.length > modules) {
+  //     setModules(modulesList.length)
+  //     setLoading(false)
+  //     dispatch(setRealityModuleScreen(false))
+  //   }
+  // }, [dispatch, loading, modules, modulesList])
 
   return (
     <div className={classes.root}>
@@ -194,18 +173,14 @@ export const RealityModule: React.FC = () => {
             <Grid item>
               <BadgeIcon icon={"reality"} size={60} />
             </Grid>
-            <Grid item>
-              <Typography variant="h5">Reality Module</Typography>
-              <TagList
-                className={classes.tag}
-                tags={["Stackable", "From Gnosis Guild"]}
-              />
+            <Grid item style={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="h5">Governor Module</Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
           <Typography gutterBottom>
-            Allows Reality.eth questions to execute a transaction when resolved.{" "}
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.{" "}
             <Link
               underline="always"
               href="https://github.com/gnosis/zodiac-module-reality"
@@ -229,7 +204,7 @@ export const RealityModule: React.FC = () => {
             >
               <Grid item>
                 <Typography variant="h4" gutterBottom className={classes.paperTitle}>
-                  Add Reality Module
+                  Add Governor Module
                 </Typography>
               </Grid>
               <Grid item>
@@ -237,7 +212,7 @@ export const RealityModule: React.FC = () => {
                   color="secondary"
                   size="medium"
                   variant="outlined"
-                  onClick={() => dispatch(setRealityModuleScreen(false))}
+                  onClick={() => dispatch(setOzGovernorModuleScreen(false))}
                 >
                   Cancel
                 </Button>
@@ -248,7 +223,7 @@ export const RealityModule: React.FC = () => {
               className={classes.stepperRoot}
               orientation="vertical"
             >
-              {REALITY_MODULE_STEPS.map((label, index) => (
+              {OZ_GOVERNOR_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
                   <StepLabel
                     onClick={() => handleOpenSection(index, label as keyof SetupData)}
@@ -264,36 +239,11 @@ export const RealityModule: React.FC = () => {
                     </Typography>{" "}
                   </StepLabel>
                   <StepContent>
-                    {label === "proposal" && (
-                      <ProposalSection
+                    {label === "token" && (
+                      <TokenSection
                         handleNext={navigate(index + 1, label, true)}
-                        handleBack={() => dispatch(setRealityModuleScreen(false))}
-                        setupData={setupData}
-                      />
-                    )}
-                    {label === "oracle" && (
-                      <OracleSection
-                        handleNext={navigate(index + 1, label, true)}
-                        handleBack={navigate(activeStep - 1, label, false)}
-                        setupData={setupData}
-                      />
-                    )}
-                    {label === "monitoring" && (
-                      <MonitoringSection
-                        handleNext={navigate(index + 1, label, true)}
-                        handleBack={navigate(activeStep - 1, label, false)}
-                        setupData={setupData}
-                      />
-                    )}
-                    {label === "review" && (
-                      <ReviewSection
-                        handleNext={handleDone} // this is where we would execute the transactions!!
-                        handleBack={navigate(activeStep - 1, label, false)}
-                        goToStep={setActiveStep}
-                        setupData={setupData}
-                        delayModules={delayModules}
-                        loading={loading}
-                        statusLog={statusLog}
+                        handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
+                        setupData={undefined}
                       />
                     )}
                   </StepContent>
@@ -306,5 +256,3 @@ export const RealityModule: React.FC = () => {
     </div>
   )
 }
-
-export default RealityModule
