@@ -104,6 +104,7 @@ export const deployAndEnableOzGovernorModule = async (
   return safeSdk.txs
     .send({ txs: [...deployOzGovernorTxs, enableModuleTx] })
     .catch((e) => {
-      throw Error("Error when proposing transactions to the Safe", e)
+      console.error(e)
+      throw new Error("Error when proposing transactions to the Safe")
     })
 }
