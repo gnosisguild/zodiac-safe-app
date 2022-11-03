@@ -1,13 +1,16 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import React, { useState } from "react"
+import {
+  Button,
+  Divider,
+  FormHelperText,
+  Grid,
+  makeStyles,
+  Typography,
+} from "@material-ui/core"
 
-import React, { useEffect } from "react"
-
-import { SectionProps } from "views/AddModule/wizards/RealityModule"
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
-
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import { fetchSafeBalanceInfo } from "services"
+import { ethers } from "ethers"
+import { GovernorSectionProps } from "../.."
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -28,7 +31,9 @@ const useStyles = makeStyles((theme) => ({
     fill: "rgba(244, 67, 54, 1)",
     width: "16px",
   },
-
+  errorColor: {
+    color: "rgba(244, 67, 54, 1)",
+  },
   loadingContainer: {
     marginRight: 4,
     padding: 2,
@@ -91,26 +96,33 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export type TokenSectionData = {
-  token: string
+  tokenAddress: string
 }
 
-export const TokenSection: React.FC<SectionProps> = ({
+export const TokenSection: React.FC<GovernorSectionProps> = ({
   handleNext,
   handleBack,
   setupData,
 }) => {
-  const { safe, provider, sdk } = useSafeAppsSDKWithProvider()
   const classes = useStyles()
-  console.log("sdk", sdk)
+  const [tokenAddress, setTokenAddress] = useState<string>(
+    setupData?.token.tokenAddress ?? "",
+  )
+  const isValidAddress = ethers.utils.isAddress(tokenAddress)
 
-  useEffect(() => {
-    const getSafeInfo = async () => {
-      await fetchSafeBalanceInfo(safe.chainId, safe.safeAddress).then((res) =>
-        console.log("res", res),
-      )
+  const collectSectionData = (): TokenSectionData => ({
+    tokenAddress,
+  })
+
+  const handleInputClasses = () => {
+    if ([tokenAddress].includes("")) {
+      return classes.input
     }
-    getSafeInfo()
-  }, [])
+    if (![tokenAddress].includes("") && !isValidAddress) {
+      return classes.inputError
+    }
+    return classes.input
+  }
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -128,7 +140,21 @@ export const TokenSection: React.FC<SectionProps> = ({
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>{/* <Divider /> */}</Grid>
+        <Grid item>
+          <ZodiacTextField
+            label="Token Address"
+            value={tokenAddress}
+            placeholder="0xDf33060F476511F806C72719394da1Ad64"
+            borderStyle="double"
+            className={handleInputClasses()}
+            onChange={(e) => setTokenAddress(e.target.value)}
+          />
+          {![tokenAddress].includes("") && !isValidAddress && (
+            <FormHelperText className={classes.errorColor}>
+              Please provide a valid address
+            </FormHelperText>
+          )}
+        </Grid>
 
         <Grid item style={{ paddingBottom: 0 }}>
           <Divider />
@@ -139,7 +165,7 @@ export const TokenSection: React.FC<SectionProps> = ({
               <Button
                 size="medium"
                 variant="text"
-                // onClick={() => handleBack()}
+                onClick={() => handleBack(collectSectionData())}
               >
                 Cancel
               </Button>
@@ -149,8 +175,8 @@ export const TokenSection: React.FC<SectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                // disabled={!isController || isSafesnapInstalled}
-                // onClick={() => handleNext(collectSectionData())}
+                disabled={!isValidAddress || [tokenAddress].includes("")}
+                onClick={() => handleNext(collectSectionData())}
               >
                 Next
               </Button>

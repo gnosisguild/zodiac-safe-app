@@ -5,7 +5,8 @@ import { getCurrentModule, getCurrentPendingModule } from "./store/modules/selec
 import AddModules from "./views/AddModule"
 import { ModulePendingTransaction } from "./views/ModuleDetails/ModulePendingTransaction"
 import RealityModule from "views/AddModule/wizards/RealityModule"
-import { OzGovernorModule } from "views/AddModule/wizards/OzGovernorModule"
+import { OzGovernorModule } from "views/AddModule/wizards/OzGovernor"
+
 
 export const Views: React.FC = () => {
   const currentModule = useRootSelector(getCurrentModule)

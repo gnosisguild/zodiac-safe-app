@@ -152,7 +152,7 @@ export const AddModulesView = () => {
         <ModuleButton
           title="Governor Module"
           description="Enables an Open Zeppelin Governor contract as a module"
-          icon="custom"
+          icon="ozGov"
           onClick={() => dispatch(setOzGovernorModuleScreen(true))}
         />
 
