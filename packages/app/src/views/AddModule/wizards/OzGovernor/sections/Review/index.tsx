@@ -117,7 +117,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                 </Grid>
                 <Grid item>
                   <Typography>Voting Delay:</Typography>
-                  <Typography>{governor.votingDelay} block</Typography>
+                  <Typography>{governor.votingDelay} days</Typography>
                 </Grid>
                 <Grid item>
                   <Typography>Voting Period:</Typography>
