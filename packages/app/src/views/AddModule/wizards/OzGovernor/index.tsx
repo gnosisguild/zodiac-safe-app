@@ -16,16 +16,17 @@ import classnames from "classnames"
 import { useRootDispatch } from "store"
 import { setOzGovernorModuleScreen } from "store/modules"
 import TokenSection, { TokenSectionData } from "../OzGovernor/sections/Token"
+import GovernorSection, { GovernorSectionData } from "./sections/Governor"
 
 export interface GovernorSectionProps {
-  handleNext: (stepData: TokenSectionData | any) => void
-  handleBack: (stepData: TokenSectionData | any) => void
+  handleNext: (stepData: TokenSectionData | GovernorSectionData | any) => void
+  handleBack: (stepData: TokenSectionData | GovernorSectionData | any) => void
   setupData: SetupData | undefined
 }
 
 export type SetupData = {
   token: TokenSectionData
-  governor: any
+  governor: GovernorSectionData
   review: any
 }
 
@@ -94,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
 export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
   const dispatch = useRootDispatch()
-  const [activeStep, setActiveStep] = useState<number>(0)
+  const [activeStep, setActiveStep] = useState<number>(1)
   const [completed, setCompleted] = useState({
     token: false,
     governor: false,
@@ -195,6 +196,13 @@ export const OzGovernorModule: React.FC = () => {
                       <TokenSection
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
+                        setupData={setupData}
+                      />
+                    )}
+                    {label === "governor" && (
+                      <GovernorSection
+                        handleNext={navigate(index + 1, label, true)}
+                        handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
