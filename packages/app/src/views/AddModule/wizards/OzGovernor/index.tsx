@@ -57,9 +57,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
-  tag: {
-    background: theme.palette.secondary.main,
-  },
+
   paperContainer: {
     padding: theme.spacing(2),
   },
@@ -109,7 +107,8 @@ export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
   const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
-  const [activeStep, setActiveStep] = useState<number>(2)
+  const [activeStep, setActiveStep] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
   const [completed, setCompleted] = useState({
     token: false,
     governor: false,
@@ -122,8 +121,8 @@ export const OzGovernorModule: React.FC = () => {
     },
     governor: {
       daoName: "MyGovernor",
-      votingDelay: 1,
-      votingPeriod: 1,
+      votingDelay: 0,
+      votingPeriod: 604800,
       proposalThreshold: 0,
       quorumPercent: 4,
     },
@@ -146,26 +145,11 @@ export const OzGovernorModule: React.FC = () => {
 
   const handleDone = async (delayModuleExecutor?: string) => {
     console.log("setupData", setupData)
-    // const logger: StatusLog[] = []
-    // setLoading(true)
-    // if (setupData == null) {
-    //   setLoading(false)
-    //   throw new Error("No setup data")
-    // }
-    // const executorAddress =
-    //   delayModuleExecutor !== "" || delayModuleExecutor == null
-    //     ? safeInfo.safeAddress
-    //     : delayModuleExecutor
-
-    // const statusLogger = (currentStatus: string, error?: Error) => {
-    //   if (error != null) {
-    //     logger.push({ error: true, msg: error.toString() })
-    //     throw error
-    //   } else {
-    //     logger.push({ error: false, msg: currentStatus })
-    //   }
-    //   setStatusLog(logger)
-    // }
+    setLoading(true)
+    if (setupData == null) {
+      setLoading(false)
+      throw new Error("No setup data")
+    }
     const { tokenAddress } = setupData.token
     const { daoName, votingDelay, votingPeriod, proposalThreshold, quorumPercent } =
       setupData.governor
@@ -182,10 +166,9 @@ export const OzGovernorModule: React.FC = () => {
         quorumPercent,
       )
     } catch (error) {
+      setLoading(false)
       console.error(error)
     }
-    // dispatch(fetchPendingModules(safeInfo))
-    // dispatch(setModuleAdded(true))
   }
 
   return (
@@ -275,7 +258,7 @@ export const OzGovernorModule: React.FC = () => {
                         handleBack={navigate(index - 2, label, true)}
                         setupData={setupData}
                         goToStep={setActiveStep}
-                        loading={false}
+                        loading={loading}
                       />
                     )}
                   </StepContent>
