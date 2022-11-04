@@ -11,6 +11,8 @@ import {
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { ethers } from "ethers"
 import { GovernorSectionProps } from "../.."
+import { isVotesCompilable } from "../../service/tokenValidation"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -108,17 +110,31 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
   const [tokenAddress, setTokenAddress] = useState<string>(
     setupData?.token.tokenAddress ?? "",
   )
-  const isValidAddress = ethers.utils.isAddress(tokenAddress)
+  const [isValidTokenAddress, setIsValidTokenAddress] = useState<boolean>(false)
+  const { provider } = useSafeAppsSDKWithProvider()
+  const tokenAddressValidator = isVotesCompilable(provider)
 
   const collectSectionData = (): TokenSectionData => ({
     tokenAddress,
   })
 
+  const handleTokenAddressInput = async (tokenAddress: string) => {
+    setTokenAddress(tokenAddress)
+    if (
+      ethers.utils.isAddress(tokenAddress) &&
+      (await tokenAddressValidator(tokenAddress))
+    ) {
+      setIsValidTokenAddress(true)
+    } else {
+      setIsValidTokenAddress(false)
+    }
+  }
+
   const handleInputClasses = () => {
     if ([tokenAddress].includes("")) {
       return classes.input
     }
-    if (![tokenAddress].includes("") && !isValidAddress) {
+    if (![tokenAddress].includes("") && !isValidTokenAddress) {
       return classes.inputError
     }
     return classes.input
@@ -147,9 +163,9 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
             placeholder="0xDf33060F476511F806C72719394da1Ad64"
             borderStyle="double"
             className={handleInputClasses()}
-            onChange={(e) => setTokenAddress(e.target.value)}
+            onChange={(e) => handleTokenAddressInput(e.target.value)}
           />
-          {![tokenAddress].includes("") && !isValidAddress && (
+          {![tokenAddress].includes("") && !isValidTokenAddress && (
             <FormHelperText className={classes.errorColor}>
               Please provide a valid address
             </FormHelperText>
@@ -175,7 +191,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                disabled={!isValidAddress || [tokenAddress].includes("")}
+                disabled={!isValidTokenAddress || [tokenAddress].includes("")}
                 onClick={() => handleNext(collectSectionData())}
               >
                 Next
