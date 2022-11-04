@@ -51,7 +51,7 @@ const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
   "oracle",
   "monitoring",
   "review",
-] // TODO: Add monitoring
+]
 
 const useStyles = makeStyles((theme) => ({
   root: {

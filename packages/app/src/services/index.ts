@@ -445,6 +445,24 @@ export const callContract = (
   return contract.functions[method](...data)
 }
 
+export async function fetchSafeBalanceInfo(
+  chainId: number,
+  safeAddress: string,
+) {
+  const network = getNetworkExplorerInfo(chainId)
+  if (!network) return []
+
+  const url = new URL(
+    `api/v1/safes/${safeAddress}/balances/?trusted=false&exclude_spam=false`,
+    network.safeTransactionApi,
+  )
+
+  const request = await fetch(url.toString())
+  const response = await request.json()
+  console.log('response', response)
+  return response.results 
+}
+
 export async function fetchSafeTransactions(
   chainId: number,
   safeAddress: string,
