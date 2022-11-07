@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Button,
   Divider,
@@ -11,6 +11,8 @@ import {
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { ethers } from "ethers"
 import { GovernorSectionProps } from "../.."
+import { isVotesCompilable } from "../../service/tokenValidation"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -21,59 +23,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 
-  doneIcon: {
-    marginRight: 4,
-    fill: "#A8E07E",
-    width: "16px",
-  },
-  errorIcon: {
-    marginRight: 4,
-    fill: "rgba(244, 67, 54, 1)",
-    width: "16px",
-  },
   errorColor: {
     color: "rgba(244, 67, 54, 1)",
-  },
-  loadingContainer: {
-    marginRight: 4,
-    padding: 2,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "50%",
-    height: 14,
-    width: 14,
-    border: `1px solid ${colors.tan[300]}`,
-  },
-  spinner: {
-    width: "8px !important",
-    height: "8px !important",
-    color: `${colors.tan[300]} !important`,
-  },
-  loading: {
-    width: "15px !important",
-    height: "15px !important",
-    marginRight: 8,
-  },
-  radio: {
-    marginLeft: -2,
-    padding: 2,
-    "& ~ .MuiFormControlLabel-label": {
-      fontSize: 12,
-      marginLeft: 4,
-    },
-    "&$checked": {
-      color: colors.tan[1000],
-    },
-  },
-  checked: {},
-  textSubdued: {
-    color: "rgba(255 255 255 / 70%)",
-  },
-  textFieldSmall: {
-    "& .MuiFormLabel-root": {
-      fontSize: 12,
-    },
   },
   input: {
     "& .MuiInputBase-root": {
@@ -92,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }))
 
 export type TokenSectionData = {
@@ -108,7 +58,9 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
   const [tokenAddress, setTokenAddress] = useState<string>(
     setupData?.token.tokenAddress ?? "",
   )
-  const isValidAddress = ethers.utils.isAddress(tokenAddress)
+  const [isValidTokenAddress, setIsValidTokenAddress] = useState<boolean>(false)
+  const { provider } = useSafeAppsSDKWithProvider()
+  const tokenAddressValidator = isVotesCompilable(provider)
 
   const collectSectionData = (): TokenSectionData => ({
     tokenAddress,
@@ -118,11 +70,27 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
     if ([tokenAddress].includes("")) {
       return classes.input
     }
-    if (![tokenAddress].includes("") && !isValidAddress) {
+    if (![tokenAddress].includes("") && !isValidTokenAddress) {
       return classes.inputError
     }
     return classes.input
   }
+
+  useEffect(() => {
+    if (![tokenAddress].includes("")) {
+      const validations = async () => {
+        if (
+          ethers.utils.isAddress(tokenAddress) &&
+          (await tokenAddressValidator(tokenAddress))
+        ) {
+          setIsValidTokenAddress(true)
+        } else {
+          setIsValidTokenAddress(false)
+        }
+      }
+      validations()
+    }
+  }, [tokenAddress, tokenAddressValidator])
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -149,7 +117,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
             className={handleInputClasses()}
             onChange={(e) => setTokenAddress(e.target.value)}
           />
-          {![tokenAddress].includes("") && !isValidAddress && (
+          {![tokenAddress].includes("") && !isValidTokenAddress && (
             <FormHelperText className={classes.errorColor}>
               Please provide a valid address
             </FormHelperText>
@@ -175,7 +143,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                disabled={!isValidAddress || [tokenAddress].includes("")}
+                disabled={!isValidTokenAddress || [tokenAddress].includes("")}
                 onClick={() => handleNext(collectSectionData())}
               >
                 Next
