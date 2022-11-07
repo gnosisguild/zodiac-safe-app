@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
+import { Button, Divider, Grid, Link, makeStyles, Typography } from "@material-ui/core"
 import { CircleStep } from "components/CircleStep"
 import React from "react"
 import { colors, ZodiacPaper } from "zodiac-ui-components"
@@ -38,13 +38,20 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   label: {
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Mono, monospace",
     fontSize: 12,
     fontWeight: "bold",
   },
   loading: {
     width: "15px !important",
     height: "15px !important",
+  },
+  value: {
+    fontFamily: "Roboto Mono, monospace",
+    fontWeight: "bold",
+  },
+  underline: {
+    textDecoration: "underline",
   },
 }))
 
@@ -74,7 +81,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
-      <Grid container spacing={4} className={classes.container}>
+      <Grid container spacing={3} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
@@ -82,7 +89,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
             </Grid>
             <Grid item>
               <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.
+                Please take a final look at your OZ Governor Module details.
               </Typography>
             </Grid>
           </Grid>
@@ -106,18 +113,23 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
             {item.label === "Token" && token && (
               <Grid item>
                 <Typography>Voting token:</Typography>
-                <Typography>{token.tokenAddress}</Typography>
+                <Link
+                  href={`https://goerli.etherscan.io/token/${token.tokenAddress}`} // TO DO: Replace with real network address
+                  className={classes.value}
+                >
+                  {token.tokenAddress}
+                </Link>
               </Grid>
             )}
             {item.label === "Governor" && governor && (
               <>
                 <Grid item>
                   <Typography>Name:</Typography>
-                  <Typography>{governor.daoName}</Typography>
+                  <Typography className={classes.value}>{governor.daoName}</Typography>
                 </Grid>
                 <Grid item>
                   <Typography>Voting Delay:</Typography>
-                  <Typography>
+                  <Typography className={classes.value}>
                     {BigNumber.from(governor.votingDelay)
                       .div(unitConversion[governor.votingDelayUnit])
                       .toString()}{" "}
@@ -126,7 +138,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                 </Grid>
                 <Grid item>
                   <Typography>Voting Period:</Typography>
-                  <Typography>
+                  <Typography className={classes.value}>
                     {BigNumber.from(governor.votingPeriod)
                       .div(unitConversion[governor.votingPeriodUnit])
                       .toString()}{" "}
@@ -135,11 +147,15 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                 </Grid>
                 <Grid item>
                   <Typography>Proposal Threshold:</Typography>
-                  <Typography>{governor.proposalThreshold}%</Typography>
+                  <Typography className={classes.value}>
+                    {governor.proposalThreshold}%
+                  </Typography>
                 </Grid>
                 <Grid item>
                   <Typography>Quorum (%):</Typography>
-                  <Typography>{governor.quorumPercent}%</Typography>
+                  <Typography className={classes.value}>
+                    {governor.quorumPercent}%
+                  </Typography>
                 </Grid>
               </>
             )}

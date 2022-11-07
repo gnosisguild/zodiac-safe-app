@@ -177,10 +177,10 @@ export const OzGovernorModule: React.FC = () => {
         </Grid>
         <Grid item>
           <Typography gutterBottom>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.{" "}
+            Enables an Open Zeppelin Governor contract as a module.{" "}
             <Link
               underline="always"
-              href="https://github.com/gnosis/zodiac-module-reality"
+              href="https://blog.openzeppelin.com/governor-smart-contract/"
               target={"_blank"}
               color="inherit"
             >
