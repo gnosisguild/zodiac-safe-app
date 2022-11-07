@@ -5,13 +5,13 @@ import React from "react"
 import { colors, ZodiacPaper } from "zodiac-ui-components"
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward"
 import { Loader } from "@gnosis.pm/safe-react-components"
-import { GovernorSectionProps, SetupData } from "../.."
+import { GovernorWizardProps, SetupData } from "../.."
 import { BigNumber } from "ethers"
 import { unitConversion } from "components/input/TimeSelect"
 
-interface OZReviewSectionProps extends GovernorSectionProps {
+interface OZReviewSectionProps extends GovernorWizardProps {
   goToStep: (step: number) => void
-  setupData: SetupData | undefined
+  setupData: SetupData
   loading: boolean
 }
 
@@ -117,15 +117,20 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                 </Grid>
                 <Grid item>
                   <Typography>Voting Delay:</Typography>
-                  <Typography>{governor.votingDelay} days</Typography>
+                  <Typography>
+                    {BigNumber.from(governor.votingDelay)
+                      .div(unitConversion[governor.votingDelayUnit])
+                      .toString()}{" "}
+                    {governor.votingDelayUnit}
+                  </Typography>
                 </Grid>
                 <Grid item>
                   <Typography>Voting Period:</Typography>
                   <Typography>
                     {BigNumber.from(governor.votingPeriod)
-                      .div(unitConversion["days"])
+                      .div(unitConversion[governor.votingPeriodUnit])
                       .toString()}{" "}
-                    days
+                    {governor.votingPeriodUnit}
                   </Typography>
                 </Grid>
                 <Grid item>

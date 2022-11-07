@@ -1,9 +1,9 @@
-import React, { useState } from "react"
-import { Button, Divider, Grid, makeStyles, Slider, Typography } from "@material-ui/core"
+import React, { ChangeEvent, useState } from "react"
+import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
 
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
-import { GovernorSectionProps } from "../.."
-import { TimeSelect } from "components/input/TimeSelect"
+import { GovernorWizardProps } from "../.."
+import { TimeSelect, unitConversion } from "components/input/TimeSelect"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -88,22 +88,60 @@ const useStyles = makeStyles((theme) => ({
   errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }))
 
+type Unit = keyof typeof unitConversion
+
 export type GovernorSectionData = {
   daoName: string
+  votingDelay: number
+  votingDelayUnit: Unit
+  votingPeriod: number
+  votingPeriodUnit: Unit
+  proposalThreshold: number
+  quorumPercent: number
 }
 
-export const GovernorSection: React.FC<GovernorSectionProps> = ({
+type GovernorFields =
+  | "daoName"
+  | "votingDelay"
+  | "votingPeriod"
+  | "proposalThreshold"
+  | "quorumPercent"
+
+export const GOVERNOR_INITIAL_VALUES: GovernorSectionData = {
+  daoName: "",
+  votingDelay: 0,
+  votingDelayUnit: "days",
+  votingPeriod: 604800,
+  votingPeriodUnit: "days",
+  proposalThreshold: 0,
+  quorumPercent: 4,
+}
+
+export const GovernorSection: React.FC<GovernorWizardProps> = ({
   handleNext,
   handleBack,
   setupData,
 }) => {
   const classes = useStyles()
-  const [daoName, setDaoName] = useState<string>(setupData?.governor?.daoName ?? "")
+  const governor = setupData.governor
+  const [governorData, setGovernorData] = useState<GovernorSectionData>(governor)
 
-  const collectSectionData = (): GovernorSectionData => ({
+  const updateFields = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    fieldName: GovernorFields,
+  ) => {
+    setGovernorData({ ...governorData, [fieldName]: event.target.value })
+  }
+
+  const collectSectionData = (): GovernorSectionData => governorData
+  const {
     daoName,
-  })
-
+    votingDelay,
+    votingDelayUnit,
+    votingPeriod,
+    votingPeriodUnit,
+    proposalThreshold,
+  } = governorData
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
@@ -127,7 +165,7 @@ export const GovernorSection: React.FC<GovernorSectionProps> = ({
             placeholder="My Governor"
             borderStyle="double"
             className={classes.input}
-            onChange={(e) => setDaoName(e.target.value)}
+            onChange={(e) => updateFields(e, "daoName")}
           />
         </Grid>
 
@@ -154,10 +192,14 @@ export const GovernorSection: React.FC<GovernorSectionProps> = ({
                 variant={"secondary"}
                 label="Cooldown"
                 tooltipMsg="The time between proposal submission and when voting starts."
-                // valueUnit={get("cooldownUnit")}
-                // value={cooldown}
+                valueUnit={votingDelayUnit}
+                value={votingDelay.toString()}
                 onChange={(value, unit) => {
-                  console.log("value", value)
+                  setGovernorData({
+                    ...governorData,
+                    votingDelay: parseInt(value),
+                    votingDelayUnit: unit,
+                  })
                 }}
               />
             </Grid>
@@ -166,8 +208,14 @@ export const GovernorSection: React.FC<GovernorSectionProps> = ({
                 variant={"secondary"}
                 label="Expiration"
                 tooltipMsg="The time between proposal when voting starts and ends."
+                valueUnit={votingPeriodUnit}
+                value={votingPeriod.toString()}
                 onChange={(value, unit) => {
-                  console.log("value", value)
+                  setGovernorData({
+                    ...governorData,
+                    votingPeriod: parseInt(value),
+                    votingPeriodUnit: unit,
+                  })
                 }}
               />
             </Grid>
@@ -188,13 +236,13 @@ export const GovernorSection: React.FC<GovernorSectionProps> = ({
             color="secondary"
             borderStyle="double"
             className={classes.input}
+            type="number"
+            value={proposalThreshold}
             tooltipMsg="How many tokens must someone own before they can submit a proposal to the DAO?"
+            onChange={(e) => updateFields(e, "proposalThreshold")}
           />
         </Grid>
 
-        <Grid item>
-          <Slider aria-labelledby="continuous-slider" />
-        </Grid>
         <Grid item style={{ paddingBottom: 0 }}>
           <Divider />
         </Grid>

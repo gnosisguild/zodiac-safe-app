@@ -19,13 +19,15 @@ import TokenSection, { TokenSectionData } from "../OzGovernor/sections/Token"
 import OZReviewSection from "./sections/Review"
 import { deployAndEnableOzGovernorModule } from "./service/moduleDeployment"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import GovernorSection, { GovernorSectionData } from "./sections/Governor"
+import GovernorSection, {
+  GovernorSectionData,
+  GOVERNOR_INITIAL_VALUES,
+} from "./sections/Governor"
 
-
-export interface GovernorSectionProps {
+export interface GovernorWizardProps {
   handleNext: (stepData: TokenSectionData | GovernorSectionData | any) => void
   handleBack: (stepData: TokenSectionData | GovernorSectionData | any) => void
-  setupData: SetupData | undefined
+  setupData: SetupData
 }
 
 export type SetupData = {
@@ -102,7 +104,7 @@ export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
   const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
-  const [activeStep, setActiveStep] = useState<number>(0)
+  const [activeStep, setActiveStep] = useState<number>(1)
   const [loading, setLoading] = useState<boolean>(false)
   const [completed, setCompleted] = useState({
     token: false,
@@ -114,13 +116,7 @@ export const OzGovernorModule: React.FC = () => {
     token: {
       tokenAddress: "",
     },
-    governor: {
-      daoName: "MyGovernor",
-      votingDelay: 0,
-      votingPeriod: 604800,
-      proposalThreshold: 0,
-      quorumPercent: 4,
-    },
+    governor: GOVERNOR_INITIAL_VALUES,
     review: {},
   })
 
@@ -242,7 +238,7 @@ export const OzGovernorModule: React.FC = () => {
                   <StepContent>
                     {label === "token" && (
                       <TokenSection
-                        handleNext={navigate(index + 2, label, true)}
+                        handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
                         setupData={setupData}
                       />
@@ -257,7 +253,7 @@ export const OzGovernorModule: React.FC = () => {
                     {label === "review" && (
                       <OZReviewSection
                         handleNext={handleDone} // this is where we would execute the transactions!!
-                        handleBack={navigate(index - 2, label, true)}
+                        handleBack={navigate(index - 1, label, true)}
                         setupData={setupData}
                         goToStep={setActiveStep}
                         loading={loading}

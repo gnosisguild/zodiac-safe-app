@@ -10,7 +10,7 @@ import {
 
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { ethers } from "ethers"
-import { GovernorSectionProps } from "../.."
+import { GovernorWizardProps } from "../.."
 import { isVotesCompilable } from "../../service/tokenValidation"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
@@ -49,7 +49,7 @@ export type TokenSectionData = {
   tokenAddress: string
 }
 
-export const TokenSection: React.FC<GovernorSectionProps> = ({
+export const TokenSection: React.FC<GovernorWizardProps> = ({
   handleNext,
   handleBack,
   setupData,
