@@ -103,7 +103,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
             <Grid item>
               <Typography>
                 The following token will enable members to vote on proposals with this
-                governor contract.
+                governor contract. The token must be ERC20Votes compatible.
               </Typography>
             </Grid>
           </Grid>
