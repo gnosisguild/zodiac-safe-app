@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   Button,
   Divider,
@@ -23,59 +23,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 
-  doneIcon: {
-    marginRight: 4,
-    fill: "#A8E07E",
-    width: "16px",
-  },
-  errorIcon: {
-    marginRight: 4,
-    fill: "rgba(244, 67, 54, 1)",
-    width: "16px",
-  },
   errorColor: {
     color: "rgba(244, 67, 54, 1)",
-  },
-  loadingContainer: {
-    marginRight: 4,
-    padding: 2,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "50%",
-    height: 14,
-    width: 14,
-    border: `1px solid ${colors.tan[300]}`,
-  },
-  spinner: {
-    width: "8px !important",
-    height: "8px !important",
-    color: `${colors.tan[300]} !important`,
-  },
-  loading: {
-    width: "15px !important",
-    height: "15px !important",
-    marginRight: 8,
-  },
-  radio: {
-    marginLeft: -2,
-    padding: 2,
-    "& ~ .MuiFormControlLabel-label": {
-      fontSize: 12,
-      marginLeft: 4,
-    },
-    "&$checked": {
-      color: colors.tan[1000],
-    },
-  },
-  checked: {},
-  textSubdued: {
-    color: "rgba(255 255 255 / 70%)",
-  },
-  textFieldSmall: {
-    "& .MuiFormLabel-root": {
-      fontSize: 12,
-    },
   },
   input: {
     "& .MuiInputBase-root": {
@@ -94,7 +43,6 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }))
 
 export type TokenSectionData = {
@@ -118,18 +66,6 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
     tokenAddress,
   })
 
-  const handleTokenAddressInput = async (tokenAddress: string) => {
-    setTokenAddress(tokenAddress)
-    if (
-      ethers.utils.isAddress(tokenAddress) &&
-      (await tokenAddressValidator(tokenAddress))
-    ) {
-      setIsValidTokenAddress(true)
-    } else {
-      setIsValidTokenAddress(false)
-    }
-  }
-
   const handleInputClasses = () => {
     if ([tokenAddress].includes("")) {
       return classes.input
@@ -139,6 +75,22 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
     }
     return classes.input
   }
+
+  useEffect(() => {
+    if (![tokenAddress].includes("")) {
+      const validations = async () => {
+        if (
+          ethers.utils.isAddress(tokenAddress) &&
+          (await tokenAddressValidator(tokenAddress))
+        ) {
+          setIsValidTokenAddress(true)
+        } else {
+          setIsValidTokenAddress(false)
+        }
+      }
+      validations()
+    }
+  }, [tokenAddress, tokenAddressValidator])
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
@@ -163,7 +115,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
             placeholder="0xDf33060F476511F806C72719394da1Ad64"
             borderStyle="double"
             className={handleInputClasses()}
-            onChange={(e) => handleTokenAddressInput(e.target.value)}
+            onChange={(e) => setTokenAddress(e.target.value)}
           />
           {![tokenAddress].includes("") && !isValidTokenAddress && (
             <FormHelperText className={classes.errorColor}>

@@ -16,20 +16,34 @@ import classnames from "classnames"
 import { useRootDispatch } from "store"
 import { setOzGovernorModuleScreen } from "store/modules"
 import TokenSection, { TokenSectionData } from "../OzGovernor/sections/Token"
+import OZReviewSection from "./sections/Review"
+import { deployAndEnableOzGovernorModule } from "./service/moduleDeployment"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
+export type GovernorSectionData = {
+  daoName: string
+  votingDelay: number
+  votingPeriod: number
+  proposalThreshold: number
+  quorumPercent: number
+}
 export interface GovernorSectionProps {
-  handleNext: (stepData: TokenSectionData | any) => void
-  handleBack: (stepData: TokenSectionData | any) => void
+  handleNext: (stepData: TokenSectionData | GovernorSectionData | any) => void
+  handleBack: (stepData: TokenSectionData | GovernorSectionData | any) => void
   setupData: SetupData | undefined
 }
 
 export type SetupData = {
   token: TokenSectionData
-  governor: any
+  governor: GovernorSectionData
   review: any
 }
 
-const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = ["token", "governor", "review"]
+export const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = [
+  "token",
+  "governor",
+  "review",
+]
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,9 +57,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
-  tag: {
-    background: theme.palette.secondary.main,
-  },
+
   paperContainer: {
     padding: theme.spacing(2),
   },
@@ -93,15 +105,29 @@ const useStyles = makeStyles((theme) => ({
 
 export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
+  const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
   const [activeStep, setActiveStep] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
   const [completed, setCompleted] = useState({
     token: false,
     governor: false,
     review: false,
   })
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
-  const [setupData, setSetupData] = useState<SetupData>()
+  const [setupData, setSetupData] = useState<SetupData>({
+    token: {
+      tokenAddress: "",
+    },
+    governor: {
+      daoName: "MyGovernor",
+      votingDelay: 0,
+      votingPeriod: 604800,
+      proposalThreshold: 0,
+      quorumPercent: 4,
+    },
+    review: {},
+  })
 
   const handleOpenSection = (pageToOpen: number, step: keyof SetupData) => {
     if (completed[step]) {
@@ -114,6 +140,34 @@ export const OzGovernorModule: React.FC = () => {
       setActiveStep(nextPage)
       setCompleted({ ...completed, [step]: stepCompleted })
       setSetupData({ ...setupData, [step]: stepData } as SetupData)
+    }
+  }
+
+  const handleDone = async (delayModuleExecutor?: string) => {
+    console.log("setupData", setupData)
+    setLoading(true)
+    if (setupData == null) {
+      setLoading(false)
+      throw new Error("No setup data")
+    }
+    const { tokenAddress } = setupData.token
+    const { daoName, votingDelay, votingPeriod, proposalThreshold, quorumPercent } =
+      setupData.governor
+    try {
+      await deployAndEnableOzGovernorModule(
+        provider,
+        safeSdk,
+        safeInfo.safeAddress,
+        tokenAddress,
+        daoName,
+        votingDelay,
+        votingPeriod,
+        proposalThreshold,
+        quorumPercent,
+      )
+    } catch (error) {
+      setLoading(false)
+      console.error(error)
     }
   }
 
@@ -193,9 +247,18 @@ export const OzGovernorModule: React.FC = () => {
                   <StepContent>
                     {label === "token" && (
                       <TokenSection
-                        handleNext={navigate(index + 1, label, true)}
+                        handleNext={navigate(index + 2, label, true)}
                         handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
                         setupData={setupData}
+                      />
+                    )}
+                    {label === "review" && (
+                      <OZReviewSection
+                        handleNext={handleDone} // this is where we would execute the transactions!!
+                        handleBack={navigate(index - 2, label, true)}
+                        setupData={setupData}
+                        goToStep={setActiveStep}
+                        loading={loading}
                       />
                     )}
                   </StepContent>
