@@ -19,18 +19,15 @@ import TokenSection, { TokenSectionData } from "../OzGovernor/sections/Token"
 import OZReviewSection from "./sections/Review"
 import { deployAndEnableOzGovernorModule } from "./service/moduleDeployment"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import GovernorSection, {
+  GovernorSectionData,
+  GOVERNOR_INITIAL_VALUES,
+} from "./sections/Governor"
 
-export type GovernorSectionData = {
-  daoName: string
-  votingDelay: number
-  votingPeriod: number
-  proposalThreshold: number
-  quorumPercent: number
-}
-export interface GovernorSectionProps {
+export interface GovernorWizardProps {
   handleNext: (stepData: TokenSectionData | GovernorSectionData | any) => void
   handleBack: (stepData: TokenSectionData | GovernorSectionData | any) => void
-  setupData: SetupData | undefined
+  setupData: SetupData
 }
 
 export type SetupData = {
@@ -119,13 +116,7 @@ export const OzGovernorModule: React.FC = () => {
     token: {
       tokenAddress: "",
     },
-    governor: {
-      daoName: "MyGovernor",
-      votingDelay: 0,
-      votingPeriod: 604800,
-      proposalThreshold: 0,
-      quorumPercent: 4,
-    },
+    governor: GOVERNOR_INITIAL_VALUES,
     review: {},
   })
 
@@ -247,15 +238,22 @@ export const OzGovernorModule: React.FC = () => {
                   <StepContent>
                     {label === "token" && (
                       <TokenSection
-                        handleNext={navigate(index + 2, label, true)}
+                        handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
+                        setupData={setupData}
+                      />
+                    )}
+                    {label === "governor" && (
+                      <GovernorSection
+                        handleNext={navigate(index + 1, label, true)}
+                        handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
                     {label === "review" && (
                       <OZReviewSection
                         handleNext={handleDone} // this is where we would execute the transactions!!
-                        handleBack={navigate(index - 2, label, true)}
+                        handleBack={navigate(index - 1, label, true)}
                         setupData={setupData}
                         goToStep={setActiveStep}
                         loading={loading}
