@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useState } from "react"
 import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
 
-import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
+import { colors, ZodiacPaper, ZodiacSlider, ZodiacTextField } from "zodiac-ui-components"
 import { GovernorWizardProps } from "../.."
 import { TimeSelect, unitConversion } from "components/input/TimeSelect"
 
@@ -13,60 +13,8 @@ const useStyles = makeStyles((theme) => ({
   paperContainer: {
     padding: theme.spacing(2),
   },
-
-  doneIcon: {
-    marginRight: 4,
-    fill: "#A8E07E",
-    width: "16px",
-  },
-  errorIcon: {
-    marginRight: 4,
-    fill: "rgba(244, 67, 54, 1)",
-    width: "16px",
-  },
-  errorColor: {
-    color: "rgba(244, 67, 54, 1)",
-  },
-  loadingContainer: {
-    marginRight: 4,
-    padding: 2,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "50%",
-    height: 14,
-    width: 14,
-    border: `1px solid ${colors.tan[300]}`,
-  },
-  spinner: {
-    width: "8px !important",
-    height: "8px !important",
-    color: `${colors.tan[300]} !important`,
-  },
-  loading: {
-    width: "15px !important",
-    height: "15px !important",
-    marginRight: 6,
-  },
-  radio: {
-    marginLeft: -2,
-    padding: 2,
-    "& ~ .MuiFormControlLabel-label": {
-      fontSize: 12,
-      marginLeft: 4,
-    },
-    "&$checked": {
-      color: colors.tan[1000],
-    },
-  },
-  checked: {},
   textSubdued: {
     color: "rgba(255 255 255 / 70%)",
-  },
-  textFieldSmall: {
-    "& .MuiFormLabel-root": {
-      fontSize: 12,
-    },
   },
   input: {
     "& .MuiInputBase-root": {
@@ -76,16 +24,6 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  inputError: {
-    "& .MuiInputBase-root": {
-      borderColor: "rgba(244, 67, 54, 0.3)",
-      background: "rgba(244, 67, 54, 0.1)",
-      "&::before": {
-        borderColor: "rgba(244, 67, 54, 0.3)",
-      },
-    },
-  },
-  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }))
 
 type Unit = keyof typeof unitConversion
@@ -141,7 +79,15 @@ export const GovernorSection: React.FC<GovernorWizardProps> = ({
     votingPeriod,
     votingPeriodUnit,
     proposalThreshold,
+    quorumPercent,
   } = governorData
+
+  const nextValidations = (): boolean => {
+    if (![daoName].includes("") && quorumPercent >= 0 && quorumPercent <= 100) {
+      return false
+    }
+    return true
+  }
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
@@ -242,6 +188,21 @@ export const GovernorSection: React.FC<GovernorWizardProps> = ({
             onChange={(e) => updateFields(e, "proposalThreshold")}
           />
         </Grid>
+        <Grid item>
+          <ZodiacSlider
+            label="Quorum (%):"
+            defaultValue={quorumPercent}
+            hasInput
+            onChangeSlider={(value) => {
+              if (typeof value === "number" && quorumPercent !== value && value >= 0) {
+                setGovernorData({
+                  ...governorData,
+                  quorumPercent: value,
+                })
+              }
+            }}
+          />
+        </Grid>
 
         <Grid item style={{ paddingBottom: 0 }}>
           <Divider />
@@ -262,6 +223,7 @@ export const GovernorSection: React.FC<GovernorWizardProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
+                disabled={nextValidations()}
                 onClick={() => handleNext(collectSectionData())}
               >
                 Next

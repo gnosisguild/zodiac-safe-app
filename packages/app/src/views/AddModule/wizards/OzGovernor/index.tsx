@@ -104,7 +104,7 @@ export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
   const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
-  const [activeStep, setActiveStep] = useState<number>(1)
+  const [activeStep, setActiveStep] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
   const [completed, setCompleted] = useState({
     token: false,
