@@ -15,7 +15,17 @@ import { Link } from "components/text/Link"
 import classnames from "classnames"
 import { useRootDispatch } from "store"
 import { setOzGovernorModuleScreen } from "store/modules"
-import TokenSection, { TokenSectionData } from "../OzGovernor/sections/Token"
+import TokenSection, {
+  TokenSectionData,
+  TOKEN_INITIAL_VALUES,
+} from "../OzGovernor/sections/Token"
+import OZReviewSection from "./sections/Review"
+import { deployAndEnableOzGovernorModule } from "./service/moduleDeployment"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import GovernorSection, {
+  GovernorSectionData,
+  GOVERNOR_INITIAL_VALUES,
+} from "./sections/Governor"
 
 export interface GovernorSectionProps {
   handleNext: (stepData: TokenSectionData | any) => void
@@ -101,7 +111,11 @@ export const OzGovernorModule: React.FC = () => {
     review: false,
   })
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
-  const [setupData, setSetupData] = useState<SetupData>()
+  const [setupData, setSetupData] = useState<SetupData>({
+    token: TOKEN_INITIAL_VALUES,
+    governor: GOVERNOR_INITIAL_VALUES,
+    review: {},
+  })
 
   const handleOpenSection = (pageToOpen: number, step: keyof SetupData) => {
     if (completed[step]) {
