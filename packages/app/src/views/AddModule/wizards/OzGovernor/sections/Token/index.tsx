@@ -13,7 +13,9 @@ import {
 
 import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
 import { ethers } from "ethers"
-import { GovernorSectionProps } from "../.."
+import { GovernorWizardProps } from "../.."
+import { isVotesCompilable } from "../../service/tokenValidation"
+import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -38,47 +40,6 @@ const useStyles = makeStyles((theme) => ({
   errorColor: {
     color: "rgba(244, 67, 54, 1)",
   },
-  loadingContainer: {
-    marginRight: 4,
-    padding: 2,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "50%",
-    height: 14,
-    width: 14,
-    border: `1px solid ${colors.tan[300]}`,
-  },
-  spinner: {
-    width: "8px !important",
-    height: "8px !important",
-    color: `${colors.tan[300]} !important`,
-  },
-  loading: {
-    width: "15px !important",
-    height: "15px !important",
-    marginRight: 8,
-  },
-  radio: {
-    marginLeft: -2,
-    padding: 2,
-    "& ~ .MuiFormControlLabel-label": {
-      fontSize: 12,
-      marginLeft: 4,
-    },
-    "&$checked": {
-      color: colors.tan[1000],
-    },
-  },
-  checked: {},
-  textSubdued: {
-    color: "rgba(255 255 255 / 70%)",
-  },
-  textFieldSmall: {
-    "& .MuiFormLabel-root": {
-      fontSize: 12,
-    },
-  },
   input: {
     "& .MuiInputBase-root": {
       borderColor: colors.tan[300],
@@ -96,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
       },
     },
   },
-  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
 }))
 
 export type TokenFields =
@@ -124,7 +84,7 @@ export const TOKEN_INITIAL_VALUES: TokenSectionData = {
   tokenConfiguration: "existingToken",
 }
 
-export const TokenSection: React.FC<GovernorSectionProps> = ({
+export const TokenSection: React.FC<GovernorWizardProps> = ({
   handleNext,
   handleBack,
   setupData,
@@ -151,7 +111,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
     if ([tokenAddress].includes("")) {
       return classes.input
     }
-    if (![tokenAddress].includes("") && !isValidAddress) {
+    if (![tokenAddress].includes("") && !isValidTokenAddress) {
       return classes.inputError
     }
     return classes.input
@@ -210,7 +170,7 @@ export const TokenSection: React.FC<GovernorSectionProps> = ({
             <Grid item>
               <Typography>
                 The following token will enable members to vote on proposals with this
-                governor contract.
+                governor contract. The token must be ERC20Votes compatible.
               </Typography>
             </Grid>
           </Grid>

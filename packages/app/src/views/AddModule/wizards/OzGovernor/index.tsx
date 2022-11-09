@@ -27,19 +27,23 @@ import GovernorSection, {
   GOVERNOR_INITIAL_VALUES,
 } from "./sections/Governor"
 
-export interface GovernorSectionProps {
-  handleNext: (stepData: TokenSectionData | any) => void
-  handleBack: (stepData: TokenSectionData | any) => void
-  setupData: SetupData | undefined
+export interface GovernorWizardProps {
+  handleNext: (stepData: TokenSectionData | GovernorSectionData | any) => void
+  handleBack: (stepData: TokenSectionData | GovernorSectionData | any) => void
+  setupData: SetupData
 }
 
 export type SetupData = {
   token: TokenSectionData
-  governor: any
+  governor: GovernorSectionData
   review: any
 }
 
-const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = ["token", "governor", "review"]
+export const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = [
+  "token",
+  "governor",
+  "review",
+]
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,9 +57,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
-  tag: {
-    background: theme.palette.secondary.main,
-  },
+
   paperContainer: {
     padding: theme.spacing(2),
   },
@@ -103,8 +105,10 @@ const useStyles = makeStyles((theme) => ({
 
 export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
+  const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
   const [activeStep, setActiveStep] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
   const [completed, setCompleted] = useState({
     token: false,
     governor: false,
@@ -131,6 +135,34 @@ export const OzGovernorModule: React.FC = () => {
     }
   }
 
+  const handleDone = async (delayModuleExecutor?: string) => {
+    console.log("setupData", setupData)
+    setLoading(true)
+    if (setupData == null) {
+      setLoading(false)
+      throw new Error("No setup data")
+    }
+    const { tokenAddress } = setupData.token
+    const { daoName, votingDelay, votingPeriod, proposalThreshold, quorumPercent } =
+      setupData.governor
+    try {
+      await deployAndEnableOzGovernorModule(
+        provider,
+        safeSdk,
+        safeInfo.safeAddress,
+        tokenAddress,
+        daoName,
+        votingDelay,
+        votingPeriod,
+        proposalThreshold,
+        quorumPercent,
+      )
+    } catch (error) {
+      setLoading(false)
+      console.error(error)
+    }
+  }
+
   return (
     <div className={classes.root}>
       <Grid container spacing={2} className={classes.container}>
@@ -146,10 +178,10 @@ export const OzGovernorModule: React.FC = () => {
         </Grid>
         <Grid item>
           <Typography gutterBottom>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.{" "}
+            Enables an Open Zeppelin Governor contract as a module.{" "}
             <Link
               underline="always"
-              href="https://github.com/gnosis/zodiac-module-reality"
+              href="https://blog.openzeppelin.com/governor-smart-contract/"
               target={"_blank"}
               color="inherit"
             >
@@ -210,6 +242,22 @@ export const OzGovernorModule: React.FC = () => {
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
                         setupData={setupData}
+                      />
+                    )}
+                    {label === "governor" && (
+                      <GovernorSection
+                        handleNext={navigate(index + 1, label, true)}
+                        handleBack={navigate(activeStep - 1, label, false)}
+                        setupData={setupData}
+                      />
+                    )}
+                    {label === "review" && (
+                      <OZReviewSection
+                        handleNext={handleDone} // this is where we would execute the transactions!!
+                        handleBack={navigate(index - 1, label, true)}
+                        setupData={setupData}
+                        goToStep={setActiveStep}
+                        loading={loading}
                       />
                     )}
                   </StepContent>
