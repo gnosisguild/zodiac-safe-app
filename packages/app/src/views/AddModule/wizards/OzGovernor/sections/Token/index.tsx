@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react"
+import React, { ChangeEvent, Fragment, useEffect, useState } from "react"
 import {
   Button,
   Divider,
+  FormControlLabel,
   FormHelperText,
   Grid,
   makeStyles,
+  Radio,
+  RadioGroup,
   Typography,
 } from "@material-ui/core"
 
@@ -22,7 +25,18 @@ const useStyles = makeStyles((theme) => ({
   paperContainer: {
     padding: theme.spacing(2),
   },
-
+  radio: {
+    marginLeft: -2,
+    padding: 2,
+    "& ~ .MuiFormControlLabel-label": {
+      fontSize: 12,
+      marginLeft: 4,
+    },
+    "&$checked": {
+      color: colors.tan[1000],
+    },
+  },
+  checked: {},
   errorColor: {
     color: "rgba(244, 67, 54, 1)",
   },
@@ -45,8 +59,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+export type TokenFields =
+  | "tokenAddress"
+  | "tokenName"
+  | "tokenSymbol"
+  | "initialAmount"
+  | "tokenConfiguration"
+
+export type TokenConfigurationType = "existingToken" | "erc20"
+
 export type TokenSectionData = {
   tokenAddress: string
+  tokenName: string
+  tokenSymbol: string
+  initialAmount: number
+  tokenConfiguration: TokenConfigurationType
+}
+
+export const TOKEN_INITIAL_VALUES: TokenSectionData = {
+  tokenAddress: "",
+  tokenName: "",
+  tokenSymbol: "",
+  initialAmount: 100000,
+  tokenConfiguration: "existingToken",
 }
 
 export const TokenSection: React.FC<GovernorWizardProps> = ({
@@ -55,15 +90,21 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
   setupData,
 }) => {
   const classes = useStyles()
-  const [tokenAddress, setTokenAddress] = useState<string>(
-    setupData?.token.tokenAddress ?? "",
-  )
+  const token = setupData.token
+  const [tokenData, setTokenData] = useState<TokenSectionData>(token)
   const [isValidTokenAddress, setIsValidTokenAddress] = useState<boolean>(false)
+
   const { provider } = useSafeAppsSDKWithProvider()
   const tokenAddressValidator = isVotesCompilable(provider)
+  const { tokenAddress, tokenName, tokenSymbol, tokenConfiguration, initialAmount } =
+    tokenData
 
   const collectSectionData = (): TokenSectionData => ({
     tokenAddress,
+    tokenName,
+    tokenSymbol,
+    tokenConfiguration,
+    initialAmount,
   })
 
   const handleInputClasses = () => {
@@ -74,6 +115,21 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
       return classes.inputError
     }
     return classes.input
+  }
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTokenData({
+      ...tokenData,
+      tokenConfiguration: (event.target as HTMLInputElement)
+        .value as TokenConfigurationType,
+    })
+  }
+
+  const updateFields = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    fieldName: TokenFields,
+  ) => {
+    setTokenData({ ...tokenData, [fieldName]: event.target.value })
   }
 
   useEffect(() => {
@@ -92,6 +148,17 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
     }
   }, [tokenAddress, tokenAddressValidator])
 
+  const handleValidation = (): boolean => {
+    if (tokenConfiguration === "existingToken") {
+      return !isValidTokenAddress || [tokenAddress].includes("") ? true : false
+    }
+    if (tokenConfiguration === "erc20") {
+      return [tokenName, tokenSymbol, initialAmount].includes("") ? true : false
+    }
+    return true
+  }
+
+  const isValid = handleValidation()
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
       <Grid container spacing={4} className={classes.container}>
@@ -109,20 +176,108 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
           </Grid>
         </Grid>
         <Grid item>
-          <ZodiacTextField
-            label="Token Address"
-            value={tokenAddress}
-            placeholder="0xDf33060F476511F806C72719394da1Ad64"
-            borderStyle="double"
-            className={handleInputClasses()}
-            onChange={(e) => setTokenAddress(e.target.value)}
-          />
-          {![tokenAddress].includes("") && !isValidTokenAddress && (
-            <FormHelperText className={classes.errorColor}>
-              Please provide a valid address
-            </FormHelperText>
-          )}
+          <Typography variant="h4" color="textSecondary">
+            Token Configuration
+          </Typography>
         </Grid>
+        <Grid item>
+          <Typography variant="body2">
+            Do you have an existing token in your safe that you&apos;d like to use as the
+            token for voting in this contract?
+          </Typography>
+          <RadioGroup
+            aria-label="Token Configuration"
+            name="Token Configuration"
+            value={tokenConfiguration}
+            onChange={handleChange}
+          >
+            <FormControlLabel
+              value="existingToken"
+              control={
+                <Radio
+                  classes={{
+                    root: classes.radio,
+                    checked: classes.checked,
+                  }}
+                />
+              }
+              label="Existing Token"
+            />
+            <FormControlLabel
+              value="erc20"
+              control={
+                <Radio
+                  classes={{
+                    root: classes.radio,
+                    checked: classes.checked,
+                  }}
+                />
+              }
+              label="Deploy a new ERC20 for voting."
+            />
+          </RadioGroup>
+        </Grid>
+
+        {tokenConfiguration === "existingToken" && (
+          <Grid item>
+            <ZodiacTextField
+              label="Token Address"
+              value={tokenAddress}
+              placeholder="0xDf33060F476511F806C72719394da1Ad64"
+              borderStyle="double"
+              className={handleInputClasses()}
+              onChange={(e) => updateFields(e, "tokenAddress")}
+            />
+            {![tokenAddress].includes("") && !isValidTokenAddress && (
+              <FormHelperText className={classes.errorColor}>
+                Please provide a valid address
+              </FormHelperText>
+            )}
+          </Grid>
+        )}
+
+        {tokenConfiguration === "erc20" && (
+          <Fragment>
+            <Grid item style={{ width: "-webkit-fill-available" }}>
+              <Grid container spacing={2} justifyContent="space-between">
+                <Grid item xs={9}>
+                  <ZodiacTextField
+                    label="Token Name"
+                    value={tokenName}
+                    placeholder="Weenus"
+                    borderStyle="double"
+                    className={classes.input}
+                    onChange={(e) => updateFields(e, "tokenName")}
+                    tooltipMsg="The same as collection name in OpenSea, e.g. Nouns"
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <ZodiacTextField
+                    label="Token Symbol"
+                    value={tokenSymbol}
+                    placeholder="WEENUS"
+                    borderStyle="double"
+                    className={classes.input}
+                    onChange={(e) => updateFields(e, "tokenSymbol")}
+                    tooltipMsg="e.g. LOOT"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <ZodiacTextField
+                label="Initial Mint Amount"
+                value={initialAmount}
+                type="number"
+                placeholder="100000"
+                borderStyle="double"
+                className={classes.input}
+                onChange={(e) => updateFields(e, "initialAmount")}
+                tooltipMsg="The number of tokens you want to mint when the contract is deployed. These will be sent straight to the safe."
+              />
+            </Grid>
+          </Fragment>
+        )}
 
         <Grid item style={{ paddingBottom: 0 }}>
           <Divider />
@@ -143,7 +298,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                 color="secondary"
                 size="medium"
                 variant="contained"
-                disabled={!isValidTokenAddress || [tokenAddress].includes("")}
+                disabled={isValid}
                 onClick={() => handleNext(collectSectionData())}
               >
                 Next

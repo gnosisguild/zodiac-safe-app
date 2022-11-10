@@ -215,7 +215,7 @@ export const GovernorSection: React.FC<GovernorWizardProps> = ({
                 variant="text"
                 onClick={() => handleBack(collectSectionData())}
               >
-                Cancel
+                Back
               </Button>
             </Grid>
             <Grid item>

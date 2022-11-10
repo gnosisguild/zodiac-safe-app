@@ -15,7 +15,10 @@ import { Link } from "components/text/Link"
 import classnames from "classnames"
 import { useRootDispatch } from "store"
 import { setOzGovernorModuleScreen } from "store/modules"
-import TokenSection, { TokenSectionData } from "../OzGovernor/sections/Token"
+import TokenSection, {
+  TokenSectionData,
+  TOKEN_INITIAL_VALUES,
+} from "../OzGovernor/sections/Token"
 import OZReviewSection from "./sections/Review"
 import { deployAndEnableOzGovernorModule } from "./service/moduleDeployment"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
@@ -113,9 +116,7 @@ export const OzGovernorModule: React.FC = () => {
   })
   // we can keep the user input data here. No need to send it anywhere else (no need for Redux here, this is self contained).
   const [setupData, setSetupData] = useState<SetupData>({
-    token: {
-      tokenAddress: "",
-    },
+    token: TOKEN_INITIAL_VALUES,
     governor: GOVERNOR_INITIAL_VALUES,
     review: {},
   })

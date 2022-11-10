@@ -111,15 +111,39 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
             </Grid>
 
             {item.label === "Token" && token && (
-              <Grid item>
-                <Typography>Voting token:</Typography>
-                <Link
-                  href={`https://goerli.etherscan.io/token/${token.tokenAddress}`} // TO DO: Replace with real network address
-                  className={classes.value}
-                >
-                  {token.tokenAddress}
-                </Link>
-              </Grid>
+              <>
+                {token.tokenAddress && (
+                  <Grid item>
+                    <Typography>Voting Token:</Typography>
+                    <Link
+                      href={`https://goerli.etherscan.io/token/${token.tokenAddress}`} // TO DO: Replace with real network address
+                      className={classes.value}
+                    >
+                      {token.tokenAddress}
+                    </Link>
+                  </Grid>
+                )}
+                {token.tokenName && (
+                  <Grid item>
+                    <Typography>Token Name:</Typography>
+                    <Typography className={classes.value}>{token.tokenName}</Typography>
+                  </Grid>
+                )}
+                {token.tokenSymbol && (
+                  <Grid item>
+                    <Typography>Token Symbol:</Typography>
+                    <Typography className={classes.value}>{token.tokenSymbol}</Typography>
+                  </Grid>
+                )}
+                {token.initialAmount && (
+                  <Grid item>
+                    <Typography>Initial Amount:</Typography>
+                    <Typography className={classes.value}>
+                      {token.initialAmount}
+                    </Typography>
+                  </Grid>
+                )}
+              </>
             )}
             {item.label === "Governor" && governor && (
               <>
