@@ -2,7 +2,7 @@ import snapshot from "@snapshot-labs/snapshot.js"
 import * as R from "ramda"
 import { NETWORK } from "utils/networks"
 
-const SNAPSHOT_HUB = "https://snapshot.org"
+const SNAPSHOT_HUB = "https://hub.snapshot.org"
 const SNAPSHOT_HUB_GOERLI = "https://testnet.snapshot.org"
 const SNAPSHOT_SPACE = "https://snapshot.org"
 const SNAPSHOT_SPACE_GOERLI = "https://demo.snapshot.org"
