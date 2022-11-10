@@ -31,7 +31,7 @@ export function isReadFunction(method: FunctionFragment) {
 }
 
 export function getReadFunction(abi: ContractInterface) {
-  const inter = abi instanceof Interface ? abi : new Interface(abi)
+  const inter = abi instanceof Interface ? abi : new Interface(abi as any)
   return inter.fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)
@@ -39,7 +39,7 @@ export function getReadFunction(abi: ContractInterface) {
 }
 
 export function getWriteFunction(abi: ContractInterface) {
-  const inter = abi instanceof Interface ? abi : new Interface(abi)
+  const inter = abi instanceof Interface ? abi : new Interface(abi as any)
   return inter.fragments
     .filter(FunctionFragment.isFunctionFragment)
     .map(FunctionFragment.from)

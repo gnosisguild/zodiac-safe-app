@@ -1,6 +1,11 @@
 import { Contract as MultiCallContract, Provider as MultiCallProvider } from "ethcall"
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
-import { CONTRACT_ADDRESSES, getModuleInstance, KnownContracts } from "@gnosis.pm/zodiac"
+import {
+  CONTRACT_ADDRESSES,
+  getModuleInstance,
+  KnownContracts,
+  SUPPORTED_NETWORKS,
+} from "@gnosis.pm/zodiac"
 import { getModuleData } from "../../utils/contracts"
 import {
   DataDecoded,
@@ -86,7 +91,7 @@ export async function fetchDelayModule(
     const moduleContract = new MultiCallContract(delayModule.address, abi)
 
     const ethCallProvider = new MultiCallProvider()
-    await ethCallProvider.init(provider)
+    await ethCallProvider.init(provider as any)
 
     const txCooldown = moduleContract.txCooldown()
     const txExpiration = moduleContract.txExpiration()
@@ -221,7 +226,7 @@ export function getContractsModuleType(
   chainId: number,
   masterCopyAddress: string,
 ): ModuleType {
-  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId]
+  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId as SUPPORTED_NETWORKS]
   if (!masterCopyAddresses) return ModuleType.UNKNOWN
   const entry = Object.entries(masterCopyAddresses).find(([, address]) => {
     return address.toLowerCase() === masterCopyAddress.toLowerCase()
@@ -240,7 +245,7 @@ export function getAddModuleTransactionModuleType(
   safeTransaction: SafeTransaction,
   chainId: number,
 ): ModuleType | undefined {
-  const factoryAddress = CONTRACT_ADDRESSES[chainId]?.factory || ""
+  const factoryAddress = CONTRACT_ADDRESSES[chainId as SUPPORTED_NETWORKS]?.factory || ""
   const transactions = getTransactionsFromSafeTransaction(safeTransaction)
 
   const masterCopyAddress = transactions
