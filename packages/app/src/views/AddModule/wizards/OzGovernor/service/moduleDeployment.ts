@@ -3,6 +3,11 @@ import { ethers } from "ethers"
 import { enableModule, TxWitMeta } from "services"
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
 
+const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
+if (MULTI_SEND_CONTRACT == null) {
+  throw new Error("The MULTI_SEND_CONTRACT environment variable is not set.")
+}
+
 const deployOzGovernorModule = async (
   provider: ethers.providers.JsonRpcProvider,
   safeAddress: string,
@@ -42,14 +47,28 @@ const deployOzGovernorModule = async (
   const initData = {
     values: [
       safeAddress, // owner
+      safeAddress, // target
+      MULTI_SEND_CONTRACT, // multisend
       tokenAddress, // token
       name, // name
       votingDelay.toString(), // votingDelay
       votingPeriod.toString(), // votingPeriod
       proposalThreshold.toString(), // proposalThreshold
       quorumPercent.toString(), // quorum
+      "0", // initialVoteExtension
     ],
-    types: ["address", "address", "string", "uint256", "uint256", "uint256", "uint256"],
+    types: [
+      "address",
+      "address",
+      "address",
+      "address",
+      "string",
+      "uint256",
+      "uint256",
+      "uint256",
+      "uint256",
+      "uint64",
+    ],
   }
 
   const saltNonce = Date.now().toString()
@@ -57,7 +76,7 @@ const deployOzGovernorModule = async (
 
   const { transaction: deploymentTx, expectedModuleAddress: expectedAddress } =
     deployAndSetUpModule(
-      "KnownContracts.OZ_GOVERNOR" as any as KnownContracts, // TODO: get the known contract here once its available in the KnownContracts enum from zodiac
+      KnownContracts.OZ_GOVERNOR,
       initData,
       provider,
       chainId,
