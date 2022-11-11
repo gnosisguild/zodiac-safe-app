@@ -150,12 +150,12 @@ export const OzGovernorModule: React.FC = () => {
         provider,
         safeSdk,
         safeInfo.safeAddress,
-        tokenAddress,
         daoName,
         votingDelay,
         votingPeriod,
         proposalThreshold,
         quorumPercent,
+        tokenAddress,
       )
     } catch (error) {
       setLoading(false)
