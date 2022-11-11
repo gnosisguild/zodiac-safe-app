@@ -8,6 +8,12 @@ if (MULTI_SEND_CONTRACT == null) {
   throw new Error("The MULTI_SEND_CONTRACT environment variable is not set.")
 }
 
+type CreateTokenArgs = {
+  name: string
+  symbol: string
+  kind: "ERC20" | "ERC721"
+}
+
 const deployOzGovernorModule = async (
   provider: ethers.providers.JsonRpcProvider,
   safeAddress: string,
@@ -94,17 +100,99 @@ const deployOzGovernorModule = async (
   }
 }
 
+export const deployVotesTokenTx = async (
+  provider: ethers.providers.JsonRpcProvider,
+  safeAddress: string,
+  tokenName: string,
+  tokenSymbol: string,
+  kind: "ERC20" | "ERC721",
+): Promise<TxWitMeta> => {
+  if (safeAddress == null) {
+    throw new Error("No safe address provided")
+  }
+  if (tokenName == null) {
+    throw new Error("No token name provided")
+  }
+  if (tokenSymbol == null) {
+    throw new Error("No token symbol provided")
+  }
+  if (kind !== "ERC20" && kind !== "ERC721") {
+    throw new Error("Invalid token kind")
+  }
+
+  const initData = {
+    values: [
+      safeAddress, // owner
+      tokenName, // name
+      tokenSymbol, // symbol
+    ],
+    types: ["address", "string", "string"],
+  }
+
+  const saltNonce = Date.now().toString()
+  const chainId = (await provider.getNetwork()).chainId
+
+  const { transaction: deploymentTx, expectedModuleAddress: expectedAddress } =
+    deployAndSetUpModule(
+      kind === "ERC20" ? KnownContracts.ERC20_VOTES : KnownContracts.ERC721_VOTES,
+      initData,
+      provider,
+      chainId,
+      saltNonce,
+    )
+
+  return {
+    txs: [
+      {
+        ...deploymentTx,
+        value: deploymentTx.value.toString(),
+      },
+    ], // transactions to be executed by the safe
+    meta: { expectedAddress }, // any additional data needed from the setup process
+  }
+}
+
 export const deployAndEnableOzGovernorModule = async (
   provider: ethers.providers.JsonRpcProvider,
   safeSdk: SafeAppsSDK,
   safeAddress: string,
-  tokenAddress: string,
   name: string,
   votingDelay: number,
   votingPeriod: number,
   proposalThreshold: number,
   quorumPercent: number,
+  tokenAddress?: string,
+  createTokenArgs?: CreateTokenArgs,
 ) => {
+  if (tokenAddress == null && createTokenArgs == null) {
+    throw new Error("No token address or create token args provided")
+  } else if (tokenAddress != null && createTokenArgs != null) {
+    throw new Error("Both token address and create token args provided")
+  }
+  const txs = []
+  if (createTokenArgs != null) {
+    const { txs: deployTokenTxs, meta } = await deployVotesTokenTx(
+      provider,
+      safeAddress,
+      createTokenArgs.name,
+      createTokenArgs.symbol,
+      createTokenArgs.kind,
+    )
+    txs.push(...deployTokenTxs)
+
+    if (meta?.expectedAddress == null) {
+      throw new Error("No expected address returned from token deployment")
+    }
+
+    tokenAddress = meta.expectedAddress
+  }
+
+  if (tokenAddress == null) {
+    throw new Error(
+      "No token address provided. Should not be possible. Either the token address should be provided or a new token should be deployed.",
+    )
+  }
+
   const { txs: deployOzGovernorTxs, meta } = await deployOzGovernorModule(
     provider,
     safeAddress,
@@ -115,15 +203,15 @@ export const deployAndEnableOzGovernorModule = async (
     proposalThreshold,
     quorumPercent,
   )
+  txs.push(...deployOzGovernorTxs)
   if (meta?.expectedAddress == null) {
     throw new Error("The expected value is missing")
   }
   const enableModuleTx = enableModule(safeAddress, meta.expectedAddress)
+  txs.push(enableModuleTx)
 
-  return safeSdk.txs
-    .send({ txs: [...deployOzGovernorTxs, enableModuleTx] })
-    .catch((e) => {
-      console.error(e)
-      throw new Error("Error when proposing transactions to the Safe")
-    })
+  return safeSdk.txs.send({ txs: txs }).catch((e) => {
+    console.error(e)
+    throw new Error("Error when proposing transactions to the Safe")
+  })
 }

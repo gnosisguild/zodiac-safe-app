@@ -2371,10 +2371,10 @@
   dependencies:
     cross-fetch "^3.1.5"
 
-"@gnosis.pm/zodiac@^1.1.7":
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/zodiac/-/zodiac-1.1.7.tgz#7a04ab4ebdaae09eaf94b3cf8c0b098d3561362e"
-  integrity sha512-REOm4a0nkPKxlse2YuDVYJS1qkVkAtHJi5MqFJTaEJtURqupRNHBzMH/5oNv0aA/5/RWjtwxkeNigOzF+r/bmA==
+"@gnosis.pm/zodiac@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/zodiac/-/zodiac-1.1.9.tgz#bf61b97f20afa76b56a7c77944ad968a760db1d9"
+  integrity sha512-+XY7husTz/GhpyIWLJVDe9C687VW0U4KFETRJeDze6DOh1+wTiCHhCcpGTY4abE0F4x/JhVVHL9ciHCsDzveHQ==
   dependencies:
     "@gnosis.pm/mock-contract" "^4.0.0"
     "@gnosis.pm/safe-contracts" "1.3.0"
