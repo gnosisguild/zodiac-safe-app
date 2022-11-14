@@ -14,13 +14,20 @@ import {
 import { Link } from "components/text/Link"
 import classnames from "classnames"
 import { useRootDispatch } from "store"
-import { setOzGovernorModuleScreen } from "store/modules"
+import {
+  fetchPendingModules,
+  setModuleAdded,
+  setOzGovernorModuleScreen,
+} from "store/modules"
 import TokenSection, {
   TokenSectionData,
   TOKEN_INITIAL_VALUES,
 } from "../OzGovernor/sections/Token"
 import OZReviewSection from "./sections/Review"
-import { deployAndEnableOzGovernorModule } from "./service/moduleDeployment"
+import {
+  CreateTokenArgs,
+  deployAndEnableOzGovernorModule,
+} from "./service/moduleDeployment"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 import GovernorSection, {
   GovernorSectionData,
@@ -135,18 +142,27 @@ export const OzGovernorModule: React.FC = () => {
     }
   }
 
-  const handleDone = async (delayModuleExecutor?: string) => {
-    console.log("setupData", setupData)
+  const handleDone = async () => {
     setLoading(true)
     if (setupData == null) {
       setLoading(false)
       throw new Error("No setup data")
     }
-    const { tokenAddress } = setupData.token
+    const { tokenAddress, tokenSymbol, tokenConfiguration, tokenName } = setupData.token
     const { daoName, votingDelay, votingPeriod, proposalThreshold, quorumPercent } =
       setupData.governor
     try {
-      await deployAndEnableOzGovernorModule(
+      let createTokenAddress: CreateTokenArgs | undefined = undefined
+
+      if (tokenConfiguration === "ERC20" || tokenConfiguration === "ERC721") {
+        createTokenAddress = {
+          name: tokenName,
+          symbol: tokenSymbol,
+          kind: tokenConfiguration as "ERC20" | "ERC721",
+        }
+      }
+
+      const setup = await deployAndEnableOzGovernorModule(
         provider,
         safeSdk,
         safeInfo.safeAddress,
@@ -156,7 +172,12 @@ export const OzGovernorModule: React.FC = () => {
         proposalThreshold,
         quorumPercent,
         tokenAddress,
+        createTokenAddress,
       )
+      if (setup.safeTxHash) {
+        dispatch(fetchPendingModules(safeInfo))
+        dispatch(setModuleAdded(true))
+      }
     } catch (error) {
       setLoading(false)
       console.error(error)

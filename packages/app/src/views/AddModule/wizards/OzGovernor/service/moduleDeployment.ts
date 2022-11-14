@@ -8,7 +8,7 @@ if (MULTI_SEND_CONTRACT == null) {
   throw new Error("The MULTI_SEND_CONTRACT environment variable is not set.")
 }
 
-type CreateTokenArgs = {
+export type CreateTokenArgs = {
   name: string
   symbol: string
   kind: "ERC20" | "ERC721"
@@ -183,7 +183,6 @@ export const deployAndEnableOzGovernorModule = async (
     if (meta?.expectedAddress == null) {
       throw new Error("No expected address returned from token deployment")
     }
-
     tokenAddress = meta.expectedAddress
   }
 
