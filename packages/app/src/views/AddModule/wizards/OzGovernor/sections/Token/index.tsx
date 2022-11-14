@@ -256,7 +256,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                   <ZodiacTextField
                     label="Token Name"
                     value={tokenName}
-                    placeholder="Weenus"
+                    placeholder="MyToken"
                     borderStyle="double"
                     className={classes.input}
                     onChange={(e) => updateFields(e, "tokenName")}
@@ -267,7 +267,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                   <ZodiacTextField
                     label="Token Symbol"
                     value={tokenSymbol}
-                    placeholder="WEENUS"
+                    placeholder="TKN"
                     borderStyle="double"
                     className={classes.input}
                     onChange={(e) => updateFields(e, "tokenSymbol")}
