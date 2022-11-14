@@ -1,6 +1,4 @@
-import fs from "fs"
 import JSZip from "jszip"
-import path from "path"
 
 export const getEnv = (name: string) => {
   const val = process.env[name]
@@ -10,21 +8,15 @@ export const getEnv = (name: string) => {
   return val
 }
 
-export const readFileAndReplace = (
-  filePath: string,
+export const replaceInString = (
+  contentIn: string,
   replaceMap: { [toReplace: string]: string },
 ) => {
-  const fullFilePath = path.resolve(process.cwd(), filePath)
-  console.log("Reading file from: ", fullFilePath)
-  const buffer = fs.readFileSync(fullFilePath, {
-    encoding: "utf-8",
-  })
-  let fileContent = buffer.toString()
-  console.log("File content: ", fileContent.slice(0, 100), "...")
+  let content = contentIn
   Object.keys(replaceMap).forEach((key) => {
-    fileContent = fileContent.replace(key, replaceMap[key])
+    content = content.replace(key, replaceMap[key])
   })
-  return fileContent
+  return content
 }
 
 export const packageCode = async (code: string) => {

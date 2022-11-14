@@ -6,7 +6,8 @@ import {
 import { AutotaskClient } from "defender-autotask-client"
 import { CreateAutotaskRequest } from "defender-autotask-client"
 import { Network } from "defender-base-client"
-import { packageCode, readFileAndReplace } from "../util"
+import { packageCode, replaceInString } from "../util"
+import autotaskJsCode from "./autotasks/on_new_question_from_module"
 
 export { NotificationType } from "defender-sentinel-client"
 
@@ -90,16 +91,13 @@ export const createAutotask = async (
   apiKey: string,
   apiSecret: string,
 ) => {
-  const code = readFileAndReplace(
-    "lib/defender/autotasks/on_new_question_from_module.js",
-    {
-      "{{network}}": network,
-      "{{oracleAddress}}": oracleAddress,
-      '"{{notificationChannels}}"': JSON.stringify(notificationChannels),
-      "{{apiKey}}": apiKey,
-      "{{apiSecret}}": apiSecret,
-    },
-  )
+  const code = replaceInString(autotaskJsCode, {
+    "{{network}}": network,
+    "{{oracleAddress}}": oracleAddress,
+    '"{{notificationChannels}}"': JSON.stringify(notificationChannels),
+    "{{apiKey}}": apiKey,
+    "{{apiSecret}}": apiSecret,
+  })
 
   const params: CreateAutotaskRequest = {
     name: "Setup Sentinel for new Reality.eth question",

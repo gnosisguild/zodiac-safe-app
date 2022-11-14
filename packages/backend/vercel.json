@@ -1,7 +1,6 @@
 {
   "functions": {
     "api/monitoring/notification.ts": {
-      "includeFiles": "lib/defender/autotasks/on_new_question_from_module.js",
       "maxDuration": 60
     }
   }
