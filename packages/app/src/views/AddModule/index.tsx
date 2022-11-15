@@ -149,12 +149,14 @@ export const AddModulesView = () => {
           onClick={() => setModule(ModuleType.OPTIMISTIC_GOVERNOR)}
         />
 
-        <ModuleButton
-          title="Governor Module"
-          description="Enables an Open Zeppelin Governor contract as a module"
-          icon="ozGov"
-          onClick={() => dispatch(setOzGovernorModuleScreen(true))}
-        />
+        {NETWORK.GOERLI === safe.chainId && (
+          <ModuleButton
+            title="Governor Module"
+            description="Enables an Open Zeppelin Governor contract as a module"
+            icon="ozGov"
+            onClick={() => dispatch(setOzGovernorModuleScreen(true))}
+          />
+        )}
 
         <ModuleButton
           title="Custom Module"

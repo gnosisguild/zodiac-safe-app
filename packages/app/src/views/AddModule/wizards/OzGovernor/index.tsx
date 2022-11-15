@@ -152,10 +152,10 @@ export const OzGovernorModule: React.FC = () => {
     const { daoName, votingDelay, votingPeriod, proposalThreshold, quorumPercent } =
       setupData.governor
     try {
-      let createTokenAddress: CreateTokenArgs | undefined = undefined
+      let createTokenArgs: CreateTokenArgs | undefined = undefined
 
       if (tokenConfiguration === "ERC20" || tokenConfiguration === "ERC721") {
-        createTokenAddress = {
+        createTokenArgs = {
           name: tokenName,
           symbol: tokenSymbol,
           kind: tokenConfiguration as "ERC20" | "ERC721",
@@ -172,7 +172,7 @@ export const OzGovernorModule: React.FC = () => {
         proposalThreshold,
         quorumPercent,
         tokenAddress,
-        createTokenAddress,
+        createTokenArgs,
       )
       if (setup.safeTxHash) {
         dispatch(fetchPendingModules(safeInfo))

@@ -8,8 +8,6 @@ import { Loader } from "@gnosis.pm/safe-react-components"
 import { GovernorWizardProps, SetupData } from "../.."
 import { BigNumber } from "ethers"
 import { unitConversion } from "components/input/TimeSelect"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { NETWORK } from "utils/networks"
 
 interface OZReviewSectionProps extends GovernorWizardProps {
   goToStep: (step: number) => void
@@ -78,7 +76,6 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
   setupData,
   loading,
 }) => {
-  const { safe } = useSafeAppsSDK()
   const classes = useStyles()
   const token = setupData?.token
   const governor = setupData?.governor
@@ -219,7 +216,6 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                     <ArrowUpwardIcon />
                   )
                 }
-                disabled={loading || safe.chainId !== NETWORK.GOERLI}
                 onClick={() => {
                   handleNext(setupData)
                 }}
