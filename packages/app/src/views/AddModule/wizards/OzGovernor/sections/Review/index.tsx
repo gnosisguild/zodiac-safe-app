@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
   value: {
     fontFamily: "Roboto Mono, monospace",
     fontWeight: "bold",
+    color: "white",
   },
   underline: {
     textDecoration: "underline",
@@ -116,6 +117,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                   <Grid item>
                     <Typography>Voting Token:</Typography>
                     <Link
+                      target="_blank"
                       href={`https://goerli.etherscan.io/token/${token.tokenAddress}`} // TO DO: Replace with real network address
                       className={classes.value}
                     >
@@ -135,14 +137,14 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                     <Typography className={classes.value}>{token.tokenSymbol}</Typography>
                   </Grid>
                 )}
-                {token.initialAmount && (
+                {/* {token.tokenConfiguration === "ERC20" && token.initialAmount && (
                   <Grid item>
                     <Typography>Initial Amount:</Typography>
                     <Typography className={classes.value}>
                       {token.initialAmount}
                     </Typography>
                   </Grid>
-                )}
+                )} */}
               </>
             )}
             {item.label === "Governor" && governor && (
@@ -214,7 +216,6 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                     <ArrowUpwardIcon />
                   )
                 }
-                disabled={loading}
                 onClick={() => {
                   handleNext(setupData)
                 }}

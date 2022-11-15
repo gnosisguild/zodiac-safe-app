@@ -66,10 +66,10 @@ export type TokenFields =
   | "initialAmount"
   | "tokenConfiguration"
 
-export type TokenConfigurationType = "existingToken" | "erc20"
+export type TokenConfigurationType = "existingToken" | "ERC20" | "ERC721"
 
 export type TokenSectionData = {
-  tokenAddress: string
+  tokenAddress: string | undefined
   tokenName: string
   tokenSymbol: string
   initialAmount: number
@@ -77,7 +77,7 @@ export type TokenSectionData = {
 }
 
 export const TOKEN_INITIAL_VALUES: TokenSectionData = {
-  tokenAddress: "",
+  tokenAddress: undefined,
   tokenName: "",
   tokenSymbol: "",
   initialAmount: 100000,
@@ -111,7 +111,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
     if ([tokenAddress].includes("")) {
       return classes.input
     }
-    if (![tokenAddress].includes("") && !isValidTokenAddress) {
+    if (![tokenAddress].includes("" || undefined) && !isValidTokenAddress) {
       return classes.inputError
     }
     return classes.input
@@ -133,11 +133,11 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
   }
 
   useEffect(() => {
-    if (![tokenAddress].includes("")) {
+    if (![tokenAddress].includes("" || undefined)) {
       const validations = async () => {
         if (
-          ethers.utils.isAddress(tokenAddress) &&
-          (await tokenAddressValidator(tokenAddress))
+          ethers.utils.isAddress(tokenAddress as string) &&
+          (await tokenAddressValidator(tokenAddress as string))
         ) {
           setIsValidTokenAddress(true)
         } else {
@@ -152,8 +152,8 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
     if (tokenConfiguration === "existingToken") {
       return !isValidTokenAddress || [tokenAddress].includes("") ? true : false
     }
-    if (tokenConfiguration === "erc20") {
-      return [tokenName, tokenSymbol, initialAmount].includes("") ? true : false
+    if (tokenConfiguration === "ERC721" || tokenConfiguration === "ERC20") {
+      return [tokenName, tokenSymbol].includes("") ? true : false
     }
     return true
   }
@@ -204,7 +204,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
               label="Existing Token"
             />
             <FormControlLabel
-              value="erc20"
+              value="ERC20"
               control={
                 <Radio
                   classes={{
@@ -214,6 +214,18 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                 />
               }
               label="Deploy a new ERC20 for voting."
+            />
+            <FormControlLabel
+              value="ERC721"
+              control={
+                <Radio
+                  classes={{
+                    root: classes.radio,
+                    checked: classes.checked,
+                  }}
+                />
+              }
+              label="Deploy a new ERC721 for voting."
             />
           </RadioGroup>
         </Grid>
@@ -228,7 +240,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
               className={handleInputClasses()}
               onChange={(e) => updateFields(e, "tokenAddress")}
             />
-            {![tokenAddress].includes("") && !isValidTokenAddress && (
+            {![tokenAddress].includes("" || undefined) && !isValidTokenAddress && (
               <FormHelperText className={classes.errorColor}>
                 Please provide a valid address
               </FormHelperText>
@@ -236,7 +248,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
           </Grid>
         )}
 
-        {tokenConfiguration === "erc20" && (
+        {(tokenConfiguration === "ERC20" || tokenConfiguration === "ERC721") && (
           <Fragment>
             <Grid item style={{ width: "-webkit-fill-available" }}>
               <Grid container spacing={2} justifyContent="space-between">
@@ -244,7 +256,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                   <ZodiacTextField
                     label="Token Name"
                     value={tokenName}
-                    placeholder="Weenus"
+                    placeholder="MyToken"
                     borderStyle="double"
                     className={classes.input}
                     onChange={(e) => updateFields(e, "tokenName")}
@@ -255,7 +267,7 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                   <ZodiacTextField
                     label="Token Symbol"
                     value={tokenSymbol}
-                    placeholder="WEENUS"
+                    placeholder="TKN"
                     borderStyle="double"
                     className={classes.input}
                     onChange={(e) => updateFields(e, "tokenSymbol")}
@@ -264,18 +276,20 @@ export const TokenSection: React.FC<GovernorWizardProps> = ({
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item>
-              <ZodiacTextField
-                label="Initial Mint Amount"
-                value={initialAmount}
-                type="number"
-                placeholder="100000"
-                borderStyle="double"
-                className={classes.input}
-                onChange={(e) => updateFields(e, "initialAmount")}
-                tooltipMsg="The number of tokens you want to mint when the contract is deployed. These will be sent straight to the safe."
-              />
-            </Grid>
+            {/* {tokenConfiguration === "ERC20" && (
+              <Grid item>
+                <ZodiacTextField
+                  label="Initial Mint Amount"
+                  value={initialAmount}
+                  type="number"
+                  placeholder="100000"
+                  borderStyle="double"
+                  className={classes.input}
+                  onChange={(e) => updateFields(e, "initialAmount")}
+                  tooltipMsg="The number of tokens you want to mint when the contract is deployed. These will be sent straight to the safe."
+                />
+              </Grid>
+            )} */}
           </Fragment>
         )}
 
