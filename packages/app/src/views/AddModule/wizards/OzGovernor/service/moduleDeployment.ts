@@ -3,6 +3,8 @@ import { ethers } from "ethers"
 import { enableModule, TxWitMeta } from "services"
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
 
+const SECONDS_IN_A_BLOCK = 12
+
 const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
 if (MULTI_SEND_CONTRACT == null) {
   throw new Error("The MULTI_SEND_CONTRACT environment variable is not set.")
@@ -19,8 +21,8 @@ const deployOzGovernorModule = async (
   safeAddress: string,
   tokenAddress: string,
   name: string,
-  votingDelay: number,
-  votingPeriod: number,
+  votingDelaySeconds: number,
+  votingPeriodSeconds: number,
   proposalThreshold: number,
   quorumPercent: number,
 ): Promise<TxWitMeta> => {
@@ -34,10 +36,10 @@ const deployOzGovernorModule = async (
   if (name == null) {
     throw new Error("No name provided")
   }
-  if (votingDelay == null) {
+  if (votingDelaySeconds == null) {
     throw new Error("No voting delay provided")
   }
-  if (votingPeriod == null) {
+  if (votingPeriodSeconds == null) {
     throw new Error("No voting period provided")
   }
   if (proposalThreshold == null) {
@@ -57,8 +59,8 @@ const deployOzGovernorModule = async (
       MULTI_SEND_CONTRACT, // multisend
       tokenAddress, // token
       name, // name
-      votingDelay.toString(), // votingDelay
-      votingPeriod.toString(), // votingPeriod
+      (votingDelaySeconds / SECONDS_IN_A_BLOCK).toString(), // votingDelay
+      (votingPeriodSeconds / SECONDS_IN_A_BLOCK).toString(), // votingPeriod
       proposalThreshold.toString(), // proposalThreshold
       quorumPercent.toString(), // quorum
       "0", // initialVoteExtension
