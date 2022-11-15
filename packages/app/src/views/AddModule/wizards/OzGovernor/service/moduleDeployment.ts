@@ -19,8 +19,8 @@ const deployOzGovernorModule = async (
   safeAddress: string,
   tokenAddress: string,
   name: string,
-  votingDelay: number,
-  votingPeriod: number,
+  votingDelayInBlocks: number,
+  votingPeriodInBlocks: number,
   proposalThreshold: number,
   quorumPercent: number,
 ): Promise<TxWitMeta> => {
@@ -34,10 +34,10 @@ const deployOzGovernorModule = async (
   if (name == null) {
     throw new Error("No name provided")
   }
-  if (votingDelay == null) {
+  if (votingDelayInBlocks == null) {
     throw new Error("No voting delay provided")
   }
-  if (votingPeriod == null) {
+  if (votingPeriodInBlocks == null) {
     throw new Error("No voting period provided")
   }
   if (proposalThreshold == null) {
@@ -57,8 +57,8 @@ const deployOzGovernorModule = async (
       MULTI_SEND_CONTRACT, // multisend
       tokenAddress, // token
       name, // name
-      votingDelay.toString(), // votingDelay
-      votingPeriod.toString(), // votingPeriod
+      votingDelayInBlocks.toString(), // votingDelay
+      votingPeriodInBlocks.toString(), // votingPeriod
       proposalThreshold.toString(), // proposalThreshold
       quorumPercent.toString(), // quorum
       "0", // initialVoteExtension
@@ -157,8 +157,8 @@ export const deployAndEnableOzGovernorModule = async (
   safeSdk: SafeAppsSDK,
   safeAddress: string,
   name: string,
-  votingDelay: number,
-  votingPeriod: number,
+  votingDelayInBlocks: number,
+  votingPeriodInBlocks: number,
   proposalThreshold: number,
   quorumPercent: number,
   tokenAddress?: string,
@@ -197,8 +197,8 @@ export const deployAndEnableOzGovernorModule = async (
     safeAddress,
     tokenAddress,
     name,
-    votingDelay,
-    votingPeriod,
+    votingDelayInBlocks,
+    votingPeriodInBlocks,
     proposalThreshold,
     quorumPercent,
   )

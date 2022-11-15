@@ -3,7 +3,6 @@ import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core
 
 import { colors, ZodiacPaper, ZodiacSlider, ZodiacTextField } from "zodiac-ui-components"
 import { GovernorWizardProps } from "../.."
-import { TimeSelect, unitConversion } from "components/input/TimeSelect"
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,14 +25,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-type Unit = keyof typeof unitConversion
-
 export type GovernorSectionData = {
   daoName: string
-  votingDelay: number
-  votingDelayUnit: Unit
-  votingPeriod: number
-  votingPeriodUnit: Unit
+  votingDelayInBlocks: number
+  votingPeriodInBlocks: number
   proposalThreshold: number
   quorumPercent: number
 }
@@ -47,10 +42,8 @@ type GovernorFields =
 
 export const GOVERNOR_INITIAL_VALUES: GovernorSectionData = {
   daoName: "",
-  votingDelay: 0,
-  votingDelayUnit: "days",
-  votingPeriod: 604800,
-  votingPeriodUnit: "days",
+  votingDelayInBlocks: 0,
+  votingPeriodInBlocks: 50400,
   proposalThreshold: 0,
   quorumPercent: 4,
 }
@@ -74,10 +67,8 @@ export const GovernorSection: React.FC<GovernorWizardProps> = ({
   const collectSectionData = (): GovernorSectionData => governorData
   const {
     daoName,
-    votingDelay,
-    votingDelayUnit,
-    votingPeriod,
-    votingPeriodUnit,
+    votingDelayInBlocks,
+    votingPeriodInBlocks,
     proposalThreshold,
     quorumPercent,
   } = governorData
@@ -134,35 +125,37 @@ export const GovernorSection: React.FC<GovernorWizardProps> = ({
         <Grid item>
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={6}>
-              <TimeSelect
-                variant={"secondary"}
-                label="Cooldown"
-                tooltipMsg="The time between proposal submission and when voting starts."
-                valueUnit={votingDelayUnit}
-                value={votingDelay.toString()}
-                onChange={(value, unit) => {
+              <ZodiacTextField
+                label="Voting Delay (in blocks)"
+                value={votingDelayInBlocks}
+                type="number"
+                placeholder="0"
+                borderStyle="double"
+                className={classes.input}
+                onChange={(event) => {
                   setGovernorData({
                     ...governorData,
-                    votingDelay: parseInt(value),
-                    votingDelayUnit: unit,
+                    votingDelayInBlocks: parseInt(event.target.value),
                   })
                 }}
+                tooltipMsg="The time between proposal submission and when voting starts."
               />
             </Grid>
             <Grid item xs={6}>
-              <TimeSelect
-                variant={"secondary"}
-                label="Expiration"
-                tooltipMsg="The time between proposal when voting starts and ends."
-                valueUnit={votingPeriodUnit}
-                value={votingPeriod.toString()}
-                onChange={(value, unit) => {
+              <ZodiacTextField
+                label="Voting Period (in blocks)"
+                value={votingPeriodInBlocks}
+                type="number"
+                placeholder="50400"
+                borderStyle="double"
+                className={classes.input}
+                onChange={(event) => {
                   setGovernorData({
                     ...governorData,
-                    votingPeriod: parseInt(value),
-                    votingPeriodUnit: unit,
+                    votingPeriodInBlocks: parseInt(event.target.value),
                   })
                 }}
+                tooltipMsg="The number of blocks between when a proposal's voting period starts and ends."
               />
             </Grid>
           </Grid>
