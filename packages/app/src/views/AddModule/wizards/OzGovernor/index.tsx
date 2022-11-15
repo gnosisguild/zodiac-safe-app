@@ -149,8 +149,13 @@ export const OzGovernorModule: React.FC = () => {
       throw new Error("No setup data")
     }
     const { tokenAddress, tokenSymbol, tokenConfiguration, tokenName } = setupData.token
-    const { daoName, votingDelay, votingPeriod, proposalThreshold, quorumPercent } =
-      setupData.governor
+    const {
+      daoName,
+      votingDelayInBlocks,
+      votingPeriodInBlocks,
+      proposalThreshold,
+      quorumPercent,
+    } = setupData.governor
     try {
       let createTokenArgs: CreateTokenArgs | undefined = undefined
 
@@ -167,8 +172,8 @@ export const OzGovernorModule: React.FC = () => {
         safeSdk,
         safeInfo.safeAddress,
         daoName,
-        votingDelay,
-        votingPeriod,
+        votingDelayInBlocks,
+        votingPeriodInBlocks,
         proposalThreshold,
         quorumPercent,
         tokenAddress,
