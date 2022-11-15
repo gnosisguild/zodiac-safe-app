@@ -3,7 +3,7 @@ import { Interface } from "@ethersproject/abi"
 import {
   calculateProxyAddress,
   deployAndSetUpModule,
-  getFactoryAndMasterCopy,
+  getModuleFactoryAndMasterCopy,
   getModuleInstance,
   KnownContracts,
 } from "@gnosis.pm/zodiac"
@@ -300,11 +300,8 @@ export function deployCirculatingSupplyContract(
     ? KnownContracts.CIRCULATING_SUPPLY_ERC721
     : KnownContracts.CIRCULATING_SUPPLY_ERC20
 
-  const { factory, module: circulatingSupplyContract } = getFactoryAndMasterCopy(
-    type,
-    provider,
-    chainId,
-  )
+  const { moduleFactory, moduleMastercopy: circulatingSupplyContract } =
+    getModuleFactoryAndMasterCopy(type, provider, chainId)
 
   const encodedInitParams = new ethers.utils.AbiCoder().encode(
     ["address", "address", "address[]"],
@@ -316,13 +313,13 @@ export function deployCirculatingSupplyContract(
   )
 
   const expectedAddress = calculateProxyAddress(
-    factory,
+    moduleFactory,
     circulatingSupplyContract.address,
     moduleSetupData,
     saltNonce,
   )
 
-  const deployData = factory.interface.encodeFunctionData("deployModule", [
+  const deployData = moduleFactory.interface.encodeFunctionData("deployModule", [
     circulatingSupplyContract.address,
     moduleSetupData,
     saltNonce,
@@ -330,7 +327,7 @@ export function deployCirculatingSupplyContract(
 
   const transaction = {
     data: deployData,
-    to: factory.address,
+    to: moduleFactory.address,
     value: "0",
   }
   return {
@@ -443,6 +440,21 @@ export const callContract = (
 ) => {
   const contract = new Contract(address, abi, provider)
   return contract.functions[method](...data)
+}
+
+export async function fetchSafeBalanceInfo(chainId: number, safeAddress: string) {
+  const network = getNetworkExplorerInfo(chainId)
+  if (!network) return []
+
+  const url = new URL(
+    `api/v1/safes/${safeAddress}/balances/?trusted=false&exclude_spam=false`,
+    network.safeTransactionApi,
+  )
+
+  const request = await fetch(url.toString())
+  const response = await request.json()
+  console.log("response", response)
+  return response.results
 }
 
 export async function fetchSafeTransactions(

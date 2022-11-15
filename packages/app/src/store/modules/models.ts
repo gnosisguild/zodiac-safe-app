@@ -9,6 +9,7 @@ export enum ModuleType {
   BRIDGE = "bridge",
   EXIT = "exit",
   ROLES = "roles",
+  OZ_GOVERNOR = "ozGovernor",
   UNKNOWN = "unknown",
 }
 
@@ -23,6 +24,7 @@ export const MODULE_TYPES: Record<string, ModuleType> = {
   scopeGuard: ModuleType.UNKNOWN,
   circulatingSupply: ModuleType.UNKNOWN,
   roles: ModuleType.ROLES,
+  ozGovernor: ModuleType.OZ_GOVERNOR,
 }
 
 export const MODULE_NAMES: Record<ModuleType, string> = {
@@ -35,6 +37,7 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.DELAY]: "Delay Modifier",
   [ModuleType.ROLES]: "Roles Modifier",
   [ModuleType.EXIT]: "Exit Module",
+  [ModuleType.OZ_GOVERNOR]: "Governor Module",
 }
 
 export enum ModuleOperation {
@@ -114,6 +117,7 @@ export interface ModulesState {
   pendingModules: PendingModule[]
   moduleAdded: boolean
   realityModuleScreen: boolean
+  OzGovernorModuleScreen: boolean
 }
 
 export type Operation = "read" | "write"

@@ -9,6 +9,7 @@ import { ModuleType } from "../../store/modules/models"
 import {
   fetchPendingModules,
   setModuleAdded,
+  setOzGovernorModuleScreen,
   setRealityModuleScreen,
 } from "../../store/modules"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
@@ -147,6 +148,15 @@ export const AddModulesView = () => {
           icon="optimisticGov"
           onClick={() => setModule(ModuleType.OPTIMISTIC_GOVERNOR)}
         />
+
+        {NETWORK.GOERLI === safe.chainId && (
+          <ModuleButton
+            title="Governor Module"
+            description="Enables an Open Zeppelin Governor contract as a module"
+            icon="ozGov"
+            onClick={() => dispatch(setOzGovernorModuleScreen(true))}
+          />
+        )}
 
         <ModuleButton
           title="Custom Module"
