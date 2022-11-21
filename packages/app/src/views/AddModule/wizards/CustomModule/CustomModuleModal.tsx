@@ -89,6 +89,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
       onClose={onClose}
       title="Custom Module"
       icon="custom"
+      readMoreLink="https://zodiac.wiki/index.php/Category:Custom_Module"
       warning="Modules do not require multisig approval for transactions. Only add modules that you trust!"
     >
       <ParamInput
