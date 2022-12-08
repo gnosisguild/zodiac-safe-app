@@ -7,7 +7,8 @@ import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward"
 import { Loader } from "@gnosis.pm/safe-react-components"
 import { GovernorWizardProps, SetupData } from "../.."
 import { EXPLORERS_CONFIG } from "utils/explorers"
-import { NETWORKS } from "utils/networks"
+import { NETWORK } from "utils/networks"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 
 interface OZReviewSectionProps extends GovernorWizardProps {
   goToStep: (step: number) => void
@@ -79,6 +80,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
   const classes = useStyles()
   const token = setupData?.token
   const governor = setupData?.governor
+  const { safe } = useSafeAppsSDK()
 
   return (
     <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
