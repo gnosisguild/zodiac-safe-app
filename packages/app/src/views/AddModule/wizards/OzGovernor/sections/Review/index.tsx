@@ -6,6 +6,8 @@ import { colors, ZodiacPaper } from "zodiac-ui-components"
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward"
 import { Loader } from "@gnosis.pm/safe-react-components"
 import { GovernorWizardProps, SetupData } from "../.."
+import { EXPLORERS_CONFIG } from "utils/explorers"
+import { NETWORKS } from "utils/networks"
 
 interface OZReviewSectionProps extends GovernorWizardProps {
   goToStep: (step: number) => void
@@ -116,7 +118,9 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                     <Typography>Voting Token:</Typography>
                     <Link
                       target="_blank"
-                      href={`https://goerli.etherscan.io/token/${token.tokenAddress}`} // TO DO: Replace with real network address
+                      href={`${
+                        EXPLORERS_CONFIG[safe.chainId as NETWORK]
+                      }/token/${token.tokenAddress}`}
                       className={classes.value}
                     >
                       {token.tokenAddress}

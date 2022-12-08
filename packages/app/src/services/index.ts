@@ -95,6 +95,8 @@ export function getDefaultOracle(chainId: number): string {
       return "0x0eF940F7f053a2eF5D6578841072488aF0c7d89A"
     case NETWORK.ARBITRUM:
       return "0x5D18bD4dC5f1AC8e9bD9B666Bd71cB35A327C4A9"
+    case NETWORK.AVALANCHE:
+      return "0xD88cd78631Ea0D068cedB0d1357a6eabe59D7502"
   }
   return ""
 }
