@@ -1,10 +1,10 @@
 import { Contract as MultiCallContract, Provider as MultiCallProvider } from "ethcall"
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
 import {
-  CONTRACT_ADDRESSES,
+  ContractAddresses,
   getModuleInstance,
   KnownContracts,
-  SUPPORTED_NETWORKS,
+  SupportedNetworks,
 } from "@gnosis.pm/zodiac"
 import { getModuleData } from "../../utils/contracts"
 import {
@@ -226,7 +226,7 @@ export function getContractsModuleType(
   chainId: number,
   masterCopyAddress: string,
 ): ModuleType {
-  const masterCopyAddresses = CONTRACT_ADDRESSES[chainId as SUPPORTED_NETWORKS]
+  const masterCopyAddresses = ContractAddresses[chainId as SupportedNetworks]
   if (!masterCopyAddresses) return ModuleType.UNKNOWN
   const entry = Object.entries(masterCopyAddresses).find(([, address]) => {
     return address.toLowerCase() === masterCopyAddress.toLowerCase()
@@ -245,7 +245,7 @@ export function getAddModuleTransactionModuleType(
   safeTransaction: SafeTransaction,
   chainId: number,
 ): ModuleType | undefined {
-  const factoryAddress = CONTRACT_ADDRESSES[chainId as SUPPORTED_NETWORKS]?.factory || ""
+  const factoryAddress = ContractAddresses[chainId as SupportedNetworks]?.factory || ""
   const transactions = getTransactionsFromSafeTransaction(safeTransaction)
 
   const masterCopyAddress = transactions
