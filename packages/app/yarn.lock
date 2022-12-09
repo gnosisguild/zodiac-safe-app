@@ -2371,7 +2371,7 @@
   dependencies:
     cross-fetch "^3.1.5"
 
-"@gnosis.pm/zodiac@^2.0.4":
+"@gnosis.pm/zodiac@2.0.4":
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/zodiac/-/zodiac-2.0.4.tgz#aad51e6c8811d10b640b2918bf036d6cb6c279ca"
   integrity sha512-obEMoCRbhzyrQisx92eK4xxnEe/1kPmahKAqGmeEV8x5ZILBk7MuSIcLUnpKGxbMZMUB2wOemVRvvNjwcFklYQ==
@@ -16886,10 +16886,10 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@~4.1.3:
-  version "4.1.6"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.1.6.tgz"
-  integrity sha512-pxnwLxeb/Z5SP80JDRzVjh58KsM6jZHRAOtTpS7sXLS4ogXNKC9ANxHHZqLLeVHZN35jCtI4JdmLLbLiC1kBow==
+typescript@4.9.4:
+  version "4.9.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.4.tgz#a2a3d2756c079abda241d75f149df9d561091e78"
+  integrity sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==
 
 typewise-core@^1.2, typewise-core@^1.2.0:
   version "1.2.0"
