@@ -319,7 +319,7 @@ export function deployCirculatingSupplyContract(
   )
 
   const expectedAddress = calculateProxyAddress(
-    moduleFactory,
+    moduleFactory as Contract,
     circulatingSupplyContract.address,
     moduleSetupData,
     saltNonce,
