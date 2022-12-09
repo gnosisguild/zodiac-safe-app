@@ -76,6 +76,15 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     verifyContractUrl: "https://arbiscan.io/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
+  [NETWORK.AVALANCHE]: {
+    networkExplorerName: "Snowtrace",
+    networkExplorerUrl: "https://snowtrace.io/",
+    networkExplorerApiUrl: "https://api.snowtrace.io/api",
+    safeTransactionApi: "https://safe-transaction-avalanche.safe.global/",
+    safeUrl: "https://app.safe.global/avax:",
+    verifyContractUrl: "https://snowtrace.io/verifyContract",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+  },
 }
 
 export const getNetworkExplorerInfo = (chainId: number) => {

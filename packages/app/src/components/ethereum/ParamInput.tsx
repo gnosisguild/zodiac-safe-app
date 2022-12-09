@@ -6,7 +6,8 @@ import { formatParamValue } from "../../utils/contracts"
 import { MenuItem } from "@material-ui/core"
 import { BigNumber } from "ethers"
 
-export interface ParamInputProps extends Omit<TextFieldProps, "onChange" | "value" | "label"> {
+export interface ParamInputProps
+  extends Omit<TextFieldProps, "onChange" | "value" | "label"> {
   param: ParamType
   value?: string | boolean | BigNumber
   label?: string
@@ -21,7 +22,10 @@ function getLabel(param: ParamType) {
   return `(${param.type})`
 }
 
-function getDefaultValue(param: ParamType, defaultValue: ParamInputProps["value"]): string {
+function getDefaultValue(
+  param: ParamType,
+  defaultValue: ParamInputProps["value"],
+): string {
   if (defaultValue !== undefined) {
     if (typeof defaultValue === "object") return JSON.stringify(defaultValue)
     return defaultValue.toString()
@@ -29,9 +33,16 @@ function getDefaultValue(param: ParamType, defaultValue: ParamInputProps["value"
   return param.baseType === "boolean" ? "false" : ""
 }
 
-export const ParamInput = ({ param, value: defaultValue, onChange, ...props }: ParamInputProps) => {
+export const ParamInput = ({
+  param,
+  value: defaultValue,
+  onChange,
+  ...props
+}: ParamInputProps) => {
   if (props.defaultValue != null) {
-    throw new Error("This is a controlled component, `defaultValue` should not be used. Use `value` instead.")
+    throw new Error(
+      "This is a controlled component, `defaultValue` should not be used. Use `value` instead.",
+    )
   }
   const [value, setValue] = useState<string>(getDefaultValue(param, defaultValue))
   const [error, setError] = useState<string>()
@@ -55,9 +66,9 @@ export const ParamInput = ({ param, value: defaultValue, onChange, ...props }: P
       const paramValue = formatParamValue(param, _value)
       onChange(paramValue, true)
       setError(undefined)
-    } catch (error) {
+    } catch (error: any) {
       onChange(_value, false)
-      setError(error.message)
+      setError(error?.message)
     }
   }
 

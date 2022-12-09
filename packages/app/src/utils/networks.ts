@@ -6,6 +6,7 @@ export enum NETWORK {
   GNOSIS_CHAIN = 100,
   POLYGON = 137,
   ARBITRUM = 42161,
+  AVALANCHE = 43114,
 }
 
 export interface Coin {
@@ -25,6 +26,7 @@ export const NATIVE_ASSET: Record<string, Coin> = {
   XDAI: { symbol: "xDai", decimals: 18 },
   MATIC: { symbol: "MATIC", decimals: 18 },
   BNB: { symbol: "BNB", decimals: 18 },
+  AVAX: { symbol: "AVAX", decimals: 18 },
 }
 
 export const NETWORKS: Record<NETWORK, Network> = {
@@ -70,6 +72,12 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: "arb1",
     nativeAsset: NATIVE_ASSET.ETH,
   },
+  [NETWORK.AVALANCHE]: {
+    chainId: NETWORK.AVALANCHE,
+    name: "avalanche",
+    shortName: "avax",
+    nativeAsset: NATIVE_ASSET.AVAX,
+  },
 }
 
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
@@ -80,4 +88,5 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
   [NETWORK.ARBITRUM]: NATIVE_ASSET.ETH,
+  [NETWORK.AVALANCHE]: NATIVE_ASSET.AVAX,
 }
