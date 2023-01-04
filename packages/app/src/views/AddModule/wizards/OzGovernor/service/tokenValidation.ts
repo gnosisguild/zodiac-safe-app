@@ -22,7 +22,6 @@ export const isVotesCompilable =
         tokenContract.getPastVotes(RANDOM_VALID_ADDRESS, RANDOM_BLOCK_NUMBER),
         tokenContract.getPastTotalSupply(RANDOM_BLOCK_NUMBER),
         tokenContract.callStatic.delegates(RANDOM_VALID_ADDRESS),
-        tokenContract.callStatic.delegate(RANDOM_VALID_ADDRESS),
       ])
       // eslint-disable-next-line
       tokenContract.functions["delegateBySig"].name
