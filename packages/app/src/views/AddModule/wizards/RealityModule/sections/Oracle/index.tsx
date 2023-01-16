@@ -198,7 +198,7 @@ export const OracleSection: React.FC<SectionProps> = ({
                 The Reality.eth oracle uses a mechanism known as the{" "}
                 <Link
                   underline="always"
-                  href="https://snapshot.com"
+                  href="https://reality.eth.limo/app/docs/html/whitepaper.html"
                   target={"_blank"}
                   color="inherit"
                 >
