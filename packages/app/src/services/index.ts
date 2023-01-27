@@ -157,6 +157,10 @@ function getKlerosAddress(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0xf72cfd1b34a91a64f9a98537fe63fbab7530adca"
+    case NETWORK.GNOSIS_CHAIN:
+      return "0x29f39de98d750eb77b5fafb31b2837f079fce222"
+    case NETWORK.POLYGON:
+      return "0x5AFa42b30955f137e10f89dfb5EF1542a186F90e"
   }
   return ""
 }
