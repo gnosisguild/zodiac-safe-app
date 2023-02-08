@@ -72,7 +72,7 @@ export const OptimisticGovernorModuleModal = ({
     rules: "",
     identifier: "0x5a4f444941430000000000000000000000000000000000000000000000000000",
     liveness: "86400",
-    snapshotURL: "https://snapshot.space/",
+    snapshotURL: "https://snapshot.org/#/",
     votingQuorum: "5",
     votingPeriod: "24",
   })
@@ -131,7 +131,7 @@ export const OptimisticGovernorModuleModal = ({
     </Typography>
   )
 
-  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum}% and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. A value set for a proposal in Snapshot should be used if it is greater than the rules parameter.`
+  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum}% and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. Quorum and voting period values set for a specific proposal in Snapshot should be used if they are more strict than the rules parameter. The explanation included with the on-chain proposal must be the unique IPFS identifier for the specific Snapshot proposal that was approved or a unique identifier for a proposal in an alternative voting system approved by DAO social consensus if Snapshot is being exploited or is otherwise unavailable.`
 
   return (
     <AddModuleModal
