@@ -137,11 +137,11 @@ export const OptimisticGovernorModuleModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="UMA Optimistic Governor Module"
+      title="UMA oSnap Module"
       description="Allows successful Snapshot proposals to
       execute transactions using UMA's optimistic oracle."
       icon="optimisticGov"
-      tags={["From Outcome Finance"]}
+      tags={["From UMA"]}
       onAdd={handleAddOptimisticGovernorModule}
       readMoreLink="https://docs.outcome.finance/optimistic-governance/what-is-the-optimistic-governor"
       ButtonProps={{ disabled: !isValid }}
@@ -169,7 +169,7 @@ export const OptimisticGovernorModuleModal = ({
           <Typography className={classes.errorMessage}>
             {Number(params.bond) < 1500 &&
             params.collateral === getCollateral(safe.chainId, 1)
-              ? "Warning: A minimum bond of 1,500 is recommended for USDC"
+            ? "Warning: A minimum bond of 1,500 is recommended for USDC"
               : Number(params.bond) < 1 &&
                 params.collateral === getCollateral(safe.chainId, 0)
               ? "Warning: A minimum bond of 1 is recommended for WETH"
