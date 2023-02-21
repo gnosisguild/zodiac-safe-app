@@ -131,7 +131,7 @@ export const OptimisticGovernorModuleModal = ({
     </Typography>
   )
 
-  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum}% and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. Quorum and voting period values set for a specific proposal in Snapshot should be used if they are more strict than the rules parameter. The explanation included with the on-chain proposal must be the unique IPFS identifier for the specific Snapshot proposal that was approved or a unique identifier for a proposal in an alternative voting system approved by DAO social consensus if Snapshot is being exploited or is otherwise unavailable.`
+  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum} and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. Quorum and voting period values set for a specific proposal in Snapshot should be used if they are more strict than the rules parameter. The explanation included with the on-chain proposal must be the unique IPFS identifier for the specific Snapshot proposal that was approved or a unique identifier for a proposal in an alternative voting system approved by DAO social consensus if Snapshot is being exploited or is otherwise unavailable.`
 
   return (
     <AddModuleModal
@@ -200,10 +200,10 @@ export const OptimisticGovernorModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <ParamInput
-            param={ParamType.from("uint256")}
+            param={ParamType.from("string")}
             color="secondary"
             value={params.votingQuorum}
-            label="Voting Quorum (%)"
+            label="Voting Quorum"
             onChange={(value, valid) => onParamChange("votingQuorum", value, valid)}
           />
         </Grid>
