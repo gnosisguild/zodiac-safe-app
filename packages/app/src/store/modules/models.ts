@@ -29,7 +29,7 @@ export const MODULE_TYPES: Record<string, ModuleType> = {
 
 export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.TELLOR]: "Tellor Module",
-  [ModuleType.OPTIMISTIC_GOVERNOR]: "UMA Optimistic Governor Module",
+  [ModuleType.OPTIMISTIC_GOVERNOR]: "UMA oSnap Module",
   [ModuleType.REALITY_ERC20]: "Reality Module",
   [ModuleType.REALITY_ETH]: "Reality Module",
   [ModuleType.UNKNOWN]: "Unknown Module",

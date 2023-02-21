@@ -143,7 +143,7 @@ export const AddModulesView = () => {
         />
 
         <ModuleButton
-          title="UMA Optimistic Governor Module"
+          title="UMA oSnap Module"
           description="Enables on-chain execution of successful Snapshot proposals utilizing UMA's optimistic oracle."
           icon="optimisticGov"
           onClick={() => setModule(ModuleType.OPTIMISTIC_GOVERNOR)}

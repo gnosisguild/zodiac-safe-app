@@ -72,7 +72,7 @@ export const OptimisticGovernorModuleModal = ({
     rules: "",
     identifier: "0x5a4f444941430000000000000000000000000000000000000000000000000000",
     liveness: "86400",
-    snapshotURL: "https://snapshot.space/",
+    snapshotURL: "https://snapshot.org/#/",
     votingQuorum: "5",
     votingPeriod: "24",
   })
@@ -131,17 +131,17 @@ export const OptimisticGovernorModuleModal = ({
     </Typography>
   )
 
-  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum}% and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. A value set for a proposal in Snapshot should be used if it is greater than the rules parameter.`
+  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum} and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. Quorum and voting period values set for a specific proposal in Snapshot should be used if they are more strict than the rules parameter. The explanation included with the on-chain proposal must be the unique IPFS identifier for the specific Snapshot proposal that was approved or a unique identifier for a proposal in an alternative voting system approved by DAO social consensus if Snapshot is being exploited or is otherwise unavailable.`
 
   return (
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="UMA Optimistic Governor Module"
+      title="UMA oSnap Module"
       description="Allows successful Snapshot proposals to
       execute transactions using UMA's optimistic oracle."
       icon="optimisticGov"
-      tags={["From Outcome Finance"]}
+      tags={["From UMA"]}
       onAdd={handleAddOptimisticGovernorModule}
       readMoreLink="https://docs.outcome.finance/optimistic-governance/what-is-the-optimistic-governor"
       ButtonProps={{ disabled: !isValid }}
@@ -169,7 +169,7 @@ export const OptimisticGovernorModuleModal = ({
           <Typography className={classes.errorMessage}>
             {Number(params.bond) < 1500 &&
             params.collateral === getCollateral(safe.chainId, 1)
-              ? "Warning: A minimum bond of 1,500 is recommended for USDC"
+            ? "Warning: A minimum bond of 1,500 is recommended for USDC"
               : Number(params.bond) < 1 &&
                 params.collateral === getCollateral(safe.chainId, 0)
               ? "Warning: A minimum bond of 1 is recommended for WETH"
@@ -200,10 +200,10 @@ export const OptimisticGovernorModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <ParamInput
-            param={ParamType.from("uint256")}
+            param={ParamType.from("string")}
             color="secondary"
             value={params.votingQuorum}
-            label="Voting Quorum (%)"
+            label="Voting Quorum"
             onChange={(value, valid) => onParamChange("votingQuorum", value, valid)}
           />
         </Grid>
