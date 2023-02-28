@@ -36,7 +36,12 @@ export interface ProposalStatusProps {
   address?: string
 }
 
-export const ProposalStatus: React.FC<ProposalStatusProps> = ({ status, message, type, address }) => {
+export const ProposalStatus: React.FC<ProposalStatusProps> = ({
+  status,
+  message,
+  type,
+  address,
+}) => {
   const classes = useStyles()
   const [showModal, setShowModal] = useState<boolean>(false)
 
@@ -49,6 +54,9 @@ export const ProposalStatus: React.FC<ProposalStatusProps> = ({ status, message,
         return "Security Risk Detected"
 
       case "snapshot":
+        if (message?.includes("invalid")) {
+          return "Invalid Snapshot settings file"
+        }
         return "Snapshot space not found"
 
       case "safesnap":
@@ -73,7 +81,10 @@ export const ProposalStatus: React.FC<ProposalStatusProps> = ({ status, message,
               <Typography className={classes.message}>{message}</Typography>
             </Grid>
             <Grid item>
-              <Typography className={classes.messageDetails} onClick={() => setShowModal(!showModal)}>
+              <Typography
+                className={classes.messageDetails}
+                onClick={() => setShowModal(!showModal)}
+              >
                 Details
               </Typography>
             </Grid>

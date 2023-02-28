@@ -36,7 +36,11 @@ export interface ProposalDetailsModalProps {
   address?: string
 }
 
-export const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({ title, type, address }) => {
+export const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({
+  title,
+  type,
+  address,
+}) => {
   const classes = useStyles()
 
   return (
@@ -57,14 +61,37 @@ export const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({ titl
             "The safe you are currently using with Zodiac is not the controller of the ENS you've entered. Try one of the following: "}
           {type === "owner" &&
             "The ENS that you've entered is not owned by a safe. This gives unilateral control to the individual with this address: "}
-          {type === "safesnap" && "The Snapshot space has already installed the Safesnap plugin."}
+          {type === "safesnap" &&
+            "The Snapshot space has already installed the Safesnap plugin."}
           {type === "snapshot" &&
-            "The ENS you've entered is not setup with a Snapshot space. To setup a snapshot space with this ENS, follow the guide"}
-
-          {type === "snapshot" && (
+            title.includes("Invalid") &&
+            "The current snapshot settings file is invalid. Check the browser console for validation details. The schema for validating the settings file can be found"}
+          {type === "snapshot" && title.includes("Invalid") && (
             <>
               {" "}
-              <Link underline="always" href="https://docs.snapshot.org/spaces/create" target={"_blank"} color="inherit">
+              <Link
+                underline="always"
+                href="https://github.com/snapshot-labs/snapshot.js/blob/master/src/schemas/space.json"
+                target={"_blank"}
+                color="inherit"
+              >
+                here.
+              </Link>
+            </>
+          )}
+          {type === "snapshot" &&
+            !title.includes("Invalid") &&
+            "The ENS you've entered is not setup with a Snapshot space. To setup a snapshot space with this ENS, follow the guide"}
+
+          {type === "snapshot" && !title.includes("Invalid") && (
+            <>
+              {" "}
+              <Link
+                underline="always"
+                href="https://docs.snapshot.org/spaces/create"
+                target={"_blank"}
+                color="inherit"
+              >
                 here.
               </Link>
             </>
@@ -84,7 +111,8 @@ export const ProposalDetailsModal: React.FC<ProposalDetailsModalProps> = ({ titl
         <Grid item>
           <Typography>
             {type === "controller" && "- Check that your ENS is typed correctly."}
-            {type === "owner" && "We highly recommend transferring the ENS to a multisig safe before continuing."}
+            {type === "owner" &&
+              "We highly recommend transferring the ENS to a multisig safe before continuing."}
           </Typography>
         </Grid>
       )}

@@ -130,6 +130,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [isSafesnapInstalled, setIsSafesnapInstalled] = useState<boolean>(false)
   const [isController, setIsController] = useState<boolean>(false)
+  const [hasSnapshot, setHasSnapshot] = useState<boolean>(false)
   const [validSnapshot, setValidSnapshot] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [ensIsValid, setEnsIsValid] = useState<boolean>(false)
@@ -161,14 +162,21 @@ export const ProposalSection: React.FC<SectionProps> = ({
     const address = await provider.resolveName(ensName)
     if (address) {
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName, safe.chainId)
+      const snapshotSpaceValidation = snapshot.validateSchema(snapshotSpace)
       const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress)
       const isController = await checkIfIsController(provider, ensName, safe.safeAddress)
       const plugins = snapshotSpace?.plugins
       if (plugins) {
-        setIsSafesnapInstalled(plugins.safeSnap ? true : false)
+        setIsSafesnapInstalled(plugins.safeSnap ? true : false) // comment out for easy testing
       }
-
-      setValidSnapshot(snapshotSpace ? true : false)
+      if (snapshotSpaceValidation !== true) {
+        console.log(
+          "The current snapshot space is not valid. Valid snapshot space schema. Errors:",
+        )
+        console.log(JSON.stringify(snapshot.validateSchema(snapshotSpace), undefined, 2))
+      }
+      setHasSnapshot(snapshotSpace ? true : false)
+      setValidSnapshot(snapshotSpaceValidation === true)
       setIsOwner(isOwner)
       setIsController(isController)
       setEnsAddress(address)
@@ -179,6 +187,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
       setLoading(false)
       setIsOwner(false)
       setIsController(false)
+      setHasSnapshot(false)
       setValidSnapshot(false)
       setIsSafesnapInstalled(false)
       return
@@ -200,6 +209,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
     if (ens === "") {
       setIsController(false)
       setIsOwner(false)
+      setHasSnapshot(false)
       setValidSnapshot(false)
       setEnsName("")
     } else {
@@ -304,7 +314,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                 className={`${classes.textFieldSmall} ${
                   ensName.includes(".eth") &&
                   !loading &&
-                  (!validSnapshot || !isController || !isOwner)
+                  (!hasSnapshot || !isController || !isOwner)
                     ? classes.inputError
                     : classes.input
                 }`}
@@ -317,12 +327,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
                     )}
                     {ensName.includes(".eth") &&
                       !loading &&
-                      (!validSnapshot || !isController || !isOwner) && (
+                      (!hasSnapshot || !isController || !isOwner) && (
                         <ErrorOutlineIcon className={classes.errorIcon} />
                       )}
                     {ensName.includes(".eth") &&
                       !loading &&
-                      validSnapshot &&
+                      hasSnapshot &&
                       isController &&
                       isOwner && <DoneIcon className={classes.doneIcon} />}
                   </>
@@ -340,6 +350,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       loading,
                       false,
                       false,
+                      hasSnapshot,
                       validSnapshot,
                       false,
                     )}
@@ -347,6 +358,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       "snapshot",
                       false,
                       false,
+                      hasSnapshot,
                       validSnapshot,
                       false,
                     )}
@@ -359,10 +371,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       false,
                       false,
                       false,
+                      false,
                       isSafesnapInstalled,
                     )}
                     message={handleProposalStatusMessage(
                       "safesnap",
+                      false,
                       false,
                       false,
                       false,
@@ -378,10 +392,12 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       false,
                       false,
                       false,
+                      false,
                     )}
                     message={handleProposalStatusMessage(
                       "controller",
                       isController,
+                      false,
                       false,
                       false,
                       false,
@@ -396,11 +412,13 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       isOwner,
                       false,
                       false,
+                      false,
                     )}
                     message={handleProposalStatusMessage(
                       "owner",
                       false,
                       isOwner,
+                      false,
                       false,
                       false,
                     )}
