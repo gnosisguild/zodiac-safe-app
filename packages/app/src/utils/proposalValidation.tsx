@@ -3,10 +3,14 @@ export const handleProposalStatus = (
   loading: boolean,
   isController: boolean,
   isOwner: boolean,
+  hasSnapshot: boolean,
   validSnapshot: boolean,
   isSafesnapInstalled: boolean,
 ): "warning" | "error" | null => {
   if (!loading) {
+    if (type === "snapshot" && !hasSnapshot) {
+      return "error"
+    }
     if (type === "snapshot" && !validSnapshot) {
       return "error"
     }
@@ -27,11 +31,15 @@ export const handleProposalStatusMessage = (
   type: "controller" | "owner" | "snapshot" | "safesnap",
   isController: boolean,
   isOwner: boolean,
-  validSnapshot: boolean,
+  hasSnapshot: boolean,
+  hasValidSnapshot: boolean,
   isSafesnapInstalled: boolean,
 ): string | null => {
-  if (type === "snapshot" && !validSnapshot) {
+  if (type === "snapshot" && !hasSnapshot) {
     return "The ENS name should have a Snapshot space created."
+  }
+  if (type === "snapshot" && !hasValidSnapshot) {
+    return "Your snapshot settings file is invalid."
   }
   if (type === "controller" && !isController) {
     return "The safe must be the controller of the ENS name."
