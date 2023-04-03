@@ -9,26 +9,12 @@ export const collateralOptions = {
   WETH: "WETH",
 }
 
-export function scaleBondDecimals(collateralAddress: string, bond: string): number {
-  switch (collateralAddress) {
-    case "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48":
-      return Number(bond) * Math.pow(10, 6)
-    case "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174":
-      return Number(bond) * Math.pow(10, 6)
-    case "0xeb8f08a975Ab53E34D8a0330E0D34de942C95926":
-      return Number(bond) * Math.pow(10, 6)
-    case "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2":
-      return Number(bond) * Math.pow(10, 18)
-    case "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619":
-      return Number(bond) * Math.pow(10, 18)
-    case "0xc778417E063141139Fce010982780140Aa0cD5Ab":
-      return Number(bond) * Math.pow(10, 18)
-    case "0x07865c6E87B9F70255377e024ace6630C1Eaa37F":
-      return Number(bond) * Math.pow(10, 6)
-    case "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6":
-      return Number(bond) * Math.pow(10, 18)
+export function scaleBondDecimals(bond: string, isWeth: boolean): number {
+  if (isWeth) {
+    return Number(bond) * Math.pow(10, 18)
+  } else {
+    return Number(bond) * Math.pow(10, 6)
   }
-  return 18
 }
 
 // List of chain IDs where OG is available.
@@ -36,6 +22,10 @@ const optimisticGovernorAvailability: number[] = [
   NETWORK.MAINNET,
   NETWORK.POLYGON,
   NETWORK.GOERLI,
+  NETWORK.GNOSIS_CHAIN,
+  NETWORK.OPTIMISM,
+  NETWORK.ARBITRUM,
+  NETWORK.AVALANCHE,
 ]
 
 type Option = keyof typeof collateralOptions
@@ -133,7 +123,8 @@ export const CollateralSelect = ({
       (k) => collateralOptions[`${k}` as Option] === newOption,
     ) as Option
     setOption(newOption)
-    const newCollateral = getCollateral(chainId, COLLATERAL_OPTIONS[newOptionKey])
+    const isWeth = newOptionKey === "WETH" ? true : false
+    const newCollateral = getCollateral(chainId, isWeth)
     onChange(newCollateral)
   }
 

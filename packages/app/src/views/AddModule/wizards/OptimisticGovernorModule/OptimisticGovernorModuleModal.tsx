@@ -64,13 +64,14 @@ export const OptimisticGovernorModuleModal = ({
   const [delayModule, setDelayModule] = useState<string>(
     delayModules.length === 1 ? delayModules[0].address : "",
   )
+  const [isWeth, setIsWeth] = useState<boolean>(false)
   const [params, setParams] = useState<OptimisticGovernorModuleParams>({
     finder: getFinder(safe.chainId),
     owner: safe.safeAddress,
-    collateral: getCollateral(safe.chainId, 1),
+    collateral: getCollateral(safe.chainId, isWeth),
     bond: "1500",
     rules: "",
-    identifier: "0x5a4f444941430000000000000000000000000000000000000000000000000000",
+    identifier: "0x4153534552545f54525554480000000000000000000000000000000000000000",
     liveness: "86400",
     snapshotURL: "https://snapshot.org/#/",
     votingQuorum: "5",
@@ -113,6 +114,7 @@ export const OptimisticGovernorModuleModal = ({
         safe.safeAddress,
         safe.chainId,
         args,
+        isWeth,
       )
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()
@@ -131,7 +133,7 @@ export const OptimisticGovernorModuleModal = ({
     </Typography>
   )
 
-  params.rules = `Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum} and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited. The quorum and voting period are minimum requirements for a proposal to be valid. Quorum and voting period values set for a specific proposal in Snapshot should be used if they are more strict than the rules parameter. The explanation included with the on-chain proposal must be the unique IPFS identifier for the specific Snapshot proposal that was approved or a unique identifier for a proposal in an alternative voting system approved by DAO social consensus if Snapshot is being exploited or is otherwise unavailable.`
+  params.rules = `I assert that this transaction proposal is valid according to the following rules: Proposals approved on Snapshot, as verified at ${params.snapshotURL}, are valid as long as there is a minimum quorum of ${params.votingQuorum} and a minimum voting period of ${params.votingPeriod} hours and it does not appear that the Snapshot voting system is being exploited or is otherwise unavailable. The quorum and voting period are minimum requirements for a proposal to be valid. Quorum and voting period values set for a specific proposal in Snapshot should be used if they are more strict than the rules parameter. The explanation included with the on-chain proposal must be the unique IPFS identifier for the specific Snapshot proposal that was approved or a unique identifier for a proposal in an alternative voting system approved by DAO social consensus if Snapshot is being exploited or is otherwise unavailable.`
 
   return (
     <AddModuleModal
@@ -143,7 +145,7 @@ export const OptimisticGovernorModuleModal = ({
       icon="optimisticGov"
       tags={["From UMA"]}
       onAdd={handleAddOptimisticGovernorModule}
-      readMoreLink="https://docs.outcome.finance/optimistic-governance/what-is-the-optimistic-governor"
+      readMoreLink="https://docs.uma.xyz/developers/osnap"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
@@ -154,7 +156,10 @@ export const OptimisticGovernorModuleModal = ({
             label="Collateral"
             defaultAddress={params.collateral}
             defaultOption={collateralOptions.USDC}
-            onChange={(value) => onParamChange("collateral", value)}
+            onChange={(value) => {
+              onParamChange("collateral", value)
+              setIsWeth(!isWeth)
+            }}
             chainId={safe.chainId}
           />
         </Grid>
@@ -167,11 +172,9 @@ export const OptimisticGovernorModuleModal = ({
             onChange={(value, valid) => onParamChange("bond", value, valid)}
           />
           <Typography className={classes.errorMessage}>
-            {Number(params.bond) < 1500 &&
-            params.collateral === getCollateral(safe.chainId, 1)
-            ? "Warning: A minimum bond of 1,500 is recommended for USDC"
-              : Number(params.bond) < 1 &&
-                params.collateral === getCollateral(safe.chainId, 0)
+            {Number(params.bond) < 1500 && !isWeth
+              ? "Warning: A minimum bond of 1,500 is recommended for USDC"
+              : Number(params.bond) < 1 && isWeth
               ? "Warning: A minimum bond of 1 is recommended for WETH"
               : null}
           </Typography>

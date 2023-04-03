@@ -109,6 +109,14 @@ export function getFinder(chainId: number): string {
       return "0x09aea4b2242abC8bb4BB78D537A67a245A7bEC64"
     case NETWORK.GOERLI:
       return "0xE60dBa66B85E10E7Fd18a67a6859E241A243950e"
+    case NETWORK.GNOSIS_CHAIN:
+      return "0xeF684C38F94F48775959ECf2012D7E864ffb9dd4"
+    case NETWORK.OPTIMISM:
+      return "0x278d6b1aA37d09769E519f05FcC5923161A8536D"
+    case NETWORK.ARBITRUM:
+      return "0xB0b9f73B424AD8dc58156C2AE0D7A1115D1EcCd1"
+    case NETWORK.AVALANCHE:
+      return "0xCFdC4d6FdeC25e339ef07e25C35a482A6bedcfE0"
   }
   return ""
 }
@@ -118,14 +126,12 @@ export enum COLLATERAL_OPTIONS {
   USDC,
 }
 
-export function getCollateral(chainId: number, collateralOption: number): string {
-  switch (collateralOption) {
-    case COLLATERAL_OPTIONS.USDC:
-      return getUSDCAddress(chainId)
-    case COLLATERAL_OPTIONS.WETH:
-      return getWETHAddress(chainId)
+export function getCollateral(chainId: number, isWeth: boolean): string {
+  if (isWeth) {
+    return getUSDCAddress(chainId)
+  } else {
+    return getWETHAddress(chainId)
   }
-  return ""
 }
 
 function getUSDCAddress(chainId: number): string {
@@ -136,6 +142,14 @@ function getUSDCAddress(chainId: number): string {
       return "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
     case NETWORK.GOERLI:
       return "0x07865c6E87B9F70255377e024ace6630C1Eaa37F"
+    case NETWORK.GNOSIS_CHAIN:
+      return "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"
+    case NETWORK.OPTIMISM:
+      return "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"
+    case NETWORK.ARBITRUM:
+      return "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+    case NETWORK.AVALANCHE:
+      return "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
   }
   return ""
 }
@@ -148,6 +162,14 @@ function getWETHAddress(chainId: number): string {
       return "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
     case NETWORK.GOERLI:
       return "0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6"
+    case NETWORK.GNOSIS_CHAIN:
+      return "0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1"
+    case NETWORK.OPTIMISM:
+      return "0x4200000000000000000000000000000000000006"
+    case NETWORK.ARBITRUM:
+      return "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"
+    case NETWORK.AVALANCHE:
+      return "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB"
   }
   return ""
 }
@@ -547,12 +569,13 @@ export function deployOptimisticGovernorModule(
   safeAddress: string,
   chainId: number,
   args: OptimisticGovernorModuleParams,
+  isWeth: boolean,
 ) {
   const type = KnownContracts.OPTIMISTIC_GOVERNOR
 
   const { executor, collateral, bond, rules, identifier, liveness } = args
 
-  const scaledBond = scaleBondDecimals(collateral, bond).toString()
+  const scaledBond = scaleBondDecimals(bond, isWeth).toString()
 
   const {
     transaction: daoModuleDeploymentTx,
