@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Box, Grid, InputLabel, makeStyles, MenuItem, Select } from "@material-ui/core"
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg"
-import { getCollateral, COLLATERAL_OPTIONS } from "../../services"
+import { getCollateral } from "../../services"
 import { NETWORK } from "../../utils/networks"
 
 export const collateralOptions = {

@@ -121,16 +121,11 @@ export function getFinder(chainId: number): string {
   return ""
 }
 
-export enum COLLATERAL_OPTIONS {
-  WETH,
-  USDC,
-}
-
 export function getCollateral(chainId: number, isWeth: boolean): string {
   if (isWeth) {
-    return getUSDCAddress(chainId)
-  } else {
     return getWETHAddress(chainId)
+  } else {
+    return getUSDCAddress(chainId)
   }
 }
 
