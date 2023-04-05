@@ -10,6 +10,7 @@ const ensImplementation = "0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85" // ENS: B
 
 const abiPublicResolver = [
   "function setText(bytes32 node, string calldata key, string calldata value) external",
+  "function text(bytes32 node, string calldata key) external view returns (string memory)",
 ]
 
 const abiRegistry = [
@@ -71,6 +72,19 @@ export const checkIfIsOwner = async (
   )
   const nftOwner = await ensImplementationContract.ownerOf(tokenId)
   return ethers.utils.getAddress(nftOwner) === ethers.utils.getAddress(address)
+}
+
+export const getEnsTextRecord = async (
+  ensName: string,
+  recordId: string,
+  provider: ethers.providers.Provider,
+) => {
+  const nameHash = ethers.utils.namehash(ensName)
+  const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, provider)
+  const ensResolverAddress = await ensRegistryContract.resolver(nameHash)
+  const ensResolverContract = new ethers.Contract(ensResolverAddress, abiPublicResolver, provider)
+  const record = ensResolverContract.functions.text(nameHash, recordId)
+  return record
 }
 
 export const checkIfIsController = async (

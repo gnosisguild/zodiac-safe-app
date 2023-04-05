@@ -169,7 +169,7 @@ function getWETHAddress(chainId: number): string {
   return ""
 }
 
-function getKlerosAddress(chainId: number): string {
+export function getKlerosAddress(chainId: number): string {
   // TODO: Add addresses when Kleros becomes available.
   switch (chainId) {
     case NETWORK.MAINNET:

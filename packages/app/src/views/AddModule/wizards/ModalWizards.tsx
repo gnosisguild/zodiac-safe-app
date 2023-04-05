@@ -8,6 +8,7 @@ import { AMBModuleModal } from "./AMBModuleModal/AMBModuleModal"
 import { ExitModuleModal } from "./ExitModule/ExitModuleModal"
 import { RolesModifierModal } from "./RolesModifier/RolesModifierModal"
 import { RealityModuleOldModal } from "./RealityModuleOld/RealityModuleOldModal"
+import { KlerosRealityModuleModal } from "./KlerosRealityModule/KlerosRealityModuleModal"
 
 /**
  * All wizards that use a Modal must be added here.
@@ -58,6 +59,11 @@ export const ModuleModals = ({ selected, onClose, onSubmit }: ModuleModalsProps)
         open={selected === ModuleType.REALITY_ETH}
         onClose={onClose}
         onSubmit={() => onSubmit && onSubmit(ModuleType.REALITY_ETH)}
+      />
+      <KlerosRealityModuleModal
+        open={selected === ModuleType.KLEROS_REALITY}
+        onClose={onClose}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.KLEROS_REALITY)}
       />
 
       <CustomModuleModal
