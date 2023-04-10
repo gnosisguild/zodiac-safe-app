@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core"
 import { ethers } from "ethers"
 import { useRootSelector } from "store"
@@ -186,17 +186,17 @@ export const KlerosRealityModuleModal = ({
 
   const [isController, setIsController] = useState<boolean>(false)
   const [isSafesnapInstalled, setIsSafesnapInstalled] = useState<boolean>(false)
-  const validSnapshot = () =>
+  const validSnapshot =
     !!params.snapshotEns && params.snapshotEns.includes(".eth") && !loadingEns && validEns
 
   const [validFields, setValidFields] = useState({
-    snapshotEns: validSnapshot(),
+    snapshotEns: validSnapshot,
     bond: !!params.bond,
   })
 
   const isValid = Object.values(validFields).every((field) => field)
 
-  const validateEns = async () => {
+  const validateEns = useCallback(async () => {
     const address = await provider.resolveName(params.snapshotEns)
     console.log({ address })
     if (address) {
@@ -227,7 +227,7 @@ export const KlerosRealityModuleModal = ({
       }
     }
     setLoadedEns(true)
-  }
+  }, [params.snapshotEns, provider, safe.chainId, safe.safeAddress])
 
   // snapshot ens validation
   useEffect(() => {
@@ -241,7 +241,7 @@ export const KlerosRealityModuleModal = ({
         validateInfo()
       }
     }
-  }, [params.snapshotEns])
+  }, [params.snapshotEns, validateEns])
 
   // add appropriate default amounts, chain dependant.
   // 1 ETH, 1500 xDAI, 1000 MATIC.
@@ -249,17 +249,19 @@ export const KlerosRealityModuleModal = ({
     if (safe.chainId) {
       const defaultAmount =
         safe.chainId === 1 ? "1" : safe.chainId === 100 ? "1500" : "1000"
-      setParams({ ...params, bond: defaultAmount })
+      setParams((prevParams) => {
+        return { ...prevParams, bond: defaultAmount }
+      })
     }
   }, [safe.chainId])
 
   // on change in params, recheck validation
   useEffect(() => {
     setValidFields({
-      snapshotEns: validSnapshot(),
+      snapshotEns: validSnapshot,
       bond: !!params.bond,
     })
-  }, [params, loadingEns])
+  }, [params, loadingEns, validSnapshot])
 
   const onParamChange = <Field extends keyof RealityModuleParams>(
     field: Field,
@@ -406,15 +408,14 @@ export const KlerosRealityModuleModal = ({
             ) : (
               <PropStatus message="This Snapshot space does not exist." status="error" />
             ))}
-          {loadedEns &&
-            daorequirements === "" && (
-               // Notice on how to setup DAO requirements, which appear on template.
-              <PropStatus
-                message="Missing DAO requirements ENS record."
-                link="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#missing-daorequirements"
-                status="warning"
-              />
-            )}
+          {loadedEns && daorequirements === "" && (
+            // Notice on how to setup DAO requirements, which appear on template.
+            <PropStatus
+              message="Missing DAO requirements ENS record."
+              link="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#missing-daorequirements"
+              status="warning"
+            />
+          )}
         </Grid>
         <Grid item xs={6}>
           <TimeSelect
