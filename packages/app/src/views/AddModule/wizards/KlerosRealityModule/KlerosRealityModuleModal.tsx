@@ -388,7 +388,7 @@ export const KlerosRealityModuleModal = ({
             }
           />
           {loadedEns &&
-            (validSnapshot() ? (
+            (validSnapshot ? (
               isController && safe.chainId === 1 ? (
                 isSafesnapInstalled ? (
                   <div>
