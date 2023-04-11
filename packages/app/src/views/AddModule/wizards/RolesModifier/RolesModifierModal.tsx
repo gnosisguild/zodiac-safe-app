@@ -82,7 +82,7 @@ export const RolesModifierModal = ({
       icon="roles"
       tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRolesModifier}
-      readMoreLink="https://github.com/gnosis/zodiac-modifier-roles"
+      readMoreLink="https://zodiac.wiki/index.php/Category:Roles_Modifier"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>

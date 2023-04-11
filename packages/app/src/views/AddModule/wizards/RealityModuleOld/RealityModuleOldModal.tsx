@@ -167,7 +167,7 @@ export const RealityModuleOldModal = ({
       icon="reality"
       tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRealityModule}
-      readMoreLink="https://github.com/gnosis/zodiac-module-reality"
+      readMoreLink="https://zodiac.wiki/index.php/Category:Reality_Module"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
