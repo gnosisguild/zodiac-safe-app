@@ -14,6 +14,7 @@ import {
 } from "../../store/modules"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { NETWORK } from "utils/networks"
+import { klerosAvailability } from "components/input/ArbitratorSelect"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -135,6 +136,16 @@ export const AddModulesView = () => {
             onClick={() => setModule(ModuleType.REALITY_ETH)}
           />
         )}
+
+        {klerosAvailability.includes(safe.chainId) && (
+          <ModuleButton
+            title="Kleros Reality Module"
+            description="Deploy a Reality Module, automatically setting Kleros up as arbitrator."
+            icon="reality"
+            onClick={() => setModule(ModuleType.KLEROS_REALITY)}
+          />
+        )}
+
         <ModuleButton
           title="Tellor Module"
           description="Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle"

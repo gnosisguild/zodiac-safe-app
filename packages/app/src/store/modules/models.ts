@@ -10,6 +10,7 @@ export enum ModuleType {
   EXIT = "exit",
   ROLES = "roles",
   OZ_GOVERNOR = "ozGovernor",
+  KLEROS_REALITY = "klerosReality",
   UNKNOWN = "unknown",
 }
 
@@ -32,6 +33,7 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.OPTIMISTIC_GOVERNOR]: "UMA oSnap Module",
   [ModuleType.REALITY_ERC20]: "Reality Module",
   [ModuleType.REALITY_ETH]: "Reality Module",
+  [ModuleType.KLEROS_REALITY]: "Kleros Reality Module",
   [ModuleType.UNKNOWN]: "Unknown Module",
   [ModuleType.BRIDGE]: "Bridge Module",
   [ModuleType.DELAY]: "Delay Modifier",

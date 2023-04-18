@@ -160,7 +160,16 @@ export const RealityModule: React.FC = () => {
 
     const statusLogger = (currentStatus: string, error?: Error) => {
       if (error != null) {
-        logger.push({ error: true, msg: error.toString() })
+        if (error.name === "OpenError") {
+          logger.push({
+            error: true,
+            msg:
+              error.toString() +
+              `This error can be caused by add/track blockers. Please disable any blockers (for instance, the Brave Shield) and try again.`,
+          })
+        } else {
+          logger.push({ error: true, msg: error.toString() })
+        }
         throw error
       } else {
         logger.push({ error: false, msg: currentStatus })
@@ -208,7 +217,7 @@ export const RealityModule: React.FC = () => {
             Allows Reality.eth questions to execute a transaction when resolved.{" "}
             <Link
               underline="always"
-              href="https://github.com/gnosis/zodiac-module-reality"
+              href="https://zodiac.wiki/index.php/Category:Reality_Module"
               target={"_blank"}
               color="inherit"
             >

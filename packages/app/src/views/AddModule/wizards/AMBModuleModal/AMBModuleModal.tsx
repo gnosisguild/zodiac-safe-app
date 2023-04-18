@@ -77,7 +77,7 @@ export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps)
       icon="bridge"
       tags={["From Gnosis Guild"]}
       onAdd={handleAddAMBModule}
-      readMoreLink="https://github.com/gnosis/zodiac-module-bridge"
+      readMoreLink="https://zodiac.wiki/index.php/Category:Bridge_Module"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>

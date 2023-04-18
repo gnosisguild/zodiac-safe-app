@@ -83,7 +83,7 @@ export const ParamInput = ({
         {...props}
       >
         <MenuItem value="true">True</MenuItem>
-        <MenuItem value="false">True</MenuItem>
+        <MenuItem value="false">False</MenuItem>
       </ZodiacTextField>
     )
   }
