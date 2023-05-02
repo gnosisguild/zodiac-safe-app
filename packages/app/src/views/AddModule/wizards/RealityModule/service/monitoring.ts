@@ -1,3 +1,4 @@
+import { NETWORK } from "utils/networks"
 import { MonitoringSectionData } from "../sections/Monitoring"
 
 const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL
@@ -23,7 +24,7 @@ interface RequestType extends MonitoringCredentials {
 }
 
 export const setUpMonitoring = async (
-  network: string,
+  chainId: NETWORK,
   realityModuleAddress: string,
   oracleAddress: string,
   data: MonitoringSectionData,
@@ -85,7 +86,7 @@ export const setUpMonitoring = async (
   const requestBody: RequestType = {
     apiKey: data.apiKey,
     apiSecret: data.secretKey,
-    network,
+    network: networkToOzDefenderNetworkName(chainId),
     oracleAddress,
     realityModuleAddress,
     notificationChannels,
@@ -114,4 +115,27 @@ export const validationCredentials = async (query: MonitoringCredentials) => {
       },
     },
   )
+}
+
+const networkToOzDefenderNetworkName = (network: NETWORK) => {
+  switch (network) {
+    case NETWORK.MAINNET:
+      return "mainnet"
+    case NETWORK.GOERLI:
+      return "goerli"
+    case NETWORK.OPTIMISM:
+      return "optimism"
+    case NETWORK.BSC:
+      return "bsc"
+    case NETWORK.GNOSIS_CHAIN:
+      return "xdai"
+    case NETWORK.POLYGON:
+      return "matic"
+    case NETWORK.ARBITRUM:
+      return "arbitrum"
+    case NETWORK.AVALANCHE:
+      return "avalanche"
+    default:
+      throw new Error("Unsupported network")
+  }
 }

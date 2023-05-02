@@ -82,7 +82,7 @@ export const setup = async (
 
   statusCallback("Setting up monitoring with OZ Defender")
   await setUpMonitoring(
-    NETWORKS[safeInfo.chainId as NETWORK].name,
+    safeInfo.chainId as NETWORK,
     realityModuleAddress,
     setupData.oracle.instanceData.instanceAddress,
     setupData.monitoring,
