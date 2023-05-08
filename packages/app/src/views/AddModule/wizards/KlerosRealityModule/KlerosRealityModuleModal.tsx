@@ -1,15 +1,20 @@
-import React, { useEffect, useState, useCallback } from "react"
-import { Box, Grid, Link, makeStyles, Typography } from "@material-ui/core"
+import React, { useEffect, useState, useCallback, useMemo } from "react"
+import {
+  Box,
+  Grid,
+  Link,
+  makeStyles,
+  Switch,
+  Typography,
+  withStyles,
+} from "@material-ui/core"
+import debounce from "lodash.debounce"
 import { ethers } from "ethers"
-import { useRootSelector } from "store"
-import { getDelayModules } from "store/modules/selectors"
 import { NETWORK, NETWORKS } from "utils/networks"
 import { getDefaultOracle, getKlerosAddress } from "services"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { TimeSelect } from "components/input/TimeSelect"
 import { colors, ZodiacTextField } from "zodiac-ui-components"
-import { AttachModuleForm } from "../components/AttachModuleForm"
-import { ModuleType } from "store/modules/models"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 import { deployRealityModule } from "../RealityModule/service/moduleDeployment"
 import {
@@ -22,9 +27,14 @@ import {
 } from "../RealityModule/sections/Oracle/components/OracleTemplate"
 import * as snapshot from "services/snapshot"
 import { checkIfIsController, getEnsTextRecord } from "services/ens"
-import { Loader } from "@gnosis.pm/safe-react-components"
+import { Icon, Loader } from "@gnosis.pm/safe-react-components"
 import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
 import WarningOutlinedIcon from "@material-ui/icons/WarningOutlined"
+import { MonitoringSectionData } from "../RealityModule/sections/Monitoring"
+import { setUpMonitoring } from "../RealityModule/service/monitoring"
+import { ActionButton } from "../../../../components/ActionButton"
+import { ReactComponent as ArrowUpIcon } from "../../../../assets/icons/arrow-up-icon.svg"
+import { ReactComponent as CheckmarkIcon } from "../../../../assets/icons/checkmark-nofill.svg"
 
 const SECONDS_IN_DAY = 86400
 
@@ -72,7 +82,9 @@ const useStyles = makeStyles((theme) => ({
   spinner: {
     width: "8px !important",
     height: "8px !important",
-    color: `${colors.tan[300]} !important`,
+    color: `yellow !important`,
+    fill: `yellow !important`,
+    opacity: "100% !important",
   },
   detailsContainer: {
     width: "95%",
@@ -102,11 +114,28 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     color: "rgba(230, 230, 54, 1)",
   },
+  linkStyle: {
+    color: "rgba(190, 190, 120, 1)",
+  },
   flexRow: {
     display: "flex",
     flexDirection: "row",
   },
 }))
+
+const CustomSwitch = withStyles({
+  switchBase: {
+    "&.Mui-checked": { color: "white" },
+  },
+  colorSecondary: {
+    "&.Mui-checked + .MuiSwitch-track": {
+      backgroundColor: "yellow",
+    },
+  },
+  track: {
+    backgroundColor: "black",
+  },
+})(Switch)
 
 const PropStatus: React.FC<{
   status: "error" | "warning" | null
@@ -166,9 +195,10 @@ export const KlerosRealityModuleModal = ({
 }: RealityModuleModalProps) => {
   const classes = useStyles()
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
-  const delayModules = useRootSelector(getDelayModules)
-  const [delayModule, setDelayModule] = useState<string>(
-    delayModules.length === 1 ? delayModules[0].address : "",
+  // hack to resolve mainnet ENS
+  const mainnetProvider = useMemo(
+    () => new ethers.providers.InfuraProvider(1, process.env.REACT_APP_INFURA_ID),
+    [],
   )
 
   const bondToken = NETWORKS[safe.chainId as NETWORK].nativeAsset
@@ -187,17 +217,41 @@ export const KlerosRealityModuleModal = ({
   const [isController, setIsController] = useState<boolean>(false)
   const [isSafesnapInstalled, setIsSafesnapInstalled] = useState<boolean>(false)
   const validSnapshot =
-    !!params.snapshotEns && params.snapshotEns.includes(".eth") && !loadingEns && validEns
+    !!params.snapshotEns &&
+    params.snapshotEns.includes(".eth") &&
+    !loadingEns &&
+    loadedEns &&
+    validEns
 
   const [validFields, setValidFields] = useState({
     snapshotEns: validSnapshot,
     bond: !!params.bond,
   })
 
+  const [openMonitoring, setOpenMonitoring] = useState<boolean>(false)
+  const [apiKey, setApiKey] = useState<string | undefined>()
+  const [apiSecret, setApiSecret] = useState<string | undefined>()
+  const [currentEmail, setCurrentEmail] = useState<string>("")
+  const [emails, setEmails] = useState<string[]>([])
+  const [discordKey, setDiscordKey] = useState<string | undefined>()
+  const [telegramBotToken, setTelegramBotToken] = useState<string | undefined>()
+  const [telegramChatId, setTelegramChatId] = useState<string | undefined>()
+
+  const [step, setStep] = useState<"form" | "confirm">("form")
+
   const isValid = Object.values(validFields).every((field) => field)
+  const emailIsValid =
+    /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(currentEmail) && !emails.includes(currentEmail)
+
+  const canConfirm =
+    isValid &&
+    (!openMonitoring ||
+      (apiKey !== undefined &&
+        apiSecret !== undefined &&
+        (emails.length > 0 || discordKey || (telegramBotToken && telegramChatId))))
 
   const validateEns = useCallback(async () => {
-    const address = await provider.resolveName(params.snapshotEns)
+    const address = await mainnetProvider.resolveName(params.snapshotEns)
     console.log({ address })
     if (address) {
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(
@@ -207,14 +261,14 @@ export const KlerosRealityModuleModal = ({
       const daorequirements = await getEnsTextRecord(
         params.snapshotEns,
         "daorequirements",
-        provider,
+        mainnetProvider,
       )
       setDaorequirements(daorequirements[0])
       setValidEns(snapshotSpace !== undefined)
       if (snapshotSpace !== undefined) {
         setIsSafesnapInstalled(!!snapshotSpace.plugins?.safeSnap)
         const isController = await checkIfIsController(
-          provider,
+          mainnetProvider,
           params.snapshotEns,
           safe.safeAddress,
         )
@@ -225,30 +279,44 @@ export const KlerosRealityModuleModal = ({
         console.log({ isController, snapshotSpace })
         console.log({ snapshotSpace })
       }
+    } else {
     }
-    setLoadedEns(true)
-  }, [params.snapshotEns, provider, safe.chainId, safe.safeAddress])
+  }, [params.snapshotEns, safe.chainId, safe.safeAddress, mainnetProvider])
+
+  const debouncedSnapshotEnsValidation = debounce(() => {
+    setValidEns(false)
+    setDaorequirements("")
+    setIsController(false)
+    setIsSafesnapInstalled(false)
+    setLoadedEns(false)
+    if (params.snapshotEns && params.snapshotEns.includes(".eth")) {
+      setLoadingEns(true)
+      const validateInfo = async () => {
+        await validateEns()
+        setLoadingEns(false)
+        setLoadedEns(true)
+      }
+      validateInfo()
+    }
+  }, 300)
 
   // snapshot ens validation
   useEffect(() => {
-    if (params.snapshotEns) {
-      if (params.snapshotEns.includes(".eth")) {
-        setLoadingEns(true)
-        const validateInfo = async () => {
-          await validateEns()
-          setLoadingEns(false)
-        }
-        validateInfo()
-      }
-    }
-  }, [params.snapshotEns, validateEns])
+    debouncedSnapshotEnsValidation()
+  }, [params, params.snapshotEns, validateEns])
 
   // add appropriate default amounts, chain dependant.
-  // 1 ETH, 1500 xDAI, 1000 MATIC.
+  // 1 ETH, 1500 xDAI, 1000 MATIC. Defaults to 1 unit otherwise.
   useEffect(() => {
     if (safe.chainId) {
       const defaultAmount =
-        safe.chainId === 1 ? "1" : safe.chainId === 100 ? "1500" : "1000"
+        safe.chainId === 1
+          ? "1"
+          : safe.chainId === 100
+          ? "1500"
+          : safe.chainId === 137
+          ? "1000"
+          : "1"
       setParams((prevParams) => {
         return { ...prevParams, bond: defaultAmount }
       })
@@ -268,7 +336,6 @@ export const KlerosRealityModuleModal = ({
     value: RealityModuleParams[Field],
     valid?: boolean,
   ) => {
-    if (field === "snapshotEns") setLoadedEns(false)
     setParams({
       ...params,
       [field]: value,
@@ -282,7 +349,7 @@ export const KlerosRealityModuleModal = ({
         ...params,
         oracle: getDefaultOracle(safe.chainId),
         arbitrator: getKlerosAddress(safe.chainId),
-        executor: delayModule || safe.safeAddress,
+        executor: safe.safeAddress,
         bond: minimumBond.toString(),
       }
 
@@ -303,13 +370,12 @@ export const KlerosRealityModuleModal = ({
       )
 
       let txs = [...deploymentRealityModuleTxsMm.txs]
+      const realityModuleAddress = deploymentRealityModuleTxsMm.meta
+        ?.expectedModuleAddress as string
       // We can only batch the SafeSnap creation when Safe is controller + mainnet
       // Otherwise, just create the module, hope the user got the hint and opened Details
       // to figure out how to set up SafeSnap in the space themselves.
       if (isController && safe.chainId === 1) {
-        const realityModuleAddress =
-          deploymentRealityModuleTxsMm.meta?.expectedModuleAddress
-
         if (realityModuleAddress == null) {
           throw new Error(
             "The calculated reality module address is 'null'. This should be handled in the 'statusCallback' function.",
@@ -322,6 +388,24 @@ export const KlerosRealityModuleModal = ({
           safe.chainId,
         )
         txs.push(safeSnapTxs[0])
+      }
+      // If monitoring enabled, try to setup monitoring
+      if (openMonitoring) {
+        const monitoringData: MonitoringSectionData = {
+          // api and secret are required for button to be enabled
+          apiKey: apiKey as string,
+          secretKey: apiSecret as string,
+          discordKey: discordKey ?? "",
+          email: emails,
+          slackKey: "",
+          telegram: { botToken: telegramBotToken ?? "", chatID: telegramChatId ?? "" },
+        }
+        await setUpMonitoring(
+          safe.chainId,
+          realityModuleAddress,
+          args.oracle,
+          monitoringData,
+        )
       }
 
       await sdk.txs.send({ txs })
@@ -347,15 +431,6 @@ export const KlerosRealityModuleModal = ({
     }
   }
 
-  const description = (
-    <Typography variant="body2">
-      This will add a timedelay to any transactions created by this module.{" "}
-      <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both
-      are set to 24 hours, the cumulative delay before the transaction can be executed
-      will be 48 hours).
-    </Typography>
-  )
-
   return (
     <AddModuleModal
       open={open}
@@ -365,28 +440,279 @@ export const KlerosRealityModuleModal = ({
       icon="reality"
       tags={["Stackable", "From Kleros"]}
       onAdd={handleAddRealityModule}
-      readMoreLink="https://github.com/gnosis/zodiac-module-reality"
-      ButtonProps={{ disabled: !isValid }}
+      hideButton={true}
+      readMoreLink="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module"
     >
-      <Typography gutterBottom>Parameters</Typography>
+      {step === "form" ? (
+        <>
+          <Typography gutterBottom>Parameters</Typography>
 
-      <Grid container spacing={2} className={classes.fields}>
-        <Grid item xs={12}>
-          <ZodiacTextField
-            value={params.snapshotEns}
-            onChange={(e) => onParamChange("snapshotEns", e.target.value, true)}
-            label="Snapshot Name"
-            placeholder="gnosis.eth"
-            rightIcon={
-              <>
-                {loadingEns && (
-                  <Box className={classes.loadingContainer}>
-                    <Loader size="sm" className={classes.spinner} />
-                  </Box>
-                )}
-              </>
-            }
-          />
+          <Grid container spacing={2} className={classes.fields}>
+            <Grid item xs={12}>
+              <ZodiacTextField
+                value={params.snapshotEns}
+                onChange={(e) => onParamChange("snapshotEns", e.target.value, true)}
+                label="Snapshot Name"
+                placeholder="gnosis.eth"
+                rightIcon={
+                  <>
+                    {loadingEns ? (
+                      <Box className={classes.loadingContainer}>
+                        <Loader size="sm" className={classes.spinner} />
+                      </Box>
+                    ) : loadedEns && validEns ? (
+                      <Box className={classes.loadingContainer}>
+                        <CheckmarkIcon className={classes.spinner} />
+                      </Box>
+                    ) : null}
+                  </>
+                }
+              />
+              {!loadingEns && loadedEns && !validSnapshot && (
+                <PropStatus
+                  message="This Snapshot space does not exist."
+                  status="error"
+                />
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              <TimeSelect
+                label="Timeout"
+                defaultValue={params.timeout}
+                defaultUnit="days"
+                onChange={(value) => onParamChange("timeout", value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TimeSelect
+                label="Cooldown"
+                defaultValue={params.cooldown}
+                defaultUnit="days"
+                onChange={(value) => onParamChange("cooldown", value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TimeSelect
+                label="Expiration"
+                defaultValue={params.expiration}
+                defaultUnit="days"
+                onChange={(value) => onParamChange("expiration", value)}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <ZodiacTextField
+                label={`Bond`}
+                prefix={bondToken.symbol}
+                color="secondary"
+                value={params.bond}
+                onChange={handleBondChange}
+              />
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <Typography variant="body1">Configure Monitoring</Typography>
+            </Grid>
+            <Grid
+              xs={6}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div />
+              <CustomSwitch
+                value={openMonitoring}
+                onClick={() => {
+                  setOpenMonitoring(!openMonitoring)
+                }}
+              />
+            </Grid>
+          </Grid>
+          {openMonitoring && (
+            <Grid container direction="column" spacing={2} className={classes.fields}>
+              <Grid item xs={12}>
+                <Typography variant="body2">
+                  Setting up an effective monitoring strategy is critical for the security
+                  of your safe. First, you need to{" "}
+                  <Link
+                    className={classes.linkStyle}
+                    underline="always"
+                    href="https://defender.openzeppelin.com/#/auth/sign-in"
+                    target="_blank"
+                  >
+                    create an Open Zeppelin account
+                  </Link>
+                  .
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <ZodiacTextField
+                  value={apiKey}
+                  onChange={(e) => {
+                    setApiKey(e.target.value)
+                  }}
+                  label="API Key"
+                  placeholder="3pwZzZZZzzZZZzzZZzZZZAAaaAAaaZZzz"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <ZodiacTextField
+                  value={apiSecret}
+                  onChange={(e) => {
+                    setApiSecret(e.target.value)
+                  }}
+                  label="API Secret"
+                  placeholder="2LUwZwwuUuuUUzzZZdDddooodudDDdaaDDdaAAAddDDadDzZZzdDDdcCCdDDaaAA"
+                />
+              </Grid>
+              {/* Emails section */}
+              <Grid item xs={12}>
+                <Grid item style={{ display: "flex" }}>
+                  <Typography>Email</Typography>
+                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                    &nbsp;(optional)
+                  </Typography>
+                </Grid>
+                <Typography variant="body2">
+                  Add as many email addresses as you need
+                </Typography>
+                <ZodiacTextField
+                  placeholder="john@doe.com"
+                  value={currentEmail}
+                  onChange={(e) => {
+                    setCurrentEmail(e.target.value)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && emailIsValid) {
+                      setEmails([...emails, currentEmail])
+                      setCurrentEmail("")
+                    }
+                  }}
+                  rightIcon={
+                    <>
+                      {emailIsValid ? (
+                        <Box className={classes.loadingContainer}>
+                          <Icon size="sm" type="add" color="primary" />
+                        </Box>
+                      ) : null}
+                    </>
+                  }
+                />
+                {emails && emails.map((e) => <Typography key={e}>{e}</Typography>)}
+              </Grid>
+
+              <Grid item xs={12}>
+                <Grid item style={{ display: "flex" }}>
+                  <Typography>Discord Integration</Typography>
+                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                    &nbsp;(optional)
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="body2">
+                    Include the Discord channel's url key
+                  </Typography>
+                  <Link
+                    className={classes.linkStyle}
+                    href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
+                    target="_blank"
+                  >
+                    Learn more
+                  </Link>
+                </Grid>
+                <ZodiacTextField
+                  value={discordKey}
+                  onChange={(e) => {
+                    setDiscordKey(e.target.value)
+                  }}
+                  placeholder="https://discord.com/api/webhooks/.../"
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Grid item style={{ display: "flex" }}>
+                  <Typography>Telegram Integration</Typography>
+                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                    &nbsp;(optional)
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography variant="body2">
+                    Include the Telegram bot token and Chat ID
+                  </Typography>
+                  <Link
+                    className={classes.linkStyle}
+                    href="https://core.telegram.org/bots#6-botfather"
+                    target={"_blank"}
+                  >
+                    Learn more
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Grid
+                    container
+                    spacing={2}
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Grid item>
+                      <ZodiacTextField
+                        placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+                        value={telegramBotToken}
+                        onChange={(e) => {
+                          setTelegramBotToken(e.target.value)
+                        }}
+                      />
+                    </Grid>
+                    <Grid item>
+                      <ZodiacTextField
+                        placeholder="1234567890"
+                        value={telegramChatId}
+                        onChange={(e) => {
+                          setTelegramChatId(e.target.value)
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          )}
+          {/* Button Section */}
+          <ActionButton
+            fullWidth
+            startIcon={<ArrowUpIcon />}
+            onClick={() => {
+              setStep("confirm")
+            }}
+            disabled={!canConfirm}
+            style={{ marginTop: "16px" }}
+          >
+            Add Module
+          </ActionButton>
+        </>
+      ) : (
+        <>
+          <Typography>It's almost ready! Just a reminder:</Typography>
           {loadedEns &&
             (validSnapshot ? (
               isController && safe.chainId === 1 ? (
@@ -399,11 +725,13 @@ export const KlerosRealityModuleModal = ({
                 )
               ) : (
                 // A way to paste the safesnap plugin info is here.
-                <PropStatus
-                  message="Install SafeSnap after creating the module."
-                  link="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#safesnap"
-                  status="warning"
-                />
+                <div style={{ marginTop: "4px" }}>
+                  <PropStatus
+                    message="Install SafeSnap after creating the module."
+                    link="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#safesnap"
+                    status="warning"
+                  />
+                </div>
               )
             ) : (
               <PropStatus message="This Snapshot space does not exist." status="error" />
@@ -416,55 +744,34 @@ export const KlerosRealityModuleModal = ({
               status="warning"
             />
           )}
-        </Grid>
-        <Grid item xs={6}>
-          <TimeSelect
-            label="Timeout"
-            defaultValue={params.timeout}
-            defaultUnit="days"
-            onChange={(value) => onParamChange("timeout", value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TimeSelect
-            label="Cooldown"
-            defaultValue={params.cooldown}
-            defaultUnit="days"
-            onChange={(value) => onParamChange("cooldown", value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TimeSelect
-            label="Expiration"
-            defaultValue={params.expiration}
-            defaultUnit="days"
-            onChange={(value) => onParamChange("expiration", value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <ZodiacTextField
-            label={`Bond`}
-            prefix={bondToken.symbol}
-            color="secondary"
-            value={params.bond}
-            onChange={handleBondChange}
-          />
-        </Grid>
-      </Grid>
-      {delayModules.length ? (
-        <>
-          <Typography variant="h6" gutterBottom>
-            Deploy Options
-          </Typography>
-          <AttachModuleForm
-            description={description}
-            modules={delayModules}
-            value={delayModule}
-            onChange={(value: string) => setDelayModule(value)}
-            type={ModuleType.DELAY}
-          />
+          <Grid
+            container
+            spacing={2}
+            style={{ display: "flex", flexDirection: "row", marginTop: "16px" }}
+          >
+            <Grid item xs={6}>
+              <ActionButton
+                fullWidth
+                startIcon={<ArrowUpIcon style={{ rotate: "270deg" }} />}
+                onClick={() => setStep("form")}
+              >
+                Return
+              </ActionButton>
+            </Grid>
+            <Grid item xs={6}>
+              <ActionButton
+                fullWidth
+                startIcon={<ArrowUpIcon />}
+                onClick={() => {
+                  handleAddRealityModule()
+                }}
+              >
+                Add Module
+              </ActionButton>
+            </Grid>
+          </Grid>
         </>
-      ) : null}
+      )}
     </AddModuleModal>
   )
 }
