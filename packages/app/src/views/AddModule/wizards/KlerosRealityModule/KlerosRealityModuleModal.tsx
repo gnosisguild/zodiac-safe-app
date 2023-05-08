@@ -303,7 +303,7 @@ export const KlerosRealityModuleModal = ({
   // snapshot ens validation
   useEffect(() => {
     debouncedSnapshotEnsValidation()
-  }, [params, params.snapshotEns, validateEns])
+  }, [params, params.snapshotEns, validateEns, debouncedSnapshotEnsValidation])
 
   // add appropriate default amounts, chain dependant.
   // 1 ETH, 1500 xDAI, 1000 MATIC. Defaults to 1 unit otherwise.
