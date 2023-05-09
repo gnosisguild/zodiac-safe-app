@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
 export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles()
   const { safe: safeInfo } = useSafeAppsSDK()
-  const rolesAddress = module.address
 
   return (
     <div className={classes.root}>
@@ -67,7 +66,7 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
           noWrap
           className={classes.link}
           onClick={() => {
-            window.location.href = rolesAppUrl(safeInfo, rolesAddress)
+            window.location.href = rolesAppUrl(safeInfo, module.address)
           }}
           underline="always"
         >
