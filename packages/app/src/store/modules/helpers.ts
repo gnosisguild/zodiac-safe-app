@@ -2,6 +2,7 @@ import { Contract as MultiCallContract, Provider as MultiCallProvider } from "et
 import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
 import {
   ContractAddresses,
+  ContractVersions,
   getModuleInstance,
   KnownContracts,
   SupportedNetworks,
@@ -13,7 +14,6 @@ import {
   DelayModule,
   Module,
   MODULE_NAMES,
-  MODULE_TYPES,
   ModuleContract,
   ModuleOperation,
   ModuleType,
@@ -222,17 +222,33 @@ export function getTransactionsFromSafeTransaction(
   return [safeTransaction]
 }
 
+const ZODIAC_CONTRACTS_TO_MODULE_TYPE: Record<string, ModuleType> = {
+  tellor: ModuleType.TELLOR,
+  optimisticGovernor: ModuleType.OPTIMISTIC_GOVERNOR,
+  realityETH: ModuleType.REALITY_ETH,
+  realityERC20: ModuleType.REALITY_ERC20,
+  delay: ModuleType.DELAY,
+  bridge: ModuleType.BRIDGE,
+  exit: ModuleType.EXIT,
+  scopeGuard: ModuleType.UNKNOWN,
+  circulatingSupply: ModuleType.UNKNOWN,
+  roles: ModuleType.ROLES,
+  ozGovernor: ModuleType.OZ_GOVERNOR,
+}
 export function getContractsModuleType(
   chainId: number,
   masterCopyAddress: string,
 ): ModuleType {
-  const masterCopyAddresses = ContractAddresses[chainId as SupportedNetworks]
-  if (!masterCopyAddresses) return ModuleType.UNKNOWN
-  const entry = Object.entries(masterCopyAddresses).find(([, address]) => {
-    return address.toLowerCase() === masterCopyAddress.toLowerCase()
+  const contractVersions = ContractVersions[chainId as SupportedNetworks]
+  if (!contractVersions) return ModuleType.UNKNOWN
+
+  const entry = Object.entries(contractVersions).find(([, addresses]) => {
+    return Object.values(addresses).some(
+      (address) => address.toLowerCase() === masterCopyAddress.toLowerCase(),
+    )
   })
   if (!entry) return ModuleType.UNKNOWN
-  return MODULE_TYPES[entry[0]] || ModuleType.UNKNOWN
+  return ZODIAC_CONTRACTS_TO_MODULE_TYPE[entry[0]] || ModuleType.UNKNOWN
 }
 
 /**

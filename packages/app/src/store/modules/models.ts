@@ -14,20 +14,6 @@ export enum ModuleType {
   UNKNOWN = "unknown",
 }
 
-export const MODULE_TYPES: Record<string, ModuleType> = {
-  tellor: ModuleType.TELLOR,
-  optimisticGovernor: ModuleType.OPTIMISTIC_GOVERNOR,
-  realityETH: ModuleType.REALITY_ETH,
-  realityERC20: ModuleType.REALITY_ERC20,
-  delay: ModuleType.DELAY,
-  bridge: ModuleType.BRIDGE,
-  exit: ModuleType.EXIT,
-  scopeGuard: ModuleType.UNKNOWN,
-  circulatingSupply: ModuleType.UNKNOWN,
-  roles: ModuleType.ROLES,
-  ozGovernor: ModuleType.OZ_GOVERNOR,
-}
-
 export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.TELLOR]: "Tellor Module",
   [ModuleType.OPTIMISTIC_GOVERNOR]: "UMA oSnap Module",
