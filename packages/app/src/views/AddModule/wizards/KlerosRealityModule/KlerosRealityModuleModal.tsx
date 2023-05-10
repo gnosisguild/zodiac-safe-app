@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react"
 import {
   Box,
   Grid,
+  IconButton,
   Link,
   makeStyles,
   Switch,
@@ -35,6 +36,7 @@ import { setUpMonitoring } from "../RealityModule/service/monitoring"
 import { ActionButton } from "../../../../components/ActionButton"
 import { ReactComponent as ArrowUpIcon } from "../../../../assets/icons/arrow-up-icon.svg"
 import { ReactComponent as CheckmarkIcon } from "../../../../assets/icons/checkmark-nofill.svg"
+import { useMonitoringValidation } from "../RealityModule/hooks/useMonitoringValidation"
 
 const SECONDS_IN_DAY = 86400
 
@@ -229,13 +231,15 @@ export const KlerosRealityModuleModal = ({
   })
 
   const [openMonitoring, setOpenMonitoring] = useState<boolean>(false)
-  const [apiKey, setApiKey] = useState<string | undefined>()
-  const [apiSecret, setApiSecret] = useState<string | undefined>()
+  const [apiKey, setApiKey] = useState<string>("")
+  const [apiSecret, setApiSecret] = useState<string>("")
+  const [validatedCredentials, setValidatedCredentials] = useState<boolean>(false)
+
   const [currentEmail, setCurrentEmail] = useState<string>("")
   const [emails, setEmails] = useState<string[]>([])
-  const [discordKey, setDiscordKey] = useState<string | undefined>()
-  const [telegramBotToken, setTelegramBotToken] = useState<string | undefined>()
-  const [telegramChatId, setTelegramChatId] = useState<string | undefined>()
+  const [discordKey, setDiscordKey] = useState<string>("")
+  const [telegramBotToken, setTelegramBotToken] = useState<string>("")
+  const [telegramChatId, setTelegramChatId] = useState<string>("")
 
   const [step, setStep] = useState<"form" | "confirm">("form")
 
@@ -248,7 +252,11 @@ export const KlerosRealityModuleModal = ({
     (!openMonitoring ||
       (apiKey !== undefined &&
         apiSecret !== undefined &&
-        (emails.length > 0 || discordKey || (telegramBotToken && telegramChatId))))
+        // we want to force the user to, at least, pass an email address
+        // because the other notification systems could break and are hard to validate
+        // if that wasn't a concern, you could pass:
+        // (emails.length > 0 || discordKey || (telegramBotToken && telegramChatId))))
+        emails.length > 0))
 
   const validateEns = useCallback(async () => {
     const address = await mainnetProvider.resolveName(params.snapshotEns)
@@ -303,7 +311,28 @@ export const KlerosRealityModuleModal = ({
   // snapshot ens validation
   useEffect(() => {
     debouncedSnapshotEnsValidation()
-  }, [params, params.snapshotEns, validateEns, debouncedSnapshotEnsValidation])
+    // eslint-disable-next-line
+  }, [params.snapshotEns])
+
+  const {
+    loading: loadingCredentials,
+    execute: validateCredentials,
+    error: invalidCredentials,
+  } = useMonitoringValidation()
+
+  const debouncedCredentialValidation = debounce(async () => {
+    setValidatedCredentials(false)
+    await validateCredentials(apiKey, apiSecret)
+    setValidatedCredentials(true)
+  }, 300)
+
+  useEffect(() => {
+    if (apiKey && apiSecret) {
+      debouncedCredentialValidation()
+    }
+
+    // eslint-disable-next-line
+  }, [apiKey, apiSecret])
 
   // add appropriate default amounts, chain dependant.
   // 1 ETH, 1500 xDAI, 1000 MATIC. Defaults to 1 unit otherwise.
@@ -393,13 +422,15 @@ export const KlerosRealityModuleModal = ({
       if (openMonitoring) {
         const monitoringData: MonitoringSectionData = {
           // api and secret are required for button to be enabled
-          apiKey: apiKey as string,
-          secretKey: apiSecret as string,
-          discordKey: discordKey ?? "",
+          apiKey: apiKey,
+          secretKey: apiSecret,
+          discordKey: discordKey,
           email: emails,
           slackKey: "",
-          telegram: { botToken: telegramBotToken ?? "", chatID: telegramChatId ?? "" },
+          telegram: { botToken: telegramBotToken, chatID: telegramChatId },
         }
+        // we trust the notification parameters for discord and telegram are valid
+        // user was forced to pass at least an email address to get here
         await setUpMonitoring(
           safe.chainId,
           realityModuleAddress,
@@ -439,7 +470,6 @@ export const KlerosRealityModuleModal = ({
       description="Deploy the Reality Module, automatically setting up Kleros as the arbitrator."
       icon="reality"
       tags={["Stackable", "From Kleros"]}
-      onAdd={handleAddRealityModule}
       hideButton={true}
       readMoreLink="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module"
     >
@@ -556,6 +586,20 @@ export const KlerosRealityModuleModal = ({
                   }}
                   label="API Key"
                   placeholder="3pwZzZZZzzZZZzzZZzZZZAAaaAAaaZZzz"
+                  rightIcon={
+                    loadingCredentials ? (
+                      <Box className={classes.loadingContainer}>
+                        <Loader size="sm" className={classes.spinner} />
+                      </Box>
+                    ) : (
+                      validatedCredentials &&
+                      !invalidCredentials && (
+                        <Box className={classes.loadingContainer}>
+                          <CheckmarkIcon className={classes.spinner} />
+                        </Box>
+                      )
+                    )
+                  }
                 />
               </Grid>
 
@@ -567,18 +611,39 @@ export const KlerosRealityModuleModal = ({
                   }}
                   label="API Secret"
                   placeholder="2LUwZwwuUuuUUzzZZdDddooodudDDdaaDDdaAAAddDDadDzZZzdDDdcCCdDDaaAA"
+                  rightIcon={
+                    loadingCredentials ? (
+                      <Box className={classes.loadingContainer}>
+                        <Loader size="sm" className={classes.spinner} />
+                      </Box>
+                    ) : (
+                      validatedCredentials &&
+                      !invalidCredentials && (
+                        <Box className={classes.loadingContainer}>
+                          <CheckmarkIcon className={classes.spinner} />
+                        </Box>
+                      )
+                    )
+                  }
                 />
               </Grid>
+
+              {validatedCredentials && invalidCredentials && (
+                <Grid item xs={12}>
+                  <PropStatus message="These credentials are wrong." status="error" />
+                </Grid>
+              )}
+
               {/* Emails section */}
               <Grid item xs={12}>
                 <Grid item style={{ display: "flex" }}>
                   <Typography>Email</Typography>
                   <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
-                    &nbsp;(optional)
+                    &nbsp;(required)
                   </Typography>
                 </Grid>
                 <Typography variant="body2">
-                  Add as many email addresses as you need
+                  Enter as many email addresses as you need
                 </Typography>
                 <ZodiacTextField
                   placeholder="john@doe.com"
@@ -602,7 +667,27 @@ export const KlerosRealityModuleModal = ({
                     </>
                   }
                 />
-                {emails && emails.map((e) => <Typography key={e}>{e}</Typography>)}
+                {emails.length > 0 ? (
+                  emails.map((e) => (
+                    <Grid container key={e}>
+                      <Grid item xs={1}>
+                        <IconButton
+                          size="small"
+                          onClick={() => setEmails(emails.filter((x) => x !== e))}
+                        >
+                          <Icon size="sm" type="delete" color="warning" />
+                        </IconButton>
+                      </Grid>
+                      <Grid item xs={11}>
+                        <Typography>{e}</Typography>
+                      </Grid>
+                    </Grid>
+                  ))
+                ) : (
+                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                    (No emails entered, at least one is required)
+                  </Typography>
+                )}
               </Grid>
 
               <Grid item xs={12}>
@@ -707,7 +792,14 @@ export const KlerosRealityModuleModal = ({
             disabled={!canConfirm}
             style={{ marginTop: "16px" }}
           >
-            Add Module
+            {/* Button Messages */}
+            {canConfirm || !openMonitoring
+              ? "Add Module"
+              : loadingCredentials
+              ? "Validating OpenZeppelin Credentials..."
+              : !validatedCredentials || invalidCredentials
+              ? "Missing OpenZeppelin API"
+              : "Missing Email"}
           </ActionButton>
         </>
       ) : (
