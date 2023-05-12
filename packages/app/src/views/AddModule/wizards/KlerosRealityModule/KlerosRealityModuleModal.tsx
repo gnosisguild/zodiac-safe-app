@@ -661,7 +661,16 @@ export const KlerosRealityModuleModal = ({
                     <>
                       {emailIsValid ? (
                         <Box className={classes.loadingContainer}>
-                          <Icon size="sm" type="add" color="primary" />
+                          <IconButton
+                            size="small"
+                            onClick={() => {
+                              setEmails([...emails, currentEmail])
+                              setCurrentEmail("")
+                            }}
+                          >
+                            {" "}
+                            <Icon size="sm" type="add" color="primary" />
+                          </IconButton>
                         </Box>
                       ) : null}
                     </>
@@ -685,7 +694,9 @@ export const KlerosRealityModuleModal = ({
                   ))
                 ) : (
                   <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
-                    (No emails entered, at least one is required)
+                    {emailIsValid
+                      ? "Press Enter or click + to add this email"
+                      : "(No emails entered, at least one is required)"}
                   </Typography>
                 )}
               </Grid>
