@@ -466,8 +466,8 @@ export const KlerosRealityModuleModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="Kleros Reality Module"
-      description="Deploy the Reality Module, automatically setting up Kleros as the arbitrator."
+      title="Kleros Snapshot Module"
+      description="Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros."
       icon="reality"
       tags={["Stackable", "From Kleros"]}
       hideButton={true}
