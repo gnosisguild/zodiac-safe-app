@@ -1,21 +1,22 @@
 {
   "files": {
-    "main.js": "./static/js/main.523d2abf.chunk.js",
-    "main.js.map": "./static/js/main.523d2abf.chunk.js.map",
+    "main.js": "./static/js/main.a5a2ccb1.chunk.js",
+    "main.js.map": "./static/js/main.a5a2ccb1.chunk.js.map",
     "runtime-main.js": "./static/js/runtime-main.cb4effe6.js",
     "runtime-main.js.map": "./static/js/runtime-main.cb4effe6.js.map",
-    "static/js/2.be76d22e.chunk.js": "./static/js/2.be76d22e.chunk.js",
-    "static/js/2.be76d22e.chunk.js.map": "./static/js/2.be76d22e.chunk.js.map",
+    "static/js/2.6e09018b.chunk.js": "./static/js/2.6e09018b.chunk.js",
+    "static/js/2.6e09018b.chunk.js.map": "./static/js/2.6e09018b.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.767266f49e8c4f0d58cce2d4f09d2be4.js": "./precache-manifest.767266f49e8c4f0d58cce2d4f09d2be4.js",
+    "precache-manifest.f68f86b6622cae1f4b5ad6323dd49c3c.js": "./precache-manifest.f68f86b6622cae1f4b5ad6323dd49c3c.js",
     "service-worker.js": "./service-worker.js",
-    "static/js/2.be76d22e.chunk.js.LICENSE.txt": "./static/js/2.be76d22e.chunk.js.LICENSE.txt",
+    "static/js/2.6e09018b.chunk.js.LICENSE.txt": "./static/js/2.6e09018b.chunk.js.LICENSE.txt",
     "static/media/add-circle-icon.42a49a22.svg": "./static/media/add-circle-icon.42a49a22.svg",
     "static/media/add-icon.7ae47d81.svg": "./static/media/add-icon.7ae47d81.svg",
     "static/media/arrow-up-icon.7e5a12da.svg": "./static/media/arrow-up-icon.7e5a12da.svg",
     "static/media/avatar-empty.8424ad03.svg": "./static/media/avatar-empty.8424ad03.svg",
     "static/media/checkbox-checked.6146c37e.svg": "./static/media/checkbox-checked.6146c37e.svg",
     "static/media/checkbox-unchecked.5c1a7eb5.svg": "./static/media/checkbox-unchecked.5c1a7eb5.svg",
+    "static/media/checkmark-nofill.855acc91.svg": "./static/media/checkmark-nofill.855acc91.svg",
     "static/media/checkmark.23e86834.svg": "./static/media/checkmark.23e86834.svg",
     "static/media/chevron-down.0df60caa.svg": "./static/media/chevron-down.0df60caa.svg",
     "static/media/dao-module-pending.3803c565.svg": "./static/media/dao-module-pending.3803c565.svg",
@@ -29,7 +30,7 @@
   },
   "entrypoints": [
     "static/js/runtime-main.cb4effe6.js",
-    "static/js/2.be76d22e.chunk.js",
-    "static/js/main.523d2abf.chunk.js"
+    "static/js/2.6e09018b.chunk.js",
+    "static/js/main.a5a2ccb1.chunk.js"
   ]
 }
