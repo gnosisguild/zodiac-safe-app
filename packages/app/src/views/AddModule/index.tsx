@@ -139,8 +139,8 @@ export const AddModulesView = () => {
 
         {klerosAvailability.includes(safe.chainId) && (
           <ModuleButton
-            title="Kleros Reality Module"
-            description="Deploy a Reality Module, automatically setting Kleros up as arbitrator."
+            title="Kleros Snapshot Module"
+            description="Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros."
             icon="reality"
             onClick={() => setModule(ModuleType.KLEROS_REALITY)}
           />
