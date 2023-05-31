@@ -88,6 +88,11 @@ const useStyles = makeStyles((theme) => ({
     fill: `yellow !important`,
     opacity: "100% !important",
   },
+  addSpinner: {
+    color: `white !important`,
+    fill: `white !important`,
+    opacity: "100% !important",
+  },
   detailsContainer: {
     width: "95%",
   },
@@ -258,6 +263,8 @@ export const KlerosRealityModuleModal = ({
         // (emails.length > 0 || discordKey || (telegramBotToken && telegramChatId))))
         emails.length > 0))
 
+  const [deploying, setDeploying] = useState<boolean>(false)
+
   const validateEns = useCallback(async () => {
     const address = await mainnetProvider.resolveName(params.snapshotEns)
     console.log({ address })
@@ -372,6 +379,7 @@ export const KlerosRealityModuleModal = ({
   }
 
   const handleAddRealityModule = async () => {
+    setDeploying(true)
     try {
       const minimumBond = ethers.utils.parseUnits(params.bond, bondToken.decimals)
       const args = {
@@ -446,6 +454,7 @@ export const KlerosRealityModuleModal = ({
     } catch (error) {
       console.log("Error deploying module: ", error)
     }
+    setDeploying(false)
   }
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -855,6 +864,7 @@ export const KlerosRealityModuleModal = ({
             <Grid item xs={6}>
               <ActionButton
                 fullWidth
+                disabled={deploying}
                 startIcon={<ArrowUpIcon style={{ rotate: "270deg" }} />}
                 onClick={() => setStep("form")}
               >
@@ -864,7 +874,14 @@ export const KlerosRealityModuleModal = ({
             <Grid item xs={6}>
               <ActionButton
                 fullWidth
-                startIcon={<ArrowUpIcon />}
+                disabled={deploying}
+                startIcon={
+                  deploying ? (
+                    <Loader size="xs" className={classes.addSpinner} />
+                  ) : (
+                    <ArrowUpIcon />
+                  )
+                }
                 onClick={() => {
                   handleAddRealityModule()
                 }}
@@ -872,6 +889,11 @@ export const KlerosRealityModuleModal = ({
                 Add Module
               </ActionButton>
             </Grid>
+            {deploying && openMonitoring && (
+              <Grid xs={12} style={{ marginLeft: "8px" }}>
+                <div>This can take around a minute, please wait...</div>
+              </Grid>
+            )}
           </Grid>
         </>
       )}
