@@ -69,6 +69,14 @@ export interface ExitModuleParams {
   tokenContract: string
 }
 
+export interface ConnextModuleParams {
+  domainId: number
+  sender: string
+  owner: string
+  avatar: string
+  target: string
+}
+
 export function getTellorOracle(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
@@ -191,6 +199,24 @@ export function getArbitrator(chainId: number, arbitratorOption: number): string
       return getKlerosAddress(chainId)
     case ARBITRATOR_OPTIONS.OTHER:
       return ""
+  }
+  return ""
+}
+
+function getConnextAddress(chainId: number): string {
+  switch (chainId) {
+    case NETWORK.MAINNET:
+      return "0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6"
+    case NETWORK.POLYGON:
+      return "0x11984dc4465481512eb5b777E44061C158CF2259"
+    case NETWORK.GOERLI:
+      return "0xFCa08024A6D4bCc87275b1E4A1E22B71fAD7f649"
+    case NETWORK.GNOSIS_CHAIN:
+      return "0x5bB83e95f63217CDa6aE3D181BA580Ef377D2109"
+    case NETWORK.OPTIMISM:
+      return "0x8f7492DE823025b4CfaAB1D34c58963F2af5DEDA"
+    case NETWORK.ARBITRUM:
+      return "0xEE9deC2712cCE65174B561151701Bf54b99C24C8"
   }
   return ""
 }
@@ -607,6 +633,42 @@ export function deployOptimisticGovernorModule(
     const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
+
+  return daoModuleTransactions
+}
+
+export function deployConnextModule(
+  provider: JsonRpcProvider,
+  safeAddress: string,
+  chainId: number,
+  args: ConnextModuleParams,
+) {
+  const type = KnownContracts.CONNEXT
+  const { domainId, sender, owner, avatar, target } = args
+  const connextAddress = getConnextAddress(chainId)
+  const {
+    transaction: daoModuleDeploymentTx,
+    expectedModuleAddress: daoModuleExpectedAddress,
+  } = deployAndSetUpModule(
+    type,
+    {
+      types: ["address", "address", "address", "address", "uint32", "address"],
+      values: [owner, avatar, target, sender, domainId, connextAddress],
+    },
+    provider,
+    chainId,
+    Date.now().toString(),
+  )
+
+  const daoModuleTransactions: BaseTransaction[] = [
+    {
+      ...daoModuleDeploymentTx,
+      value: daoModuleDeploymentTx.value.toString(),
+    },
+  ]
+
+  const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
+  daoModuleTransactions.push(enableDaoModuleTransaction)
 
   return daoModuleTransactions
 }

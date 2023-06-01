@@ -168,6 +168,13 @@ export const AddModulesView = () => {
         />
 
         <ModuleButton
+          title="Connext Module"
+          description="Deploys and setup a Connext Module"
+          icon="custom"
+          onClick={() => setModule(ModuleType.CONNEXT)}
+        />
+
+        <ModuleButton
           title="Custom Module"
           description="Enable a custom contract as a module"
           icon="custom"
