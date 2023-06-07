@@ -203,7 +203,7 @@ export const OptimisticGovernorModuleModal = ({
         </Grid>
         <Grid item xs={6}>
           <ParamInput
-            param={ParamType.from("string")}
+            param={ParamType.from("uint256")}
             color="secondary"
             value={params.votingQuorum}
             label="Voting Quorum"
