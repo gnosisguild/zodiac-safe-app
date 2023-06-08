@@ -647,8 +647,8 @@ export function deployConnextModule(
   const { domainId, sender, owner, avatar, target } = args
   const connextAddress = getConnextAddress(chainId)
   const {
-    transaction: daoModuleDeploymentTx,
-    expectedModuleAddress: daoModuleExpectedAddress,
+    transaction: connextModuleDeploymentTx,
+    expectedModuleAddress: connextModuleExpectedAddress,
   } = deployAndSetUpModule(
     type,
     {
@@ -660,15 +660,18 @@ export function deployConnextModule(
     Date.now().toString(),
   )
 
-  const daoModuleTransactions: BaseTransaction[] = [
+  const connextModuleTransactions: BaseTransaction[] = [
     {
-      ...daoModuleDeploymentTx,
-      value: daoModuleDeploymentTx.value.toString(),
+      ...connextModuleDeploymentTx,
+      value: connextModuleDeploymentTx.value.toString(),
     },
   ]
 
-  const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
-  daoModuleTransactions.push(enableDaoModuleTransaction)
+  const enableConnextModuleTransaction = enableModule(
+    safeAddress,
+    connextModuleExpectedAddress,
+  )
+  connextModuleTransactions.push(enableConnextModuleTransaction)
 
-  return daoModuleTransactions
+  return connextModuleTransactions
 }
