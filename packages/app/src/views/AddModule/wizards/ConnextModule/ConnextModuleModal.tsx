@@ -65,7 +65,7 @@ export const ConnextModuleModal = ({ onSubmit, open, onClose }: ConnextModulePro
       if (onSubmit) onSubmit()
       if (onClose) onClose()
     } catch (error) {
-      console.log("Error deploying module: ", error)
+      console.error("Error deploying module: ", error)
     }
   }
 
