@@ -75,24 +75,23 @@ export const ConnextModuleModal = ({ onSubmit, open, onClose }: ConnextModulePro
       open={open}
       onClose={onClose}
       title="Connext Module"
+      description="This module allows for execution of transactions initiated by a designated address on the other chain via Connext."
       tags={["From Connext"]}
-      // TODO: change icon
-      icon="zodiac"
+      icon="connext"
       readMoreLink="https://github.com/gnosis/zodiac-module-connext/"
-      warning="Modules do not require multisig approval for transactions. Only add modules that you trust!"
     >
       <Typography gutterBottom>Parameters</Typography>
 
       <ParamInput
-        placeholder="Address (User tipically)"
-        label="Origin Sender"
+        placeholder="Origin Sender Address"
+        label="Origin sender address"
         param={ParamType.fromString("address")}
         onChange={(value, valid) => onParamChange("sender", value, valid)}
       />
 
       <ParamInput
-        placeholder="Number (Connext domain ID)"
-        label="Origin"
+        placeholder="Connext origin domain ID"
+        label="Connext origin domain ID"
         className={classes.inputParam}
         param={ParamType.fromString("uint256")}
         onChange={(value, valid) => onParamChange("domainId", value, valid)}
