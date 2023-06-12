@@ -170,7 +170,7 @@ export const AddModulesView = () => {
         <ModuleButton
           title="Connext Module"
           description="Enables an address on one chain to control an avatar on another chain using Connext as the messaging layer."
-          icon="custom"
+          icon="connext"
           onClick={() => setModule(ModuleType.CONNEXT)}
         />
 

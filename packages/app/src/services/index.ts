@@ -203,7 +203,7 @@ export function getArbitrator(chainId: number, arbitratorOption: number): string
   return ""
 }
 
-function getConnextAddress(chainId: number): string {
+export function getConnextAddress(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
       return "0x8898B472C54c31894e3B9bb83cEA802a5d0e63C6"
