@@ -11,6 +11,7 @@ export enum ModuleType {
   ROLES = "roles",
   OZ_GOVERNOR = "ozGovernor",
   KLEROS_REALITY = "klerosReality",
+  CONNEXT = "connext",
   UNKNOWN = "unknown",
 }
 
@@ -26,6 +27,7 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.ROLES]: "Roles Modifier",
   [ModuleType.EXIT]: "Exit Module",
   [ModuleType.OZ_GOVERNOR]: "Governor Module",
+  [ModuleType.CONNEXT]: "Connext Module",
 }
 
 export enum ModuleOperation {
@@ -92,6 +94,16 @@ export interface RealityModule extends Module {
   templateId: string
   cooldown: number
   arbitrator: string
+}
+
+export interface ConnextModule extends Module {
+  type: ModuleType.CONNEXT
+  domainId: string
+  sender: string
+  owner: string
+  avatar: string
+  target: string
+  connext: string
 }
 
 export interface ModulesState {

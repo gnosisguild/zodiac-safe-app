@@ -9,6 +9,7 @@ import BRIDGE_MODULE_METADATA from "../contracts/AMBModule.json"
 import EXIT_MODULE_METADATA from "../contracts/Exit.json"
 import ROLES_MODIFIER_METADATA from "../contracts/RolesMod.json"
 import OZ_GOVERNOR_METADATA from "../contracts/OZGovernorModule.json"
+import CONNEXT_METADATA from "../contracts/ConnextModule.json"
 import { NETWORK } from "./networks"
 
 const MODULES_METADATA = {
@@ -22,6 +23,7 @@ const MODULES_METADATA = {
   [ModuleType.DELAY]: DELAY_MODIFIER_METADATA,
   [ModuleType.ROLES]: ROLES_MODIFIER_METADATA,
   [ModuleType.OZ_GOVERNOR]: OZ_GOVERNOR_METADATA,
+  [ModuleType.CONNEXT]: CONNEXT_METADATA,
 }
 
 const GNOSIS_GENERIC_PROXY_CONTRACT_BYTECODE =
