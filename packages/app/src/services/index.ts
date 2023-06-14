@@ -30,6 +30,7 @@ export type TxWitMeta = {
 }
 
 interface TellorModuleParams {
+  owner: string
   executor: string
   oracle?: string
   cooldown: string
@@ -72,9 +73,17 @@ export interface ExitModuleParams {
 export function getTellorOracle(chainId: number): string {
   switch (chainId) {
     case NETWORK.MAINNET:
-      return "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0"
+      return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
     case NETWORK.POLYGON:
-      return "0xFd45Ae72E81Adaaf01cC61c8bCe016b7060DD537"
+      return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
+    case NETWORK.GNOSIS_CHAIN:
+      return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
+    case NETWORK.GOERLI:
+      return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
+    case NETWORK.OPTIMISM:
+      return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
+    case NETWORK.ARBITRUM:
+      return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
   }
   return ""
 }
@@ -202,7 +211,7 @@ export function deployTellorModule(
   args: TellorModuleParams,
 ) {
   const type = KnownContracts.TELLOR
-  const { oracle, cooldown, expiration, executor } = args
+  const { owner, oracle, cooldown, expiration, executor } = args
   const oracleAddress = oracle || getTellorOracle(chainId)
 
   const {
@@ -211,8 +220,8 @@ export function deployTellorModule(
   } = deployAndSetUpModule(
     type,
     {
-      types: ["address", "address", "address", "uint32", "uint32"],
-      values: [safeAddress, executor, oracleAddress, cooldown, expiration],
+      types: ["address", "address", "address", "address", "uint32", "uint32"],
+      values: [owner, safeAddress, executor, oracleAddress, cooldown, expiration],
     },
     provider,
     chainId,

@@ -20,6 +20,7 @@ interface TellorModuleModalProps {
 }
 
 interface TellorModuleParams {
+  owner: string
   oracle: string
   cooldown: string
   expiration: string
@@ -47,6 +48,7 @@ export const TellorModuleModal = ({
     delayModules.length === 1 ? delayModules[0].address : "",
   )
   const [params, setParams] = useState<TellorModuleParams>({
+    owner: safe.safeAddress,
     oracle: getTellorOracle(safe.chainId),
     cooldown: "86400",
     expiration: "604800",
@@ -113,6 +115,14 @@ export const TellorModuleModal = ({
       <Typography gutterBottom>Parameters</Typography>
 
       <Grid container spacing={2} className={classes.fields}>
+        <Grid item xs={12}>
+          <ParamInput
+            param={ParamType.from("address")}
+            color="secondary"
+            label="Owner Address"
+            onChange={(value, valid) => onParamChange("owner", value, valid)}
+          />
+        </Grid>
         <Grid item xs={12}>
           <ParamInput
             param={ParamType.from("address")}
