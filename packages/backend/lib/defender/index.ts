@@ -38,7 +38,6 @@ export const setupNewNotificationChannel = async (
 
 export const createSentinel = async (
   client: SentinelClient,
-  notificationChannels: string[],
   network: Network,
   realityModuleAddress: string,
   autotaskId: string,
@@ -74,7 +73,7 @@ export const createSentinel = async (
       },
     ],
     autotaskTrigger: autotaskId,
-    notificationChannels: notificationChannels,
+    notificationChannels: [],
   }
 
   const sentinel = await client.create(requestParameters)
