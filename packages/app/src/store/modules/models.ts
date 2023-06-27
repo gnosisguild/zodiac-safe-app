@@ -68,6 +68,7 @@ export interface DelayModule extends Module {
 
 export interface TellorModule extends Module {
   type: ModuleType.TELLOR
+  owner: string
   executor: string
   oracle: string
   expiration: number
