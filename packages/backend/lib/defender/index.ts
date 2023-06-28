@@ -21,10 +21,12 @@ export const setupNewNotificationChannel = async (
   client: SentinelClient,
   channel: NotificationType,
   config: any,
+  realityModuleAddress: string,
+  network: Network,
 ) => {
   const notificationChannel = await client.createNotificationChannel({
     type: channel,
-    name: `ZodiacRealityModuleNotification-${channel}`,
+    name: `ZodiacRealityModuleNotification-${network}:${realityModuleAddress}-${channel}`,
     config,
     paused: false,
   })
