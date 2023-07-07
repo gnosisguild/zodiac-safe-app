@@ -15,6 +15,7 @@ export const arbitratorOptions = {
 // List of chain IDs where Kleros is available.
 export const klerosAvailability: number[] = [
   NETWORK.MAINNET,
+  NETWORK.GOERLI,
   NETWORK.GNOSIS_CHAIN,
   NETWORK.POLYGON,
 ]
