@@ -68,7 +68,6 @@ export default async (request: VercelRequest, response: VercelResponse) => {
 
     const sentinelCreationResponds = await createSentinel(
       sentinelClient,
-      notificationChannelIds,
       network,
       realityModuleAddress,
       autotaskId,
