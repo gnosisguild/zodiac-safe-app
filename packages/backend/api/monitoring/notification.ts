@@ -51,7 +51,13 @@ export default async (request: VercelRequest, response: VercelResponse) => {
     const notificationChannelIds = await Promise.all(
       notificationChannels.map(
         async ({ channel, config }) =>
-          await setupNewNotificationChannel(sentinelClient, channel, config),
+          await setupNewNotificationChannel(
+            sentinelClient,
+            channel,
+            config,
+            realityModuleAddress,
+            network,
+          ),
       ),
     )
 
