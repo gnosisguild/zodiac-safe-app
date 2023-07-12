@@ -36,53 +36,53 @@ exports.handler = async function (event) {
     paused: false,
     abi: \`[
   {
-    anonymous: false,
-    inputs: [
+    "anonymous": false,
+    "inputs": [
       {
-        indexed: false,
-        internalType: "bytes32",
-        name: "answer",
-        type: "bytes32",
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "answer",
+        "type": "bytes32"
       },
       {
-        indexed: true,
-        internalType: "bytes32",
-        name: "question_id",
-        type: "bytes32",
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "question_id",
+        "type": "bytes32"
       },
       {
-        indexed: false,
-        internalType: "bytes32",
-        name: "history_hash",
-        type: "bytes32",
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "history_hash",
+        "type": "bytes32"
       },
       {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       },
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "bond",
-        type: "uint256",
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "bond",
+        "type": "uint256"
       },
       {
-        indexed: false,
-        internalType: "uint256",
-        name: "ts",
-        type: "uint256",
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "ts",
+        "type": "uint256"
       },
       {
-        indexed: false,
-        internalType: "bool",
-        name: "is_commitment",
-        type: "bool",
-      },
+        "indexed": false,
+        "internalType": "bool",
+        "name": "is_commitment",
+        "type": "bool"
+      }
     ],
-    name: "LogNewAnswer",
-    type: "event",
+    "name": "LogNewAnswer",
+    "type": "event"
   }
 ]\`,
     eventConditions: [
