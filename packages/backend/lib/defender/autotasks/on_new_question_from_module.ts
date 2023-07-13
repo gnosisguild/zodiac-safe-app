@@ -93,10 +93,6 @@ exports.handler = async function (event) {
       },
     ],
     notificationChannels: notificationChannels,
-    alertThreshold: {
-      amount: 2,
-      windowSeconds: 300,
-    },
   }
 
   return client.create(requestParameters)
