@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "./static/js/main.c7e6232d.chunk.js",
-    "main.js.map": "./static/js/main.c7e6232d.chunk.js.map",
+    "main.js": "./static/js/main.bcd0d014.chunk.js",
+    "main.js.map": "./static/js/main.bcd0d014.chunk.js.map",
     "runtime-main.js": "./static/js/runtime-main.cb4effe6.js",
     "runtime-main.js.map": "./static/js/runtime-main.cb4effe6.js.map",
     "static/js/2.a84560d6.chunk.js": "./static/js/2.a84560d6.chunk.js",
     "static/js/2.a84560d6.chunk.js.map": "./static/js/2.a84560d6.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.21da6124e55934cb89ccbae933574ae1.js": "./precache-manifest.21da6124e55934cb89ccbae933574ae1.js",
+    "precache-manifest.119d142b5e24258b3902667626d58e1f.js": "./precache-manifest.119d142b5e24258b3902667626d58e1f.js",
     "service-worker.js": "./service-worker.js",
     "static/js/2.a84560d6.chunk.js.LICENSE.txt": "./static/js/2.a84560d6.chunk.js.LICENSE.txt",
     "static/media/add-circle-icon.42a49a22.svg": "./static/media/add-circle-icon.42a49a22.svg",
@@ -31,6 +31,6 @@
   "entrypoints": [
     "static/js/runtime-main.cb4effe6.js",
     "static/js/2.a84560d6.chunk.js",
-    "static/js/main.c7e6232d.chunk.js"
+    "static/js/main.bcd0d014.chunk.js"
   ]
 }
