@@ -305,7 +305,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                             Bot token: {monitoring.telegram.botToken}
                           </Typography>
                           <Typography className={classes.label}>
-                            Chat ID: {monitoring.telegram.chatID}
+                            Chat ID: {monitoring.telegram.chatId}
                           </Typography>
                         </Grid>
                       )}

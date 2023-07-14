@@ -63,7 +63,7 @@ export interface MonitoringSectionData {
   secretKey: string
   email: string[]
   discordKey: string
-  telegram: { botToken: string; chatID: string }
+  telegram: { botToken: string; chatId: string }
   slackKey: string
 }
 
@@ -74,7 +74,7 @@ const INITIAL_DATA: MonitoringSectionData = {
   discordKey: "",
   telegram: {
     botToken: "",
-    chatID: "",
+    chatId: "",
   },
   slackKey: "",
 }
@@ -136,7 +136,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     fieldName: string,
   ) => {
     event.preventDefault()
-    if (["chatID", "botToken"].includes(fieldName)) {
+    if (["chatId", "botToken"].includes(fieldName)) {
       const telegram = { ...monitoringData.telegram }
       const newValues = { ...telegram, [fieldName]: event.target.value }
       setMonitoringData({
@@ -181,16 +181,16 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   }
 
   const isInvalidForm = (): boolean => {
-    const { botToken, chatID } = telegram
+    const { botToken, chatId } = telegram
     if (loading || invalidCredentials) {
       return true
     }
-    if ((botToken === "" && chatID !== "") || (botToken !== "" && chatID === "")) {
+    if ((botToken === "" && chatId !== "") || (botToken !== "" && chatId === "")) {
       return true
     }
     if (
       botToken === "" &&
-      chatID === "" &&
+      chatId === "" &&
       discordKey === "" &&
       slackKey === "" &&
       email.length === 0
@@ -376,8 +376,8 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                     placeholder="123"
                     borderStyle="double"
                     className={classes.input}
-                    value={monitoringData.telegram.chatID}
-                    onChange={(e) => updateForm(e, "chatID")}
+                    value={monitoringData.telegram.chatId}
+                    onChange={(e) => updateForm(e, "chatId")}
                   />
                 </Grid>
               </Grid>

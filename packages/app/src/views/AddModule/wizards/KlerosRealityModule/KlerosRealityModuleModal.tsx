@@ -435,7 +435,7 @@ export const KlerosRealityModuleModal = ({
           discordKey: discordKey,
           email: emails,
           slackKey: "",
-          telegram: { botToken: telegramBotToken, chatID: telegramChatId },
+          telegram: { botToken: telegramBotToken, chatId: telegramChatId },
         }
         // we trust the notification parameters for discord and telegram are valid
         // user was forced to pass at least an email address to get here

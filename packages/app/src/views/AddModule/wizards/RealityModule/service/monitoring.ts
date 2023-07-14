@@ -40,7 +40,7 @@ export const setUpMonitoring = async (
     (data.slackKey ?? "") === "" &&
     data.email.length === 0 &&
     (data.telegram.botToken ?? "") === "" &&
-    (data.telegram.chatID ?? "")
+    (data.telegram.chatId ?? "")
   ) {
     throw new Error(
       "No notification channel(s) specified. Monitoring will NOT be set up.",
