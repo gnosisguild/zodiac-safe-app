@@ -7,6 +7,7 @@ export enum NETWORK {
   POLYGON = 137,
   ARBITRUM = 42161,
   AVALANCHE = 43114,
+  SEPOLIA = 11155111,
 }
 
 export interface Coin {
@@ -78,6 +79,12 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: "avax",
     nativeAsset: NATIVE_ASSET.AVAX,
   },
+  [NETWORK.SEPOLIA]: {
+    chainId: NETWORK.SEPOLIA,
+    name: "sepolia",
+    shortName: "sep",
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
 }
 
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
@@ -89,4 +96,5 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
   [NETWORK.ARBITRUM]: NATIVE_ASSET.ETH,
   [NETWORK.AVALANCHE]: NATIVE_ASSET.AVAX,
+  [NETWORK.SEPOLIA]: NATIVE_ASSET.ETH,
 }

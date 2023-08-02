@@ -119,6 +119,15 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     verifyContractUrl: "https://snowtrace.io/verifyContract",
     explorerApiKey: REACT_APP_SNOWTRACE_KEY,
   },
+  [NETWORK.SEPOLIA]: {
+    networkExplorerName: "Etherscan",
+    networkExplorerUrl: "https://sepolia.etherscan.io",
+    networkExplorerApiUrl: "https://api-sepolia.etherscan.io/api",
+    safeTransactionApi: "https://safe-transaction-sepolia.safe.global/",
+    safeUrl: "https://app.safe.global/sep:",
+    verifyContractUrl: "https://sepolia.etherscan.io/verifyContract",
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+  },
 }
 
 export const getNetworkExplorerInfo = (chainId: number) => {

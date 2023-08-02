@@ -135,6 +135,8 @@ const networkToOzDefenderNetworkName = (network: NETWORK) => {
       return "arbitrum"
     case NETWORK.AVALANCHE:
       return "avalanche"
+    case NETWORK.SEPOLIA:
+      return "sepolia"
     default:
       throw new Error("Unsupported network")
   }
