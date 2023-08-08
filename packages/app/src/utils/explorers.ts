@@ -1,6 +1,45 @@
 import { NETWORK } from "./networks"
 
+const isDev = process.env.NODE_ENV === "development"
 const REACT_APP_ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY
+if (!REACT_APP_ETHERSCAN_KEY) {
+  throw new Error("REACT_APP_ETHERSCAN_KEY is not set")
+}
+
+const REACT_APP_GOERLI_ETHERSCAN_KEY = process.env.REACT_APP_GOERLI_ETHERSCAN_KEY
+if (!REACT_APP_GOERLI_ETHERSCAN_KEY) {
+  throw new Error("REACT_APP_GOERLI_ETHERSCAN_KEY is not set")
+}
+
+const REACT_APP_GNOSISSCAN_KEY = process.env.REACT_APP_GNOSISSCAN_KEY
+if (!isDev && !REACT_APP_GNOSISSCAN_KEY) {
+  throw new Error("REACT_APP_GNOSISSCAN_KEY is not set")
+}
+
+const REACT_APP_POLYGONSCAN_KEY = process.env.REACT_APP_POLYGONSCAN_KEY
+if (!isDev && !REACT_APP_POLYGONSCAN_KEY) {
+  throw new Error("REACT_APP_POLYGONSCAN_KEY is not set")
+}
+
+const REACT_APP_BSCSCAN_KEY = process.env.REACT_APP_BSCSCAN_KEY
+if (!isDev && !REACT_APP_BSCSCAN_KEY) {
+  throw new Error("REACT_APP_BSCSCAN_KEY is not set")
+}
+
+const REACT_APP_OPTIMISTIC_ETHERSCAN_KEY = process.env.REACT_APP_OPTIMISTIC_ETHERSCAN_KEY
+if (!isDev && !REACT_APP_OPTIMISTIC_ETHERSCAN_KEY) {
+  throw new Error("REACT_APP_OPTIMISTIC_ETHERSCAN_KEY is not set")
+}
+
+const REACT_APP_ARBISCAN_KEY = process.env.REACT_APP_ARBISCAN_KEY
+if (!isDev && !REACT_APP_ARBISCAN_KEY) {
+  throw new Error("REACT_APP_ARBISCAN_KEY is not set")
+}
+
+const REACT_APP_SNWOTRACE_KEY = process.env.REACT_APP_SNWOTRACE_KEY
+if (!isDev && !REACT_APP_SNWOTRACE_KEY) {
+  throw new Error("REACT_APP_SNWOTRACE_KEY is not set")
+}
 
 interface ExplorerData {
   networkExplorerName: string
@@ -29,7 +68,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction-goerli.safe.global/",
     safeUrl: "https://app.safe.global/gor:",
     verifyContractUrl: "https://goerli.etherscan.io/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_GOERLI_ETHERSCAN_KEY,
   },
   [NETWORK.GNOSIS_CHAIN]: {
     networkExplorerName: "GnosisScan",
@@ -38,6 +77,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeUrl: "https://app.safe.global/gno:",
     safeTransactionApi: "https://safe-transaction-gnosis-chain.safe.global/",
     verifyContractUrl: "https://gnosisscan.io/verifyContract",
+    explorerApiKey: REACT_APP_GNOSISSCAN_KEY,
   },
   [NETWORK.POLYGON]: {
     networkExplorerName: "Polygonscan",
@@ -46,7 +86,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeUrl: "https://app.safe.global/matic:",
     safeTransactionApi: "https://safe-transaction-polygon.safe.global/",
     verifyContractUrl: "https://polygonscan.com/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_POLYGONSCAN_KEY,
   },
   [NETWORK.BSC]: {
     networkExplorerName: "Bscscan",
@@ -55,7 +95,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeUrl: "https://app.safe.global/bsc:",
     safeTransactionApi: "https://safe-transaction-bsc.safe.global/",
     verifyContractUrl: "https://bscscan.com/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_BSCSCAN_KEY,
   },
   [NETWORK.OPTIMISM]: {
     networkExplorerName: "Optimism",
@@ -64,7 +104,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction-optimism.safe.global/",
     safeUrl: "https://app.safe.global/oeth:",
     verifyContractUrl: "https://optimistic.etherscan.io/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_OPTIMISTIC_ETHERSCAN_KEY,
   },
   [NETWORK.ARBITRUM]: {
     networkExplorerName: "Arbiscan",
@@ -73,7 +113,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction-arbitrum.safe.global/",
     safeUrl: "https://app.safe.global/arb1:",
     verifyContractUrl: "https://arbiscan.io/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_ARBISCAN_KEY,
   },
   [NETWORK.AVALANCHE]: {
     networkExplorerName: "Snowtrace",
@@ -82,7 +122,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction-avalanche.safe.global/",
     safeUrl: "https://app.safe.global/avax:",
     verifyContractUrl: "https://snowtrace.io/verifyContract",
-    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_SNWOTRACE_KEY,
   },
 }
 
