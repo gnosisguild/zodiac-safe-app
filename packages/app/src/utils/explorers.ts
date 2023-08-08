@@ -51,7 +51,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
   [NETWORK.BSC]: {
     networkExplorerName: "Bscscan",
     networkExplorerUrl: "https://bscscan.com/",
-    networkExplorerApiUrl: "https://bscscan.com/api",
+    networkExplorerApiUrl: "https://api.bscscan.com/api",
     safeUrl: "https://app.safe.global/bsc:",
     safeTransactionApi: "https://safe-transaction-bsc.safe.global/",
     verifyContractUrl: "https://bscscan.com/verifyContract",
