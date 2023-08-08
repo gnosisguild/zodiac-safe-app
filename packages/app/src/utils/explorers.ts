@@ -6,11 +6,6 @@ if (!REACT_APP_ETHERSCAN_KEY) {
   throw new Error("REACT_APP_ETHERSCAN_KEY is not set")
 }
 
-const REACT_APP_GOERLI_ETHERSCAN_KEY = process.env.REACT_APP_GOERLI_ETHERSCAN_KEY
-if (!REACT_APP_GOERLI_ETHERSCAN_KEY) {
-  throw new Error("REACT_APP_GOERLI_ETHERSCAN_KEY is not set")
-}
-
 const REACT_APP_GNOSISSCAN_KEY = process.env.REACT_APP_GNOSISSCAN_KEY
 if (!isDev && !REACT_APP_GNOSISSCAN_KEY) {
   throw new Error("REACT_APP_GNOSISSCAN_KEY is not set")
@@ -36,9 +31,9 @@ if (!isDev && !REACT_APP_ARBISCAN_KEY) {
   throw new Error("REACT_APP_ARBISCAN_KEY is not set")
 }
 
-const REACT_APP_SNWOTRACE_KEY = process.env.REACT_APP_SNWOTRACE_KEY
-if (!isDev && !REACT_APP_SNWOTRACE_KEY) {
-  throw new Error("REACT_APP_SNWOTRACE_KEY is not set")
+const REACT_APP_SNOWTRACE_KEY = process.env.REACT_APP_SNOWTRACE_KEY
+if (!isDev && !REACT_APP_SNOWTRACE_KEY) {
+  throw new Error("REACT_APP_SNOWTRACE_KEY is not set")
 }
 
 interface ExplorerData {
@@ -68,7 +63,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction-goerli.safe.global/",
     safeUrl: "https://app.safe.global/gor:",
     verifyContractUrl: "https://goerli.etherscan.io/verifyContract",
-    explorerApiKey: REACT_APP_GOERLI_ETHERSCAN_KEY,
+    explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [NETWORK.GNOSIS_CHAIN]: {
     networkExplorerName: "GnosisScan",
@@ -122,7 +117,7 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeTransactionApi: "https://safe-transaction-avalanche.safe.global/",
     safeUrl: "https://app.safe.global/avax:",
     verifyContractUrl: "https://snowtrace.io/verifyContract",
-    explorerApiKey: REACT_APP_SNWOTRACE_KEY,
+    explorerApiKey: REACT_APP_SNOWTRACE_KEY,
   },
 }
 
