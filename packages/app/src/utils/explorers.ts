@@ -32,13 +32,12 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
   },
   [NETWORK.GNOSIS_CHAIN]: {
-    networkExplorerName: "Blockscout",
-    networkExplorerUrl: "https://blockscout.com/xdai/mainnet",
-    networkExplorerApiUrl: "https://blockscout.com/xdai/mainnet/api",
+    networkExplorerName: "GnosisScan",
+    networkExplorerUrl: "https://gnosisscan.io",
+    networkExplorerApiUrl: "https://api.gnosisscan.io/api",
     safeUrl: "https://app.safe.global/gno:",
     safeTransactionApi: "https://safe-transaction-gnosis-chain.safe.global/",
-    verifyContractUrl:
-      "https://docs.blockscout.com/for-users/smart-contract-interaction/verifying-a-smart-contract",
+    verifyContractUrl: "https://gnosisscan.io/verifyContract",
   },
   [NETWORK.POLYGON]: {
     networkExplorerName: "Polygonscan",
