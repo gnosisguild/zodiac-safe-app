@@ -64,12 +64,12 @@ export const OptimisticGovernorModuleModal = ({
   const [delayModule, setDelayModule] = useState<string>(
     delayModules.length === 1 ? delayModules[0].address : "",
   )
-  const [isWeth, setIsWeth] = useState<boolean>(false)
+  const [isWeth, setIsWeth] = useState<boolean>(true)
   const [params, setParams] = useState<OptimisticGovernorModuleParams>({
     finder: getFinder(safe.chainId),
     owner: safe.safeAddress,
     collateral: getCollateral(safe.chainId, isWeth),
-    bond: "1500",
+    bond: "2",
     rules: "",
     identifier: "0x4153534552545f54525554480000000000000000000000000000000000000000",
     liveness: "86400",
@@ -174,8 +174,8 @@ export const OptimisticGovernorModuleModal = ({
           <Typography className={classes.errorMessage}>
             {Number(params.bond) < 1500 && !isWeth
               ? "Warning: A minimum bond of 1,500 is recommended for USDC"
-              : Number(params.bond) < 1 && isWeth
-              ? "Warning: A minimum bond of 1 is recommended for WETH"
+              : Number(params.bond) < 2 && isWeth
+              ? "Warning: A bond of 2 is recommended for WETH"
               : null}
           </Typography>
         </Grid>
@@ -187,8 +187,8 @@ export const OptimisticGovernorModuleModal = ({
             onChange={(value) => onParamChange("liveness", value)}
           />
           <Typography className={classes.errorMessage}>
-            {Number(params.liveness) < 21600
-              ? "Warning: The minimum recommended liveness period is 6 hours."
+            {Number(params.liveness) < 86400
+              ? "Warning: The minimum recommended liveness period is 24 hours."
               : null}
           </Typography>
         </Grid>
