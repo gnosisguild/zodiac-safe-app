@@ -155,7 +155,7 @@ export const OptimisticGovernorModuleModal = ({
           <CollateralSelect
             label="Collateral"
             defaultAddress={params.collateral}
-            defaultOption={collateralOptions.USDC}
+            defaultOption={collateralOptions.WETH}
             onChange={(value) => {
               onParamChange("collateral", value)
               setIsWeth(!isWeth)
