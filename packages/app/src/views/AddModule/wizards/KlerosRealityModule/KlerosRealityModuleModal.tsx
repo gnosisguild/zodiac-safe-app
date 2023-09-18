@@ -207,6 +207,10 @@ export const KlerosRealityModuleModal = ({
     () => new ethers.providers.InfuraProvider(1, process.env.REACT_APP_INFURA_ID),
     [],
   )
+  const goerliProvider = useMemo(
+    () => new ethers.providers.InfuraProvider(5, process.env.REACT_APP_INFURA_ID),
+    [],
+  )
 
   const bondToken = NETWORKS[safe.chainId as NETWORK].nativeAsset
   const [params, setParams] = useState<RealityModuleParams>({
@@ -266,7 +270,9 @@ export const KlerosRealityModuleModal = ({
   const [deploying, setDeploying] = useState<boolean>(false)
 
   const validateEns = useCallback(async () => {
-    const address = await mainnetProvider.resolveName(params.snapshotEns)
+    // On production, ENS is mainnet. On Goerli, ENS is resolved in goerli.
+    const ensProvider = safe.chainId === 5 ? goerliProvider : mainnetProvider
+    const address = await ensProvider.resolveName(params.snapshotEns)
     console.log({ address })
     if (address) {
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(
@@ -276,14 +282,14 @@ export const KlerosRealityModuleModal = ({
       const daorequirements = await getEnsTextRecord(
         params.snapshotEns,
         "daorequirements",
-        mainnetProvider,
+        ensProvider,
       )
       setDaorequirements(daorequirements[0])
       setValidEns(snapshotSpace !== undefined)
       if (snapshotSpace !== undefined) {
         setIsSafesnapInstalled(!!snapshotSpace.plugins?.safeSnap)
         const isController = await checkIfIsController(
-          mainnetProvider,
+          ensProvider,
           params.snapshotEns,
           safe.safeAddress,
         )
@@ -296,7 +302,13 @@ export const KlerosRealityModuleModal = ({
       }
     } else {
     }
-  }, [params.snapshotEns, safe.chainId, safe.safeAddress, mainnetProvider])
+  }, [
+    params.snapshotEns,
+    safe.chainId,
+    safe.safeAddress,
+    mainnetProvider,
+    goerliProvider,
+  ])
 
   const debouncedSnapshotEnsValidation = debounce(() => {
     setValidEns(false)
