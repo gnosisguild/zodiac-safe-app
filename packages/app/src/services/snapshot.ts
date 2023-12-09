@@ -3,9 +3,9 @@ import * as R from "ramda"
 import { NETWORK } from "utils/networks"
 
 const SNAPSHOT_HUB = "https://hub.snapshot.org"
-const SNAPSHOT_HUB_GOERLI = "https://testnet.snapshot.org"
+const SNAPSHOT_HUB_GOERLI = "https://testnet.hub.snapshot.org"
 const SNAPSHOT_SPACE = "https://snapshot.org"
-const SNAPSHOT_SPACE_GOERLI = "https://demo.snapshot.org"
+const SNAPSHOT_SPACE_GOERLI = "https://testnet.snapshot.org"
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
 export const getSnapshotSpaceSettings = async (ensName: string, chainId: number) => {
