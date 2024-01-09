@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { AddModuleModal } from "../components/AddModuleModal"
-import { deployRolesModifier, RolesModifierParams } from "services"
+import { deployRolesV2Modifier, RolesModifierParams } from "services"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const RolesModifierModal = ({
+export const RolesV2ModifierModal = ({
   open,
   onClose,
   onSubmit,
@@ -62,7 +62,7 @@ export const RolesModifierModal = ({
 
   const handleAddRolesModifier = async () => {
     try {
-      const txs = deployRolesModifier(provider, safe.safeAddress, safe.chainId, params)
+      const txs = deployRolesV2Modifier(provider, safe.safeAddress, safe.chainId, params)
 
       await sdk.txs.send({ txs })
 
@@ -103,7 +103,7 @@ export const RolesModifierModal = ({
             color="secondary"
             value={params.multisend}
             label="Multisend Address"
-            onChange={(value, valid) => onParamChange("target", value, valid)}
+            onChange={(value, valid) => onParamChange("multisend", value, valid)}
           />
         </Grid>
       </Grid>

@@ -553,7 +553,7 @@ export async function fetchSafeStatusFromAPI(chainId: number, safeAddress: strin
   return response as SafeStatusResponse
 }
 
-export function deployRolesModifier(
+export function deployRolesV1Modifier(
   provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
@@ -562,7 +562,7 @@ export function deployRolesModifier(
   const { target, multisend } = args
   const { transaction: deployAndSetupTx, expectedModuleAddress: expectedRolesAddress } =
     deployAndSetUpModule(
-      KnownContracts.ROLES,
+      KnownContracts.ROLES_V1,
       {
         types: ["address", "address", "address"],
         values: [safeAddress, safeAddress, target],
@@ -574,7 +574,7 @@ export function deployRolesModifier(
   const enableModuleTx = enableModule(safeAddress, expectedRolesAddress)
 
   const rolesContract = getModuleInstance(
-    KnownContracts.ROLES,
+    KnownContracts.ROLES_V1,
     expectedRolesAddress,
     provider,
   )
@@ -589,10 +589,58 @@ export function deployRolesModifier(
   return [
     {
       ...deployAndSetupTx,
-      value: String(deployAndSetupTx.value),
+      value: deployAndSetupTx.value.toHexString(),
     },
     enableModuleTx,
     setMultisendTx,
+  ]
+}
+
+export function deployRolesV2Modifier(
+  provider: JsonRpcProvider,
+  safeAddress: string,
+  chainId: number,
+  args: RolesModifierParams,
+) {
+  const { target, multisend } = args
+  const { transaction: deployAndSetupTx, expectedModuleAddress: expectedRolesAddress } =
+    deployAndSetUpModule(
+      KnownContracts.ROLES_V2,
+      {
+        types: ["address", "address", "address"],
+        values: [safeAddress, safeAddress, target],
+      },
+      provider,
+      chainId,
+      Date.now().toString(),
+    )
+  const enableModuleTx = enableModule(safeAddress, expectedRolesAddress)
+
+  const rolesContract = getModuleInstance(
+    KnownContracts.ROLES_V2,
+    expectedRolesAddress,
+    provider,
+  )
+
+  const MULTISEND_SELECTOR = "0x8d80ff0a"
+  const MULTISEND_UNWRAPPER = "0x93B7fCbc63ED8a3a24B59e1C3e6649D50B7427c0"
+  const setUnwrapperTx = {
+    to: rolesContract.address,
+    data: rolesContract.interface.encodeFunctionData("setTransactionUnwrapper", [
+      multisend,
+      MULTISEND_SELECTOR,
+      MULTISEND_UNWRAPPER,
+    ]),
+    value: "0",
+  }
+
+  return [
+    {
+      ...deployAndSetupTx,
+      value: deployAndSetupTx.value.toHexString(),
+    },
+    enableModuleTx,
+    setUnwrapperTx,
   ]
 }
 

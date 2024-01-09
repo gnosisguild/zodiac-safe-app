@@ -2,16 +2,17 @@ import { HashInfo } from "../../../components/ethereum/HashInfo"
 import { makeStyles, Typography } from "@material-ui/core"
 import { PANEL_ITEM_CONTENT_HEIGHT, PanelItem, PanelItemProps } from "./PanelItem"
 import React from "react"
-import { Module } from "../../../store/modules/models"
+import { Module, ModuleType } from "../../../store/modules/models"
 import { DelayModuleItem } from "./DelayModuleItem"
-import { isDelayModule, isRolesModule } from "../../../store/modules/helpers"
+import { isDelayModule } from "../../../store/modules/helpers"
 import { ModuleList } from "../ModuleList"
 import { Address } from "../../../components/ethereum/Address"
 import { ModulePendingRemoval } from "./ModulePendingRemovalItem"
 import { Badge } from "../../../components/text/Badge"
 import { shortAddress } from "../../../utils/string"
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { RoleModuleItem } from "./RoleModuleItem"
+import { RolesV1ModuleItem } from "./RolesV1ModuleItem"
+import { RolesV2ModuleItem } from "./RolesV2ModuleItem"
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean
@@ -52,8 +53,15 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
     return <DelayModuleItem module={module} {...panelItemProps} />
   }
 
-  if (isRolesModule(module)) {
-    return <RoleModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
+  if (module.type === ModuleType.ROLES_V1) {
+    return (
+      <RolesV1ModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
+    )
+  }
+  if (module.type === ModuleType.ROLES_V2) {
+    return (
+      <RolesV2ModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
+    )
   }
 
   const ownerBadge =

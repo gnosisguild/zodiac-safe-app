@@ -6,7 +6,7 @@ import { Row } from "components/layout/Row"
 import React from "react"
 import { Module } from "store/modules/models"
 import { PanelItemProps } from "./PanelItem"
-import { rolesAppUrl } from "utils/url"
+import { rolesV2AppUrl } from "utils/url"
 
 interface RoleModuleItemProps extends PanelItemProps {
   module: Module
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
+export const RolesV2ModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
   const classes = useStyles()
   const { safe: safeInfo } = useSafeAppsSDK()
 
@@ -66,11 +66,11 @@ export const RoleModuleItem: React.FC<RoleModuleItemProps> = ({ module }) => {
           noWrap
           className={classes.link}
           onClick={() => {
-            window.location.href = rolesAppUrl(safeInfo, module.address)
+            window.location.href = rolesV2AppUrl(safeInfo, module.address)
           }}
           underline="always"
         >
-          Edit Roles
+          View Roles
         </Link>
       </Row>
     </div>
