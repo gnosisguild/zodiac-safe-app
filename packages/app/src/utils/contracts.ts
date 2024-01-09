@@ -10,7 +10,6 @@ import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
 import {
   getGenericProxyMaster,
   getModuleContractMetadata,
-  getModuleContractMetadataByBytecode,
   getProxyMaster,
   isGenericProxy,
   isGnosisGenericProxy,
@@ -191,15 +190,6 @@ export const getModuleData = memoize(
         implAddress: address,
         name: getModuleName(type),
         ...getModuleContractMetadata(type),
-      }
-    }
-
-    const standardContract = getModuleContractMetadataByBytecode(bytecode)
-    if (standardContract) {
-      return {
-        address,
-        implAddress: address,
-        ...standardContract,
       }
     }
 

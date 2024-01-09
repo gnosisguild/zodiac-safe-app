@@ -21,7 +21,7 @@ const MODULES_METADATA = {
   [ModuleType.EXIT]: EXIT_MODULE_METADATA,
   [ModuleType.BRIDGE]: BRIDGE_MODULE_METADATA,
   [ModuleType.DELAY]: DELAY_MODIFIER_METADATA,
-  [ModuleType.ROLES]: ROLES_MODIFIER_METADATA,
+  [ModuleType.ROLES_V1]: ROLES_MODIFIER_METADATA,
   [ModuleType.OZ_GOVERNOR]: OZ_GOVERNOR_METADATA,
   [ModuleType.CONNEXT]: CONNEXT_METADATA,
 }
@@ -44,17 +44,6 @@ export function getModuleContractMetadata(
 ): ModuleContractMetadata | undefined {
   if (module === ModuleType.UNKNOWN) return
   return { type: module, ...MODULES_METADATA[module] }
-}
-
-export function getModuleContractMetadataByBytecode(
-  bytecode: string,
-): ModuleContractMetadata | undefined {
-  const entry = Object.entries(MODULES_METADATA).find(
-    ([, metadata]) => metadata.bytecode === bytecode.toLowerCase().trim(),
-  )
-  if (!entry) return
-  const [type, metadata] = entry
-  return { ...metadata, type: getModuleType(type) }
 }
 
 export function isGnosisGenericProxy(bytecode: string) {
