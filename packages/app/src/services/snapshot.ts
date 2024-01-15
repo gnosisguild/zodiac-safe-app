@@ -13,7 +13,11 @@ export const getSnapshotSpaceSettings = async (ensName: string, chainId: number)
   const res = await fetch(`${getHubUrl(chainId)}/api/spaces/${ensName}`)
   if (res.ok) {
     try {
-      return await res.json()
+      return await res.json().then((res) => {
+        // Remove flagged, verified, hibernated, and turbo properties from res, as they are not part of the space config, but rater extra info from the server.
+        const { flagged, verified, hibernated, turbo, ...filteredRes } = res
+        return filteredRes
+      })
     } catch (error) {
       return undefined // there is not snapshot space for this ENS
     }
