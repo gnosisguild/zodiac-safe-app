@@ -31,10 +31,6 @@ export function isDelayModule(module: Module): module is DelayModule {
   return module.type === ModuleType.DELAY
 }
 
-export function isRolesModule(module: Module): module is DelayModule {
-  return module.type === ModuleType.ROLES
-}
-
 export function isRealityModule(module: Module): module is RealityModule {
   return (
     module.type === ModuleType.REALITY_ETH || module.type === ModuleType.REALITY_ERC20
@@ -222,19 +218,19 @@ export function getTransactionsFromSafeTransaction(
   return [safeTransaction]
 }
 
-const ZODIAC_CONTRACTS_TO_MODULE_TYPE: Record<string, ModuleType> = {
-  tellor: ModuleType.TELLOR,
-  optimisticGovernor: ModuleType.OPTIMISTIC_GOVERNOR,
-  realityETH: ModuleType.REALITY_ETH,
-  realityERC20: ModuleType.REALITY_ERC20,
-  delay: ModuleType.DELAY,
-  bridge: ModuleType.BRIDGE,
-  exit: ModuleType.EXIT,
-  scopeGuard: ModuleType.UNKNOWN,
-  circulatingSupply: ModuleType.UNKNOWN,
-  roles: ModuleType.ROLES,
-  ozGovernor: ModuleType.OZ_GOVERNOR,
+const ZODIAC_CONTRACTS_TO_MODULE_TYPE: { [key: string]: ModuleType } = {
+  [KnownContracts.TELLOR]: ModuleType.TELLOR,
+  [KnownContracts.OPTIMISTIC_GOVERNOR]: ModuleType.OPTIMISTIC_GOVERNOR,
+  [KnownContracts.REALITY_ETH]: ModuleType.REALITY_ETH,
+  [KnownContracts.REALITY_ERC20]: ModuleType.REALITY_ERC20,
+  [KnownContracts.DELAY]: ModuleType.DELAY,
+  [KnownContracts.BRIDGE]: ModuleType.BRIDGE,
+  [KnownContracts.EXIT_ERC20]: ModuleType.EXIT,
+  [KnownContracts.ROLES_V1]: ModuleType.ROLES_V1,
+  [KnownContracts.ROLES_V2]: ModuleType.ROLES_V2,
+  [KnownContracts.OZ_GOVERNOR]: ModuleType.OZ_GOVERNOR,
 }
+
 export function getContractsModuleType(
   chainId: number,
   masterCopyAddress: string,

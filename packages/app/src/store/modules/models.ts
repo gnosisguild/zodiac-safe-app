@@ -1,4 +1,5 @@
 import { ContractInterface } from "@ethersproject/contracts"
+import { ContractAbis, KnownContracts } from "@gnosis.pm/zodiac"
 
 export enum ModuleType {
   TELLOR = "tellor",
@@ -8,7 +9,8 @@ export enum ModuleType {
   DELAY = "delay",
   BRIDGE = "bridge",
   EXIT = "exit",
-  ROLES = "roles",
+  ROLES_V1 = "roles_v1",
+  ROLES_V2 = "roles_v2",
   OZ_GOVERNOR = "ozGovernor",
   KLEROS_REALITY = "klerosReality",
   CONNEXT = "connext",
@@ -24,10 +26,27 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
   [ModuleType.UNKNOWN]: "Unknown Module",
   [ModuleType.BRIDGE]: "Bridge Module",
   [ModuleType.DELAY]: "Delay Modifier",
-  [ModuleType.ROLES]: "Roles Modifier",
+  [ModuleType.ROLES_V1]: "Roles Modifier (v1)",
+  [ModuleType.ROLES_V2]: "Roles Modifier (v2)",
   [ModuleType.EXIT]: "Exit Module",
   [ModuleType.OZ_GOVERNOR]: "Governor Module",
   [ModuleType.CONNEXT]: "Connext Module",
+}
+
+export const MODULE_ABIS: Record<ModuleType, ContractInterface> = {
+  [ModuleType.TELLOR]: ContractAbis[KnownContracts.TELLOR],
+  [ModuleType.OPTIMISTIC_GOVERNOR]: ContractAbis[KnownContracts.OPTIMISTIC_GOVERNOR],
+  [ModuleType.REALITY_ERC20]: ContractAbis[KnownContracts.REALITY_ERC20],
+  [ModuleType.REALITY_ETH]: ContractAbis[KnownContracts.REALITY_ETH],
+  [ModuleType.KLEROS_REALITY]: ContractAbis[KnownContracts.REALITY_ETH],
+  [ModuleType.UNKNOWN]: [],
+  [ModuleType.BRIDGE]: ContractAbis[KnownContracts.BRIDGE],
+  [ModuleType.DELAY]: ContractAbis[KnownContracts.DELAY],
+  [ModuleType.ROLES_V1]: ContractAbis[KnownContracts.ROLES_V1],
+  [ModuleType.ROLES_V2]: ContractAbis[KnownContracts.ROLES_V2],
+  [ModuleType.EXIT]: ContractAbis[KnownContracts.EXIT_ERC20],
+  [ModuleType.OZ_GOVERNOR]: ContractAbis[KnownContracts.OZ_GOVERNOR],
+  [ModuleType.CONNEXT]: ContractAbis[KnownContracts.CONNEXT],
 }
 
 export enum ModuleOperation {
@@ -51,13 +70,12 @@ export interface ModuleContract {
   type: ModuleType
   name?: string
   abi?: ContractInterface
-  bytecode?: string
 }
 
 export interface ModuleContractMetadata {
   type: ModuleType
+  name?: string
   abi: ContractInterface
-  bytecode: string
 }
 
 export interface DelayModule extends Module {

@@ -119,8 +119,9 @@ export const AddModulesView = () => {
           title="Roles Modifier"
           description="Allows avatars to enforce granular, role-based, permissions for attached modules"
           icon="roles"
-          onClick={() => setModule(ModuleType.ROLES)}
+          onClick={() => setModule(ModuleType.ROLES_V2)}
         />
+
         {[NETWORK.MAINNET, NETWORK.GOERLI].includes(safe.chainId) ? (
           <ModuleButton
             title="Reality Module"
@@ -172,6 +173,14 @@ export const AddModulesView = () => {
           description="Enables an address on one chain to control an avatar on another chain using Connext as the messaging layer."
           icon="connext"
           onClick={() => setModule(ModuleType.CONNEXT)}
+        />
+
+        <ModuleButton
+          title="Roles Modifier v1"
+          description="Legacy version of the Roles Modifier"
+          icon="roles"
+          deprecated
+          onClick={() => setModule(ModuleType.ROLES_V1)}
         />
 
         <ModuleButton

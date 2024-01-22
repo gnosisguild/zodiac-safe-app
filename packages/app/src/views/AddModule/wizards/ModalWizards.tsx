@@ -6,7 +6,8 @@ import { ModuleType } from "../../../store/modules/models"
 import { CustomModuleModal } from "./CustomModule/CustomModuleModal"
 import { AMBModuleModal } from "./AMBModuleModal/AMBModuleModal"
 import { ExitModuleModal } from "./ExitModule/ExitModuleModal"
-import { RolesModifierModal } from "./RolesModifier/RolesModifierModal"
+import { RolesV1ModifierModal } from "./RolesModifier/RolesV1ModifierModal"
+import { RolesV2ModifierModal } from "./RolesModifier/RolesV2ModifierModal"
 import { RealityModuleOldModal } from "./RealityModuleOld/RealityModuleOldModal"
 import { KlerosRealityModuleModal } from "./KlerosRealityModule/KlerosRealityModuleModal"
 import { ConnextModuleModal } from "./ConnextModule/ConnextModuleModal"
@@ -51,10 +52,15 @@ export const ModuleModals = ({ selected, onClose, onSubmit }: ModuleModalsProps)
         onClose={onClose}
         onSubmit={() => onSubmit && onSubmit(ModuleType.EXIT)}
       />
-      <RolesModifierModal
-        open={selected === ModuleType.ROLES}
+      <RolesV1ModifierModal
+        open={selected === ModuleType.ROLES_V1}
         onClose={onClose}
-        onSubmit={() => onSubmit && onSubmit(ModuleType.DELAY)}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.ROLES_V1)}
+      />
+      <RolesV2ModifierModal
+        open={selected === ModuleType.ROLES_V2}
+        onClose={onClose}
+        onSubmit={() => onSubmit && onSubmit(ModuleType.ROLES_V2)}
       />
       <RealityModuleOldModal
         open={selected === ModuleType.REALITY_ETH}
