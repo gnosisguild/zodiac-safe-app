@@ -18,7 +18,7 @@ export function rolesV1AppUrl(safeInfo: SafeInfo, rolesAddress: string) {
 }
 
 export function rolesV2AppUrl(safeInfo: SafeInfo, rolesAddress: string) {
-  const base = "http://localhost:3000" //"https://roles.gnosisguild.org"
+  const base = "https://roles.gnosisguild.org"
   const prefix = chainPrefix(safeInfo)
 
   return new URL(`${base}/${prefix}:${rolesAddress}`).href
