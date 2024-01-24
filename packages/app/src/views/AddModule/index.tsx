@@ -15,6 +15,11 @@ import {
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
 import { NETWORK } from "utils/networks"
 import { klerosAvailability } from "components/input/ArbitratorSelect"
+import {
+  ContractAddresses as AllContractAddresses,
+  KnownContracts,
+  SupportedNetworks,
+} from "@gnosis.pm/zodiac"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,6 +61,8 @@ export const AddModulesView = () => {
     dispatch(fetchPendingModules(safe))
     dispatch(setModuleAdded(true))
   }
+
+  const ContractAddresses = AllContractAddresses[safe.chainId as SupportedNetworks]
 
   const title = hasModules ? "Add another mod" : "Start by adding a mod"
 
@@ -99,6 +106,7 @@ export const AddModulesView = () => {
           icon="bridge"
           onClick={() => setModule(ModuleType.BRIDGE)}
           className={classes.firstModule}
+          available={!!ContractAddresses[KnownContracts.BRIDGE]}
         />
 
         <ModuleButton
@@ -106,6 +114,7 @@ export const AddModulesView = () => {
           description="Enables a time delay between when a module initiates a transaction and when it can be executed"
           icon="delay"
           onClick={() => setModule(ModuleType.DELAY)}
+          available={!!ContractAddresses[KnownContracts.DELAY]}
         />
 
         <ModuleButton
@@ -113,6 +122,7 @@ export const AddModulesView = () => {
           description="Enables participants to redeem a designated token for a proportional share of this account’digital assets"
           icon="exit"
           onClick={() => setModule(ModuleType.EXIT)}
+          available={!!ContractAddresses[KnownContracts.EXIT_ERC20]}
         />
 
         <ModuleButton
@@ -120,38 +130,39 @@ export const AddModulesView = () => {
           description="Allows avatars to enforce granular, role-based, permissions for attached modules"
           icon="roles"
           onClick={() => setModule(ModuleType.ROLES_V2)}
+          available={!!ContractAddresses[KnownContracts.ROLES_V2]}
         />
 
-        {[NETWORK.MAINNET, NETWORK.GOERLI].includes(safe.chainId) ? (
-          <ModuleButton
-            title="Reality Module"
-            description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
-            icon="reality"
-            onClick={() => dispatch(setRealityModuleScreen(true))}
-          />
-        ) : (
-          <ModuleButton
-            title="Reality Module"
-            description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
-            icon="reality"
-            onClick={() => setModule(ModuleType.REALITY_ETH)}
-          />
-        )}
+        <ModuleButton
+          title="Reality Module"
+          description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
+          icon="reality"
+          onClick={() => dispatch(setRealityModuleScreen(true))}
+          available={[NETWORK.MAINNET, NETWORK.GOERLI].includes(safe.chainId)}
+        />
 
-        {klerosAvailability.includes(safe.chainId) && (
-          <ModuleButton
-            title="Kleros Snapshot Module"
-            description="Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros."
-            icon="reality"
-            onClick={() => setModule(ModuleType.KLEROS_REALITY)}
-          />
-        )}
+        <ModuleButton
+          title="Reality Module"
+          description="Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle"
+          icon="reality"
+          onClick={() => setModule(ModuleType.REALITY_ETH)}
+          available={[NETWORK.MAINNET, NETWORK.GOERLI].includes(safe.chainId)}
+        />
+
+        <ModuleButton
+          title="Kleros Snapshot Module"
+          description="Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros."
+          icon="reality"
+          onClick={() => setModule(ModuleType.KLEROS_REALITY)}
+          available={klerosAvailability.includes(safe.chainId)}
+        />
 
         <ModuleButton
           title="Tellor Module"
           description="Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle"
           icon="tellor"
           onClick={() => setModule(ModuleType.TELLOR)}
+          available={!!ContractAddresses[KnownContracts.TELLOR]}
         />
 
         <ModuleButton
@@ -159,6 +170,7 @@ export const AddModulesView = () => {
           description="Enables on-chain execution of successful Snapshot proposals utilizing UMA's optimistic oracle."
           icon="optimisticGov"
           onClick={() => setModule(ModuleType.OPTIMISTIC_GOVERNOR)}
+          available // TODO
         />
 
         <ModuleButton
@@ -166,6 +178,7 @@ export const AddModulesView = () => {
           description="Enables an Open Zeppelin Governor contract as a module."
           icon="ozGov"
           onClick={() => dispatch(setOzGovernorModuleScreen(true))}
+          available={!!ContractAddresses[KnownContracts.OZ_GOVERNOR]}
         />
 
         <ModuleButton
@@ -173,6 +186,7 @@ export const AddModulesView = () => {
           description="Enables an address on one chain to control an avatar on another chain using Connext as the messaging layer."
           icon="connext"
           onClick={() => setModule(ModuleType.CONNEXT)}
+          available={!!ContractAddresses[KnownContracts.CONNEXT]}
         />
 
         <ModuleButton
@@ -181,6 +195,7 @@ export const AddModulesView = () => {
           icon="roles"
           deprecated
           onClick={() => setModule(ModuleType.ROLES_V1)}
+          available={!!ContractAddresses[KnownContracts.ROLES_V1]}
         />
 
         <ModuleButton
@@ -188,6 +203,7 @@ export const AddModulesView = () => {
           description="Enable a custom contract as a module"
           icon="custom"
           onClick={() => setModule(ModuleType.UNKNOWN)}
+          available
         />
       </div>
 
