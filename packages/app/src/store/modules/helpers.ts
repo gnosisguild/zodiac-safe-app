@@ -226,6 +226,7 @@ const ZODIAC_CONTRACTS_TO_MODULE_TYPE: { [key: string]: ModuleType } = {
   [KnownContracts.DELAY]: ModuleType.DELAY,
   [KnownContracts.BRIDGE]: ModuleType.BRIDGE,
   [KnownContracts.EXIT_ERC20]: ModuleType.EXIT,
+  [KnownContracts.ROLES]: ModuleType.ROLES_V1,
   [KnownContracts.ROLES_V1]: ModuleType.ROLES_V1,
   [KnownContracts.ROLES_V2]: ModuleType.ROLES_V2,
   [KnownContracts.OZ_GOVERNOR]: ModuleType.OZ_GOVERNOR,
