@@ -12,6 +12,7 @@ interface RoleModuleItemProps extends PanelItemProps {
   module: Module
   chainId: number
 }
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "grid",
