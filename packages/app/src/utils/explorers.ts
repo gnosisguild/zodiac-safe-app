@@ -36,6 +36,11 @@ if (!isDev && !REACT_APP_SNOWTRACE_KEY) {
   throw new Error("REACT_APP_SNOWTRACE_KEY is not set")
 }
 
+const REACT_APP_BASESCAN_KEY = process.env.REACT_APP_BASESCAN_KEY
+if (!isDev && !REACT_APP_BASESCAN_KEY) {
+  throw new Error("REACT_APP_BASESCAN_KEY is not set")
+}
+
 interface ExplorerData {
   networkExplorerName: string
   networkExplorerUrl: string
@@ -127,6 +132,15 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeUrl: "https://app.safe.global/sep:",
     verifyContractUrl: "https://sepolia.etherscan.io/verifyContract",
     explorerApiKey: REACT_APP_ETHERSCAN_KEY,
+  },
+  [NETWORK.BASE]: {
+    networkExplorerName: "Basescan",
+    networkExplorerUrl: "https://basescan.org",
+    networkExplorerApiUrl: "https://api.basescan.org/api",
+    safeTransactionApi: "https://safe-transaction-base.safe.global",
+    safeUrl: "https://app.safe.global/base:",
+    verifyContractUrl: "https://basescan.org/verifyContract",
+    explorerApiKey: REACT_APP_BASESCAN_KEY,
   },
 }
 

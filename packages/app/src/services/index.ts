@@ -94,6 +94,8 @@ export function getTellorOracle(chainId: number): string {
       return "0xD9157453E2668B2fc45b7A803D3FEF3642430cC0"
     case NETWORK.SEPOLIA:
       return "" // TODO
+    case NETWORK.BASE:
+      return "" // TODO
   }
   return ""
 }
@@ -117,6 +119,8 @@ export function getDefaultOracle(chainId: number): string {
     case NETWORK.AVALANCHE:
       return "0xD88cd78631Ea0D068cedB0d1357a6eabe59D7502"
     case NETWORK.SEPOLIA:
+      return "" // TODO
+    case NETWORK.BASE:
       return "" // TODO
   }
   return ""
