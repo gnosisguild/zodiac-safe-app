@@ -1,15 +1,15 @@
-import React from "react";
-import { Box, makeStyles } from "@material-ui/core";
-import { Icon } from "@gnosis.pm/safe-react-components";
-import { ActionButton } from "../../../components/ActionButton";
+import React from "react"
+import { Box, makeStyles } from "@material-ui/core"
+import { Icon } from "@gnosis.pm/safe-react-components"
+import { ActionButton } from "../../../components/ActionButton"
 
 export interface TransactionBlockHeaderButtonsProps {
-  edit?: boolean;
-  disabled?: boolean;
-  onEdit?(): void;
-  onDelete?(): void;
-  onSave?(): void;
-  onCancel?(): void;
+  edit?: boolean
+  disabled?: boolean
+  onEdit?(): void
+  onDelete?(): void
+  onSave?(): void
+  onCancel?(): void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   label: {
     color: theme.palette.text.primary,
   },
-}));
+}))
 
 export const TransactionBlockHeaderButtons = ({
   edit = false,
@@ -41,16 +41,12 @@ export const TransactionBlockHeaderButtons = ({
   onSave,
   onDelete,
 }: TransactionBlockHeaderButtonsProps) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   if (edit) {
     return (
       <>
-        <ActionButton
-          disabled={disabled}
-          className={classes.button}
-          onClick={onSave}
-        >
+        <ActionButton disabled={disabled} className={classes.button} onClick={onSave}>
           Save Changes
         </ActionButton>
         <ActionButton
@@ -62,7 +58,7 @@ export const TransactionBlockHeaderButtons = ({
           Cancel
         </ActionButton>
       </>
-    );
+    )
   }
 
   return (
@@ -74,5 +70,5 @@ export const TransactionBlockHeaderButtons = ({
         <Icon type="delete" size="md" className={classes.icon} />
       </Box>
     </>
-  );
-};
+  )
+}

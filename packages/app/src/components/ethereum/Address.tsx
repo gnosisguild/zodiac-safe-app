@@ -1,22 +1,22 @@
-import React from "react";
-import { makeStyles, Typography, TypographyProps } from "@material-ui/core";
-import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components";
-import { AddressExplorerButton } from "./AddressExplorerButton";
-import { shortAddress } from "../../utils/string";
-import classNames from "classnames";
+import React from "react"
+import { makeStyles, Typography, TypographyProps } from "@material-ui/core"
+import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components"
+import { AddressExplorerButton } from "./AddressExplorerButton"
+import { shortAddress } from "../../utils/string"
+import classNames from "classnames"
 
 interface AddressProps {
-  address: string;
-  short?: boolean;
-  hideCopyBtn?: boolean;
-  hideExplorerBtn?: boolean;
-  showOnHover?: boolean;
-  gutterBottom?: boolean;
+  address: string
+  short?: boolean
+  hideCopyBtn?: boolean
+  hideExplorerBtn?: boolean
+  showOnHover?: boolean
+  gutterBottom?: boolean
   classes?: {
-    icon?: string;
-    container?: string;
-  };
-  TypographyProps?: TypographyProps;
+    icon?: string
+    container?: string
+  }
+  TypographyProps?: TypographyProps
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
       visibility: "initial",
     },
   },
-}));
+}))
 
 export const Address = ({
   address,
@@ -53,7 +53,7 @@ export const Address = ({
   classes: { icon, container } = {},
   TypographyProps,
 }: AddressProps) => {
-  const classes = useStyles();
+  const classes = useStyles()
 
   return (
     <div
@@ -66,17 +66,11 @@ export const Address = ({
         {short ? shortAddress(address) : address}
       </Typography>
       {hideCopyBtn ? null : (
-        <CopyToClipboardBtn
-          textToCopy={address}
-          className={classNames(icon, "btn")}
-        />
+        <CopyToClipboardBtn textToCopy={address} className={classNames(icon, "btn")} />
       )}
       {hideExplorerBtn ? null : (
-        <AddressExplorerButton
-          address={address}
-          className={classNames(icon, "btn")}
-        />
+        <AddressExplorerButton address={address} className={classNames(icon, "btn")} />
       )}
     </div>
-  );
-};
+  )
+}

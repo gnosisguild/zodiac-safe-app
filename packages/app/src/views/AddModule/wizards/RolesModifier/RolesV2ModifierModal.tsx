@@ -1,15 +1,15 @@
 import React, { useState } from "react"
-import { Grid, makeStyles, Typography } from "@material-ui/core"
+import { Grid, InputLabel, makeStyles, Typography } from "@material-ui/core"
 import { AddModuleModal } from "../components/AddModuleModal"
-import { deployRolesV2Modifier, RolesModifierParams } from "services"
+import { deployRolesV2Modifier, RolesV2ModifierParams } from "services"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
 import { ParamType } from "@ethersproject/abi"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
 import {
-  networkAddresses as multisendNetworkAddresses,
-  defaultAddress as defaultMultisendAddress,
-} from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json"
+  MultiSelectBlock,
+  MultiSelectValues,
+} from "../../../../components/MultiSelectBlock"
+import { getAddress } from "ethers/lib/utils"
 
 interface RolesModifierModalProps {
   open: boolean
@@ -26,7 +26,14 @@ const useStyles = makeStyles((theme) => ({
   loadMessage: {
     textAlign: "center",
   },
+  multiSendLabel: {
+    color: theme.palette.text.primary,
+    marginBottom: 4,
+  },
 }))
+
+const MULTISEND_141 = "0x38869bf66a61cF6bDB996A6aE40D5853Fd43B526" // used in latest Safes
+const MULTISEND_CALLONLY_141 = "0x9641d764fc13c8B624c04430C7356C1C7C8102e2" // used in latest Safes
 
 export const RolesV2ModifierModal = ({
   open,
@@ -37,23 +44,25 @@ export const RolesV2ModifierModal = ({
 
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
-  const [errors, setErrors] = useState<Record<keyof RolesModifierParams, boolean>>({
+  const [fieldsValid, setFieldsValid] = useState<
+    Record<keyof RolesV2ModifierParams, boolean>
+  >({
     target: true,
     multisend: true,
   })
-  const [params, setParams] = useState<RolesModifierParams>({
+  const [params, setParams] = useState<RolesV2ModifierParams>({
     target: safe.safeAddress,
-    multisend: defaultMultisend(safe),
+    multisend: [MULTISEND_141, MULTISEND_CALLONLY_141],
   })
 
-  const isValid = Object.values(errors).every((field) => field)
+  const isValid = Object.values(fieldsValid).every((field) => field)
 
-  const onParamChange = <Field extends keyof RolesModifierParams>(
+  const onParamChange = <Field extends keyof RolesV2ModifierParams>(
     field: Field,
-    value: RolesModifierParams[Field],
+    value: RolesV2ModifierParams[Field],
     valid: boolean,
   ) => {
-    setErrors({ ...errors, [field]: valid })
+    setFieldsValid({ ...fieldsValid, [field]: valid })
     setParams({
       ...params,
       [field]: value,
@@ -98,12 +107,25 @@ export const RolesV2ModifierModal = ({
           />
         </Grid>
         <Grid item xs={12}>
-          <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
-            value={params.multisend}
-            label="Multisend Address"
-            onChange={(value, valid) => onParamChange("multisend", value, valid)}
+          <InputLabel className={classes.multiSendLabel}>MultiSend Addresses</InputLabel>
+          <MultiSelectBlock
+            invalidText={
+              !fieldsValid.multisend ? "Please provide valid addresses" : undefined
+            }
+            onChange={(items: unknown) => {
+              const values = (items as MultiSelectValues[]).map((v) => v.value)
+              onParamChange("multisend", values, values.every(isValidAddress))
+            }}
+            value={params.multisend.map((address) => ({
+              value: address,
+              label: label(address),
+            }))}
+            noOptionsMessage={() => "Paste an address and press enter..."}
+            formatCreateLabel={(inputValue) =>
+              isValidAddress(inputValue)
+                ? `Add "${inputValue}"`
+                : `Invalid address: ${inputValue}`
+            }
           />
         </Grid>
       </Grid>
@@ -111,8 +133,21 @@ export const RolesV2ModifierModal = ({
   )
 }
 
-function defaultMultisend(safeInfo: SafeInfo) {
-  const address = (multisendNetworkAddresses as Record<string, string>)[safeInfo.chainId]
+const isValidAddress = (address: string) => {
+  try {
+    getAddress(address)
+    return true
+  } catch {
+    return false
+  }
+}
 
-  return address || defaultMultisendAddress
+const label = (address: string) => {
+  if (address === MULTISEND_141) {
+    return address + " (MultiSend v1.4.1)"
+  } else if (address === MULTISEND_CALLONLY_141) {
+    return address + " (MultiSendCallOnly v1.4.1)"
+  } else {
+    return address
+  }
 }

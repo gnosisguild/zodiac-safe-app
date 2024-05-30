@@ -82,7 +82,11 @@ export const getEnsTextRecord = async (
   const nameHash = ethers.utils.namehash(ensName)
   const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, provider)
   const ensResolverAddress = await ensRegistryContract.resolver(nameHash)
-  const ensResolverContract = new ethers.Contract(ensResolverAddress, abiPublicResolver, provider)
+  const ensResolverContract = new ethers.Contract(
+    ensResolverAddress,
+    abiPublicResolver,
+    provider,
+  )
   const record = ensResolverContract.functions.text(nameHash, recordId)
   return record
 }

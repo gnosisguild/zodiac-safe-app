@@ -120,9 +120,9 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                     <Typography>Voting Token:</Typography>
                     <Link
                       target="_blank"
-                      href={`${
-                        EXPLORERS_CONFIG[safe.chainId as NETWORK]
-                      }/token/${token.tokenAddress}`}
+                      href={`${EXPLORERS_CONFIG[safe.chainId as NETWORK]}/token/${
+                        token.tokenAddress
+                      }`}
                       className={classes.value}
                     >
                       {token.tokenAddress}
