@@ -18,6 +18,7 @@ export const klerosAvailability: number[] = [
   NETWORK.GOERLI,
   NETWORK.GNOSIS_CHAIN,
   NETWORK.POLYGON,
+  NETWORK.SEPOLIA,
 ]
 
 type Option = keyof typeof arbitratorOptions
