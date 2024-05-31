@@ -1,6 +1,6 @@
-import { EthHashInfo } from "@gnosis.pm/safe-react-components";
-import React from "react";
-import { makeStyles } from "@material-ui/core";
+import { EthHashInfo } from "@gnosis.pm/safe-react-components"
+import React from "react"
+import { makeStyles } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -27,10 +27,10 @@ const useStyles = makeStyles((theme) => {
         fontSize: 14,
       },
     },
-  };
-});
+  }
+})
 
 export const HashInfo = (props: Parameters<typeof EthHashInfo>[0]) => {
-  const classes = useStyles();
-  return <EthHashInfo className={classes.hashInfo} {...props} />;
-};
+  const classes = useStyles()
+  return <EthHashInfo className={classes.hashInfo} {...props} />
+}

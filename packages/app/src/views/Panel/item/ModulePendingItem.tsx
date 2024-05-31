@@ -1,13 +1,13 @@
-import React from "react";
-import { PanelItem, PanelItemProps } from "./PanelItem";
-import { makeStyles, Typography } from "@material-ui/core";
-import { Link } from "../../../components/text/Link";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { getNetworkExplorerInfo } from "../../../utils/explorers";
+import React from "react"
+import { PanelItem, PanelItemProps } from "./PanelItem"
+import { makeStyles, Typography } from "@material-ui/core"
+import { Link } from "../../../components/text/Link"
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { getNetworkExplorerInfo } from "../../../utils/explorers"
 
 interface ModulePendingItemProps extends PanelItemProps {
-  title: string;
-  linkText: string;
+  title: string
+  linkText: string
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: "rgba(255, 255, 255, 0.2)",
     background: "rgba(224, 197, 173, 0.1)",
   },
-}));
+}))
 
 export const ModulePendingItem = ({
   image = null,
@@ -36,13 +36,11 @@ export const ModulePendingItem = ({
   title,
   ...props
 }: ModulePendingItemProps) => {
-  const classes = useStyles();
-  const { safe } = useSafeAppsSDK();
+  const classes = useStyles()
+  const { safe } = useSafeAppsSDK()
 
-  const network = getNetworkExplorerInfo(safe.chainId);
-  const link = network
-    ? `${network.safeUrl}${safe.safeAddress}/transactions`
-    : "";
+  const network = getNetworkExplorerInfo(safe.chainId)
+  const link = network ? `${network.safeUrl}${safe.safeAddress}/transactions` : ""
 
   return (
     <PanelItem image={<div className={classes.image}>{image}</div>} {...props}>
@@ -55,5 +53,5 @@ export const ModulePendingItem = ({
         </Link>
       </div>
     </PanelItem>
-  );
-};
+  )
+}

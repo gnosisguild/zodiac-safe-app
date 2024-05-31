@@ -57,6 +57,10 @@ export interface RolesModifierParams {
   target: string
   multisend: string
 }
+export interface RolesV2ModifierParams {
+  target: string
+  multisend: string[]
+}
 
 export interface AMBModuleParams {
   amb: string
@@ -610,7 +614,7 @@ export function deployRolesV2Modifier(
   provider: JsonRpcProvider,
   safeAddress: string,
   chainId: number,
-  args: RolesModifierParams,
+  args: RolesV2ModifierParams,
 ) {
   const { target, multisend } = args
   const { transaction: deployAndSetupTx, expectedModuleAddress: expectedRolesAddress } =
@@ -634,15 +638,15 @@ export function deployRolesV2Modifier(
 
   const MULTISEND_SELECTOR = "0x8d80ff0a"
   const MULTISEND_UNWRAPPER = "0x93B7fCbc63ED8a3a24B59e1C3e6649D50B7427c0"
-  const setUnwrapperTx = {
+  const setUnwrapperTxs = multisend.map((address) => ({
     to: rolesContract.address,
     data: rolesContract.interface.encodeFunctionData("setTransactionUnwrapper", [
-      multisend,
+      address,
       MULTISEND_SELECTOR,
       MULTISEND_UNWRAPPER,
     ]),
     value: "0",
-  }
+  }))
 
   return [
     {
@@ -650,7 +654,7 @@ export function deployRolesV2Modifier(
       value: deployAndSetupTx.value.toHexString(),
     },
     enableModuleTx,
-    setUnwrapperTx,
+    ...setUnwrapperTxs,
   ]
 }
 

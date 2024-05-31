@@ -1,5 +1,11 @@
 import React from "react"
-import { ButtonProps as MuiButtonProps, Fade, makeStyles, Modal, Typography } from "@material-ui/core"
+import {
+  ButtonProps as MuiButtonProps,
+  Fade,
+  makeStyles,
+  Modal,
+  Typography,
+} from "@material-ui/core"
 import { BadgeIcon, ZodiacPaper } from "zodiac-ui-components"
 import { BadgeIconProps } from "zodiac-ui-components/lib/components/Icons/BadgeIcon/BadgeIcon"
 import { ActionButton } from "../../../../components/ActionButton"
@@ -29,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     outline: "none",
-    maxWidth: 380,
+    maxWidth: 525,
     margin: theme.spacing(14, 1, 1, 1),
     padding: theme.spacing(2),
     backgroundColor: "rgba(78, 72, 87, 0.8)",
@@ -142,10 +148,19 @@ export const AddModuleModal: React.FC<AddModuleModalProps> = ({
             </div>
           </div>
 
-          {children ? <div className={classNames({ [classes.gutterBottom]: !hideButton })}>{children}</div> : null}
+          {children ? (
+            <div className={classNames({ [classes.gutterBottom]: !hideButton })}>
+              {children}
+            </div>
+          ) : null}
 
           {hideButton ? null : (
-            <ActionButton fullWidth startIcon={<ArrowUpIcon />} onClick={onAdd} {...ButtonProps}>
+            <ActionButton
+              fullWidth
+              startIcon={<ArrowUpIcon />}
+              onClick={onAdd}
+              {...ButtonProps}
+            >
               Add Module
             </ActionButton>
           )}
