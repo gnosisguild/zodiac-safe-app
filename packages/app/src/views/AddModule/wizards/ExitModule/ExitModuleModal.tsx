@@ -77,7 +77,7 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
       icon='exit'
       tags={['From Gnosis Guild']}
       onAdd={handleAddExitModule}
-      readMoreLink='https://zodiac.wiki/index.php/Category:Exit_Pattern'
+      readMoreLink='https://www.zodiac.wiki/documentation/exit-pattern'
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
