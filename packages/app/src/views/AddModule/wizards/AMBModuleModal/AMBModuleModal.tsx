@@ -59,7 +59,6 @@ export const AMBModuleModal: React.FC<AMBModuleModalProps> = ({ open, onClose, o
         ...params,
         executor: safe.safeAddress,
       })
-
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()
       if (onClose) onClose()
@@ -77,7 +76,7 @@ export const AMBModuleModal: React.FC<AMBModuleModalProps> = ({ open, onClose, o
       icon='bridge'
       tags={['From Gnosis Guild']}
       onAdd={handleAddAMBModule}
-      readMoreLink='https://zodiac.wiki/index.php/Category:Bridge_Module'
+      readMoreLink='https://www.zodiac.wiki/documentation/bridge-module'
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>

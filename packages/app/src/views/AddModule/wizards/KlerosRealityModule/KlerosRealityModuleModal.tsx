@@ -193,14 +193,8 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
   const classes = useStyles()
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
   // hack to resolve mainnet ENS
-  const mainnetProvider = useMemo(
-    () => new InfuraProvider(1, import.meta.env.VITE_INFURA_ID),
-    [],
-  )
-  const goerliProvider = useMemo(
-    () => new InfuraProvider(5, import.meta.env.VITE_INFURA_ID),
-    [],
-  )
+  const mainnetProvider = useMemo(() => new InfuraProvider(1, import.meta.env.VITE_INFURA_ID), [])
+  const goerliProvider = useMemo(() => new InfuraProvider(5, import.meta.env.VITE_INFURA_ID), [])
 
   const bondToken = NETWORKS[safe.chainId as NETWORK].nativeAsset
   const [params, setParams] = useState<RealityModuleParams>({
@@ -542,6 +536,7 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
             </Grid>
             <Grid
               xs={6}
+              item
               style={{
                 display: 'flex',
                 flexDirection: 'row',

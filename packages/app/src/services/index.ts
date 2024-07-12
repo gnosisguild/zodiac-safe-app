@@ -1,12 +1,4 @@
-import {
-  AbiCoder,
-  Contract,
-  Interface,
-  BrowserProvider,
-  zeroPadValue,
-  FunctionFragment,
-  ethers,
-} from 'ethers'
+import { AbiCoder, Contract, Interface, BrowserProvider, FunctionFragment, ethers } from 'ethers'
 
 import {
   calculateProxyAddress,
@@ -340,14 +332,13 @@ export async function deployBridgeModule(
         executor,
         amb,
         controller,
-        zeroPadValue(BigInt(ambChainId).toString(16), 32),
+        ethers.zeroPadValue(ethers.toBeHex(ambChainId), 32),
       ],
     },
     provider,
     chainId,
     Date.now().toString(),
   )
-
   const enableModuleTransaction = enableModule(safeAddress, expectedModuleAddress)
 
   return [
