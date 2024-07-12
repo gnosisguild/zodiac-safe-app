@@ -73,7 +73,7 @@ export const DelayModuleModal = ({ open, onClose, onSubmit }: DelayModuleModalPr
       icon='delay'
       tags={['Stackable', 'From Gnosis Guild']}
       onAdd={handleAddDelayModule}
-      readMoreLink='https://zodiac.wiki/index.php/Category:Delay_Modifier'
+      readMoreLink='https://www.zodiac.wiki/documentation/delay-modifier'
     >
       <Typography gutterBottom>Parameters</Typography>
 
