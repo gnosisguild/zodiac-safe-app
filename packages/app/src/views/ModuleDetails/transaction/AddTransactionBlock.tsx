@@ -1,29 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { FunctionFragment } from "@ethersproject/abi";
-import { makeStyles, MenuItem, Typography } from "@material-ui/core";
-import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm";
-import { ZodiacPaper, ZodiacTextField } from "zodiac-ui-components";
-import { getWriteFunction } from "../../../utils/contracts";
-import classNames from "classnames";
-import { Transaction } from "../../../store/transactionBuilder/models";
-import { ActionButton } from "../../../components/ActionButton";
-import { useRootDispatch, useRootSelector } from "../../../store";
-import { getAddTransaction } from "../../../store/transactionBuilder/selectors";
-import { resetNewTransaction } from "../../../store/transactionBuilder";
-import { getCurrentModule } from "../../../store/modules/selectors";
-import { TransactionField } from "./TransactionField";
-import { ReactComponent as AddIcon } from "../../../assets/icons/add-icon.svg";
-import { ContractInterface } from "@ethersproject/contracts";
+import React, { useEffect, useMemo, useState } from 'react'
+
+import { makeStyles, MenuItem, Typography } from '@material-ui/core'
+import { ContractQueryForm } from '../../../components/ethereum/ContractQueryForm'
+import { ZodiacPaper, ZodiacTextField } from 'zodiac-ui-components'
+import { getWriteFunction } from '../../../utils/contracts'
+import classNames from 'classnames'
+import { Transaction } from '../../../store/transactionBuilder/models'
+import { ActionButton } from '../../../components/ActionButton'
+import { useRootDispatch, useRootSelector } from '../../../store'
+import { getAddTransaction } from '../../../store/transactionBuilder/selectors'
+import { resetNewTransaction } from '../../../store/transactionBuilder'
+import { getCurrentModule } from '../../../store/modules/selectors'
+import { TransactionField } from './TransactionField'
+import { ReactComponent as AddIcon } from '../../../assets/icons/add-icon.svg'
+import { ContractInterface, FunctionFragment } from 'ethers'
 
 interface AddTransactionBlockProps {
-  abi: ContractInterface;
+  abi: ContractInterface
 
-  onAdd(transaction: Transaction): void;
+  onAdd(transaction: Transaction): void
 }
 
 const useStyles = makeStyles((theme) => ({
   greyText: {
-    "& select": {
+    '& select': {
       color: theme.palette.primary.main,
     },
   },
@@ -46,20 +46,16 @@ const useStyles = makeStyles((theme) => ({
   field: {
     marginTop: theme.spacing(2.5),
   },
-}));
+}))
 
 type TransactionFieldsProps = {
-  func?: FunctionFragment;
-  defaultParams?: any[];
-} & Pick<AddTransactionBlockProps, "onAdd">;
+  func?: FunctionFragment
+  defaultParams?: any[]
+} & Pick<AddTransactionBlockProps, 'onAdd'>
 
-const TransactionFields = ({
-  func,
-  onAdd,
-  defaultParams,
-}: TransactionFieldsProps) => {
-  const classes = useStyles();
-  const module = useRootSelector(getCurrentModule);
+const TransactionFields = ({ func, onAdd, defaultParams }: TransactionFieldsProps) => {
+  const classes = useStyles()
+  const module = useRootSelector(getCurrentModule)
 
   if (!func) {
     return (
@@ -71,19 +67,19 @@ const TransactionFields = ({
       >
         Add this transaction
       </ActionButton>
-    );
+    )
   }
 
   const handleAdd = (params: any[]) => {
-    if (!module) return;
+    if (!module) return
     onAdd({
       func,
       params,
       module,
       to: module.address,
       id: `${func.name}_${new Date().getTime()}`,
-    });
-  };
+    })
+  }
 
   return (
     <ContractQueryForm func={func} defaultParams={defaultParams}>
@@ -106,64 +102,66 @@ const TransactionFields = ({
         </>
       )}
     </ContractQueryForm>
-  );
-};
+  )
+}
 
-const getSelectedFunction = (
-  writeFunctions: FunctionFragment[],
-  selectedFunc?: string
-): number => {
+const getSelectedFunction = (writeFunctions: FunctionFragment[], selectedFunc?: string): number => {
   if (selectedFunc) {
-    const index = writeFunctions.findIndex(
-      (func) => func.format() === selectedFunc
-    );
-    if (index >= 0) return index;
+    const index = writeFunctions.findIndex((func) => func.format() === selectedFunc)
+    if (index >= 0) return index
   }
-  return -1;
-};
+  return -1
+}
 
-export const AddTransactionBlock = ({
-  abi,
-  onAdd,
-}: AddTransactionBlockProps) => {
-  const classes = useStyles();
-  const dispatch = useRootDispatch();
-  const writeFunctions = useMemo(() => getWriteFunction(abi), [abi]);
-  const { func: selectedFunc, params: defaultParams } =
-    useRootSelector(getAddTransaction);
+export const AddTransactionBlock = ({ abi, onAdd }: AddTransactionBlockProps) => {
+  const classes = useStyles()
+  const dispatch = useRootDispatch()
+  const writeFunctions = useMemo(() => getWriteFunction(abi), [abi])
+  const { func: selectedFunc, params: defaultParams } = useRootSelector(getAddTransaction)
 
   const [funcIndex, setFuncIndex] = useState(() =>
-    getSelectedFunction(writeFunctions, selectedFunc)
-  );
+    getSelectedFunction(writeFunctions, selectedFunc),
+  )
 
   useEffect(() => {
-    if (selectedFunc)
-      setFuncIndex(getSelectedFunction(writeFunctions, selectedFunc));
-  }, [selectedFunc, writeFunctions]);
+    if (selectedFunc) setFuncIndex(getSelectedFunction(writeFunctions, selectedFunc))
+  }, [selectedFunc, writeFunctions])
 
   const handleAdd = (transaction: Transaction) => {
-    setFuncIndex(-1);
-    onAdd(transaction);
-  };
+    setFuncIndex(-1)
+    onAdd(transaction)
+  }
 
   const handleFuncChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFuncIndex(parseInt(event.target.value));
-    dispatch(resetNewTransaction());
-  };
+    setFuncIndex(parseInt(event.target.value))
+    dispatch(resetNewTransaction())
+  }
 
   return (
     <>
-      <ZodiacPaper className={classes.header} elevation={0}>
-        <Typography variant="h5" gutterBottom>
+      <ZodiacPaper
+        className={classes.header}
+        elevation={0}
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
+        <Typography variant='h5' gutterBottom>
           Add Transaction
         </Typography>
-        <Typography variant="body2" className={classes.text}>
-          Add multiple transactions here, and we will bundle them together into
-          a single transaction, to save you gas.
+        <Typography variant='body2' className={classes.text}>
+          Add multiple transactions here, and we will bundle them together into a single
+          transaction, to save you gas.
         </Typography>
       </ZodiacPaper>
 
-      <ZodiacPaper className={classes.content} elevation={0}>
+      <ZodiacPaper
+        className={classes.content}
+        elevation={0}
+        placeholder={undefined}
+        onPointerEnterCapture={undefined}
+        onPointerLeaveCapture={undefined}
+      >
         <ZodiacTextField
           select
           value={funcIndex}
@@ -171,12 +169,12 @@ export const AddTransactionBlock = ({
           className={classNames({
             [classes.greyText]: funcIndex === undefined,
           })}
-          color="secondary"
-          label="Function"
+          color='secondary'
+          label='Function'
         >
           <MenuItem value={-1}>Select function</MenuItem>
           {writeFunctions.map((func, index) => (
-            <MenuItem key={func.format("full")} value={index}>
+            <MenuItem key={func.format('full')} value={index}>
               {func.name}
             </MenuItem>
           ))}
@@ -189,5 +187,5 @@ export const AddTransactionBlock = ({
         />
       </ZodiacPaper>
     </>
-  );
-};
+  )
+}

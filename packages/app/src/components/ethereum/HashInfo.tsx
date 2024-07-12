@@ -1,5 +1,4 @@
 import { EthHashInfo } from "@gnosis.pm/safe-react-components"
-import React from "react"
 import { makeStyles } from "@material-ui/core"
 
 const useStyles = makeStyles((theme) => {

@@ -5,17 +5,17 @@ on:
     types: created
 
 env:
-  REACT_APP_INFURA_ID: ${{ secrets.REACT_APP_INFURA_ID }}
-  REACT_APP_MULTI_SEND_CONTRACT: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
-  REACT_APP_BACKEND_API_URL: "https://api.zodiac.gnosisguild.org/api"
-  REACT_APP_ETHERSCAN_KEY: ${{ secrets.REACT_APP_ETHERSCAN_KEY }}
-  REACT_APP_GNOSISSCAN_KEY: ${{ secrets.REACT_APP_GNOSISSCAN_KEY }}
-  REACT_APP_POLYGONSCAN_KEY: ${{ secrets.REACT_APP_POLYGONSCAN_KEY }}
-  REACT_APP_BSCSCAN_KEY: ${{ secrets.REACT_APP_BSCSCAN_KEY }}
-  REACT_APP_OPTIMISTIC_ETHERSCAN_KEY: ${{ secrets.REACT_APP_OPTIMISTIC_ETHERSCAN_KEY }}
-  REACT_APP_ARBISCAN_KEY: ${{ secrets.REACT_APP_ARBISCAN_KEY }}
-  REACT_APP_SNOWTRACE_KEY: ${{ secrets.REACT_APP_SNOWTRACE_KEY }}
-  REACT_APP_BASESCAN_KEY: ${{ secrets.REACT_APP_BASESCAN_KEY }}
+  VITE_INFURA_ID: ${{ secrets.VITE_INFURA_ID }}
+  VITE_MULTI_SEND_CONTRACT: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
+  VITE_BACKEND_API_URL: "https://api.zodiac.gnosisguild.org/api"
+  VITE_ETHERSCAN_KEY: ${{ secrets.VITE_ETHERSCAN_KEY }}
+  VITE_GNOSISSCAN_KEY: ${{ secrets.VITE_GNOSISSCAN_KEY }}
+  VITE_POLYGONSCAN_KEY: ${{ secrets.VITE_POLYGONSCAN_KEY }}
+  VITE_BSCSCAN_KEY: ${{ secrets.VITE_BSCSCAN_KEY }}
+  VITE_OPTIMISTIC_ETHERSCAN_KEY: ${{ secrets.VITE_OPTIMISTIC_ETHERSCAN_KEY }}
+  VITE_ARBISCAN_KEY: ${{ secrets.VITE_ARBISCAN_KEY }}
+  VITE_SNOWTRACE_KEY: ${{ secrets.VITE_SNOWTRACE_KEY }}
+  VITE_BASESCAN_KEY: ${{ secrets.VITE_BASESCAN_KEY }}
 
 jobs:
   deploy:
@@ -38,7 +38,7 @@ jobs:
         uses: anantaramdas/ipfs-pinata-deploy-action@39bbda1ce1fe24c69c6f57861b8038278d53688d
         with:
           pin-name: Zodiac Safe App - Prod — ${ GITHUB_SHA }
-          path: "./packages/app/build"
+          path: "./packages/app/dist"
           pinata-api-key: ${{ secrets.PINATA_API_KEY }}
           pinata-secret-api-key: ${{ secrets.PINATA_API_SECRET_KEY }}
 
@@ -88,7 +88,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: packages/app/build
+          folder: packages/app/dist
 
       # Deploys a production instance of the backend api to vercel
       - name: Install Vercel CLI

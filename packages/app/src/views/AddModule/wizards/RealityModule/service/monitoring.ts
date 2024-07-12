@@ -1,10 +1,10 @@
-import { NETWORK } from "utils/networks"
-import { MonitoringSectionData } from "../sections/Monitoring"
+import { NETWORK } from 'utils/networks'
+import { MonitoringSectionData } from '../sections/Monitoring'
 
-const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL
 
 if (BACKEND_API_URL == null) {
-  throw new Error("BACKEND_API_URL not set")
+  throw new Error('BACKEND_API_URL not set')
 }
 
 interface MonitoringCredentials {
@@ -29,29 +29,24 @@ export const setUpMonitoring = async (
   oracleAddress: string,
   data: MonitoringSectionData,
 ) => {
-  console.log()
-  if ((data.apiKey ?? "") === "" || (data.secretKey ?? "") === "") {
-    throw new Error(
-      "API keys for monitoring service missing. Monitoring will NOT be set up.",
-    )
+  if ((data.apiKey ?? '') === '' || (data.secretKey ?? '') === '') {
+    throw new Error('API keys for monitoring service missing. Monitoring will NOT be set up.')
   }
   if (
-    (data.discordKey ?? "") === "" &&
-    (data.slackKey ?? "") === "" &&
+    (data.discordKey ?? '') === '' &&
+    (data.slackKey ?? '') === '' &&
     data.email.length === 0 &&
-    (data.telegram.botToken ?? "") === "" &&
-    (data.telegram.chatId ?? "")
+    (data.telegram.botToken ?? '') === '' &&
+    (data.telegram.chatId ?? '')
   ) {
-    throw new Error(
-      "No notification channel(s) specified. Monitoring will NOT be set up.",
-    )
+    throw new Error('No notification channel(s) specified. Monitoring will NOT be set up.')
   }
 
   const notificationChannels: NotificationChannels[] = []
 
   if (data.email.length > 0) {
     notificationChannels.push({
-      channel: "email",
+      channel: 'email',
       config: {
         emails: data.email,
       },
@@ -60,7 +55,7 @@ export const setUpMonitoring = async (
 
   if (data.discordKey.length > 0) {
     notificationChannels.push({
-      channel: "discord",
+      channel: 'discord',
       config: {
         url: data.discordKey,
       },
@@ -69,7 +64,7 @@ export const setUpMonitoring = async (
 
   if (data.slackKey.length > 0) {
     notificationChannels.push({
-      channel: "slack",
+      channel: 'slack',
       config: {
         url: data.slackKey,
       },
@@ -78,7 +73,7 @@ export const setUpMonitoring = async (
 
   if (data.telegram.botToken.length > 0) {
     notificationChannels.push({
-      channel: "telegram",
+      channel: 'telegram',
       config: data.telegram,
     })
   }
@@ -92,11 +87,11 @@ export const setUpMonitoring = async (
     notificationChannels,
   }
 
-  return fetch(BACKEND_API_URL + "/monitoring/notification", {
-    method: "POST",
+  return fetch(BACKEND_API_URL + '/monitoring/notification', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
     body: JSON.stringify(requestBody),
   })
@@ -104,42 +99,37 @@ export const setUpMonitoring = async (
 
 export const validationCredentials = async (query: MonitoringCredentials) => {
   const { apiKey, apiSecret } = query
-  return fetch(
-    `${BACKEND_API_URL}/monitoring/validation?apiKey=${apiKey}&apiSecret=${apiSecret}`,
-    {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+  return fetch(`${BACKEND_API_URL}/monitoring/validation?apiKey=${apiKey}&apiSecret=${apiSecret}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
-  )
+  })
 }
 
 const networkToOzDefenderNetworkName = (network: NETWORK) => {
   switch (network) {
     case NETWORK.MAINNET:
-      return "mainnet"
-    case NETWORK.GOERLI:
-      return "goerli"
+      return 'mainnet'
     case NETWORK.OPTIMISM:
-      return "optimism"
+      return 'optimism'
     case NETWORK.BSC:
-      return "bsc"
+      return 'bsc'
     case NETWORK.GNOSIS_CHAIN:
-      return "xdai"
+      return 'xdai'
     case NETWORK.POLYGON:
-      return "matic"
+      return 'matic'
     case NETWORK.ARBITRUM:
-      return "arbitrum"
+      return 'arbitrum'
     case NETWORK.AVALANCHE:
-      return "avalanche"
+      return 'avalanche'
     case NETWORK.SEPOLIA:
-      return "sepolia"
+      return 'sepolia'
     case NETWORK.BASE:
-      return "base"
+      return 'base'
     default:
-      throw new Error("Unsupported network")
+      throw new Error('Unsupported network')
   }
 }

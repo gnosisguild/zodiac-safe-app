@@ -218,7 +218,13 @@ export const ProposalSection: React.FC<SectionProps> = ({
   }
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+        <ZodiacPaper
+      borderStyle='single'
+      className={classes.paperContainer}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={2} className={classes.container}>

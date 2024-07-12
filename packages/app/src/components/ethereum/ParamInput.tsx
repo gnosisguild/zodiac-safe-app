@@ -1,15 +1,13 @@
-import React, { useState } from "react"
-import { ParamType } from "@ethersproject/abi"
-import { ZodiacTextField } from "zodiac-ui-components"
-import { TextFieldProps } from "../input/TextField"
-import { formatParamValue } from "../../utils/contracts"
-import { MenuItem } from "@material-ui/core"
-import { BigNumber } from "ethers"
+import React, { useState } from 'react'
+import { ZodiacTextField } from 'zodiac-ui-components'
+import { TextFieldProps } from '../input/TextField'
+import { formatParamValue } from '../../utils/contracts'
+import { MenuItem } from '@material-ui/core'
+import { ParamType } from 'ethers/abi'
 
-export interface ParamInputProps
-  extends Omit<TextFieldProps, "onChange" | "value" | "label"> {
+export interface ParamInputProps extends Omit<TextFieldProps, 'onChange' | 'value' | 'label'> {
   param: ParamType
-  value?: string | boolean | BigNumber
+  value?: string | boolean | BigInt
   label?: string
 
   onChange(value: any, valid: boolean): void
@@ -22,26 +20,18 @@ function getLabel(param: ParamType) {
   return `(${param.type})`
 }
 
-function getDefaultValue(
-  param: ParamType,
-  defaultValue: ParamInputProps["value"],
-): string {
+function getDefaultValue(param: ParamType, defaultValue: ParamInputProps['value']): string {
   if (defaultValue !== undefined) {
-    if (typeof defaultValue === "object") return JSON.stringify(defaultValue)
+    if (typeof defaultValue === 'object') return JSON.stringify(defaultValue)
     return defaultValue.toString()
   }
-  return param.baseType === "boolean" ? "false" : ""
+  return param.baseType === 'boolean' ? 'false' : ''
 }
 
-export const ParamInput = ({
-  param,
-  value: defaultValue,
-  onChange,
-  ...props
-}: ParamInputProps) => {
+export const ParamInput = ({ param, value: defaultValue, onChange, ...props }: ParamInputProps) => {
   if (props.defaultValue != null) {
     throw new Error(
-      "This is a controlled component, `defaultValue` should not be used. Use `value` instead.",
+      'This is a controlled component, `defaultValue` should not be used. Use `value` instead.',
     )
   }
   const [value, setValue] = useState<string>(getDefaultValue(param, defaultValue))
@@ -51,8 +41,8 @@ export const ParamInput = ({
     const _value = evt.target.value
     setValue(_value)
 
-    if (param.baseType === "boolean") {
-      onChange(_value === "true", true)
+    if (param.baseType === 'boolean') {
+      onChange(_value === 'true', true)
       return
     }
 
@@ -72,25 +62,25 @@ export const ParamInput = ({
     }
   }
 
-  if (param.baseType === "boolean") {
+  if (param.baseType === 'boolean') {
     return (
       <ZodiacTextField
         select
-        color="secondary"
+        color='secondary'
         label={getLabel(param)}
         value={value}
         onChange={handleChange}
         {...props}
       >
-        <MenuItem value="true">True</MenuItem>
-        <MenuItem value="false">False</MenuItem>
+        <MenuItem value='true'>True</MenuItem>
+        <MenuItem value='false'>False</MenuItem>
       </ZodiacTextField>
     )
   }
 
   return (
     <ZodiacTextField
-      color="secondary"
+      color='secondary'
       label={getLabel(param)}
       value={value}
       onChange={handleChange}

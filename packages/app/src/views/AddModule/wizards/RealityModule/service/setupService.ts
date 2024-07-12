@@ -1,19 +1,18 @@
-import { ethers } from "ethers"
-import { getArbitrator, TxWitMeta as TxsWitMeta } from "../../../../../services"
-import { NETWORK, NETWORKS } from "../../../../../utils/networks"
-import * as ipfs from "../../../../../services/ipfs"
-import * as R from "ramda"
-import { setTextRecordTx } from "services/ens"
-import { SetupData } from ".."
-import SafeAppsSDK, { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
-import * as snapshot from "../../../../../services/snapshot"
-import { deployRealityModule, RealityModuleParams } from "./moduleDeployment"
-import { setUpMonitoring } from "./monitoring"
-import { pinSnapshotSpace } from "./snapshot-space-pinning"
+import { BrowserProvider, ethers, parseUnits } from 'ethers'
+import { getArbitrator, TxWitMeta as TxsWitMeta } from '../../../../../services'
+import { NETWORK, NETWORKS } from '../../../../../utils/networks'
+// import * as ipfs from '../../../../../services/ipfs'
+import * as R from 'ramda'
+import { setTextRecordTx } from 'services/ens'
+import { SetupData } from '..'
+import SafeAppsSDK, { SafeInfo } from '@gnosis.pm/safe-apps-sdk'
+import * as snapshot from '../../../../../services/snapshot'
+import { deployRealityModule, RealityModuleParams } from './moduleDeployment'
+import { setUpMonitoring } from './monitoring'
+import { pinSnapshotSpace } from './snapshot-space-pinning'
 
-const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
-export const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS =
-  "0x0961F418E0B6efaA073004989EF1B2fd1bc4a41c" // needs to be deployed on all networks supported by the Reality Module
+const MULTI_SEND_CONTRACT = import.meta.env.VITE_MULTI_SEND_CONTRACT
+export const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS = '0x0961F418E0B6efaA073004989EF1B2fd1bc4a41c' // needs to be deployed on all networks supported by the Reality Module
 
 /**
  * Sets up the Reality Module.
@@ -21,14 +20,14 @@ export const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS =
  * @notice The input variables are not checked for validity here, as this happens in the UI.
  */
 export const setup = async (
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   safeSdk: SafeAppsSDK,
   safeInfo: SafeInfo,
   executorAddress: string,
   setupData: SetupData,
   statusCallback: (currentStatus: string, error?: Error) => void,
 ) => {
-  statusCallback("Setting up Reality Module deployment transactions")
+  statusCallback('Setting up Reality Module deployment transactions')
   const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
     provider,
     safeInfo.chainId,
@@ -36,7 +35,7 @@ export const setup = async (
     executorAddress,
     setupData,
   ).catch((e) => {
-    statusCallback("Error while setting up Reality Module deployment transactions", e)
+    statusCallback('Error while setting up Reality Module deployment transactions', e)
   })
 
   if (deploymentRealityModuleTxsMm == null) {
@@ -47,7 +46,7 @@ export const setup = async (
 
   const realityModuleAddress = deploymentRealityModuleTxsMm.meta?.expectedModuleAddress
   if (realityModuleAddress == null) {
-    const error = new Error("Unable to calculate the Reality Module future address.")
+    const error = new Error('Unable to calculate the Reality Module future address.')
     statusCallback(error.message, error)
   }
 
@@ -57,42 +56,37 @@ export const setup = async (
     )
   }
 
-  statusCallback(
-    "Setting up transaction for adding the new snapshot space to the ENS record",
-  )
+  statusCallback('Setting up transaction for adding the new snapshot space to the ENS record')
   const addSafeToSnapshotTxsMm = await addSafeSnapToSnapshotSpaceTxs(
     provider,
     setupData.proposal.ensName,
     realityModuleAddress,
     safeInfo.chainId,
   ).catch((e) => {
-    statusCallback(
-      "Error when setting up transactions to add SafeSnap to the Snapshot Space",
-      e,
-    )
+    statusCallback('Error when setting up transactions to add SafeSnap to the Snapshot Space', e)
   })
 
   if (deploymentRealityModuleTxsMm == null || addSafeToSnapshotTxsMm == null) {
     throw new Error(
-      "The creation of transactions failed. IT SHOULD NOT BE POSSIBLE TO REACH THIS STATE.",
+      'The creation of transactions failed. IT SHOULD NOT BE POSSIBLE TO REACH THIS STATE.',
     )
   }
 
   const txs = [...deploymentRealityModuleTxsMm.txs, ...addSafeToSnapshotTxsMm.txs]
 
-  statusCallback("Setting up monitoring with OZ Defender")
+  statusCallback('Setting up monitoring with OZ Defender')
   await setUpMonitoring(
     safeInfo.chainId as NETWORK,
     realityModuleAddress,
     setupData.oracle.instanceData.instanceAddress,
     setupData.monitoring,
   ).catch((e) => {
-    statusCallback("Error when setting up monitoring.", e)
+    statusCallback('Error when setting up monitoring.', e)
   })
 
-  statusCallback("Proposing transactions to the Safe")
+  statusCallback('Proposing transactions to the Safe')
   await safeSdk.txs.send({ txs }).catch((e) => {
-    statusCallback("Error when proposing transactions to the Safe", e)
+    statusCallback('Error when proposing transactions to the Safe', e)
   })
 
   // await pokeSnapshotAPI(setupData.proposal.ensName); // TODO: if the transactions does not happen immediately, we need to poke the snapshot API in some other way later when the transactions is executed to make sure the new space settings is picked up.
@@ -109,7 +103,7 @@ export const setup = async (
  * @returns transaction array
  */
 const deployRealityModuleTxs = async (
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   chainId: number,
   safeAddress: string,
   executorAddress: string,
@@ -118,9 +112,7 @@ const deployRealityModuleTxs = async (
   const bondToken = NETWORKS[chainId as NETWORK].nativeAsset
   const moduleDeploymentParameters: RealityModuleParams = {
     executor: executorAddress,
-    bond: ethers.utils
-      .parseUnits(setupData.oracle.bondData.bond.toString(), bondToken.decimals)
-      .toString(),
+    bond: parseUnits(setupData.oracle.bondData.bond.toString(), bondToken.decimals).toString(),
     timeout: setupData.oracle.delayData.timeout.toString(),
     cooldown: setupData.oracle.delayData.cooldown.toString(),
     expiration: setupData.oracle.delayData.expiration.toString(),
@@ -144,7 +136,7 @@ export const addSafeSnapToSettings = (
   realityModuleAddress: string,
 ) =>
   R.assocPath(
-    ["plugins", "safeSnap"],
+    ['plugins', 'safeSnap'],
     {
       safes: [
         {
@@ -158,7 +150,7 @@ export const addSafeSnapToSettings = (
   )
 
 export const addSafeSnapToSnapshotSpaceTxs = async (
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   ensName: string,
   realityModuleAddress: string,
   chainId: number,
@@ -174,13 +166,13 @@ export const addSafeSnapToSnapshotSpaceTxs = async (
   )
   // validate the new schema
   if (!snapshot.verifyNewSnapshotSettings(originalSpaceSettings, newSpaceSettings)) {
-    throw new Error("The new settings file is changed in unexpected ways")
+    throw new Error('The new settings file is changed in unexpected ways')
   }
 
   // 3. Deploy the modified settings file to IPFS.
-  const cidV0Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV0().toString()
+  // const cidV0Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV0().toString()
   // 4. Pin the new file
-  let cidV0FromPinning = ""
+  let cidV0FromPinning = ''
   try {
     const { cidV0 } = await pinSnapshotSpace({
       snapshotSpaceEnsName: ensName,
@@ -189,29 +181,26 @@ export const addSafeSnapToSnapshotSpaceTxs = async (
     })
     cidV0FromPinning = cidV0
   } catch (e) {
-    throw new Error(
-      "Failed to pin the new snapshot space settings file. Error from backend: " + e,
-    )
+    throw new Error('Failed to pin the new snapshot space settings file. Error from backend: ' + e)
   }
 
-  if (cidV0FromPinning === "" || cidV0FromPinning == null) {
-    throw new Error(
-      "Communication with the backend pinning service failed. No CID was returned.",
-    )
+  if (cidV0FromPinning === '' || cidV0FromPinning == null) {
+    throw new Error('Communication with the backend pinning service failed. No CID was returned.')
   }
 
-  if (cidV0Locale != null && cidV0Locale !== cidV0FromPinning) {
-    throw new Error(
-      `The CID from the locale browser node (${cidV0Locale}) does not correspond the CID from the pinning service (${cidV0FromPinning})`,
-    )
-  }
+  // if (cidV0Locale != null && cidV0Locale !== cidV0FromPinning) {
+  //   throw new Error(
+  //     `The CID from the locale browser node (${cidV0Locale}) does not correspond the CID from the pinning service (${cidV0FromPinning})`,
+  //   )
+  // }
 
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
   const setEnsRecordTx = await setTextRecordTx(
     provider,
     ensName,
-    "snapshot",
-    `ipfs://${cidV0Locale}`,
+    'snapshot',
+    `ipfs://`,
+    // `ipfs://${cidV0Locale}`,
   )
 
   return { txs: [setEnsRecordTx] }

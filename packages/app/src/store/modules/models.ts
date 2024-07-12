@@ -1,39 +1,39 @@
-import { ContractInterface } from "@ethersproject/contracts"
-import { ContractAbis, KnownContracts } from "@gnosis.pm/zodiac"
+import { ContractAbis, KnownContracts } from '@gnosis.pm/zodiac'
+import { Interface, InterfaceAbi } from 'ethers'
 
 export enum ModuleType {
-  TELLOR = "tellor",
-  OPTIMISTIC_GOVERNOR = "optimisticGovernor",
-  REALITY_ETH = "realityETH",
-  REALITY_ERC20 = "realityERC20",
-  DELAY = "delay",
-  BRIDGE = "bridge",
-  EXIT = "exit",
-  ROLES_V1 = "roles_v1",
-  ROLES_V2 = "roles_v2",
-  OZ_GOVERNOR = "ozGovernor",
-  KLEROS_REALITY = "klerosReality",
-  CONNEXT = "connext",
-  UNKNOWN = "unknown",
+  TELLOR = 'tellor',
+  OPTIMISTIC_GOVERNOR = 'optimisticGovernor',
+  REALITY_ETH = 'realityETH',
+  REALITY_ERC20 = 'realityERC20',
+  DELAY = 'delay',
+  BRIDGE = 'bridge',
+  EXIT = 'exit',
+  ROLES_V1 = 'roles_v1',
+  ROLES_V2 = 'roles_v2',
+  OZ_GOVERNOR = 'ozGovernor',
+  KLEROS_REALITY = 'klerosReality',
+  CONNEXT = 'connext',
+  UNKNOWN = 'unknown',
 }
 
 export const MODULE_NAMES: Record<ModuleType, string> = {
-  [ModuleType.TELLOR]: "Tellor Module",
-  [ModuleType.OPTIMISTIC_GOVERNOR]: "UMA oSnap Module",
-  [ModuleType.REALITY_ERC20]: "Reality Module",
-  [ModuleType.REALITY_ETH]: "Reality Module",
-  [ModuleType.KLEROS_REALITY]: "Kleros Reality Module",
-  [ModuleType.UNKNOWN]: "Unknown Module",
-  [ModuleType.BRIDGE]: "Bridge Module",
-  [ModuleType.DELAY]: "Delay Modifier",
-  [ModuleType.ROLES_V1]: "Roles Modifier (v1)",
-  [ModuleType.ROLES_V2]: "Roles Modifier (v2)",
-  [ModuleType.EXIT]: "Exit Module",
-  [ModuleType.OZ_GOVERNOR]: "Governor Module",
-  [ModuleType.CONNEXT]: "Connext Module",
+  [ModuleType.TELLOR]: 'Tellor Module',
+  [ModuleType.OPTIMISTIC_GOVERNOR]: 'UMA oSnap Module',
+  [ModuleType.REALITY_ERC20]: 'Reality Module',
+  [ModuleType.REALITY_ETH]: 'Reality Module',
+  [ModuleType.KLEROS_REALITY]: 'Kleros Reality Module',
+  [ModuleType.UNKNOWN]: 'Unknown Module',
+  [ModuleType.BRIDGE]: 'Bridge Module',
+  [ModuleType.DELAY]: 'Delay Modifier',
+  [ModuleType.ROLES_V1]: 'Roles Modifier (v1)',
+  [ModuleType.ROLES_V2]: 'Roles Modifier (v2)',
+  [ModuleType.EXIT]: 'Exit Module',
+  [ModuleType.OZ_GOVERNOR]: 'Governor Module',
+  [ModuleType.CONNEXT]: 'Connext Module',
 }
 
-export const MODULE_ABIS: Record<ModuleType, ContractInterface> = {
+export const MODULE_ABIS: Record<ModuleType, Interface | InterfaceAbi> = {
   [ModuleType.TELLOR]: ContractAbis[KnownContracts.TELLOR],
   [ModuleType.OPTIMISTIC_GOVERNOR]: ContractAbis[KnownContracts.OPTIMISTIC_GOVERNOR],
   [ModuleType.REALITY_ERC20]: ContractAbis[KnownContracts.REALITY_ERC20],
@@ -69,13 +69,13 @@ export interface ModuleContract {
   implAddress: string
   type: ModuleType
   name?: string
-  abi?: ContractInterface
+  abi?: Interface | InterfaceAbi
 }
 
 export interface ModuleContractMetadata {
   type: ModuleType
   name?: string
-  abi: ContractInterface
+  abi: Interface | InterfaceAbi
 }
 
 export interface DelayModule extends Module {
@@ -139,7 +139,7 @@ export interface ModulesState {
   OzGovernorModuleScreen: boolean
 }
 
-export type Operation = "read" | "write"
+export type Operation = 'read' | 'write'
 
 export interface DataDecoded {
   method: string
@@ -147,10 +147,10 @@ export interface DataDecoded {
 }
 
 export interface MultiSendDataDecoded extends DataDecoded {
-  method: "multiSend"
+  method: 'multiSend'
   parameters: {
-    name: "transactions"
-    type: "bytes"
+    name: 'transactions'
+    type: 'bytes'
     value: string
     valueDecoded: DecodedTransaction[]
   }[]

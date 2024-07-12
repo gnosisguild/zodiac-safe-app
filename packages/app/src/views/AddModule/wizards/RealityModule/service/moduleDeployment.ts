@@ -1,14 +1,10 @@
-import { ethers } from "ethers"
-import { enableModule, getDefaultOracle, TxWitMeta } from "../../../../../services"
-import {
-  deployAndSetUpModule,
-  getModuleInstance,
-  KnownContracts,
-} from "@gnosis.pm/zodiac"
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
-import { buildTransaction } from "services/helpers"
-import { Data as OracleTemplateData } from "../sections/Oracle/components/OracleTemplate"
-import DETERMINISTIC_DEPLOYMENT_HELPER_META from "../../../../../contracts/DeterministicDeploymentHelper.json"
+import { BrowserProvider, ethers, isAddress } from 'ethers'
+import { enableModule, getDefaultOracle, TxWitMeta } from '../../../../../services'
+import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis.pm/zodiac'
+import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
+import { buildTransaction } from 'services/helpers'
+import { Data as OracleTemplateData } from '../sections/Oracle/components/OracleTemplate'
+import DETERMINISTIC_DEPLOYMENT_HELPER_META from '../../../../../contracts/DeterministicDeploymentHelper.json'
 export interface RealityModuleParams {
   executor: string
   oracle?: string
@@ -22,7 +18,7 @@ export interface RealityModuleParams {
 // TODO: Add support for Reality.ETH oracles that is not known (for instance deployed by the caller)
 // using `deployAndSetUpCustomModule` instead of `deployAndSetUpModule`
 export async function deployRealityModule(
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   safeAddress: string,
   deterministicDeploymentHelperAddress: string,
   chainId: number,
@@ -34,8 +30,7 @@ export async function deployRealityModule(
     ? KnownContracts.REALITY_ERC20
     : KnownContracts.REALITY_ETH
   const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
-  const oracleAddress =
-    oracle != null && ethers.utils.isAddress(oracle) ? oracle : getDefaultOracle(chainId)
+  const oracleAddress = oracle != null && isAddress(oracle) ? oracle : getDefaultOracle(chainId)
   if (oracleAddress == null) {
     throw new Error(
       `No oracle address provided and no default oracle available for this chain (chainID: ${chainId})`,
@@ -44,16 +39,16 @@ export async function deployRealityModule(
   const saltNonce = Date.now().toString()
   const initData = {
     types: [
-      "address",
-      "address",
-      "address",
-      "address",
-      "uint32",
-      "uint32",
-      "uint32",
-      "uint256",
-      "uint256",
-      "address",
+      'address',
+      'address',
+      'address',
+      'address',
+      'uint32',
+      'uint32',
+      'uint32',
+      'uint256',
+      'uint256',
+      'address',
     ],
     values: [
       deterministicDeploymentHelperAddress,
@@ -69,8 +64,13 @@ export async function deployRealityModule(
     ],
   }
 
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress } =
-    deployAndSetUpModule(oracleType, initData, provider, chainId, saltNonce)
+  const { transaction: daoModuleDeploymentTx, expectedModuleAddress } = await deployAndSetUpModule(
+    oracleType,
+    initData,
+    provider,
+    chainId,
+    saltNonce,
+  )
 
   const daoModuleTransactions: BaseTransaction[] = [
     {
@@ -81,10 +81,11 @@ export async function deployRealityModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
+    const delayModuleAddress = await delayModule.getAddress()
     const addModuleTransaction = buildTransaction(
       delayModule.interface,
-      delayModule.address,
-      "enableModule",
+      delayModuleAddress,
+      'enableModule',
       [expectedModuleAddress],
     )
 
@@ -101,29 +102,29 @@ export async function deployRealityModule(
   )
 
   const populatedTemplateConfigurationTx =
-    await deterministicSetupHelper.populateTransaction.createTemplateAndChangeOwner(
+    await deterministicSetupHelper.createTemplateAndChangeOwner(
       expectedModuleAddress,
       oracleAddress,
       JSON.stringify({
-        type: "bool",
+        type: 'bool',
         title: template.templateQuestion,
-        category: "DAO proposal",
-        lang: "en",
+        category: 'DAO proposal',
+        lang: 'en',
       }),
       safeAddress,
     )
 
   if (populatedTemplateConfigurationTx.to == null) {
-    throw new Error("Missing to address")
+    throw new Error('Missing to address')
   }
   if (populatedTemplateConfigurationTx.data == null) {
-    throw new Error("Missing data")
+    throw new Error('Missing data')
   }
 
   daoModuleTransactions.push({
     to: populatedTemplateConfigurationTx.to,
     data: populatedTemplateConfigurationTx.data,
-    value: "0",
+    value: '0',
   })
 
   return {

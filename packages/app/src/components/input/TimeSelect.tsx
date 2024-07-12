@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react"
-import { Box, makeStyles, MenuItem, Select } from "@material-ui/core"
-import { BigNumber, BigNumberish } from "ethers"
-import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg"
-import { TextField } from "./TextField"
-import { colors } from "zodiac-ui-components"
-import useKeyPress from "hooks/useKeyPress"
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
-import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined"
+import React, { useEffect, useState } from 'react'
+import { Box, makeStyles, MenuItem, Select } from '@material-ui/core'
+import { BigNumberish } from 'ethers'
+import { ReactComponent as CheckmarkIcon } from '../../assets/icons/checkmark.svg'
+import { TextField } from './TextField'
+import { colors } from 'zodiac-ui-components'
+import useKeyPress from 'hooks/useKeyPress'
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
+import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined'
 
 export const unitConversion = {
   seconds: 1,
@@ -24,8 +24,8 @@ interface TimeSelectProps {
   value?: string
   valueUnit?: Unit
   label: string
-  variant?: "primary" | "secondary" | "error"
-  alertType?: "error" | "warning"
+  variant?: 'primary' | 'secondary' | 'error'
+  alertType?: 'error' | 'warning'
   onChange(time: string, unit: Unit): void
 }
 
@@ -39,28 +39,28 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   item: {
-    display: "flex",
-    flexDirection: "row",
+    display: 'flex',
+    flexDirection: 'row',
     padding: theme.spacing(1.5, 1),
-    "&:not(:last-child)": {
+    '&:not(:last-child)': {
       borderBottomWidth: 1,
-      borderBottomStyle: "solid",
+      borderBottomStyle: 'solid',
       borderBottomColor: theme.palette.primary.light,
     },
-    "& .show-if-selected": {
-      display: "none",
+    '& .show-if-selected': {
+      display: 'none',
     },
-    "&.Mui-selected .show-if-selected": {
-      display: "block",
+    '&.Mui-selected .show-if-selected': {
+      display: 'block',
     },
-    "&.Mui-selected::after": {
+    '&.Mui-selected::after': {
       content: '""',
       right: 0,
       top: 0,
     },
   },
   dropdownContainer: {
-    maxWidth: "120px",
+    maxWidth: '120px',
   },
   dropdown: {
     borderRadius: 8,
@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: 0,
     borderTopWidth: 2,
     borderTopColor: theme.palette.primary.light,
-    borderTopStyle: "solid",
+    borderTopStyle: 'solid',
     marginTop: -1,
   },
   primary: {
@@ -78,36 +78,35 @@ const useStyles = makeStyles((theme) => ({
     borderColor: colors.tan[300],
   },
   error: {
-    background: "rgba(244, 67, 54, 0.1)",
-    borderColor: "rgba(244, 67, 54, 0.3)",
+    background: 'rgba(244, 67, 54, 0.1)',
+    borderColor: 'rgba(244, 67, 54, 0.3)',
   },
   errorIcon: {
-    fill: "rgba(244, 67, 54, 1)",
+    fill: 'rgba(244, 67, 54, 1)',
   },
 }))
 
-function calculateTime(amount: string, unit: Unit): BigNumber {
-  return BigNumber.from(amount).mul(unitConversion[unit])
+function calculateTime(amount: string, unit: Unit): BigInt {
+  return BigInt(amount) * BigInt(unitConversion[unit])
 }
 
 export const TimeSelect = ({
   onChange,
-  defaultUnit = "hours",
-  defaultValue = "0",
+  defaultUnit = 'hours',
+  defaultValue = '0',
   value,
   valueUnit,
   label,
-  variant = "primary",
+  variant = 'primary',
   tooltipMsg,
   alertType,
 }: TimeSelectProps) => {
   const classes = useStyles()
-  const tabPress = useKeyPress("Tab")
+  const tabPress = useKeyPress('Tab')
   const [unit, setUnit] = useState<Unit>(defaultUnit)
   const [amount, setAmount] = useState(
-    BigNumber.from(defaultValue).div(unitConversion[unit]).toString(),
+    (BigInt(defaultValue) / BigInt(unitConversion[unit])).toString(),
   )
-
   const [open, setOpen] = useState(false)
 
   const handleClose = () => setOpen(false)
@@ -117,21 +116,21 @@ export const TimeSelect = ({
 
   const handleAmountChange = (_amount: string) => {
     try {
-      const newAmount = calculateTime(_amount || "0", unit)
+      const newAmount = calculateTime(_amount || '0', unit)
       setAmount(_amount)
       onChange(newAmount.toString(), unit)
     } catch (err) {
-      console.warn("invalid time")
+      console.warn('invalid time')
     }
   }
 
   const handleAdornment = () => {
     if (alertType) {
       switch (alertType) {
-        case "error":
+        case 'error':
           return <ErrorOutlineIcon className={classes.errorIcon} />
 
-        case "warning":
+        case 'warning':
           return <ReportProblemOutlinedIcon className={classes.errorIcon} />
       }
     }
@@ -140,13 +139,13 @@ export const TimeSelect = ({
 
   const handleRoot = () => {
     switch (variant) {
-      case "primary":
+      case 'primary':
         return classes.primary
 
-      case "secondary":
+      case 'secondary':
         return classes.secondary
 
-      case "error":
+      case 'error':
         return classes.error
     }
   }
@@ -165,19 +164,20 @@ export const TimeSelect = ({
 
   useEffect(() => {
     if (selectRef.current) {
-      selectRef.current.addEventListener("keyup", (event) => {
-        if (event.code === "Tab") handleOpen()
+      selectRef.current.addEventListener('keyup', (event) => {
+        if (event.code === 'Tab') handleOpen()
       })
     }
   }, [selectRef])
 
   useEffect(() => {
     if (value && valueUnit) {
-      const parsedValue = BigNumber.from(value).div(unitConversion[valueUnit]).toString()
+      const parsedValue = (BigInt(value) / BigInt(unitConversion[valueUnit])).toString()
+
       if (parsedValue !== amount) {
         setAmount(parsedValue)
       }
-      if (["hours", "days"].includes(unit) && valueUnit !== unit) {
+      if (['hours', 'days'].includes(unit) && valueUnit !== unit) {
         setUnit(valueUnit)
       }
     }
@@ -190,7 +190,7 @@ export const TimeSelect = ({
       tooltipMsg={tooltipMsg}
       InputProps={{
         value: amount,
-        placeholder: "24",
+        placeholder: '24',
         classes: {
           root: handleRoot(),
         },
@@ -209,12 +209,12 @@ export const TimeSelect = ({
           onOpen={handleOpen}
           onClose={handleClose}
           className={`${classes.select} ${
-            variant === "primary" ? classes.primary : classes.secondary
+            variant === 'primary' ? classes.primary : classes.secondary
           }`}
           MenuProps={{
             anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "left",
+              vertical: 'bottom',
+              horizontal: 'left',
             },
             anchorPosition: {
               top: 0,
@@ -233,8 +233,8 @@ export const TimeSelect = ({
           {Object.keys(unitConversion).map((unit) => (
             <MenuItem key={unit} value={unit} className={classes.item}>
               {unit}
-              <Box className="show-if-selected" flexGrow={1} />
-              <CheckmarkIcon className="show-if-selected" />
+              <Box className='show-if-selected' flexGrow={1} />
+              <CheckmarkIcon className='show-if-selected' />
             </MenuItem>
           ))}
         </Select>

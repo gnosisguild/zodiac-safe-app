@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react'
 
-export const Grow = () => {
-  return <div style={{ flexGrow: 1 }} />;
-};
+export const Grow: React.FC = () => {
+  return <div style={{ flexGrow: 1 }} />
+}

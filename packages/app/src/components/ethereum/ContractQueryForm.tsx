@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
-import { FunctionFragment } from "@ethersproject/abi";
+
 import { validateFunctionParams } from "../../utils/contracts";
 import { ParamInputProps } from "./ParamInput";
+import { FunctionFragment } from "ethers";
 
 type ParamValue = { value: any; valid: boolean };
 

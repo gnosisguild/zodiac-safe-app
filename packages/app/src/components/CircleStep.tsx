@@ -9,7 +9,7 @@ type CircleStepProps = {
   disabled?: boolean;
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   circle: {
     padding: 6,
     display: "flex",

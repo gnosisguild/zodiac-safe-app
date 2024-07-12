@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { Box, Grid, InputLabel, makeStyles, MenuItem, Select } from "@material-ui/core"
 import { ParamInput } from "../../components/ethereum/ParamInput"
-import { ParamType } from "@ethersproject/abi"
 import { ReactComponent as CheckmarkIcon } from "../../assets/icons/checkmark.svg"
 import { getArbitrator, ARBITRATOR_OPTIONS } from "../../services"
 import { NETWORK } from "../../utils/networks"
+import { ParamType } from "ethers"
 
 export const arbitratorOptions = {
   NO_ARBITRATOR: "No arbitration (highest bond wins)",
@@ -15,7 +15,6 @@ export const arbitratorOptions = {
 // List of chain IDs where Kleros is available.
 export const klerosAvailability: number[] = [
   NETWORK.MAINNET,
-  NETWORK.GOERLI,
   NETWORK.GNOSIS_CHAIN,
   NETWORK.POLYGON,
   NETWORK.SEPOLIA,

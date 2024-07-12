@@ -1,35 +1,33 @@
-import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
-import { Link } from "components/text/Link"
-import React, { useEffect, useState } from "react"
-import { ZodiacModal, ZodiacPaper } from "zodiac-ui-components"
+import { Button, Divider, Grid, makeStyles, Typography } from '@material-ui/core'
+import { Link } from 'components/text/Link'
+import React, { useEffect, useState } from 'react'
+import { ZodiacModal, ZodiacPaper } from 'zodiac-ui-components'
 import OracleTemplate, {
   Data as OracleTemplateData,
   getDefaultTemplateQuestion,
-} from "./components/OracleTemplate"
-import OracleInstance, { Data as OracleInstanceData } from "./components/OracleInstance"
-import OracleDelay, { Data as OracleDelayData } from "./components/OracleDelay"
-import OracleBond, { Data as OracleBondData, MIN_BOND } from "./components/OracleBond"
-import OracleArbitration, {
-  Data as OracleArbitratorData,
-} from "./components/OracleArbitration"
-import { SectionProps } from "views/AddModule/wizards/RealityModule"
-import { ARBITRATOR_OPTIONS } from "services"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
-import { OracleAlert } from "./components/OracleAlert"
+} from './components/OracleTemplate'
+import OracleInstance, { Data as OracleInstanceData } from './components/OracleInstance'
+import OracleDelay, { Data as OracleDelayData } from './components/OracleDelay'
+import OracleBond, { Data as OracleBondData, MIN_BOND } from './components/OracleBond'
+import OracleArbitration, { Data as OracleArbitratorData } from './components/OracleArbitration'
+import { SectionProps } from 'views/AddModule/wizards/RealityModule'
+import { ARBITRATOR_OPTIONS } from 'services'
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
+import { OracleAlert } from './components/OracleAlert'
 import {
   DEFAULT_COOLDOWN,
   DEFAULT_EXPIRATION,
   DEFAULT_TIMEOUT,
   isValidOracleDelay,
   warningOracleDelay,
-} from "views/AddModule/wizards/RealityModule/utils/oracleValidations"
-import { OracleDelayValidation } from "./components/OracleDelayValidation"
+} from 'views/AddModule/wizards/RealityModule/utils/oracleValidations'
+import { OracleDelayValidation } from './components/OracleDelayValidation'
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   paperContainer: {
@@ -37,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
   },
 
   icon: {
-    fill: "white",
-    width: "20px",
+    fill: 'white',
+    width: '20px',
   },
 
   divider: {
@@ -49,34 +47,34 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 650,
   },
   errorPaperContainer: {
-    width: "100%",
+    width: '100%',
     padding: theme.spacing(1),
-    background: "rgba(0, 0, 0, 0.2)",
+    background: 'rgba(0, 0, 0, 0.2)',
     border: 0,
     borderRadius: 4,
-    display: "inline-block",
-    "& .MuiTypography-root": {
-      fontFamily: "Roboto Mono",
+    display: 'inline-block',
+    '& .MuiTypography-root': {
+      fontFamily: 'Roboto Mono',
     },
   },
 }))
 
 export const ORACLE_MAINNET_OPTIONS = [
   {
-    label: "ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c",
-    value: "ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c",
+    label: 'ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c',
+    value: 'ETH-0x5b7dD1E86623548AF054A4985F7fc8Ccbb554E2c',
   },
   {
-    label: "GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9",
-    value: "GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9",
+    label: 'GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9',
+    value: 'GNO-0x33aa365a53a4c9ba777fb5f450901a8eef73f0a9',
   },
   // { label: "Add Custom Instance", value: "custom" },
 ]
 
 export const ORACLE_GOERLI_OPTIONS = [
   {
-    label: "ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f",
-    value: "ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f",
+    label: 'ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f',
+    value: 'ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f',
   },
   // { label: "Add Custom Instance", value: "custom" },
 ]
@@ -94,40 +92,36 @@ export type OracleSectionData = {
   arbitratorData: OracleArbitratorData
 }
 
-export const OracleSection: React.FC<SectionProps> = ({
-  handleBack,
-  handleNext,
-  setupData,
-}) => {
+export const OracleSection: React.FC<SectionProps> = ({ handleBack, handleNext, setupData }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
   const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_GOERLI_OPTIONS
   const [showModal, setShowModal] = useState<boolean>(false)
   if (setupData?.proposal.ensName == null) {
-    throw new Error("ENS name is not set")
+    throw new Error('ENS name is not set')
   }
   const [templateData, setTemplateData] = useState<OracleTemplateData>({
-    templateType: "default",
-    language: "english",
-    category: "DAO proposal",
+    templateType: 'default',
+    language: 'english',
+    category: 'DAO proposal',
     templateQuestion: getDefaultTemplateQuestion(setupData?.proposal.ensName),
   })
 
   const [instanceData, setInstanceData] = useState<OracleInstanceData>({
-    instanceAddress: options[0].value.substr(options[0].value.indexOf("-") + 1),
-    instanceType: options[0].value.substr(0, options[0].value.indexOf("-")) as
-      | "ETH"
-      | "GNO"
-      | "custom",
+    instanceAddress: options[0].value.substr(options[0].value.indexOf('-') + 1),
+    instanceType: options[0].value.substr(0, options[0].value.indexOf('-')) as
+      | 'ETH'
+      | 'GNO'
+      | 'custom',
   })
 
   const [delayData, setDelayData] = useState<OracleDelayData>({
     timeout: DEFAULT_TIMEOUT,
-    timeoutUnit: "days",
+    timeoutUnit: 'days',
     cooldown: DEFAULT_COOLDOWN,
-    cooldownUnit: "days",
+    cooldownUnit: 'days',
     expiration: DEFAULT_EXPIRATION,
-    expirationUnit: "days",
+    expirationUnit: 'days',
   })
 
   const [bondData, setBondData] = useState<OracleBondData>({
@@ -136,12 +130,12 @@ export const OracleSection: React.FC<SectionProps> = ({
 
   const { timeout, cooldown, expiration } = delayData
   const { bond } = bondData
-  const isValidTimeout = isValidOracleDelay("timeout", timeout)
-  const isValidCooldown = isValidOracleDelay("cooldown", cooldown)
-  const isValidExpiration = isValidOracleDelay("expiration", expiration, cooldown)
-  const isWarningTimeout = warningOracleDelay("timeout", timeout)
-  const isWarningCooldown = warningOracleDelay("cooldown", cooldown)
-  const isWarningExpiration = warningOracleDelay("expiration", expiration)
+  const isValidTimeout = isValidOracleDelay('timeout', timeout)
+  const isValidCooldown = isValidOracleDelay('cooldown', cooldown)
+  const isValidExpiration = isValidOracleDelay('expiration', expiration, cooldown)
+  const isWarningTimeout = warningOracleDelay('timeout', timeout)
+  const isWarningCooldown = warningOracleDelay('cooldown', cooldown)
+  const isWarningExpiration = warningOracleDelay('expiration', expiration)
 
   const [arbitratorData, setArbitratorData] = useState<OracleArbitratorData>({
     arbitratorOption: ARBITRATOR_OPTIONS.NO_ARBITRATOR,
@@ -167,8 +161,7 @@ export const OracleSection: React.FC<SectionProps> = ({
 
   useEffect(() => {
     if (setupData && setupData.oracle) {
-      const { bondData, delayData, instanceData, templateData, arbitratorData } =
-        setupData.oracle
+      const { bondData, delayData, instanceData, templateData, arbitratorData } = setupData.oracle
       setBondData(bondData)
       setDelayData(delayData)
       setInstanceData(instanceData)
@@ -179,34 +172,40 @@ export const OracleSection: React.FC<SectionProps> = ({
 
   if (setupData?.proposal.ensName == null) {
     throw new Error(
-      "The ENS name is not available, it needs to already be in the setupData, before initiating this step.",
+      'The ENS name is not available, it needs to already be in the setupData, before initiating this step.',
     )
   }
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper
+      borderStyle='single'
+      className={classes.paperContainer}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Set up the Oracle</Typography>
+              <Typography variant='h3'>Set up the Oracle</Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Now, it&apos;s time to set up the oracle for your reality module. The
-                oracle ensures the results of proposals are brought accurately on-chain.
-                The Reality.eth oracle uses a mechanism known as the{" "}
+                Now, it&apos;s time to set up the oracle for your reality module. The oracle ensures
+                the results of proposals are brought accurately on-chain. The Reality.eth oracle
+                uses a mechanism known as the{' '}
                 <Link
-                  underline="always"
-                  href="https://reality.eth.limo/app/docs/html/whitepaper.html"
-                  target={"_blank"}
-                  color="inherit"
+                  underline='always'
+                  href='https://reality.eth.limo/app/docs/html/whitepaper.html'
+                  target={'_blank'}
+                  color='inherit'
                 >
                   escalation game
-                </Link>{" "}
-                to generate correct answers that can be used as inputs for smart
-                contracts. The following parameters are very important for your DAO's
-                security and should be considered carefully.
+                </Link>{' '}
+                to generate correct answers that can be used as inputs for smart contracts. The
+                following parameters are very important for your DAO's security and should be
+                considered carefully.
               </Typography>
             </Grid>
           </Grid>
@@ -245,24 +244,18 @@ export const OracleSection: React.FC<SectionProps> = ({
         </Grid>
 
         <Grid item>
-          <Grid container spacing={3} justifyContent="center" alignItems="center">
+          <Grid container spacing={3} justifyContent='center' alignItems='center'>
             <Grid item>
-              <Button
-                size="medium"
-                variant="text"
-                onClick={() => handleBack(collectData())}
-              >
+              <Button size='medium' variant='text' onClick={() => handleBack(collectData())}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
-                disabled={[isValidTimeout, isValidCooldown, isValidExpiration].includes(
-                  false,
-                )}
+                color='secondary'
+                size='medium'
+                variant='contained'
+                disabled={[isValidTimeout, isValidCooldown, isValidExpiration].includes(false)}
                 onClick={validateOracle}
               >
                 Next
@@ -277,40 +270,45 @@ export const OracleSection: React.FC<SectionProps> = ({
         isOpen={showModal}
         onClose={() => setShowModal(!showModal)}
         children={
-          <Grid container spacing={1} direction="column">
+          <Grid container spacing={1} direction='column'>
             <Grid item>
-              <Grid container spacing={1} alignItems="center">
+              <Grid container spacing={1} alignItems='center'>
                 <Grid item>
                   <ErrorOutlineIcon className={classes.icon} />
                 </Grid>
                 <Grid item>
-                  <Typography variant="h4">Security Risk Detected</Typography>
+                  <Typography variant='h4'>Security Risk Detected</Typography>
                 </Grid>
               </Grid>
             </Grid>
 
             <Grid item>
               <Typography>
-                The following security risks have been detected. We highly recommend that
-                you resolve them before moving forward, as these can leave to loss of
-                funds.
+                The following security risks have been detected. We highly recommend that you
+                resolve them before moving forward, as these can leave to loss of funds.
               </Typography>
             </Grid>
 
             <Grid item>
-              <ZodiacPaper borderStyle="single" className={classes.errorPaperContainer}>
-                <OracleDelayValidation type="timeout" delayValue={timeout} />
-                <OracleDelayValidation type="cooldown" delayValue={cooldown} />
+              <ZodiacPaper
+                borderStyle='single'
+                className={classes.errorPaperContainer}
+                placeholder={undefined}
+                onPointerEnterCapture={undefined}
+                onPointerLeaveCapture={undefined}
+              >
+                <OracleDelayValidation type='timeout' delayValue={timeout} />
+                <OracleDelayValidation type='cooldown' delayValue={cooldown} />
                 <OracleDelayValidation
-                  type="expiration"
+                  type='expiration'
                   delayValue={expiration}
                   dependsDelayValue={cooldown}
                 />
                 {bond < MIN_BOND && (
                   <Grid item>
                     <OracleAlert
-                      type={"warning"}
-                      message={"We highly recommend that your bond exceeds 0.1 ETH."}
+                      type={'warning'}
+                      message={'We highly recommend that your bond exceeds 0.1 ETH.'}
                     />
                   </Grid>
                 )}
@@ -322,17 +320,17 @@ export const OracleSection: React.FC<SectionProps> = ({
             </Grid>
 
             <Grid item>
-              <Grid container alignItems="center" justifyContent="center" spacing={3}>
+              <Grid container alignItems='center' justifyContent='center' spacing={3}>
                 <Grid item>
-                  <Button size="medium" onClick={() => handleNext(collectData())}>
+                  <Button size='medium' onClick={() => handleNext(collectData())}>
                     Proceed
                   </Button>
                 </Grid>
                 <Grid item>
                   <Button
-                    color="secondary"
-                    size="medium"
-                    variant="contained"
+                    color='secondary'
+                    size='medium'
+                    variant='contained'
                     onClick={() => setShowModal(false)}
                   >
                     Resolve (Recommended)

@@ -12,12 +12,13 @@ import { getDelayModules } from "../../../../store/modules/selectors"
 import { TimeSelect } from "../../../../components/input/TimeSelect"
 import { ModuleType } from "../../../../store/modules/models"
 import { ParamInput } from "../../../../components/ethereum/ParamInput"
-import { ParamType } from "@ethersproject/abi"
+
 import {
   collateralOptions,
   CollateralSelect,
 } from "../../../../components/input/CollateralSelect"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import { ParamType } from "ethers"
 
 interface OptimisticGovernorModuleModalProps {
   open: boolean
@@ -109,7 +110,7 @@ export const OptimisticGovernorModuleModal = ({
         owner: safe.safeAddress,
         executor: delayModule || safe.safeAddress,
       }
-      const txs = deployOptimisticGovernorModule(
+      const txs = await deployOptimisticGovernorModule(
         provider,
         safe.safeAddress,
         safe.chainId,

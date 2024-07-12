@@ -1,57 +1,61 @@
-import React from "react";
-import { FunctionFragment } from "@ethersproject/abi";
-import { makeStyles } from "@material-ui/core";
-import { ZodiacPaper } from "zodiac-ui-components";
-import { FunctionOutputs } from "../../../hooks/useContractQuery";
-import { Skeleton } from "@material-ui/lab";
-import { formatValue } from "../../../utils/contracts";
+import React from 'react'
+
+import { makeStyles } from '@material-ui/core'
+import { ZodiacPaper } from 'zodiac-ui-components'
+import { FunctionOutputs } from '../../../hooks/useContractQuery'
+import { Skeleton } from '@material-ui/lab'
+import { formatValue } from '../../../utils/contracts'
+import { FunctionFragment } from 'ethers'
 
 interface ContractFunctionResultProps {
-  func: FunctionFragment;
-  loading?: boolean;
-  result?: FunctionOutputs;
+  func: FunctionFragment
+  loading?: boolean
+  result?: FunctionOutputs
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
     color: theme.palette.common.white,
-    fontFamily: "Roboto Mono",
+    fontFamily: 'Roboto Mono',
     fontSize: 12,
     padding: theme.spacing(2),
   },
   item: {
-    "& + &": {
+    '& + &': {
       marginTop: theme.spacing(1),
     },
   },
   label: {
-    color: "rgba(217, 212, 173, 0.9)",
+    color: 'rgba(217, 212, 173, 0.9)',
   },
   value: {
-    overflowWrap: "break-word",
+    overflowWrap: 'break-word',
   },
-}));
+}))
 
 export const ContractFunctionResult = ({
   func,
   loading = false,
   result,
 }: ContractFunctionResultProps) => {
-  const classes = useStyles();
-  if (loading) return <Skeleton variant="rect" height={50} />;
-  if (!result) return null;
+  const classes = useStyles()
+  if (loading) return <Skeleton variant='rect' height={50} />
+  if (!result) return null
   return (
-    <ZodiacPaper className={classes.root}>
+    <ZodiacPaper
+      className={classes.root}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       {func.outputs?.map((param, index) => (
         <div key={index} className={classes.item}>
           <span className={classes.label}>
-            {param.name ? `${param.name} (${param.type})` : param.type}:{" "}
+            {param.name ? `${param.name} (${param.type})` : param.type}:{' '}
           </span>
-          <span className={classes.value}>
-            {formatValue(param.baseType, result[index])}
-          </span>
+          <span className={classes.value}>{formatValue(param.baseType, result)}</span>
         </div>
       ))}
     </ZodiacPaper>
-  );
-};
+  )
+}

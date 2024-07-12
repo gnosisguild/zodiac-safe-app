@@ -1,10 +1,10 @@
-import React, { useState } from "react"
-import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { AddModuleModal } from "../components/AddModuleModal"
-import { deployExitModule, ExitModuleParams } from "../../../../services"
-import { ParamInput } from "../../../../components/ethereum/ParamInput"
-import { ParamType } from "@ethersproject/abi"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import React, { useState } from 'react'
+import { Grid, makeStyles, Typography } from '@material-ui/core'
+import { AddModuleModal } from '../components/AddModuleModal'
+import { deployExitModule, ExitModuleParams } from '../../../../services'
+import { ParamInput } from '../../../../components/ethereum/ParamInput'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import { ParamType } from 'ethers'
 
 interface ExitModuleModalProps {
   open: boolean
@@ -14,17 +14,17 @@ interface ExitModuleModalProps {
   onSubmit?(): void
 }
 
-type ExitModuleParamsInput = Omit<ExitModuleParams, "executor">
+type ExitModuleParamsInput = Omit<ExitModuleParams, 'executor'>
 
 const useStyles = makeStyles((theme) => ({
   fields: {
     marginBottom: theme.spacing(1),
   },
   loadMessage: {
-    textAlign: "center",
+    textAlign: 'center',
   },
   textLink: {
-    cursor: "pointer",
+    cursor: 'pointer',
   },
 }))
 
@@ -36,7 +36,7 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
     tokenContract: false,
   })
   const [params, setParams] = useState<ExitModuleParamsInput>({
-    tokenContract: "",
+    tokenContract: '',
   })
 
   const isValid = Object.values(errors).every((field) => field)
@@ -64,7 +64,7 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
       if (onSubmit) onSubmit()
       if (onClose) onClose()
     } catch (error) {
-      console.log("Error deploying module: ", error)
+      console.log('Error deploying module: ', error)
     }
   }
 
@@ -72,12 +72,12 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="Exit Module"
-      description="This module allows any holders of a designated ERC20, at any time, to redeem their designated ERC20 tokens in exchange for a proportional share of the Safe’s ERC20 compatible assets."
-      icon="exit"
-      tags={["From Gnosis Guild"]}
+      title='Exit Module'
+      description='This module allows any holders of a designated ERC20, at any time, to redeem their designated ERC20 tokens in exchange for a proportional share of the Safe’s ERC20 compatible assets.'
+      icon='exit'
+      tags={['From Gnosis Guild']}
       onAdd={handleAddExitModule}
-      readMoreLink="https://zodiac.wiki/index.php/Category:Exit_Pattern"
+      readMoreLink='https://zodiac.wiki/index.php/Category:Exit_Pattern'
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
@@ -85,11 +85,11 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
           <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
+            param={ParamType.from('address')}
+            color='secondary'
             value={params.tokenContract}
-            label="Token Contract Address"
-            onChange={(value, valid) => onParamChange("tokenContract", value, valid)}
+            label='Token Contract Address'
+            onChange={(value, valid) => onParamChange('tokenContract', value, valid)}
           />
         </Grid>
       </Grid>

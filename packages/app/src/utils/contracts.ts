@@ -1,28 +1,25 @@
-import {
-  defaultAbiCoder,
-  FunctionFragment,
-  Interface,
-  ParamType,
-} from "@ethersproject/abi"
-import memoize from "lodash.memoize"
-import { getNetworkExplorerInfo } from "./explorers"
-import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
+import { AbiCoder, ContractInterface, FunctionFragment, Interface, ParamType } from 'ethers'
+import memoize from 'lodash.memoize'
+import { getNetworkExplorerInfo } from './explorers'
+import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
 import {
   getGenericProxyMaster,
   getModuleContractMetadata,
   getProxyMaster,
   isGenericProxy,
   isGnosisGenericProxy,
-} from "./modulesValidation"
-import { ModuleContract, ModuleType } from "../store/modules/models"
-import retry from "async-retry"
-import { BigNumber, ethers } from "ethers"
-import { ContractInterface } from "@ethersproject/contracts"
-import { getContractsModuleType, getModuleName } from "../store/modules/helpers"
+} from './modulesValidation'
+import { ModuleContract, ModuleType } from '../store/modules/models'
+import retry from 'async-retry'
+import { BrowserProvider } from 'ethers'
+
+import { getContractsModuleType, getModuleName } from '../store/modules/helpers'
+
+const defaultAbiCoder = new AbiCoder()
 
 export function isWriteFunction(method: FunctionFragment) {
   if (!method.stateMutability) return true
-  return !["view", "pure"].includes(method.stateMutability)
+  return !['view', 'pure'].includes(method.stateMutability)
 }
 
 export function isReadFunction(method: FunctionFragment) {
@@ -31,8 +28,9 @@ export function isReadFunction(method: FunctionFragment) {
 
 export function getReadFunction(abi: ContractInterface) {
   const inter = abi instanceof Interface ? abi : new Interface(abi as any)
+
   return inter.fragments
-    .filter(FunctionFragment.isFunctionFragment)
+    .filter(FunctionFragment.isFragment)
     .map(FunctionFragment.from)
     .filter(isReadFunction)
 }
@@ -40,7 +38,7 @@ export function getReadFunction(abi: ContractInterface) {
 export function getWriteFunction(abi: ContractInterface) {
   const inter = abi instanceof Interface ? abi : new Interface(abi as any)
   return inter.fragments
-    .filter(FunctionFragment.isFunctionFragment)
+    .filter(FunctionFragment.isFragment)
     .map(FunctionFragment.from)
     .filter(isWriteFunction)
 }
@@ -51,13 +49,13 @@ export const fetchContractSourceCode = memoize(
       async (bail) => {
         const network = getNetworkExplorerInfo(chainId)
 
-        if (!network) throw new Error("Network data not found")
+        if (!network) throw new Error('Network data not found')
 
         const { apiUrl, apiKey } = network
 
         const urlParams: Record<string, string> = {
-          module: "contract",
-          action: "getsourcecode",
+          module: 'contract',
+          action: 'getsourcecode',
           address: contractAddress,
         }
 
@@ -69,14 +67,14 @@ export const fetchContractSourceCode = memoize(
 
         const response = await fetch(`${apiUrl}?${params}`)
 
-        if (!response.ok) throw new Error("Could not fetch contract source code")
+        if (!response.ok) throw new Error('Could not fetch contract source code')
 
         const { status, result } = await response.json()
-        if (status === "0") throw new Error("Could not fetch contract source code")
+        if (status === '0') throw new Error('Could not fetch contract source code')
 
         const data = result[0] as { ABI: string; ContractName: string }
 
-        if (!data.ContractName) bail(new Error("Contract is not verified"))
+        if (!data.ContractName) bail(new Error('Contract is not verified'))
 
         return data
       },
@@ -90,9 +88,7 @@ export function isBasicFunction(func: FunctionFragment) {
 }
 
 export function isOneResult(func: FunctionFragment) {
-  return (
-    func.outputs?.length === 1 && func.outputs && func.outputs[0]?.baseType !== "array"
-  )
+  return func.outputs?.length === 1 && func.outputs && func.outputs[0]?.baseType !== 'array'
 }
 
 export function validateFunctionParamValue(param: ParamType, value: any): boolean {
@@ -120,16 +116,16 @@ export function validateFunctionParams(func: FunctionFragment, params: any[]): b
  */
 export function formatParamValue(param: ParamType, value: string): any {
   let _value = value
-  if (param.baseType === "array" || param.baseType === "tuple") {
+  if (param.baseType === 'array' || param.baseType === 'tuple') {
     try {
       _value = JSON.parse(_value)
     } catch (e) {
-      throw new Error("Input must be of type " + param.baseType)
+      throw new Error('Input must be of type ' + param.baseType)
     }
   }
 
   if (!validateFunctionParamValue(param, _value)) {
-    throw new Error("Input must be of type " + param.type)
+    throw new Error('Input must be of type ' + param.type)
   }
 
   return _value
@@ -141,11 +137,11 @@ export function formatParamValue(param: ParamType, value: string): any {
  * @param value - Value.
  */
 export function formatDisplayParamValue(param: ParamType, value: any): string {
-  if (param.baseType === "array" || param.baseType === "tuple") {
+  if (param.baseType === 'array' || param.baseType === 'tuple') {
     try {
       return JSON.stringify(value)
     } catch (e) {
-      console.warn("formatDisplayParamValue: value is not an object", value, e)
+      console.warn('formatDisplayParamValue: value is not an object', value, e)
     }
   }
   return value.toString()
@@ -153,7 +149,7 @@ export function formatDisplayParamValue(param: ParamType, value: any): string {
 
 export const getModuleData = memoize(
   async (
-    provider: ethers.providers.JsonRpcProvider,
+    provider: BrowserProvider,
     safeSDK: SafeAppsSDK,
     chainId: number,
     address: string,
@@ -162,27 +158,18 @@ export const getModuleData = memoize(
 
     if (isGenericProxy(bytecode)) {
       const masterAddress = getGenericProxyMaster(bytecode)
-      const module: ModuleContract = await getModuleData(
-        provider,
-        safeSDK,
-        chainId,
-        masterAddress,
-      )
+      const module: ModuleContract = await getModuleData(provider, safeSDK, chainId, masterAddress)
       return { ...module, address }
     }
 
     if (isGnosisGenericProxy(bytecode)) {
       const masterAddress = await getProxyMaster(provider, address, chainId)
-      const module: ModuleContract = await getModuleData(
-        provider,
-        safeSDK,
-        chainId,
-        masterAddress,
-      )
+      const module: ModuleContract = await getModuleData(provider, safeSDK, chainId, masterAddress)
       return { ...module, address }
     }
 
     const type = getContractsModuleType(chainId, address)
+
     if (type !== ModuleType.UNKNOWN) {
       return {
         type,
@@ -207,16 +194,12 @@ export const getModuleData = memoize(
       return { address, implAddress: address, type: ModuleType.UNKNOWN }
     }
   },
-  (sdk, chainId, address, provider) => `${chainId}_${address}_${provider}`,
+  (_sdk, chainId, address, provider) => `${chainId}_${address}_${provider}`,
 )
 
-export function formatValue(
-  baseType: string,
-  value: string | BigNumber | boolean,
-): string {
-  if (baseType === "array" || baseType === "tuple") {
+export function formatValue(baseType: string, value: string | BigInt | boolean): string {
+  if (baseType === 'array' || baseType === 'tuple') {
     value = JSON.stringify(value)
   }
-
   return value.toString()
 }

@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Divider, Grid, Link, makeStyles, Typography } from "@material-ui/core"
-import { CircleStep } from "components/CircleStep"
-import React from "react"
-import { colors, ZodiacPaper } from "zodiac-ui-components"
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward"
-import { Loader } from "@gnosis.pm/safe-react-components"
-import { GovernorWizardProps, SetupData } from "../.."
-import { EXPLORERS_CONFIG } from "utils/explorers"
-import { NETWORK } from "utils/networks"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import { Button, Divider, Grid, Link, makeStyles, Typography } from '@material-ui/core'
+import { CircleStep } from 'components/CircleStep'
+import React from 'react'
+import { colors, ZodiacPaper } from 'zodiac-ui-components'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import { Loader } from '@gnosis.pm/safe-react-components'
+import { GovernorWizardProps, SetupData } from '../..'
+import { EXPLORERS_CONFIG } from 'utils/explorers'
+import { NETWORK } from 'utils/networks'
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
 
 interface OZReviewSectionProps extends GovernorWizardProps {
   goToStep: (step: number) => void
@@ -18,8 +18,8 @@ interface OZReviewSectionProps extends GovernorWizardProps {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   paperContainer: {
@@ -27,44 +27,44 @@ const useStyles = makeStyles((theme) => ({
   },
 
   icon: {
-    fill: "white",
-    cursor: "pointer",
+    fill: 'white',
+    cursor: 'pointer',
   },
   input: {
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
       borderColor: colors.tan[300],
-      "&::before": {
+      '&::before': {
         borderColor: colors.tan[300],
       },
     },
   },
   label: {
-    fontFamily: "Roboto Mono, monospace",
+    fontFamily: 'Roboto Mono, monospace',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   loading: {
-    width: "15px !important",
-    height: "15px !important",
+    width: '15px !important',
+    height: '15px !important',
   },
   value: {
-    fontFamily: "Roboto Mono, monospace",
-    fontWeight: "bold",
-    color: "white",
+    fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 'bold',
+    color: 'white',
   },
   underline: {
-    textDecoration: "underline",
+    textDecoration: 'underline',
   },
 }))
 
 const SECTIONS = [
   {
-    label: "Token",
+    label: 'Token',
     number: 1,
     section: 0,
   },
   {
-    label: "Governor",
+    label: 'Governor',
     number: 2,
     section: 1,
   },
@@ -83,17 +83,21 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
   const { safe } = useSafeAppsSDK()
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper
+      borderStyle='single'
+      className={classes.paperContainer}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       <Grid container spacing={3} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Review</Typography>
+              <Typography variant='h3'>Review</Typography>
             </Grid>
             <Grid item>
-              <Typography>
-                Please take a final look at your OZ Governor Module details.
-              </Typography>
+              <Typography>Please take a final look at your OZ Governor Module details.</Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -108,18 +112,18 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
               <CircleStep
                 label={item.label}
                 number={item.number}
-                disabled={loading || item.label === "Governor"}
+                disabled={loading || item.label === 'Governor'}
                 onClick={() => goToStep(item.section)}
               />
             </Grid>
 
-            {item.label === "Token" && token && (
+            {item.label === 'Token' && token && (
               <>
                 {token.tokenAddress && (
                   <Grid item>
                     <Typography>Voting Token:</Typography>
                     <Link
-                      target="_blank"
+                      target='_blank'
                       href={`${EXPLORERS_CONFIG[safe.chainId as NETWORK]}/token/${
                         token.tokenAddress
                       }`}
@@ -151,7 +155,7 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                 )} */}
               </>
             )}
-            {item.label === "Governor" && governor && (
+            {item.label === 'Governor' && governor && (
               <>
                 <Grid item>
                   <Typography>Name:</Typography>
@@ -171,15 +175,11 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
                 </Grid>
                 <Grid item>
                   <Typography>Proposal Threshold:</Typography>
-                  <Typography className={classes.value}>
-                    {governor.proposalThreshold}%
-                  </Typography>
+                  <Typography className={classes.value}>{governor.proposalThreshold}%</Typography>
                 </Grid>
                 <Grid item>
                   <Typography>Quorum (%):</Typography>
-                  <Typography className={classes.value}>
-                    {governor.quorumPercent}%
-                  </Typography>
+                  <Typography className={classes.value}>{governor.quorumPercent}%</Typography>
                 </Grid>
               </>
             )}
@@ -191,25 +191,20 @@ export const OZReviewSection: React.FC<OZReviewSectionProps> = ({
         ))}
 
         <Grid item>
-          <Grid container spacing={3} justifyContent="center" alignItems="center">
+          <Grid container spacing={3} justifyContent='center' alignItems='center'>
             <Grid item>
-              <Button
-                size="medium"
-                variant="text"
-                onClick={handleBack}
-                disabled={loading}
-              >
+              <Button size='medium' variant='text' onClick={handleBack} disabled={loading}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
+                color='secondary'
+                size='medium'
+                variant='contained'
                 startIcon={
                   loading ? (
-                    <Loader className={classes.loading} size="sm" color="background" />
+                    <Loader className={classes.loading} size='sm' color='background' />
                   ) : (
                     <ArrowUpwardIcon />
                   )

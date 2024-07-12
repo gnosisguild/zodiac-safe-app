@@ -1,23 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react"
-import { FunctionFragment } from "@ethersproject/abi"
-import { Box, makeStyles, Typography } from "@material-ui/core"
-import { Collapsable } from "../../../components/Collapsable"
-import classNames from "classnames"
-import { useContractQuery } from "../../../hooks/useContractQuery"
-import { ContractQueryForm } from "../../../components/ethereum/ContractQueryForm"
-import { ContractFunctionResult } from "./ContractFunctionResult"
-import { ContractFunctionHeader } from "./ContractFunctionHeader"
-import { formatValue, isBasicFunction, isOneResult } from "../../../utils/contracts"
-import { Row } from "../../../components/layout/Row"
-import { ContractFunctionError } from "./ContractFunctionError"
-import { ReactComponent as PlayIcon } from "../../../assets/icons/play-icon.svg"
-import { ActionButton } from "../../../components/ActionButton"
-import { ParamInput } from "../../../components/ethereum/ParamInput"
-import { useRootSelector } from "../../../store"
-import { getReloadCount } from "../../../store/modules/selectors"
-import { ArrowIcon } from "../../../components/icons/ArrowIcon"
-import { Grow } from "../../../components/layout/Grow"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import React, { useCallback, useEffect, useState } from 'react'
+import { Box, makeStyles, Typography } from '@material-ui/core'
+import { Collapsable } from '../../../components/Collapsable'
+import classNames from 'classnames'
+import { useContractQuery } from '../../../hooks/useContractQuery'
+import { ContractQueryForm } from '../../../components/ethereum/ContractQueryForm'
+import { ContractFunctionResult } from './ContractFunctionResult'
+import { ContractFunctionHeader } from './ContractFunctionHeader'
+import { formatValue, isBasicFunction, isOneResult } from '../../../utils/contracts'
+import { Row } from '../../../components/layout/Row'
+import { ContractFunctionError } from './ContractFunctionError'
+import { ReactComponent as PlayIcon } from '../../../assets/icons/play-icon.svg'
+import { ActionButton } from '../../../components/ActionButton'
+import { ParamInput } from '../../../components/ethereum/ParamInput'
+import { useRootSelector } from '../../../store'
+import { getReloadCount } from '../../../store/modules/selectors'
+import { ArrowIcon } from '../../../components/icons/ArrowIcon'
+import { Grow } from '../../../components/layout/Grow'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import { FunctionFragment } from 'ethers'
 
 interface ContractFunctionBlockProps {
   address: string
@@ -26,7 +26,7 @@ interface ContractFunctionBlockProps {
 
 const useStyles = makeStyles((theme) => ({
   clickable: {
-    cursor: "pointer",
+    cursor: 'pointer',
   },
   expandIcon: {
     marginLeft: theme.spacing(2),
@@ -42,10 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const ContractFunctionQueryBlock = ({
-  address,
-  func,
-}: ContractFunctionBlockProps) => {
+export const ContractFunctionQueryBlock = ({ address, func }: ContractFunctionBlockProps) => {
   const classes = useStyles()
   const reloadCount = useRootSelector(getReloadCount)
   const { safe, provider } = useSafeAppsSDKWithProvider()
@@ -58,9 +55,9 @@ export const ContractFunctionQueryBlock = ({
   const isBasic = isBasicFunction(func)
   const oneResult = isOneResult(func)
 
-  const baseType = oneResult && func.outputs ? func.outputs[0].baseType : ""
-  const resultLength =
-    result === undefined || !oneResult ? 0 : formatValue(baseType, result[0]).length
+  const baseType = oneResult && func.outputs ? func.outputs[0].baseType : ''
+
+  const resultLength = result === undefined || !oneResult ? 0 : formatValue(baseType, result).length
 
   const execQuery = useCallback(
     (params?: any[]) => {
@@ -118,23 +115,25 @@ export const ContractFunctionQueryBlock = ({
   )
 
   return (
-    <Collapsable open={open && collapsable} content={content}>
-      <Row
-        style={{ alignItems: "center" }}
-        className={classNames({ [classes.clickable]: collapsable })}
-        onClick={() => setOpen(!open)}
-      >
-        <Typography className={classes.title}>{func.name}</Typography>
-        <Grow />
-        <ContractFunctionHeader
-          func={func}
-          result={result}
-          loading={loading}
-          date={lastQueryDate}
-          showResult={showResultOnHeader}
-        />
-        {collapsable ? <ArrowIcon up={open} className={classes.expandIcon} /> : null}
-      </Row>
-    </Collapsable>
+    <>
+      <Collapsable open={open && collapsable} content={content}>
+        <Row
+          style={{ alignItems: 'center' }}
+          className={classNames({ [classes.clickable]: collapsable })}
+          onClick={() => setOpen(!open)}
+        >
+          <Typography className={classes.title}>{func.name}</Typography>
+          <Grow />
+          <ContractFunctionHeader
+            func={func}
+            result={result}
+            loading={loading}
+            date={lastQueryDate}
+            showResult={showResultOnHeader}
+          />
+          {collapsable ? <ArrowIcon up={open} className={classes.expandIcon} /> : null}
+        </Row>
+      </Collapsable>
+    </>
   )
 }
