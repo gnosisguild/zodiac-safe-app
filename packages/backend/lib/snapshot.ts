@@ -10,6 +10,7 @@ const CHAIN_ID_SEPOLIA = 11155111
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
 export const getSnapshotSpaceSettings = async (ensName: string, chainId: number) => {
+  console.log("chainId", chainId)
   await updateSnapshotCache(ensName, chainId) // make sure that the returned snapshot space settings is the newest version
   const res = await fetch(`${getHubUrl(chainId)}/api/spaces/${ensName}`)
   if (res.ok) {
