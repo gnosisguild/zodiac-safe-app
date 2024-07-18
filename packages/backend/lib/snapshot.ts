@@ -6,7 +6,6 @@ const SNAPSHOT_HUB = "https://hub.snapshot.org"
 const TESTNET_SNAPSHOT_HUB = "https://testnet.snapshot.org"
 const SNAPSHOT_SPACE = "https://snapshot.org"
 const DEMO_SNAPSHOT_SPACE = "https://demo.snapshot.org"
-const CHAIN_ID_GOERLI = 5
 const CHAIN_ID_SEPOLIA = 11155111
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
@@ -47,11 +46,7 @@ export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: an
   )
 
 const getHubUrl = (chainId: number) =>
-  chainId === CHAIN_ID_GOERLI || chainId === CHAIN_ID_SEPOLIA
-    ? TESTNET_SNAPSHOT_HUB
-    : SNAPSHOT_HUB
+  chainId === CHAIN_ID_SEPOLIA ? TESTNET_SNAPSHOT_HUB : SNAPSHOT_HUB
 
 export const getSnapshotSpaceUrl = (chainId: number, ensName: string) =>
-  (chainId === CHAIN_ID_GOERLI || chainId === CHAIN_ID_SEPOLIA
-    ? DEMO_SNAPSHOT_SPACE
-    : SNAPSHOT_SPACE) + `/#/${ensName}`
+  (chainId === CHAIN_ID_SEPOLIA ? DEMO_SNAPSHOT_SPACE : SNAPSHOT_SPACE) + `/#/${ensName}`
