@@ -14,7 +14,7 @@ import {
   DelayModule,
   Module,
   MODULE_NAMES,
-
+  ModuleContract,
   ModuleOperation,
   ModuleType,
   MultiSendDataDecoded,
@@ -44,10 +44,6 @@ export const sanitizeModule = async (
   parentModulesList: string[] = [moduleAddress],
 ): Promise<Module> => {
   const module = await getModuleData(provider, sdk, chainId, moduleAddress)
-
-  if (!module.abi) {
-    throw new Error('[sanitizeModule] - error with the abi')
-  }
   if (module.type === ModuleType.DELAY) {
     return await fetchDelayModule(provider, moduleAddress, sdk, chainId, parentModule)
   }
@@ -61,7 +57,7 @@ export const sanitizeModule = async (
     parentModulesList,
   )
 
-  const owner = await fetchModuleOwner(provider, moduleAddress, module.abi, chainId)
+  const owner = await fetchModuleOwner(provider, moduleAddress, module.abi as Interface, chainId)
 
   return {
     owner,
@@ -149,7 +145,7 @@ export async function fetchDelayModule(
 export async function fetchSubModules(
   provider: BrowserProvider,
   moduleAddress: string,
-  abi: Interface | InterfaceAbi,
+  abi: Interface | InterfaceAbi | ModuleContract['abi'],
   sdk: SafeAppsSDK,
   chainId: number,
   parentModulesList: string[] = [],
