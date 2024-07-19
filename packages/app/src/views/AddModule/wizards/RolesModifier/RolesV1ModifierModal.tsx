@@ -78,7 +78,7 @@ export const RolesV1ModifierModal = ({ open, onClose, onSubmit }: RolesModifierM
       icon='roles'
       tags={['Deprecated', 'Stackable', 'From Gnosis Guild']}
       onAdd={handleAddRolesModifier}
-      readMoreLink='https://zodiac.wiki/index.php/Category:Roles_Modifier'
+      readMoreLink='https://www.zodiac.wiki/documentation/roles-modifier'
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
