@@ -9,6 +9,7 @@ import SafeAppsSDK, { SafeInfo } from '@gnosis.pm/safe-apps-sdk'
 import * as snapshot from '../../../../../services/snapshot'
 import { deployRealityModule, RealityModuleParams } from './moduleDeployment'
 import { pinSnapshotSpace } from './snapshot-space-pinning'
+import { setUpMonitoring } from './monitoring'
 const MULTI_SEND_CONTRACT = import.meta.env.VITE_MULTI_SEND_CONTRACT
 export const DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS = '0x0961F418E0B6efaA073004989EF1B2fd1bc4a41c' // needs to be deployed on all networks supported by the Reality Module
 
@@ -35,6 +36,7 @@ export const addSafeSnapToSnapshotSpaceTxs = async (
 
   // 3. Deploy the modified settings file to IPFS.
   // const cidV0Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV0().toString()
+  
   // 4. Pin the new file
   let cidV0FromPinning = ''
   try {
@@ -135,15 +137,15 @@ export const setup = async (
 
     const txs = [...deploymentRealityModuleTxsMm.txs, ...safeSnapTxs]
 
-    // statusCallback('Setting up monitoring with OZ Defender')
-    // await setUpMonitoring(
-    //   safeInfo.chainId as NETWORK,
-    //   realityModuleAddress,
-    //   setupData.oracle.instanceData.instanceAddress,
-    //   setupData.monitoring,
-    // ).catch((e) => {
-    //   statusCallback('Error when setting up monitoring.', e)
-    // })
+    statusCallback('Setting up monitoring with OZ Defender')
+    await setUpMonitoring(
+      safeInfo.chainId as NETWORK,
+      realityModuleAddress,
+      setupData.oracle.instanceData.instanceAddress,
+      setupData.monitoring,
+    ).catch((e) => {
+      statusCallback('Error when setting up monitoring.', e)
+    })
 
     statusCallback('Proposing transactions to the Safe')
     await safeSdk.txs.send({ txs }).catch((e) => {

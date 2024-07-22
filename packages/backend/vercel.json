@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/monitoring/notification.ts": {
-      "maxDuration": 60
-    }
-  }
-}

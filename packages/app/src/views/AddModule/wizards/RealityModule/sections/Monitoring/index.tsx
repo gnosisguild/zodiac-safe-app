@@ -243,7 +243,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
                 Open Zeppelin guide {''}
                 <Link
                   underline='always'
-                  href='https://docs.openzeppelin.com/defender/guide-factory#generate-api-key'
+                  href='https://docs.openzeppelin.com/defender/v2/manage.html#relayer-api-keys'
                   target={'_blank'}
                   color='inherit'
                 >

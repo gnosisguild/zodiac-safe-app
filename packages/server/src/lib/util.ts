@@ -2,9 +2,11 @@ import JSZip from "jszip"
 
 export const getEnv = (name: string) => {
   const val = process.env[name]
-  if (val == null) {
+
+  if (val === null) {
     throw new Error("Missing environment variable: " + name)
   }
+  console.log("val", process.env.TZ)
   return val
 }
 
