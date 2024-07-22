@@ -9,30 +9,30 @@ import {
   // Radio,
   // RadioGroup,
   Typography,
-} from "@material-ui/core"
+} from '@material-ui/core'
 
-import { Link } from "components/text/Link"
-import React, { useEffect, useState } from "react"
+import { Link } from 'components/text/Link'
+import React, { useEffect, useState } from 'react'
 // import useSpace from "services/snapshot/hooks/useSpace"
-import { checkIfIsController, checkIfIsOwner } from "services/ens"
-import { SectionProps } from "views/AddModule/wizards/RealityModule"
-import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
-import ProposalStatus from "./components/ProposalStatus"
-import * as snapshot from "services/snapshot"
-import {
-  handleProposalStatus,
-  handleProposalStatusMessage,
-} from "utils/proposalValidation"
-import { Loader } from "@gnosis.pm/safe-react-components"
-import DoneIcon from "@material-ui/icons/Done"
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import { safeAppUrl } from "utils/url"
+import { checkIfIsController, checkIfIsOwner } from 'services/ens'
+import { SectionProps } from 'views/AddModule/wizards/RealityModule'
+import { colors, ZodiacPaper, ZodiacTextField } from 'zodiac-ui-components'
+import ProposalStatus from './components/ProposalStatus'
+import * as snapshot from 'services/snapshot'
+import { handleProposalStatus, handleProposalStatusMessage } from 'utils/proposalValidation'
+import { Loader } from '@gnosis.pm/safe-react-components'
+import DoneIcon from '@material-ui/icons/Done'
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import { safeAppUrl } from 'utils/url'
+import useEns from 'hooks/useEns'
+import useDebouncedState from 'hooks/useDebouncedState'
+import { getAddressRecord } from '@ensdomains/ensjs/public'
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
   paperContainer: {
     padding: theme.spacing(2),
@@ -40,74 +40,74 @@ const useStyles = makeStyles((theme) => ({
 
   doneIcon: {
     marginRight: 4,
-    fill: "#A8E07E",
-    width: "16px",
+    fill: '#A8E07E',
+    width: '16px',
   },
   errorIcon: {
     marginRight: 4,
-    fill: "rgba(244, 67, 54, 1)",
-    width: "16px",
+    fill: 'rgba(244, 67, 54, 1)',
+    width: '16px',
   },
 
   loadingContainer: {
     marginRight: 4,
     padding: 2,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "50%",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '50%',
     height: 14,
     width: 14,
     border: `1px solid ${colors.tan[300]}`,
   },
   spinner: {
-    width: "8px !important",
-    height: "8px !important",
+    width: '8px !important',
+    height: '8px !important',
     color: `${colors.tan[300]} !important`,
   },
   loading: {
-    width: "15px !important",
-    height: "15px !important",
+    width: '15px !important',
+    height: '15px !important',
     marginRight: 8,
   },
   radio: {
     marginLeft: -2,
     padding: 2,
-    "& ~ .MuiFormControlLabel-label": {
+    '& ~ .MuiFormControlLabel-label': {
       fontSize: 12,
       marginLeft: 4,
     },
-    "&$checked": {
+    '&$checked': {
       color: colors.tan[1000],
     },
   },
   checked: {},
   textSubdued: {
-    color: "rgba(255 255 255 / 70%)",
+    color: 'rgba(255 255 255 / 70%)',
   },
   textFieldSmall: {
-    "& .MuiFormLabel-root": {
+    '& .MuiFormLabel-root': {
       fontSize: 12,
     },
   },
   input: {
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
       borderColor: colors.tan[300],
-      "&::before": {
+      '&::before': {
         borderColor: colors.tan[300],
       },
     },
   },
   inputError: {
-    "& .MuiInputBase-root": {
-      borderColor: "rgba(244, 67, 54, 0.3)",
-      background: "rgba(244, 67, 54, 0.1)",
-      "&::before": {
-        borderColor: "rgba(244, 67, 54, 0.3)",
+    '& .MuiInputBase-root': {
+      borderColor: 'rgba(244, 67, 54, 0.3)',
+      background: 'rgba(244, 67, 54, 0.1)',
+      '&::before': {
+        borderColor: 'rgba(244, 67, 54, 0.3)',
       },
     },
   },
-  errorContainer: { margin: 8, display: "flex", alignItems: "center" },
+  errorContainer: { margin: 8, display: 'flex', alignItems: 'center' },
 }))
 
 export type ProposalSectionData = {
@@ -115,18 +115,12 @@ export type ProposalSectionData = {
   ensName: string
 }
 
-export const ProposalSection: React.FC<SectionProps> = ({
-  handleNext,
-  handleBack,
-  setupData,
-}) => {
+export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack, setupData }) => {
+  const { ensClient } = useEns()
   const { safe, provider } = useSafeAppsSDKWithProvider()
   const classes = useStyles()
-  // const [proposalType, setProposalType] = useState<"snapshot" | "custom">(
-  //   "snapshot"
-  // );
-  const [ensName, setEnsName] = useState<string>("")
-  const [ensAddress, setEnsAddress] = useState<string>("")
+  const [ensName, debouncedEnsName, setEnsName] = useDebouncedState('')
+  const [ensAddress, setEnsAddress] = useState<string>('')
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [isSafesnapInstalled, setIsSafesnapInstalled] = useState<boolean>(false)
   const [isController, setIsController] = useState<boolean>(false)
@@ -142,48 +136,53 @@ export const ProposalSection: React.FC<SectionProps> = ({
   }, [])
 
   useEffect(() => {
-    if (ensName) {
-      if (ensName.includes(".eth")) {
-        setEnsIsValid(true)
-        setLoading(true)
-        const validateInfo = async () => {
-          await validEns()
+    const checkEns = async () => {
+      if (debouncedEnsName && ensClient) {
+        const ensSubgraphRecord = await ensClient.getSubgraphRecords({ name: debouncedEnsName })
+        if (ensSubgraphRecord) {
+          setEnsIsValid(true)
+          setLoading(true)
+          const validateInfo = async () => {
+            await validEns()
+          }
+          validateInfo()
+        } else {
+          setEnsIsValid(false)
+          setIsController(false)
+          setIsOwner(false)
         }
-        validateInfo()
-      } else {
-        setEnsIsValid(false)
-        setIsController(false)
-        setIsOwner(false)
       }
     }
-  }, [ensName])
+    checkEns()
+  }, [debouncedEnsName, ensClient])
 
   const validEns = async () => {
-    const address = await provider.resolveName(ensName)
+    if (!ensClient) return
+    const record = await getAddressRecord(ensClient, { name: debouncedEnsName })
+    const address = record?.value
     if (address) {
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(ensName, safe.chainId)
-      const snapshotSpaceValidation = snapshot.validateSchema(snapshotSpace)
-      const isOwner = await checkIfIsOwner(provider, ensName, safe.safeAddress)
-      const isController = await checkIfIsController(provider, ensName, safe.safeAddress)
+      console.log(snapshotSpace)
+      // const snapshotSpaceValidation = snapshot.validateSchema(snapshotSpace)
+      const isOwner = await checkIfIsOwner(ensClient, ensName, safe.safeAddress)
+      const isController = await checkIfIsController(provider, ensClient, ensName, safe.safeAddress)
       const plugins = snapshotSpace?.plugins
       if (plugins) {
         setIsSafesnapInstalled(plugins.safeSnap ? true : false) // comment out for easy testing
       }
-      if (snapshotSpaceValidation !== true) {
-        console.log(
-          "The current snapshot space is not valid. Valid snapshot space schema. Errors:",
-        )
-        console.log(JSON.stringify(snapshot.validateSchema(snapshotSpace), undefined, 2))
-      }
+      // if (snapshotSpaceValidation !== true) {
+      //   console.log('The current snapshot space is not valid. Valid snapshot space schema. Errors:')
+      //   console.log(JSON.stringify(snapshot.validateSchema(snapshotSpace), undefined, 2))
+      // }
       setHasSnapshot(snapshotSpace ? true : false)
-      setValidSnapshot(snapshotSpaceValidation === true)
+      // setValidSnapshot(snapshotSpaceValidation === true)
       setIsOwner(isOwner)
       setIsController(isController)
       setEnsAddress(address)
       setLoading(false)
       return
     } else {
-      setEnsAddress("")
+      setEnsAddress('')
       setLoading(false)
       setIsOwner(false)
       setIsController(false)
@@ -206,19 +205,19 @@ export const ProposalSection: React.FC<SectionProps> = ({
   // };
 
   const handleEns = (ens: string) => {
-    if (ens === "") {
+    if (ens === '') {
       setIsController(false)
       setIsOwner(false)
       setHasSnapshot(false)
       setValidSnapshot(false)
-      setEnsName("")
+      setEnsName('')
     } else {
       setEnsName(ens)
     }
   }
 
   return (
-        <ZodiacPaper
+    <ZodiacPaper
       borderStyle='single'
       className={classes.paperContainer}
       placeholder={undefined}
@@ -229,22 +228,22 @@ export const ProposalSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Configure Proposal Space</Typography>
+              <Typography variant='h3'>Configure Proposal Space</Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Add your preferred proposal type below to get started. If you&apos;re
-                unsure, we recommend starting with Snapshot.
+                Add your preferred proposal type below to get started. If you&apos;re unsure, we
+                recommend starting with Snapshot.
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
                 Don&apos;t have a snapshot space setup yet?{` `}
                 <Link
-                  underline="always"
+                  underline='always'
                   href={safeAppUrl(safe, `https://snapshot.org/#/setup?step=1`)}
-                  target={"_blank"}
-                  color="inherit"
+                  target={'_blank'}
+                  color='inherit'
                 >
                   Get started here.
                 </Link>
@@ -258,18 +257,18 @@ export const ProposalSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Proposal Configuration
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="body2" className={classes.textSubdued}>
+              <Typography variant='body2' className={classes.textSubdued}>
                 {/* Enter your snapshot space ENS domain below to get started. If
                 you&apos;d prefer to provide a custom proposal integration,
                 select Custom and provide the appropriate URL where the
                 proposals can be viewed publicly. */}
-                Enter your snapshot space ENS domain below to get started. The Safe must
-                be the controller of this ENS domain.
+                Enter your snapshot space ENS domain below to get started. The Safe must be the
+                controller of this ENS domain.
               </Typography>
             </Grid>
             {/* For now we're only use snapshot space */}
@@ -314,11 +313,11 @@ export const ProposalSection: React.FC<SectionProps> = ({
               <ZodiacTextField
                 value={ensName}
                 onChange={({ target }) => handleEns(target.value)}
-                label="Enter the Snapshot ENS name."
-                placeholder="ex: gnosis.eth"
-                borderStyle="double"
+                label='Enter the Snapshot ENS name.'
+                placeholder='ex: gnosis.eth'
+                borderStyle='double'
                 className={`${classes.textFieldSmall} ${
-                  ensName.includes(".eth") &&
+                  ensName.includes('.eth') &&
                   !loading &&
                   (!hasSnapshot || !isController || !isOwner)
                     ? classes.inputError
@@ -328,15 +327,15 @@ export const ProposalSection: React.FC<SectionProps> = ({
                   <>
                     {loading && (
                       <Box className={classes.loadingContainer}>
-                        <Loader size="sm" className={classes.spinner} />
+                        <Loader size='sm' className={classes.spinner} />
                       </Box>
                     )}
-                    {ensName.includes(".eth") &&
+                    {ensName.includes('.eth') &&
                       !loading &&
                       (!hasSnapshot || !isController || !isOwner) && (
                         <ErrorOutlineIcon className={classes.errorIcon} />
                       )}
-                    {ensName.includes(".eth") &&
+                    {ensName.includes('.eth') &&
                       !loading &&
                       hasSnapshot &&
                       isController &&
@@ -350,9 +349,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
               {ensIsValid && (
                 <>
                   <ProposalStatus
-                    type="snapshot"
+                    type='snapshot'
                     status={handleProposalStatus(
-                      "snapshot",
+                      'snapshot',
                       loading,
                       false,
                       false,
@@ -361,7 +360,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       false,
                     )}
                     message={handleProposalStatusMessage(
-                      "snapshot",
+                      'snapshot',
                       false,
                       false,
                       hasSnapshot,
@@ -370,9 +369,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
                     )}
                   />
                   <ProposalStatus
-                    type="safesnap"
+                    type='safesnap'
                     status={handleProposalStatus(
-                      "safesnap",
+                      'safesnap',
                       loading,
                       false,
                       false,
@@ -381,7 +380,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       isSafesnapInstalled,
                     )}
                     message={handleProposalStatusMessage(
-                      "safesnap",
+                      'safesnap',
                       false,
                       false,
                       false,
@@ -390,9 +389,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
                     )}
                   />
                   <ProposalStatus
-                    type="controller"
+                    type='controller'
                     status={handleProposalStatus(
-                      "controller",
+                      'controller',
                       loading,
                       isController,
                       false,
@@ -401,7 +400,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       false,
                     )}
                     message={handleProposalStatusMessage(
-                      "controller",
+                      'controller',
                       isController,
                       false,
                       false,
@@ -410,9 +409,9 @@ export const ProposalSection: React.FC<SectionProps> = ({
                     )}
                   />
                   <ProposalStatus
-                    type="owner"
+                    type='owner'
                     status={handleProposalStatus(
-                      "owner",
+                      'owner',
                       loading,
                       false,
                       isOwner,
@@ -421,7 +420,7 @@ export const ProposalSection: React.FC<SectionProps> = ({
                       false,
                     )}
                     message={handleProposalStatusMessage(
-                      "owner",
+                      'owner',
                       false,
                       isOwner,
                       false,
@@ -449,21 +448,17 @@ export const ProposalSection: React.FC<SectionProps> = ({
           <Divider />
         </Grid>
         <Grid item>
-          <Grid container spacing={3} justifyContent="center" alignItems="center">
+          <Grid container spacing={3} justifyContent='center' alignItems='center'>
             <Grid item>
-              <Button
-                size="medium"
-                variant="text"
-                onClick={() => handleBack(collectSectionData())}
-              >
+              <Button size='medium' variant='text' onClick={() => handleBack(collectSectionData())}>
                 Cancel
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
+                color='secondary'
+                size='medium'
+                variant='contained'
                 disabled={!isController || isSafesnapInstalled}
                 onClick={() => handleNext(collectSectionData())}
               >

@@ -54,7 +54,7 @@ export const ContractFunctionPreviewBlock = ({
         <ContractFunctionHeader
           func={func}
           showResult={shrink}
-          result={shrink ? [getPlaceholderValue(func)] : undefined}
+          result={shrink ? getPlaceholderValue(func) : undefined}
         />
         {!shrink ? <ArrowIcon className={classes.expandIcon} /> : null}
       </Row>

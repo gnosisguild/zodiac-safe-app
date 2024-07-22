@@ -209,7 +209,7 @@ export const RealityModule: React.FC = () => {
             Allows Reality.eth questions to execute a transaction when resolved.{' '}
             <Link
               underline='always'
-              href='https://zodiac.wiki/index.php/Category:Reality_Module'
+              href='https://www.zodiac.wiki/documentation/reality-module'
               target={'_blank'}
               color='inherit'
             >

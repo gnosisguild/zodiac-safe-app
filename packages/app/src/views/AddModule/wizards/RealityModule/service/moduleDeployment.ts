@@ -16,7 +16,6 @@ export interface RealityModuleParams {
 }
 
 // TODO: Add support for Reality.ETH oracles that is not known (for instance deployed by the caller)
-// using `deployAndSetUpCustomModule` instead of `deployAndSetUpModule`
 export async function deployRealityModule(
   provider: BrowserProvider,
   safeAddress: string,
@@ -25,10 +24,8 @@ export async function deployRealityModule(
   args: RealityModuleParams,
   template: OracleTemplateData,
   isERC20?: boolean,
-): Promise<TxWitMeta> {
-  const oracleType: KnownContracts = isERC20
-    ? KnownContracts.REALITY_ERC20
-    : KnownContracts.REALITY_ETH
+): Promise<TxWitMeta>{
+  const type: KnownContracts = isERC20 ? KnownContracts.REALITY_ERC20 : KnownContracts.REALITY_ETH
   const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
   const oracleAddress = oracle != null && isAddress(oracle) ? oracle : getDefaultOracle(chainId)
   if (oracleAddress == null) {
@@ -36,41 +33,39 @@ export async function deployRealityModule(
       `No oracle address provided and no default oracle available for this chain (chainID: ${chainId})`,
     )
   }
-  const saltNonce = Date.now().toString()
-  const initData = {
-    types: [
-      'address',
-      'address',
-      'address',
-      'address',
-      'uint32',
-      'uint32',
-      'uint32',
-      'uint256',
-      'uint256',
-      'address',
-    ],
-    values: [
-      deterministicDeploymentHelperAddress,
-      safeAddress,
-      executor,
-      oracleAddress,
-      timeout,
-      cooldown,
-      expiration,
-      bond,
-      0, // templateId - must use 0 here, will be set up later
-      arbitrator,
-    ],
-  }
-
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress } = await deployAndSetUpModule(
-    oracleType,
-    initData,
-    provider,
-    chainId,
-    saltNonce,
-  )
+  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } =
+    await deployAndSetUpModule(
+      type,
+      {
+        types: [
+          'address',
+          'address',
+          'address',
+          'address',
+          'uint32',
+          'uint32',
+          'uint32',
+          'uint256',
+          'uint256',
+          'address',
+        ],
+        values: [
+          deterministicDeploymentHelperAddress,
+          safeAddress,
+          executor,
+          oracleAddress,
+          timeout,
+          cooldown,
+          expiration,
+          bond,
+          0, // templateId - must use 0 here, will be set up later
+          arbitrator,
+        ],
+      },
+      provider,
+      chainId,
+      Date.now().toString(),
+    )
 
   const daoModuleTransactions: BaseTransaction[] = [
     {
@@ -86,24 +81,24 @@ export async function deployRealityModule(
       delayModule.interface,
       delayModuleAddress,
       'enableModule',
-      [expectedModuleAddress],
+      [daoModuleExpectedAddress],
     )
 
     daoModuleTransactions.push(addModuleTransaction)
   } else {
-    const enableDaoModuleTransaction = enableModule(safeAddress, expectedModuleAddress)
+    const enableDaoModuleTransaction = enableModule(safeAddress, daoModuleExpectedAddress)
     daoModuleTransactions.push(enableDaoModuleTransaction)
   }
-
+  const signer = await provider.getSigner()
   const deterministicSetupHelper = new ethers.Contract(
     deterministicDeploymentHelperAddress,
     DETERMINISTIC_DEPLOYMENT_HELPER_META.abi,
-    provider,
+    signer.provider,
   )
+  console.log('deterministicSetupHelper', deterministicSetupHelper)
 
-  const populatedTemplateConfigurationTx =
-    await deterministicSetupHelper.createTemplateAndChangeOwner(
-      expectedModuleAddress,
+  const populatedTemplateConfigurationTx = await deterministicSetupHelper.createTemplateAndChangeOwner.populateTransaction(
+      daoModuleExpectedAddress,
       oracleAddress,
       JSON.stringify({
         type: 'bool',
@@ -129,6 +124,6 @@ export async function deployRealityModule(
 
   return {
     txs: daoModuleTransactions,
-    meta: { expectedModuleAddress },
+    meta: { daoModuleExpectedAddress },
   }
 }

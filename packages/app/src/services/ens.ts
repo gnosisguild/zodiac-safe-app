@@ -1,5 +1,12 @@
-import { Provider, ethers, getAddress, keccak256, namehash, toUtf8Bytes } from 'ethers'
+import { BrowserProvider, Provider, ethers, getAddress } from 'ethers'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
+import { EnsPublicClient } from '@ensdomains/ensjs'
+import { namehash, normalize } from 'viem/ens'
+//Some apps may show the contract address as the owner. This doesn't affect your ownership.
+enum EnsWrappedContract {
+  MAINNET = '0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401',
+  SEPOLIA = '0x0635513f179D50A207757E05759CbD106d7dFcE8',
+}
 
 /**
  * This only works for domains using a resolver that conforms to the `abiPublicResolver` (like the PublicResolver).
@@ -18,19 +25,21 @@ const abiRegistry = [
   'function resolver(bytes32 node) external view returns (address)',
 ]
 
+const resolverAbi = ['function addr(bytes32 node) external view returns (address)']
+
 const abiImplementation = ['function ownerOf(uint256 tokenId) public view returns (address owner)']
 
 export const setTextRecordTx = async (
-  provider: Provider,
+  signer: ethers.JsonRpcSigner,
   ensName: string,
   key: string,
   content: string,
 ): Promise<BaseTransaction> => {
-  const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, provider)
+  const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, signer)
   const nameHash = namehash(ensName)
   const ensResolver = await ensRegistryContract.resolver(nameHash)
-  const ensResolverContract = new ethers.Contract(ensResolver, abiPublicResolver, provider)
-  const populatedTx = await ensResolverContract.setText(nameHash, key, content)
+  const ensResolverContract = new ethers.Contract(ensResolver, abiPublicResolver, signer)
+  const populatedTx = await ensResolverContract.setText.populateTransaction(nameHash, key, content)
 
   if (populatedTx.to == null) {
     throw new Error('Missing to address')
@@ -46,18 +55,29 @@ export const setTextRecordTx = async (
   }
 }
 
-// the owner of the NFT
-export const checkIfIsOwner = async (provider: Provider, ensName: string, address: string) => {
-  const name = ensName.split('.')[0] // only supports toplevel
-  const labelHash = keccak256(toUtf8Bytes(name))
-  const tokenId = BigInt(labelHash).toString()
-  const ensImplementationContract = new ethers.Contract(
-    ensImplementation,
-    abiImplementation,
-    provider,
-  )
-  const nftOwner = await ensImplementationContract.ownerOf(tokenId)
-  return getAddress(nftOwner) === getAddress(address)
+export const checkIfIsOwner = async (
+  ensClient: EnsPublicClient<any, any>,
+  ensName: string,
+  safeAddress: string,
+): Promise<boolean> => {
+  try {
+    const ownerInstance = await ensClient.getOwner({ name: ensName })
+    const owner = ownerInstance?.owner
+
+    if (!owner) return false
+
+    const normalizedOwner = getAddress(owner)
+    const normalizedSafeAddress = getAddress(safeAddress)
+
+    return (
+      normalizedOwner === normalizedSafeAddress ||
+      normalizedOwner === getAddress(EnsWrappedContract.MAINNET) ||
+      normalizedOwner === getAddress(EnsWrappedContract.SEPOLIA)
+    )
+  } catch (error) {
+    console.error('Error checking owner:', error)
+    return false
+  }
 }
 
 export const getEnsTextRecord = async (ensName: string, recordId: string, provider: Provider) => {
@@ -69,10 +89,28 @@ export const getEnsTextRecord = async (ensName: string, recordId: string, provid
   return record
 }
 
-export const checkIfIsController = async (provider: Provider, ensName: string, address: string) => {
-  const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, provider)
-  const nameHash = namehash(ensName)
-  const owner = await ensRegistryContract.owner(nameHash)
+export const checkIfIsController = async (
+  provider: BrowserProvider,
+  ensClient: EnsPublicClient<any, any>,
+  ensName: string,
+  safeAddress: string,
+) => {
+  if (!provider || !ensClient || !ensName || !safeAddress) {
+    throw new Error('all parameter are required')
+  }
 
-  return getAddress(address) === getAddress(owner)
+  try {
+    const resolverAddress = await ensClient.getResolver({ name: ensName })
+    if (!resolverAddress) {
+      console.warn('invalid ens name')
+      return false
+    }
+    const node = namehash(ensName)
+    const resolverContract = new ethers.Contract(resolverAddress, resolverAbi, provider)
+    const controller = await resolverContract.addr(node)
+    return getAddress(controller) === getAddress(safeAddress)
+  } catch (error) {
+    console.error('Error verifying the ENS controller:', error)
+    return false
+  }
 }

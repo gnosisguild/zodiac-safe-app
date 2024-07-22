@@ -38,12 +38,12 @@ export const fetchModulesList = createAsyncThunk(
     const { provider, safeSDK, safeAddress, chainId } = params
     await provider.ready
     const moduleAddresses = await fetchSafeModulesAddress(provider, safeAddress)
-
     const requests = moduleAddresses.map(async (moduleAddress) => {
       try {
         return await sanitizeModule(provider, moduleAddress, safeSDK, chainId, safeAddress)
       } catch (error) {
-        throw new Error(`Error sanitizing module ${moduleAddress}: ${error}`)
+        console.error('Error:', `Error sanitizing module ${moduleAddress}: ${error}`)
+        // throw new Error(`Error sanitizing module ${moduleAddress}: ${error}`)
       }
     })
     requests.reverse()

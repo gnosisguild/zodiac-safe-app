@@ -10,7 +10,7 @@ import {
   withStyles,
 } from '@material-ui/core'
 import debounce from 'lodash.debounce'
-import { InfuraProvider, ethers, parseUnits } from 'ethers'
+import { InfuraProvider, parseUnits } from 'ethers'
 import { NETWORK, NETWORKS } from 'utils/networks'
 import { getDefaultOracle, getKlerosAddress } from 'services'
 import { AddModuleModal } from '../components/AddModuleModal'
@@ -37,6 +37,8 @@ import { ActionButton } from '../../../../components/ActionButton'
 import { ReactComponent as ArrowUpIcon } from '../../../../assets/icons/arrow-up-icon.svg'
 import { ReactComponent as CheckmarkIcon } from '../../../../assets/icons/checkmark-nofill.svg'
 import { useMonitoringValidation } from '../RealityModule/hooks/useMonitoringValidation'
+import useEns from 'hooks/useEns'
+import { getAddressRecord } from '@ensdomains/ensjs/public'
 
 const SECONDS_IN_DAY = 86400
 
@@ -192,6 +194,7 @@ const PropStatus: React.FC<{
 export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleModalProps) => {
   const classes = useStyles()
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
+  const { ensClient } = useEns()
   // hack to resolve mainnet ENS
   const mainnetProvider = useMemo(() => new InfuraProvider(1, import.meta.env.VITE_INFURA_ID), [])
   const goerliProvider = useMemo(() => new InfuraProvider(5, import.meta.env.VITE_INFURA_ID), [])
@@ -254,10 +257,9 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
   const [deploying, setDeploying] = useState<boolean>(false)
 
   const validateEns = useCallback(async () => {
-    // On production, ENS is mainnet. On Goerli, ENS is resolved in goerli.
-    const ensProvider = safe.chainId === 5 ? goerliProvider : mainnetProvider
-    const address = await ensProvider.resolveName(params.snapshotEns)
-    console.log({ address })
+    if (!ensClient) return
+    const record = await getAddressRecord(ensClient, { name: params.snapshotEns })
+    const address = record?.value
     if (address) {
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(
         params.snapshotEns,
@@ -266,14 +268,15 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
       const daorequirements = await getEnsTextRecord(
         params.snapshotEns,
         'daorequirements',
-        ensProvider,
+        provider,
       )
       setDaorequirements(daorequirements[0])
       setValidEns(snapshotSpace !== undefined)
       if (snapshotSpace !== undefined) {
         setIsSafesnapInstalled(!!snapshotSpace.plugins?.safeSnap)
         const isController = await checkIfIsController(
-          ensProvider,
+          provider,
+          ensClient,
           params.snapshotEns,
           safe.safeAddress,
         )
@@ -398,7 +401,7 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
 
       let txs = [...deploymentRealityModuleTxsMm.txs]
       const realityModuleAddress = deploymentRealityModuleTxsMm.meta
-        ?.expectedModuleAddress as string
+        ?.daoModuleExpectedAddress as string
       // We can only batch the SafeSnap creation when Safe is controller + mainnet
       // Otherwise, just create the module, hope the user got the hint and opened Details
       // to figure out how to set up SafeSnap in the space themselves.
@@ -408,8 +411,9 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
             "The calculated reality module address is 'null'. This should be handled in the 'statusCallback' function.",
           )
         }
+        const signer = await provider.getSigner()
         const { txs: safeSnapTxs } = await addSafeSnapToSnapshotSpaceTxs(
-          provider,
+          signer,
           args.snapshotEns,
           realityModuleAddress,
           safe.chainId,
