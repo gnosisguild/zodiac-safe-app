@@ -139,8 +139,8 @@ export const AddModulesView = () => {
         />
 
         <ModuleButton
-          title='Reality Module'
-          description='Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle'
+          title='Reality Module Wizard'
+          description='Use a wizard to enable on-chain execution based on the outcome of events reported by the Reality.eth oracle'
           icon='reality'
           onClick={() => dispatch(setRealityModuleScreen(true))}
           available={[NETWORK.MAINNET, NETWORK.SEPOLIA].includes(safe.chainId)}
