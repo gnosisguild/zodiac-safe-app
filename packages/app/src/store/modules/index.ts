@@ -9,7 +9,7 @@ import {
 import { getModulesToBeRemoved, getPendingModulesToEnable, sanitizeModule } from './helpers'
 import { getModulesList } from './selectors'
 import { RootState } from '../index'
-import { ethers, BrowserProvider } from 'ethers'
+import { BrowserProvider } from 'ethers'
 
 const initialModulesState: ModulesState = {
   operation: 'read',
@@ -95,6 +95,20 @@ export const fetchPendingModules = createAsyncThunk(
   },
 )
 
+const isModulePresent = (modules: Module[], moduleAddress: string) => {
+  for (const module of modules) {
+    if (module.address === moduleAddress) {
+      return true
+    }
+    if (module.subModules && module.subModules.length > 0) {
+      if (isModulePresent(module.subModules, moduleAddress)) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 export const modulesSlice = createSlice({
   name: 'modules',
   initialState: initialModulesState,
@@ -137,8 +151,7 @@ export const modulesSlice = createSlice({
       state.list = action.payload
       const current = state.current
       if (current) {
-        // Check if current module got removed
-        const isPresent = action.payload.some((module) => module.address === current.address)
+        const isPresent = isModulePresent(action.payload, current.address)
         if (!isPresent) {
           state.current = undefined
         }

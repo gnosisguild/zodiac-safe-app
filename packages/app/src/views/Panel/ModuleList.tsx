@@ -71,7 +71,8 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const safeThreshold = useRootSelector(getSafeThreshold)
   const pendingRemoveTxs = useRootSelector(getPendingRemoveModuleTransactions)
 
-  const handleClick = (module: Module) => {
+  const handleClick = (e: React.MouseEvent, module: Module) => {
+    e.stopPropagation()
     dispatch(setCurrentModule(module))
     dispatch(resetNewTransaction())
   }
@@ -133,7 +134,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
         module={module}
         active={active}
         sub={sub}
-        onClick={() => handleClick(module)}
+        onClick={(e) => handleClick(e, module)}
         children={null}
       />
     )

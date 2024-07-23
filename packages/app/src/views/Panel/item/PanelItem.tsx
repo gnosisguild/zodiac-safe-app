@@ -9,7 +9,7 @@ export interface PanelItemProps {
   sub?: boolean
   image?: React.ReactElement | null
   children: React.ReactNode
-  onClick?(): void
+  onClick?(e: React.MouseEvent): void
 }
 
 export const PANEL_ITEM_CONTENT_HEIGHT = 56
