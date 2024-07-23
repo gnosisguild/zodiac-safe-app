@@ -29,14 +29,10 @@ export const addSafeSnapToSnapshotSpaceTxs = async (
     realityModuleAddress,
   )
 
-  // validate the new schema
-  // if (!snapshot.verifyNewSnapshotSettings(originalSpaceSettings, newSpaceSettings)) {
-  //   throw new Error('The new settings file is changed in unexpected ways')
-  // }
-
   // 3. Deploy the modified settings file to IPFS.
+  // We moved this logic to the backend
   // const cidV0Locale = (await ipfs.add(JSON.stringify(newSpaceSettings))).toV0().toString()
-  
+
   // 4. Pin the new file
   let cidV0FromPinning = ''
   try {
@@ -54,20 +50,7 @@ export const addSafeSnapToSnapshotSpaceTxs = async (
     throw new Error('Communication with the backend pinning service failed. No CID was returned.')
   }
 
-  // if (cidV0Locale != null && cidV0Locale !== cidV0FromPinning) {
-  //   throw new Error(
-  //     `The CID from the locale browser node (${cidV0Locale}) does not correspond the CID from the pinning service (${cidV0FromPinning})`,
-  //   )
-  // }
-
   // 5. Sett the hash of the new setting file in the ENS snapshot record.
-  // const setEnsRecordTx = await ensWalletClient.setTextRecord({
-  //   account: safeAddress as `0x${string}`,
-  //   resolverAddress: ensResolver as `0x${string}`,
-  //   name: ensName,
-  //   key: 'snapshot',
-  //   value: `ipfs://${cidV0FromPinning}`,
-  // })
   const setEnsRecordTx = await setTextRecordTx(
     signer,
     ensName,
