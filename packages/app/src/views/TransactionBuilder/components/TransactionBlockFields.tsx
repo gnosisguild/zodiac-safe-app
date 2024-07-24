@@ -1,23 +1,21 @@
-import React from "react";
-import { FunctionFragment } from "@ethersproject/abi";
-import { Grid } from "@material-ui/core";
-import {
-  ParamInput,
-  ParamInputProps,
-} from "../../../components/ethereum/ParamInput";
-import { DisplayField } from "../../../components/input/DisplayField";
-import { formatDisplayParamValue } from "../../../utils/contracts";
+import React from 'react'
+
+import { Grid } from '@material-ui/core'
+import { ParamInput, ParamInputProps } from '../../../components/ethereum/ParamInput'
+import { DisplayField } from '../../../components/input/DisplayField'
+import { formatDisplayParamValue } from '../../../utils/contracts'
+import { FunctionFragment } from 'ethers'
 
 export type TransactionBlockFieldsProps<Edit = boolean> = Edit extends false
   ? {
-      edit: Edit;
-      func: FunctionFragment;
-      params: any[];
+      edit: Edit
+      func: FunctionFragment
+      params: any[]
     }
   : {
-      edit: Edit;
-      paramInputProps: ParamInputProps[];
-    };
+      edit: Edit
+      paramInputProps: ParamInputProps[]
+    }
 
 export const TransactionBlockFields = (props: TransactionBlockFieldsProps) => {
   const fields = props.edit
@@ -33,11 +31,11 @@ export const TransactionBlockFields = (props: TransactionBlockFieldsProps) => {
             value={formatDisplayParamValue(param, props.params[index])}
           />
         </Grid>
-      ));
+      ))
 
   return (
     <Grid container spacing={2}>
       {fields}
     </Grid>
-  );
-};
+  )
+}

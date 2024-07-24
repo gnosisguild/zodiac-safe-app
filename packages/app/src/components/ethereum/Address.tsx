@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const Address = ({
+export const Address: React.FC<AddressProps> = ({
   address,
   short = false,
   hideCopyBtn = false,
@@ -52,7 +52,7 @@ export const Address = ({
   gutterBottom = false,
   classes: { icon, container } = {},
   TypographyProps,
-}: AddressProps) => {
+}) => {
   const classes = useStyles()
 
   return (

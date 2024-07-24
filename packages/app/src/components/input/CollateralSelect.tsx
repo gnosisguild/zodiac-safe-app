@@ -21,7 +21,6 @@ export function scaleBondDecimals(bond: string, isWeth: boolean): number {
 const optimisticGovernorAvailability: number[] = [
   NETWORK.MAINNET,
   NETWORK.POLYGON,
-  NETWORK.GOERLI,
   NETWORK.GNOSIS_CHAIN,
   NETWORK.OPTIMISM,
   NETWORK.ARBITRUM,

@@ -1,5 +1,4 @@
 import React from "react";
-import { FunctionFragment } from "@ethersproject/abi";
 import { makeStyles, Typography } from "@material-ui/core";
 import { Collapsable } from "../../../components/Collapsable";
 import { ContractFunctionHeader } from "./ContractFunctionHeader";
@@ -7,6 +6,7 @@ import { isBasicFunction, isOneResult } from "../../../utils/contracts";
 import { Row } from "../../../components/layout/Row";
 import { ArrowIcon } from "../../../components/icons/ArrowIcon";
 import { Grow } from "../../../components/layout/Grow";
+import { FunctionFragment } from "ethers";
 
 interface ContractFunctionPreviewBlockProps {
   func: FunctionFragment;
@@ -54,7 +54,7 @@ export const ContractFunctionPreviewBlock = ({
         <ContractFunctionHeader
           func={func}
           showResult={shrink}
-          result={shrink ? [getPlaceholderValue(func)] : undefined}
+          result={shrink ? getPlaceholderValue(func) : undefined}
         />
         {!shrink ? <ArrowIcon className={classes.expandIcon} /> : null}
       </Row>

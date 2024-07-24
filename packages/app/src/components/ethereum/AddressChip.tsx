@@ -1,11 +1,11 @@
-import React from "react";
-import { Chip, ChipProps, makeStyles } from "@material-ui/core";
-import { HashInfo } from "./HashInfo";
-import { shortAddress } from "../../utils/string";
+import React from 'react'
+import { Chip, ChipProps, makeStyles } from '@material-ui/core'
+import { HashInfo } from './HashInfo'
+import { shortAddress } from '../../utils/string'
 
 interface AddressChipProps extends ChipProps {
-  address: string;
-  name?: string;
+  address: string
+  name?: string
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -13,21 +13,21 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   avatar: {
-    "& img": {
+    '& img': {
       width: 20,
       height: 20,
     },
   },
-}));
+}))
 
-export const AddressChip = ({ address, name, ...props }: AddressChipProps) => {
-  const classes = useStyles();
+export const AddressChip: React.FC<AddressChipProps> = ({ address, name, ...props }) => {
+  const classes = useStyles()
   const label = (
     <>
       {name ? <b className={classes.name}>{name}</b> : null}
       {shortAddress(address)}
     </>
-  );
+  )
   return (
     <Chip
       {...props}
@@ -35,12 +35,12 @@ export const AddressChip = ({ address, name, ...props }: AddressChipProps) => {
         <HashInfo
           showAvatar
           showHash={false}
-          avatarSize="sm"
+          avatarSize='sm'
           hash={address}
           className={classes.avatar}
         />
       }
       label={label}
     />
-  );
-};
+  )
+}

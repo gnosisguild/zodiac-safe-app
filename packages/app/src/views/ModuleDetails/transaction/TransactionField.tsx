@@ -3,9 +3,9 @@ import {
   ParamInputProps,
 } from "../../../components/ethereum/ParamInput";
 import React from "react";
-import { FunctionFragment } from "@ethersproject/abi";
+
 import { TimeSelect } from "../../../components/input/TimeSelect";
-import { BigNumberish } from "ethers";
+import { BigNumberish, FunctionFragment } from "ethers";
 
 interface TransactionFieldProps {
   param: ParamInputProps;

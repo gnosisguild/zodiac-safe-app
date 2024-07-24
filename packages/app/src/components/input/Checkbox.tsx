@@ -1,22 +1,18 @@
-import React from "react";
-import {
-  Checkbox as MUICheckbox,
-  CheckboxProps,
-  makeStyles,
-} from "@material-ui/core";
-import { ReactComponent as CheckMarkCheckedIcon } from "../../assets/icons/checkbox-checked.svg";
-import { ReactComponent as CheckMarkUncheckedIcon } from "../../assets/icons/checkbox-unchecked.svg";
+import React from 'react'
+import { Checkbox as MUICheckbox, CheckboxProps, makeStyles } from '@material-ui/core'
+import { ReactComponent as CheckMarkCheckedIcon } from '../../assets/icons/checkbox-checked.svg'
+import { ReactComponent as CheckMarkUncheckedIcon } from '../../assets/icons/checkbox-unchecked.svg'
 
 const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
-    backgroundColor: "transparent !important",
+    backgroundColor: 'transparent !important',
     borderRadius: 0,
   },
-}));
+}))
 
-export const Checkbox = ({ ...props }: CheckboxProps) => {
-  const classes = useStyles();
+export const Checkbox: React.FC<CheckboxProps> = ({ ...props }) => {
+  const classes = useStyles()
 
   return (
     <MUICheckbox
@@ -28,5 +24,5 @@ export const Checkbox = ({ ...props }: CheckboxProps) => {
       classes={{ root: classes.root }}
       {...props}
     />
-  );
-};
+  )
+}

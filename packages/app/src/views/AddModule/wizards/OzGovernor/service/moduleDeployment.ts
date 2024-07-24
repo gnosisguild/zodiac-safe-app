@@ -1,21 +1,21 @@
-import { deployAndSetUpModule, KnownContracts } from "@gnosis.pm/zodiac"
-import { ethers } from "ethers"
-import { enableModule, TxWitMeta } from "services"
-import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
+import { deployAndSetUpModule, KnownContracts } from '@gnosis.pm/zodiac'
+import { BrowserProvider, ethers } from 'ethers'
+import { enableModule, TxWitMeta } from 'services'
+import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
 
-const MULTI_SEND_CONTRACT = process.env.REACT_APP_MULTI_SEND_CONTRACT
+const MULTI_SEND_CONTRACT = import.meta.env.VITE_MULTI_SEND_CONTRACT
 if (MULTI_SEND_CONTRACT == null) {
-  throw new Error("The MULTI_SEND_CONTRACT environment variable is not set.")
+  throw new Error('The MULTI_SEND_CONTRACT environment variable is not set.')
 }
 
 export type CreateTokenArgs = {
   name: string
   symbol: string
-  kind: "ERC20" | "ERC721"
+  kind: 'ERC20' | 'ERC721'
 }
 
 const deployOzGovernorModule = async (
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   safeAddress: string,
   tokenAddress: string,
   name: string,
@@ -26,28 +26,28 @@ const deployOzGovernorModule = async (
 ): Promise<TxWitMeta> => {
   // input validation
   if (safeAddress == null) {
-    throw new Error("No safe address provided")
+    throw new Error('No safe address provided')
   }
   if (tokenAddress == null) {
-    throw new Error("No token address provided")
+    throw new Error('No token address provided')
   }
   if (name == null) {
-    throw new Error("No name provided")
+    throw new Error('No name provided')
   }
   if (votingDelayInBlocks == null) {
-    throw new Error("No voting delay provided")
+    throw new Error('No voting delay provided')
   }
   if (votingPeriodInBlocks == null) {
-    throw new Error("No voting period provided")
+    throw new Error('No voting period provided')
   }
   if (proposalThreshold == null) {
-    throw new Error("No proposal threshold provided")
+    throw new Error('No proposal threshold provided')
   }
   if (quorumPercent == null) {
-    throw new Error("No quorum percent provided")
+    throw new Error('No quorum percent provided')
   }
   if (quorumPercent > 100 || quorumPercent < 0) {
-    throw new Error("Quorum percent must be between 0 and 100")
+    throw new Error('Quorum percent must be between 0 and 100')
   }
 
   const initData = {
@@ -61,19 +61,19 @@ const deployOzGovernorModule = async (
       votingPeriodInBlocks.toString(), // votingPeriod
       proposalThreshold.toString(), // proposalThreshold
       quorumPercent.toString(), // quorum
-      "0", // initialVoteExtension
+      '0', // initialVoteExtension
     ],
     types: [
-      "address",
-      "address",
-      "address",
-      "address",
-      "string",
-      "uint256",
-      "uint256",
-      "uint256",
-      "uint256",
-      "uint64",
+      'address',
+      'address',
+      'address',
+      'address',
+      'string',
+      'uint256',
+      'uint256',
+      'uint256',
+      'uint256',
+      'uint64',
     ],
   }
 
@@ -81,11 +81,11 @@ const deployOzGovernorModule = async (
   const chainId = (await provider.getNetwork()).chainId
 
   const { transaction: deploymentTx, expectedModuleAddress: expectedAddress } =
-    deployAndSetUpModule(
+    await deployAndSetUpModule(
       KnownContracts.OZ_GOVERNOR,
       initData,
       provider,
-      chainId,
+      Number(chainId),
       saltNonce,
     )
 
@@ -101,23 +101,23 @@ const deployOzGovernorModule = async (
 }
 
 export const deployVotesTokenTx = async (
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   safeAddress: string,
   tokenName: string,
   tokenSymbol: string,
-  kind: "ERC20" | "ERC721",
+  kind: 'ERC20' | 'ERC721',
 ): Promise<TxWitMeta> => {
   if (safeAddress == null) {
-    throw new Error("No safe address provided")
+    throw new Error('No safe address provided')
   }
   if (tokenName == null) {
-    throw new Error("No token name provided")
+    throw new Error('No token name provided')
   }
   if (tokenSymbol == null) {
-    throw new Error("No token symbol provided")
+    throw new Error('No token symbol provided')
   }
-  if (kind !== "ERC20" && kind !== "ERC721") {
-    throw new Error("Invalid token kind")
+  if (kind !== 'ERC20' && kind !== 'ERC721') {
+    throw new Error('Invalid token kind')
   }
 
   const initData = {
@@ -126,18 +126,18 @@ export const deployVotesTokenTx = async (
       tokenName, // name
       tokenSymbol, // symbol
     ],
-    types: ["address", "string", "string"],
+    types: ['address', 'string', 'string'],
   }
 
   const saltNonce = Date.now().toString()
   const chainId = (await provider.getNetwork()).chainId
 
   const { transaction: deploymentTx, expectedModuleAddress: expectedAddress } =
-    deployAndSetUpModule(
-      kind === "ERC20" ? KnownContracts.ERC20_VOTES : KnownContracts.ERC721_VOTES,
+    await deployAndSetUpModule(
+      kind === 'ERC20' ? KnownContracts.ERC20_VOTES : KnownContracts.ERC721_VOTES,
       initData,
       provider,
-      chainId,
+      Number(chainId),
       saltNonce,
     )
 
@@ -153,7 +153,7 @@ export const deployVotesTokenTx = async (
 }
 
 export const deployAndEnableOzGovernorModule = async (
-  provider: ethers.providers.JsonRpcProvider,
+  provider: BrowserProvider,
   safeSdk: SafeAppsSDK,
   safeAddress: string,
   name: string,
@@ -165,9 +165,9 @@ export const deployAndEnableOzGovernorModule = async (
   createTokenArgs?: CreateTokenArgs,
 ) => {
   if (tokenAddress == null && createTokenArgs == null) {
-    throw new Error("No token address or create token args provided")
+    throw new Error('No token address or create token args provided')
   } else if (tokenAddress != null && createTokenArgs != null) {
-    throw new Error("Both token address and create token args provided")
+    throw new Error('Both token address and create token args provided')
   }
   const txs = []
   if (createTokenArgs != null) {
@@ -181,14 +181,14 @@ export const deployAndEnableOzGovernorModule = async (
     txs.push(...deployTokenTxs)
 
     if (meta?.expectedAddress == null) {
-      throw new Error("No expected address returned from token deployment")
+      throw new Error('No expected address returned from token deployment')
     }
     tokenAddress = meta.expectedAddress
   }
 
   if (tokenAddress == null) {
     throw new Error(
-      "No token address provided. Should not be possible. Either the token address should be provided or a new token should be deployed.",
+      'No token address provided. Should not be possible. Either the token address should be provided or a new token should be deployed.',
     )
   }
 
@@ -204,13 +204,13 @@ export const deployAndEnableOzGovernorModule = async (
   )
   txs.push(...deployOzGovernorTxs)
   if (meta?.expectedAddress == null) {
-    throw new Error("The expected value is missing")
+    throw new Error('The expected value is missing')
   }
   const enableModuleTx = enableModule(safeAddress, meta.expectedAddress)
   txs.push(enableModuleTx)
 
   return safeSdk.txs.send({ txs: txs }).catch((e) => {
     console.error(e)
-    throw new Error("Error when proposing transactions to the Safe")
+    throw new Error('Error when proposing transactions to the Safe')
   })
 }

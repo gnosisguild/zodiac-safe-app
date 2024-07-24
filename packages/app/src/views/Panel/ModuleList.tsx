@@ -1,25 +1,25 @@
-import { makeStyles, Typography } from "@material-ui/core"
-import React, { useEffect } from "react"
-import { Module } from "../../store/modules/models"
-import { fetchModulesList, setCurrentModule } from "../../store/modules"
-import { useRootDispatch, useRootSelector } from "../../store"
+import { makeStyles, Typography } from '@material-ui/core'
+import React, { useEffect } from 'react'
+import { Module } from '../../store/modules/models'
+import { fetchModulesList, setCurrentModule } from '../../store/modules'
+import { useRootDispatch, useRootSelector } from '../../store'
 import {
   getCurrentModule,
   getIsLoadingModules,
   getPendingModules,
   getPendingRemoveModuleTransactions,
   getSafeThreshold,
-} from "../../store/modules/selectors"
-import { ReactComponent as AvatarEmptyIcon } from "../../assets/icons/avatar-empty.svg"
-import { Skeleton } from "@material-ui/lab"
-import { PANEL_ITEM_HEIGHT, PANEL_ITEM_MARGIN, PanelItem } from "./item/PanelItem"
-import { ModuleItem } from "./item/ModuleItem"
-import { resetNewTransaction } from "../../store/transactionBuilder"
-import { PendingModuleStates } from "./PendingModuleStates"
-import { Column } from "../../components/layout/Column"
-import { isPendingModule } from "../../store/modules/helpers"
-import { ReactComponent as ModuleStackIcon } from "../../assets/icons/module-inherit.svg"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+} from '../../store/modules/selectors'
+import { ReactComponent as AvatarEmptyIcon } from '../../assets/icons/avatar-empty.svg'
+import { Skeleton } from '@material-ui/lab'
+import { PANEL_ITEM_HEIGHT, PANEL_ITEM_MARGIN, PanelItem } from './item/PanelItem'
+import { ModuleItem } from './item/ModuleItem'
+import { resetNewTransaction } from '../../store/transactionBuilder'
+import { PendingModuleStates } from './PendingModuleStates'
+import { Column } from '../../components/layout/Column'
+import { isPendingModule } from '../../store/modules/helpers'
+import { ReactComponent as ModuleStackIcon } from '../../assets/icons/module-inherit.svg'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 
 interface ModuleListProps {
   modules: Module[]
@@ -28,12 +28,12 @@ interface ModuleListProps {
 
 const useStyles = makeStyles((theme) => ({
   subModules: {
-    position: "relative",
+    position: 'relative',
   },
   line: {
-    position: "absolute",
-    borderColor: "#6d6b5a",
-    borderStyle: "solid",
+    position: 'absolute',
+    borderColor: '#6d6b5a',
+    borderStyle: 'solid',
     borderBottomWidth: 2,
     borderLeftWidth: 2,
     borderTopWidth: 0,
@@ -44,18 +44,18 @@ const useStyles = makeStyles((theme) => ({
     width: 32,
   },
   moduleStackIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: -54,
     zIndex: 100,
-    stroke: "#6d6b5a",
+    stroke: '#6d6b5a',
   },
   emptyModulesText: {
     maxWidth: 200,
   },
   emptyImage: {
-    border: "1px solid rgba(255,255,255,0.2)",
-    borderRadius: "50%",
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '50%',
     padding: theme.spacing(0.5),
   },
 }))
@@ -71,7 +71,8 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
   const safeThreshold = useRootSelector(getSafeThreshold)
   const pendingRemoveTxs = useRootSelector(getPendingRemoveModuleTransactions)
 
-  const handleClick = (module: Module) => {
+  const handleClick = (e: React.MouseEvent, module: Module) => {
+    e.stopPropagation()
     dispatch(setCurrentModule(module))
     dispatch(resetNewTransaction())
   }
@@ -105,7 +106,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (modulesLoading) {
     return (
-      <PanelItem image={<Skeleton variant="circle" width={50} height={50} />}>
+      <PanelItem image={<Skeleton variant='circle' width={50} height={50} />}>
         <Skeleton width={160} height={20} />
         <Skeleton width={100} height={20} />
       </PanelItem>
@@ -114,9 +115,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
 
   if (!modules.length && !pendingModules.length) {
     return (
-      <PanelItem
-        image={<AvatarEmptyIcon className={classes.emptyImage} height={50} width={50} />}
-      >
+      <PanelItem image={<AvatarEmptyIcon className={classes.emptyImage} height={50} width={50} />}>
         <Typography className={classes.emptyModulesText}>
           Modules will appear here once added
         </Typography>
@@ -135,7 +134,8 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
         module={module}
         active={active}
         sub={sub}
-        onClick={() => handleClick(module)}
+        onClick={(e) => handleClick(e, module)}
+        children={null}
       />
     )
   })
@@ -155,9 +155,7 @@ export const ModuleList = ({ modules, sub = false }: ModuleListProps) => {
         6
       return <div key={index} className={classes.line} style={{ height }} />
     })
-    const arrow = modules.length ? (
-      <ModuleStackIcon className={classes.moduleStackIcon} />
-    ) : null
+    const arrow = modules.length ? <ModuleStackIcon className={classes.moduleStackIcon} /> : null
     return (
       <div className={classes.subModules}>
         {content}

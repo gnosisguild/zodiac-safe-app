@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react"
-import { useRootDispatch, useRootSelector } from "store"
+import React, { useEffect, useState } from 'react'
+import { useRootDispatch, useRootSelector } from 'store'
 import {
   fetchPendingModules,
   setModuleAdded,
   setRealityModuleScreen,
-} from "../../../../store/modules"
-import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components"
+} from '../../../../store/modules'
+import { BadgeIcon, colors, ZodiacPaper } from 'zodiac-ui-components'
 import {
   Button,
   Divider,
@@ -16,18 +16,18 @@ import {
   StepLabel,
   Stepper,
   Typography,
-} from "@material-ui/core"
-import { TagList } from "components/list/TagList"
-import { Link } from "components/text/Link"
-import OracleSection, { OracleSectionData } from "./sections/Oracle"
-import ProposalSection, { ProposalSectionData } from "./sections/Proposal"
-import ReviewSection from "./sections/Review"
-import classnames from "classnames"
-import MonitoringSection, { MonitoringSectionData } from "./sections/Monitoring"
-import { setup } from "./service/setupService"
-import { getDelayModules, getModulesList } from "store/modules/selectors"
-import { StatusLog } from "./sections/Review/components/SubmittingStatus"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+} from '@material-ui/core'
+import { TagList } from 'components/list/TagList'
+import { Link } from 'components/text/Link'
+import OracleSection, { OracleSectionData } from './sections/Oracle'
+import ProposalSection, { ProposalSectionData } from './sections/Proposal'
+import ReviewSection from './sections/Review'
+import classnames from 'classnames'
+import MonitoringSection, { MonitoringSectionData } from './sections/Monitoring'
+import { setup } from './service/setupService'
+import { getDelayModules, getModulesList } from 'store/modules/selectors'
+import { StatusLog } from './sections/Review/components/SubmittingStatus'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 
 export interface SectionProps {
   handleNext: (
@@ -46,24 +46,19 @@ export type SetupData = {
   review: any
 }
 
-const REALITY_MODULE_STEPS: (keyof SetupData)[] = [
-  "proposal",
-  "oracle",
-  "monitoring",
-  "review",
-]
+const REALITY_MODULE_STEPS: (keyof SetupData)[] = ['proposal', 'oracle', 'monitoring', 'review']
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
     padding: theme.spacing(1.5),
-    overflowY: "auto",
+    overflowY: 'auto',
   },
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
   tag: {
     background: theme.palette.secondary.main,
@@ -75,40 +70,40 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
   },
   step: {
-    "& text": {
-      fontFamily: "Roboto Mono",
+    '& text': {
+      fontFamily: 'Roboto Mono',
     },
-    "& .step-label": {
-      textTransform: "capitalize",
-      display: "inline",
-      fontFamily: "Roboto Mono",
-      "&.clickable": {
-        cursor: "pointer",
-        "&:hover": {
-          textDecoration: "underline",
+    '& .step-label': {
+      textTransform: 'capitalize',
+      display: 'inline',
+      fontFamily: 'Roboto Mono',
+      '&.clickable': {
+        cursor: 'pointer',
+        '&:hover': {
+          textDecoration: 'underline',
         },
       },
     },
   },
   stepperRoot: {
-    backgroundColor: "transparent",
-    border: "none",
+    backgroundColor: 'transparent',
+    border: 'none',
     padding: theme.spacing(0),
-    "& .MuiStepIcon-active": {
+    '& .MuiStepIcon-active': {
       color: theme.palette.secondary.main,
       border: `1px solid ${colors.tan[300]}`,
-      borderRadius: "100%",
+      borderRadius: '100%',
     },
-    "& .MuiStepIcon-completed": {
+    '& .MuiStepIcon-completed': {
       background: theme.palette.text.primary,
       border: `1px solid ${colors.tan[300]}`,
-      borderRadius: "100%",
+      borderRadius: '100%',
       color: theme.palette.secondary.main,
     },
-    "& .Mui-disabled .MuiStepIcon-root": {
+    '& .Mui-disabled .MuiStepIcon-root': {
       color: theme.palette.primary.main,
       border: `1px solid ${colors.tan[300]}`,
-      borderRadius: "100%",
+      borderRadius: '100%',
     },
   },
 }))
@@ -151,16 +146,16 @@ export const RealityModule: React.FC = () => {
     setLoading(true)
     if (setupData == null) {
       setLoading(false)
-      throw new Error("No setup data")
+      throw new Error('No setup data')
     }
     const executorAddress =
-      delayModuleExecutor !== "" || delayModuleExecutor == null
+      delayModuleExecutor !== '' || delayModuleExecutor == null
         ? safeInfo.safeAddress
         : delayModuleExecutor
 
     const statusLogger = (currentStatus: string, error?: Error) => {
       if (error != null) {
-        if (error.name === "OpenError") {
+        if (error.name === 'OpenError') {
           logger.push({
             error: true,
             msg:
@@ -201,25 +196,22 @@ export const RealityModule: React.FC = () => {
         <Grid item>
           <Grid container spacing={2}>
             <Grid item>
-              <BadgeIcon icon={"reality"} size={60} />
+              <BadgeIcon icon={'reality'} size={60} />
             </Grid>
             <Grid item>
-              <Typography variant="h5">Reality Module</Typography>
-              <TagList
-                className={classes.tag}
-                tags={["Stackable", "From Gnosis Guild"]}
-              />
+              <Typography variant='h5'>Reality Module</Typography>
+              <TagList className={classes.tag} tags={['Stackable', 'From Gnosis Guild']} />
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
           <Typography gutterBottom>
-            Allows Reality.eth questions to execute a transaction when resolved.{" "}
+            Allows Reality.eth questions to execute a transaction when resolved.{' '}
             <Link
-              underline="always"
-              href="https://zodiac.wiki/index.php/Category:Reality_Module"
-              target={"_blank"}
-              color="inherit"
+              underline='always'
+              href='https://www.zodiac.wiki/documentation/reality-module'
+              target={'_blank'}
+              color='inherit'
             >
               Read more here.
             </Link>
@@ -229,72 +221,69 @@ export const RealityModule: React.FC = () => {
           <Divider />
         </Grid>
         <Grid item>
-          <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+          <ZodiacPaper
+            borderStyle='single'
+            className={classes.paperContainer}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
             <Grid
               container
-              justifyContent="space-between"
-              alignItems="center"
+              justifyContent='space-between'
+              alignItems='center'
               style={{ marginBottom: 15 }}
             >
               <Grid item>
-                <Typography variant="h4" gutterBottom className={classes.paperTitle}>
+                <Typography variant='h4' gutterBottom className={classes.paperTitle}>
                   Add Reality Module
                 </Typography>
               </Grid>
               <Grid item>
                 <Button
-                  color="secondary"
-                  size="medium"
-                  variant="outlined"
+                  color='secondary'
+                  size='medium'
+                  variant='outlined'
                   onClick={() => dispatch(setRealityModuleScreen(false))}
                 >
                   Cancel
                 </Button>
               </Grid>
             </Grid>
-            <Stepper
-              activeStep={activeStep}
-              className={classes.stepperRoot}
-              orientation="vertical"
-            >
+            <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation='vertical'>
               {REALITY_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
-                  <StepLabel
-                    onClick={() => handleOpenSection(index, label as keyof SetupData)}
-                  >
+                  <StepLabel onClick={() => handleOpenSection(index, label as keyof SetupData)}>
                     <Typography
-                      variant="h6"
-                      className={classnames(
-                        index <= activeStep && "clickable",
-                        "step-label",
-                      )}
+                      variant='h6'
+                      className={classnames(index <= activeStep && 'clickable', 'step-label')}
                     >
                       {label}
-                    </Typography>{" "}
+                    </Typography>{' '}
                   </StepLabel>
                   <StepContent>
-                    {label === "proposal" && (
+                    {label === 'proposal' && (
                       <ProposalSection
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setRealityModuleScreen(false))}
                         setupData={setupData}
                       />
                     )}
-                    {label === "oracle" && (
+                    {label === 'oracle' && (
                       <OracleSection
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
-                    {label === "monitoring" && (
+                    {label === 'monitoring' && (
                       <MonitoringSection
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
-                    {label === "review" && (
+                    {label === 'review' && (
                       <ReviewSection
                         handleNext={handleDone} // this is where we would execute the transactions!!
                         handleBack={navigate(activeStep - 1, label, false)}

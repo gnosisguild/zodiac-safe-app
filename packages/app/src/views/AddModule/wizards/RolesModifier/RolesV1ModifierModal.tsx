@@ -1,15 +1,15 @@
-import React, { useState } from "react"
-import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { AddModuleModal } from "../components/AddModuleModal"
-import { deployRolesV1Modifier, RolesModifierParams } from "services"
-import { ParamInput } from "../../../../components/ethereum/ParamInput"
-import { ParamType } from "@ethersproject/abi"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk"
+import React, { useState } from 'react'
+import { Grid, makeStyles, Typography } from '@material-ui/core'
+import { AddModuleModal } from '../components/AddModuleModal'
+import { deployRolesV1Modifier, RolesModifierParams } from 'services'
+import { ParamInput } from '../../../../components/ethereum/ParamInput'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import { SafeInfo } from '@gnosis.pm/safe-apps-sdk'
 import {
   networkAddresses as multisendNetworkAddresses,
   defaultAddress as defaultMultisendAddress,
-} from "@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json"
+} from '@gnosis.pm/safe-deployments/dist/assets/v1.3.0/multi_send.json'
+import { ParamType } from 'ethers'
 
 interface RolesModifierModalProps {
   open: boolean
@@ -24,15 +24,11 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   loadMessage: {
-    textAlign: "center",
+    textAlign: 'center',
   },
 }))
 
-export const RolesV1ModifierModal = ({
-  open,
-  onClose,
-  onSubmit,
-}: RolesModifierModalProps) => {
+export const RolesV1ModifierModal = ({ open, onClose, onSubmit }: RolesModifierModalProps) => {
   const classes = useStyles()
 
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
@@ -62,7 +58,7 @@ export const RolesV1ModifierModal = ({
 
   const handleAddRolesModifier = async () => {
     try {
-      const txs = deployRolesV1Modifier(provider, safe.safeAddress, safe.chainId, params)
+      const txs = await deployRolesV1Modifier(provider, safe.safeAddress, safe.chainId, params)
 
       await sdk.txs.send({ txs })
 
@@ -77,12 +73,12 @@ export const RolesV1ModifierModal = ({
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="Roles Modifier v1"
-      description="Legacy version of the Roles Modifier"
-      icon="roles"
-      tags={["Deprecated", "Stackable", "From Gnosis Guild"]}
+      title='Roles Modifier v1'
+      description='Legacy version of the Roles Modifier'
+      icon='roles'
+      tags={['Deprecated', 'Stackable', 'From Gnosis Guild']}
       onAdd={handleAddRolesModifier}
-      readMoreLink="https://zodiac.wiki/index.php/Category:Roles_Modifier"
+      readMoreLink='https://www.zodiac.wiki/documentation/roles-modifier'
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
@@ -90,20 +86,20 @@ export const RolesV1ModifierModal = ({
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
           <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
+            param={ParamType.from('address')}
+            color='secondary'
             value={params.target}
-            label="Target Address"
-            onChange={(value, valid) => onParamChange("target", value, valid)}
+            label='Target Address'
+            onChange={(value, valid) => onParamChange('target', value, valid)}
           />
         </Grid>
         <Grid item xs={12}>
           <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
+            param={ParamType.from('address')}
+            color='secondary'
             value={params.multisend}
-            label="Multisend Address"
-            onChange={(value, valid) => onParamChange("multisend", value, valid)}
+            label='Multisend Address'
+            onChange={(value, valid) => onParamChange('multisend', value, valid)}
           />
         </Grid>
       </Grid>

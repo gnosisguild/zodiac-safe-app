@@ -1,9 +1,9 @@
-import React from "react"
-import { makeStyles, Typography } from "@material-ui/core"
-import { ZodiacPaper } from "zodiac-ui-components"
-import { Link } from "../../components/text/Link"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { getNetworkExplorerInfo } from "../../utils/explorers"
+import React from 'react'
+import { makeStyles, Typography } from '@material-ui/core'
+import { ZodiacPaper } from 'zodiac-ui-components'
+import { Link } from '../../components/text/Link'
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
+import { getNetworkExplorerInfo } from '../../utils/explorers'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,21 +17,26 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const ModuleNoAvailable = () => {
+export const ModuleNoAvailable: React.FC = () => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
   const { verifyUrl } = getNetworkExplorerInfo(safe.chainId) || {}
 
   return (
-    <ZodiacPaper borderStyle="double" className={classes.root}>
-      <Typography variant="h5" className={classes.title}>
+    <ZodiacPaper
+      borderStyle='double'
+      className={classes.root}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
+      <Typography variant='h5' className={classes.title}>
         No Read or Write functions available
       </Typography>
       <Typography>
-        We couldn't find an ABI and didn't recognize it as one of the known Zodiac
-        contracts.
+        We couldn't find an ABI and didn't recognize it as one of the known Zodiac contracts.
       </Typography>
-      <Link target="_blank" href={verifyUrl} className={classes.link}>
+      <Link target='_blank' href={verifyUrl} className={classes.link}>
         Verify this contract on Etherscan to fix this.
       </Link>
     </ZodiacPaper>

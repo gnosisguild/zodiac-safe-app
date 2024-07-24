@@ -1,11 +1,11 @@
-import snapshot from "@snapshot-labs/snapshot.js"
-import * as R from "ramda"
-import { NETWORK } from "utils/networks"
+import snapshot from '@snapshot-labs/snapshot.js'
+import * as R from 'ramda'
+import { NETWORK } from 'utils/networks'
 
-const SNAPSHOT_HUB = "https://hub.snapshot.org"
-const SNAPSHOT_HUB_GOERLI = "https://testnet.hub.snapshot.org"
-const SNAPSHOT_SPACE = "https://snapshot.org"
-const SNAPSHOT_SPACE_GOERLI = "https://testnet.snapshot.org"
+const SNAPSHOT_HUB = 'https://hub.snapshot.org'
+const SNAPSHOT_HUB_TEST = 'https://testnet.hub.snapshot.org'
+const SNAPSHOT_SPACE = 'https://snapshot.org'
+const SNAPSHOT_SPACE_TEST = 'https://testnet.snapshot.org'
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
 export const getSnapshotSpaceSettings = async (ensName: string, chainId: number) => {
@@ -36,8 +36,8 @@ export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: an
   R.and(
     // check that there are no unintended changes to the new Snapshot Space settings
     R.equals(
-      R.omit(["plugins", "safeSnap"], originalSettings),
-      R.omit(["plugins", "safeSnap"], newSettings),
+      R.omit(['plugins', 'safeSnap'], originalSettings),
+      R.omit(['plugins', 'safeSnap'], newSettings),
     ),
     // validate the schema
     // we must be strict here, if not a truthy error value can be returned
@@ -45,7 +45,7 @@ export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: an
   )
 
 const getHubUrl = (chainId: number) =>
-  chainId === NETWORK.GOERLI ? SNAPSHOT_HUB_GOERLI : SNAPSHOT_HUB
+  chainId === NETWORK.SEPOLIA ? SNAPSHOT_HUB_TEST : SNAPSHOT_HUB
 
 export const getSnapshotSpaceUrl = (chainId: number, ensName: string) =>
-  (chainId === NETWORK.GOERLI ? SNAPSHOT_SPACE_GOERLI : SNAPSHOT_SPACE) + `/#/${ensName}`
+  (chainId === NETWORK.SEPOLIA ? SNAPSHOT_SPACE_TEST : SNAPSHOT_SPACE) + `/#/${ensName}`

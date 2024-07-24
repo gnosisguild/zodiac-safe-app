@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react"
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import {
   Box,
   Grid,
@@ -8,35 +8,38 @@ import {
   Switch,
   Typography,
   withStyles,
-} from "@material-ui/core"
-import debounce from "lodash.debounce"
-import { ethers } from "ethers"
-import { NETWORK, NETWORKS } from "utils/networks"
-import { getDefaultOracle, getKlerosAddress } from "services"
-import { AddModuleModal } from "../components/AddModuleModal"
-import { TimeSelect } from "components/input/TimeSelect"
-import { colors, ZodiacTextField } from "zodiac-ui-components"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import { deployRealityModule } from "../RealityModule/service/moduleDeployment"
+} from '@material-ui/core'
+import debounce from 'lodash.debounce'
+import { InfuraProvider, parseUnits } from 'ethers'
+import { NETWORK, NETWORKS } from 'utils/networks'
+import { getDefaultOracle, getKlerosAddress } from 'services'
+import { AddModuleModal } from '../components/AddModuleModal'
+import { TimeSelect } from 'components/input/TimeSelect'
+import { colors, ZodiacTextField } from 'zodiac-ui-components'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import { deployRealityModule } from '../RealityModule/service/moduleDeployment'
 import {
   addSafeSnapToSnapshotSpaceTxs,
   DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
-} from "../RealityModule/service/setupService"
+} from '../RealityModule/service/setupService'
 import {
   Data as TemplateData,
   getDefaultTemplateQuestion,
-} from "../RealityModule/sections/Oracle/components/OracleTemplate"
-import * as snapshot from "services/snapshot"
-import { checkIfIsController, getEnsTextRecord } from "services/ens"
-import { Icon, Loader } from "@gnosis.pm/safe-react-components"
-import ErrorOutlineIcon from "@material-ui/icons/ErrorOutline"
-import WarningOutlinedIcon from "@material-ui/icons/WarningOutlined"
-import { MonitoringSectionData } from "../RealityModule/sections/Monitoring"
-import { setUpMonitoring } from "../RealityModule/service/monitoring"
-import { ActionButton } from "../../../../components/ActionButton"
-import { ReactComponent as ArrowUpIcon } from "../../../../assets/icons/arrow-up-icon.svg"
-import { ReactComponent as CheckmarkIcon } from "../../../../assets/icons/checkmark-nofill.svg"
-import { useMonitoringValidation } from "../RealityModule/hooks/useMonitoringValidation"
+} from '../RealityModule/sections/Oracle/components/OracleTemplate'
+import * as snapshot from 'services/snapshot'
+import { checkIfIsController, getEnsTextRecord } from 'services/ens'
+import { Icon, Loader } from '@gnosis.pm/safe-react-components'
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
+import WarningOutlinedIcon from '@material-ui/icons/WarningOutlined'
+import { MonitoringSectionData } from '../RealityModule/sections/Monitoring'
+import { setUpMonitoring } from '../RealityModule/service/monitoring'
+import { ActionButton } from '../../../../components/ActionButton'
+import { ReactComponent as ArrowUpIcon } from '../../../../assets/icons/arrow-up-icon.svg'
+import { ReactComponent as CheckmarkIcon } from '../../../../assets/icons/checkmark-nofill.svg'
+import { useMonitoringValidation } from '../RealityModule/hooks/useMonitoringValidation'
+import useEns from 'hooks/useEns'
+import { getAddressRecord } from '@ensdomains/ensjs/public'
+import DoneIcon from '@material-ui/icons/Done'
 
 const SECONDS_IN_DAY = 86400
 
@@ -56,96 +59,130 @@ interface RealityModuleParams {
   bond: string
 }
 const useStyles = makeStyles((theme) => ({
+  doneIcon: {
+    marginRight: 4,
+    fill: '#A8E07E',
+    width: '16px',
+  },
   errorIcon: {
-    fill: "rgba(244, 67, 54, 1)",
-    width: "20px",
+    fill: 'rgba(244, 67, 54, 1)',
+    width: '20px',
   },
   warningIcon: {
-    fill: "rgba(230, 230, 54, 1)",
-    width: "20px",
+    fill: 'rgba(230, 230, 54, 1)',
+    width: '20px',
   },
   fields: {
     marginBottom: theme.spacing(1),
   },
   loadMessage: {
-    textAlign: "center",
+    textAlign: 'center',
   },
   loadingContainer: {
     marginRight: 4,
     padding: 2,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: "50%",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '50%',
     height: 14,
     width: 14,
     border: `1px solid ${colors.tan[300]}`,
   },
   spinner: {
-    width: "8px !important",
-    height: "8px !important",
-    color: `yellow !important`,
-    fill: `yellow !important`,
-    opacity: "100% !important",
+    width: '8px !important',
+    height: '8px !important',
+    color: `${colors.tan[300]} !important`,
+  },
+  loading: {
+    width: '15px !important',
+    height: '15px !important',
+    marginRight: 8,
   },
   addSpinner: {
     color: `white !important`,
     fill: `white !important`,
-    opacity: "100% !important",
+    opacity: '100% !important',
   },
   detailsContainer: {
-    width: "95%",
+    width: '95%',
   },
   messageContainer: {
-    width: "85%",
-    fill: "rgba(244, 67, 54, 1)",
+    width: '85%',
+    fill: 'rgba(244, 67, 54, 1)',
   },
   errorMessageDetails: {
     fontSize: 12,
-    textDecoration: "underline",
-    cursor: "pointer",
-    color: "rgba(244, 67, 54, 1)",
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    color: 'rgba(244, 67, 54, 1)',
   },
   warningMessageDetails: {
     fontSize: 12,
-    textDecoration: "underline",
-    cursor: "pointer",
-    color: "rgba(230, 230, 54, 1)",
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    color: 'rgba(230, 230, 54, 1)',
+  },
+  textSubdued: {
+    color: 'rgba(255 255 255 / 70%)',
   },
   errorMessage: {
     fontSize: 12,
-    color: "rgba(244, 67, 54, 1)",
-    fontWeight: "bolder",
+    color: 'rgba(244, 67, 54, 1)',
+    fontWeight: 'bolder',
   },
   warningMessage: {
     fontSize: 12,
-    color: "rgba(230, 230, 54, 1)",
+    color: 'rgba(230, 230, 54, 1)',
   },
   linkStyle: {
-    color: "rgba(190, 190, 120, 1)",
+    color: 'white',
   },
   flexRow: {
-    display: "flex",
-    flexDirection: "row",
+    display: 'flex',
+    flexDirection: 'row',
   },
+  textFieldSmall: {
+    '& .MuiFormLabel-root': {
+      fontSize: 12,
+    },
+  },
+  input: {
+    '& .MuiInputBase-root': {
+      borderColor: colors.tan[300],
+      '&::before': {
+        borderColor: colors.tan[300],
+      },
+    },
+  },
+  inputError: {
+    '& .MuiInputBase-root': {
+      borderColor: 'rgba(244, 67, 54, 0.3)',
+      background: 'rgba(244, 67, 54, 0.1)',
+      '&::before': {
+        borderColor: 'rgba(244, 67, 54, 0.3)',
+      },
+    },
+  },
+  errorContainer: { margin: 8, display: 'flex', alignItems: 'center' },
 }))
 
 const CustomSwitch = withStyles({
   switchBase: {
-    "&.Mui-checked": { color: "white" },
+    '&.Mui-checked': { color: 'white' },
   },
   colorSecondary: {
-    "&.Mui-checked + .MuiSwitch-track": {
-      backgroundColor: "yellow",
+    '&.Mui-checked + .MuiSwitch-track': {
+      backgroundColor:  colors.tan[500],
     },
   },
   track: {
-    backgroundColor: "black",
+    backgroundColor: 'black',
   },
 })(Switch)
 
 const PropStatus: React.FC<{
-  status: "error" | "warning" | null
+  status: 'error' | 'warning' | null
   message: string | null
   link?: string
 }> = ({ status, message, link }) => {
@@ -153,20 +190,16 @@ const PropStatus: React.FC<{
 
   return (
     status && (
-      <Grid container spacing={1} alignItems="center">
+      <Grid container spacing={1} alignItems='center'>
         <Grid item xs={1}>
-          {status === "error" && <ErrorOutlineIcon className={classes.errorIcon} />}
-          {status === "warning" && (
-            <WarningOutlinedIcon className={classes.warningIcon} />
-          )}
+          {status === 'error' && <ErrorOutlineIcon className={classes.errorIcon} />}
+          {status === 'warning' && <WarningOutlinedIcon className={classes.warningIcon} />}
         </Grid>
         <Grid item className={classes.detailsContainer} xs={11}>
-          <Grid container justifyContent="space-between" alignItems="center">
+          <Grid container justifyContent='space-between' alignItems='center'>
             <Grid item className={classes.messageContainer}>
               <Typography
-                className={
-                  status === "error" ? classes.errorMessage : classes.warningMessage
-                }
+                className={status === 'error' ? classes.errorMessage : classes.warningMessage}
               >
                 {message}
               </Typography>
@@ -175,12 +208,10 @@ const PropStatus: React.FC<{
               <Grid item>
                 <Link
                   className={
-                    status === "error"
-                      ? classes.errorMessageDetails
-                      : classes.warningMessageDetails
+                    status === 'error' ? classes.errorMessageDetails : classes.warningMessageDetails
                   }
                   href={link}
-                  target="_blank"
+                  target='_blank'
                 >
                   Details
                 </Link>
@@ -195,41 +226,32 @@ const PropStatus: React.FC<{
   )
 }
 
-export const KlerosRealityModuleModal = ({
-  open,
-  onClose,
-  onSubmit,
-}: RealityModuleModalProps) => {
+export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityModuleModalProps) => {
   const classes = useStyles()
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
+  const { ensClient } = useEns()
   // hack to resolve mainnet ENS
-  const mainnetProvider = useMemo(
-    () => new ethers.providers.InfuraProvider(1, process.env.REACT_APP_INFURA_ID),
-    [],
-  )
-  const goerliProvider = useMemo(
-    () => new ethers.providers.InfuraProvider(5, process.env.REACT_APP_INFURA_ID),
-    [],
-  )
+  const mainnetProvider = useMemo(() => new InfuraProvider(1, import.meta.env.VITE_INFURA_ID), [])
+  const goerliProvider = useMemo(() => new InfuraProvider(5, import.meta.env.VITE_INFURA_ID), [])
 
   const bondToken = NETWORKS[safe.chainId as NETWORK].nativeAsset
   const [params, setParams] = useState<RealityModuleParams>({
-    snapshotEns: "",
+    snapshotEns: '',
     timeout: (SECONDS_IN_DAY * 2).toString(),
     cooldown: (SECONDS_IN_DAY * 2).toString(),
     expiration: (SECONDS_IN_DAY * 7).toString(),
-    bond: "0.1",
+    bond: '0.1',
   })
   const [loadingEns, setLoadingEns] = useState<boolean>(false)
   const [loadedEns, setLoadedEns] = useState<boolean>(false)
   const [validEns, setValidEns] = useState<boolean>(false)
-  const [daorequirements, setDaorequirements] = useState<string>("")
+  const [daorequirements, setDaorequirements] = useState<string>('')
 
   const [isController, setIsController] = useState<boolean>(false)
   const [isSafesnapInstalled, setIsSafesnapInstalled] = useState<boolean>(false)
   const validSnapshot =
     !!params.snapshotEns &&
-    params.snapshotEns.includes(".eth") &&
+    params.snapshotEns.includes('.eth') &&
     !loadingEns &&
     loadedEns &&
     validEns
@@ -240,17 +262,17 @@ export const KlerosRealityModuleModal = ({
   })
 
   const [openMonitoring, setOpenMonitoring] = useState<boolean>(false)
-  const [apiKey, setApiKey] = useState<string>("")
-  const [apiSecret, setApiSecret] = useState<string>("")
+  const [apiKey, setApiKey] = useState<string>('')
+  const [apiSecret, setApiSecret] = useState<string>('')
   const [validatedCredentials, setValidatedCredentials] = useState<boolean>(false)
 
-  const [currentEmail, setCurrentEmail] = useState<string>("")
+  const [currentEmail, setCurrentEmail] = useState<string>('')
   const [emails, setEmails] = useState<string[]>([])
-  const [discordKey, setDiscordKey] = useState<string>("")
-  const [telegramBotToken, setTelegramBotToken] = useState<string>("")
-  const [telegramChatId, setTelegramChatId] = useState<string>("")
+  const [discordKey, setDiscordKey] = useState<string>('')
+  const [telegramBotToken, setTelegramBotToken] = useState<string>('')
+  const [telegramChatId, setTelegramChatId] = useState<string>('')
 
-  const [step, setStep] = useState<"form" | "confirm">("form")
+  const [step, setStep] = useState<'form' | 'confirm'>('form')
 
   const isValid = Object.values(validFields).every((field) => field)
   const emailIsValid =
@@ -270,10 +292,9 @@ export const KlerosRealityModuleModal = ({
   const [deploying, setDeploying] = useState<boolean>(false)
 
   const validateEns = useCallback(async () => {
-    // On production, ENS is mainnet. On Goerli, ENS is resolved in goerli.
-    const ensProvider = safe.chainId === 5 ? goerliProvider : mainnetProvider
-    const address = await ensProvider.resolveName(params.snapshotEns)
-    console.log({ address })
+    if (!ensClient) return
+    const record = await getAddressRecord(ensClient, { name: params.snapshotEns })
+    const address = record?.value
     if (address) {
       const snapshotSpace = await snapshot.getSnapshotSpaceSettings(
         params.snapshotEns,
@@ -281,15 +302,16 @@ export const KlerosRealityModuleModal = ({
       )
       const daorequirements = await getEnsTextRecord(
         params.snapshotEns,
-        "daorequirements",
-        ensProvider,
+        'daorequirements',
+        provider,
       )
       setDaorequirements(daorequirements[0])
       setValidEns(snapshotSpace !== undefined)
       if (snapshotSpace !== undefined) {
         setIsSafesnapInstalled(!!snapshotSpace.plugins?.safeSnap)
         const isController = await checkIfIsController(
-          ensProvider,
+          provider,
+          ensClient,
           params.snapshotEns,
           safe.safeAddress,
         )
@@ -302,21 +324,15 @@ export const KlerosRealityModuleModal = ({
       }
     } else {
     }
-  }, [
-    params.snapshotEns,
-    safe.chainId,
-    safe.safeAddress,
-    mainnetProvider,
-    goerliProvider,
-  ])
+  }, [params.snapshotEns, safe.chainId, safe.safeAddress, mainnetProvider, goerliProvider])
 
   const debouncedSnapshotEnsValidation = debounce(() => {
     setValidEns(false)
-    setDaorequirements("")
+    setDaorequirements('')
     setIsController(false)
     setIsSafesnapInstalled(false)
     setLoadedEns(false)
-    if (params.snapshotEns && params.snapshotEns.includes(".eth")) {
+    if (params.snapshotEns && params.snapshotEns.includes('.eth')) {
       setLoadingEns(true)
       const validateInfo = async () => {
         await validateEns()
@@ -359,12 +375,12 @@ export const KlerosRealityModuleModal = ({
     if (safe.chainId) {
       const defaultAmount =
         safe.chainId === 1
-          ? "1"
+          ? '1'
           : safe.chainId === 100
-          ? "1500"
-          : safe.chainId === 137
-          ? "1000"
-          : "1"
+            ? '1500'
+            : safe.chainId === 137
+              ? '1000'
+              : '1'
       setParams((prevParams) => {
         return { ...prevParams, bond: defaultAmount }
       })
@@ -393,7 +409,7 @@ export const KlerosRealityModuleModal = ({
   const handleAddRealityModule = async () => {
     setDeploying(true)
     try {
-      const minimumBond = ethers.utils.parseUnits(params.bond, bondToken.decimals)
+      const minimumBond = parseUnits(params.bond, bondToken.decimals)
       const args = {
         ...params,
         oracle: getDefaultOracle(safe.chainId),
@@ -404,9 +420,9 @@ export const KlerosRealityModuleModal = ({
 
       const templateQuestion = getDefaultTemplateQuestion(args.snapshotEns)
       const templateData: TemplateData = {
-        templateType: "default",
-        language: "english",
-        category: "DAO proposal",
+        templateType: 'default',
+        language: 'english',
+        category: 'DAO proposal',
         templateQuestion: templateQuestion,
       }
       const deploymentRealityModuleTxsMm = await deployRealityModule(
@@ -420,7 +436,7 @@ export const KlerosRealityModuleModal = ({
 
       let txs = [...deploymentRealityModuleTxsMm.txs]
       const realityModuleAddress = deploymentRealityModuleTxsMm.meta
-        ?.expectedModuleAddress as string
+        ?.daoModuleExpectedAddress as string
       // We can only batch the SafeSnap creation when Safe is controller + mainnet
       // Otherwise, just create the module, hope the user got the hint and opened Details
       // to figure out how to set up SafeSnap in the space themselves.
@@ -430,8 +446,9 @@ export const KlerosRealityModuleModal = ({
             "The calculated reality module address is 'null'. This should be handled in the 'statusCallback' function.",
           )
         }
+        const signer = await provider.getSigner()
         const { txs: safeSnapTxs } = await addSafeSnapToSnapshotSpaceTxs(
-          provider,
+          signer,
           args.snapshotEns,
           realityModuleAddress,
           safe.chainId,
@@ -446,17 +463,12 @@ export const KlerosRealityModuleModal = ({
           secretKey: apiSecret,
           discordKey: discordKey,
           email: emails,
-          slackKey: "",
+          slackKey: '',
           telegram: { botToken: telegramBotToken, chatId: telegramChatId },
         }
         // we trust the notification parameters for discord and telegram are valid
         // user was forced to pass at least an email address to get here
-        await setUpMonitoring(
-          safe.chainId,
-          realityModuleAddress,
-          args.oracle,
-          monitoringData,
-        )
+        await setUpMonitoring(safe.chainId, realityModuleAddress, args.oracle, monitoringData)
       }
 
       await sdk.txs.send({ txs })
@@ -464,37 +476,43 @@ export const KlerosRealityModuleModal = ({
       if (onSubmit) onSubmit()
       if (onClose) onClose()
     } catch (error) {
-      console.log("Error deploying module: ", error)
+      console.log('Error deploying module: ', error)
     }
     setDeploying(false)
   }
 
   const handleBondChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value || "0"
-    const leftZero = value.startsWith("0") && value.length > 1
+    const value = event.target.value || '0'
+    const leftZero = value.startsWith('0') && value.length > 1
     let bond = leftZero ? value.substr(1) : value
-    bond = bond.startsWith(".") ? "0" + bond : bond
+    bond = bond.startsWith('.') ? '0' + bond : bond
 
     try {
-      ethers.utils.parseUnits(bond, bondToken.decimals)
-      onParamChange("bond", bond)
+      parseUnits(bond, bondToken.decimals)
+      onParamChange('bond', bond)
     } catch (error) {
-      console.warn("invalid bond", value, error)
+      console.warn('invalid bond', value, error)
     }
   }
 
+  const handleEnsStyleValidation = (): string => {
+    if (loadingEns) return ''
+    if (params.snapshotEns.includes('.eth') && !loadingEns && !validEns) return classes.inputError
+    if (params.snapshotEns.includes('.eth') && !loadingEns && validEns) return classes.input
+    return ''
+  }
   return (
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="Kleros Snapshot Module"
-      description="Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros."
-      icon="reality"
-      tags={["Stackable", "From Kleros"]}
+      title='Kleros Snapshot Module'
+      description='Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros.'
+      icon='reality'
+      tags={['Stackable', 'From Kleros']}
       hideButton={true}
-      readMoreLink="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module"
+      readMoreLink='https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module'
     >
-      {step === "form" ? (
+      {step === 'form' ? (
         <>
           <Typography gutterBottom>Parameters</Typography>
 
@@ -502,59 +520,59 @@ export const KlerosRealityModuleModal = ({
             <Grid item xs={12}>
               <ZodiacTextField
                 value={params.snapshotEns}
-                onChange={(e) => onParamChange("snapshotEns", e.target.value, true)}
-                label="Snapshot Name"
-                placeholder="gnosis.eth"
+                onChange={(e) => onParamChange('snapshotEns', e.target.value, true)}
+                label='Enter the Snapshot ENS name.'
+                placeholder='ex: gnosis.eth'
+                className={`${classes.textFieldSmall} ${handleEnsStyleValidation()}`}
                 rightIcon={
                   <>
-                    {loadingEns ? (
+                    {loadingEns && (
                       <Box className={classes.loadingContainer}>
-                        <Loader size="sm" className={classes.spinner} />
+                        <Loader size='sm' className={classes.spinner} />
                       </Box>
-                    ) : loadedEns && validEns ? (
-                      <Box className={classes.loadingContainer}>
-                        <CheckmarkIcon className={classes.spinner} />
-                      </Box>
-                    ) : null}
+                    )}
+                    {params.snapshotEns.includes('.eth') && !loadingEns && !validEns && (
+                      <ErrorOutlineIcon className={classes.errorIcon} />
+                    )}
+                    {params.snapshotEns.includes('.eth') && !loadingEns && validEns && (
+                      <DoneIcon className={classes.doneIcon} />
+                    )}
                   </>
                 }
               />
               {!loadingEns && loadedEns && !validSnapshot && (
-                <PropStatus
-                  message="This Snapshot space does not exist."
-                  status="error"
-                />
+                <PropStatus message='This Snapshot space does not exist.' status='error' />
               )}
             </Grid>
             <Grid item xs={6}>
               <TimeSelect
-                label="Timeout"
+                label='Timeout'
                 defaultValue={params.timeout}
-                defaultUnit="days"
-                onChange={(value) => onParamChange("timeout", value)}
+                defaultUnit='days'
+                onChange={(value) => onParamChange('timeout', value)}
               />
             </Grid>
             <Grid item xs={6}>
               <TimeSelect
-                label="Cooldown"
+                label='Cooldown'
                 defaultValue={params.cooldown}
-                defaultUnit="days"
-                onChange={(value) => onParamChange("cooldown", value)}
+                defaultUnit='days'
+                onChange={(value) => onParamChange('cooldown', value)}
               />
             </Grid>
             <Grid item xs={6}>
               <TimeSelect
-                label="Expiration"
+                label='Expiration'
                 defaultValue={params.expiration}
-                defaultUnit="days"
-                onChange={(value) => onParamChange("expiration", value)}
+                defaultUnit='days'
+                onChange={(value) => onParamChange('expiration', value)}
               />
             </Grid>
             <Grid item xs={6}>
               <ZodiacTextField
                 label={`Bond`}
                 prefix={bondToken.symbol}
-                color="secondary"
+                color='secondary'
                 value={params.bond}
                 onChange={handleBondChange}
               />
@@ -562,15 +580,16 @@ export const KlerosRealityModuleModal = ({
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <Typography variant="body1">Configure Monitoring</Typography>
+              <Typography variant='body1'>Configure Monitoring</Typography>
             </Grid>
             <Grid
               xs={6}
+              item
               style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <div />
@@ -583,16 +602,16 @@ export const KlerosRealityModuleModal = ({
             </Grid>
           </Grid>
           {openMonitoring && (
-            <Grid container direction="column" spacing={2} className={classes.fields}>
+            <Grid container direction='column' spacing={2} className={classes.fields}>
               <Grid item xs={12}>
-                <Typography variant="body2">
-                  Setting up an effective monitoring strategy is critical for the security
-                  of your safe. First, you need to{" "}
+                <Typography variant='body2'>
+                  Setting up an effective monitoring strategy is critical for the security of your
+                  safe. First, you need to{' '}
                   <Link
                     className={classes.linkStyle}
-                    underline="always"
-                    href="https://defender.openzeppelin.com/#/auth/sign-in"
-                    target="_blank"
+                    underline='always'
+                    href='https://defender.openzeppelin.com/#/auth/sign-in'
+                    target='_blank'
                   >
                     create an Open Zeppelin account
                   </Link>
@@ -605,12 +624,12 @@ export const KlerosRealityModuleModal = ({
                   onChange={(e) => {
                     setApiKey(e.target.value)
                   }}
-                  label="API Key"
-                  placeholder="3pwZzZZZzzZZZzzZZzZZZAAaaAAaaZZzz"
+                  label='API Key'
+                  placeholder='3pwZzZZZzzZZZzzZZzZZZAAaaAAaaZZzz'
                   rightIcon={
                     loadingCredentials ? (
                       <Box className={classes.loadingContainer}>
-                        <Loader size="sm" className={classes.spinner} />
+                        <Loader size='sm' className={classes.spinner} />
                       </Box>
                     ) : (
                       validatedCredentials &&
@@ -630,12 +649,12 @@ export const KlerosRealityModuleModal = ({
                   onChange={(e) => {
                     setApiSecret(e.target.value)
                   }}
-                  label="API Secret"
-                  placeholder="2LUwZwwuUuuUUzzZZdDddooodudDDdaaDDdaAAAddDDadDzZZzdDDdcCCdDDaaAA"
+                  label='API Secret'
+                  placeholder='2LUwZwwuUuuUUzzZZdDddooodudDDdaaDDdaAAAddDDadDzZZzdDDdcCCdDDaaAA'
                   rightIcon={
                     loadingCredentials ? (
                       <Box className={classes.loadingContainer}>
-                        <Loader size="sm" className={classes.spinner} />
+                        <Loader size='sm' className={classes.spinner} />
                       </Box>
                     ) : (
                       validatedCredentials &&
@@ -651,31 +670,29 @@ export const KlerosRealityModuleModal = ({
 
               {validatedCredentials && invalidCredentials && (
                 <Grid item xs={12}>
-                  <PropStatus message="These credentials are wrong." status="error" />
+                  <PropStatus message='These credentials are wrong.' status='error' />
                 </Grid>
               )}
 
               {/* Emails section */}
               <Grid item xs={12}>
-                <Grid item style={{ display: "flex" }}>
+                <Grid item style={{ display: 'flex' }}>
                   <Typography>Email</Typography>
-                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                  <Typography style={{ fontStyle: 'italic', opacity: '0.7' }}>
                     &nbsp;(required)
                   </Typography>
                 </Grid>
-                <Typography variant="body2">
-                  Enter as many email addresses as you need
-                </Typography>
+                <Typography variant='body2'>Enter as many email addresses as you need</Typography>
                 <ZodiacTextField
-                  placeholder="john@doe.com"
+                  placeholder='john@doe.com'
                   value={currentEmail}
                   onChange={(e) => {
                     setCurrentEmail(e.target.value)
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && emailIsValid) {
+                    if (e.key === 'Enter' && emailIsValid) {
                       setEmails([...emails, currentEmail])
-                      setCurrentEmail("")
+                      setCurrentEmail('')
                     }
                   }}
                   rightIcon={
@@ -683,14 +700,14 @@ export const KlerosRealityModuleModal = ({
                       {emailIsValid ? (
                         <Box className={classes.loadingContainer}>
                           <IconButton
-                            size="small"
+                            size='small'
                             onClick={() => {
                               setEmails([...emails, currentEmail])
-                              setCurrentEmail("")
+                              setCurrentEmail('')
                             }}
                           >
-                            {" "}
-                            <Icon size="sm" type="add" color="primary" />
+                            {' '}
+                            <Icon size='sm' type='add' color='primary' />
                           </IconButton>
                         </Box>
                       ) : null}
@@ -702,10 +719,10 @@ export const KlerosRealityModuleModal = ({
                     <Grid container key={e}>
                       <Grid item xs={1}>
                         <IconButton
-                          size="small"
+                          size='small'
                           onClick={() => setEmails(emails.filter((x) => x !== e))}
                         >
-                          <Icon size="sm" type="delete" color="warning" />
+                          <Icon size='sm' type='delete' color='warning' />
                         </IconButton>
                       </Grid>
                       <Grid item xs={11}>
@@ -714,36 +731,34 @@ export const KlerosRealityModuleModal = ({
                     </Grid>
                   ))
                 ) : (
-                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                  <Typography style={{ fontStyle: 'italic', opacity: '0.7' }}>
                     {emailIsValid
-                      ? "Press Enter or click + to add this email"
-                      : "(No emails entered, at least one is required)"}
+                      ? 'Press Enter or click + to add this email'
+                      : '(No emails entered, at least one is required)'}
                   </Typography>
                 )}
               </Grid>
 
               <Grid item xs={12}>
-                <Grid item style={{ display: "flex" }}>
+                <Grid item style={{ display: 'flex' }}>
                   <Typography>Discord Integration</Typography>
-                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                  <Typography style={{ fontStyle: 'italic', opacity: '0.7' }}>
                     &nbsp;(optional)
                   </Typography>
                 </Grid>
                 <Grid
                   container
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography variant="body2">
-                    Include the Discord channel's url key
-                  </Typography>
+                  <Typography variant='body2'>Include the Discord channel's url key</Typography>
                   <Link
                     className={classes.linkStyle}
-                    href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
-                    target="_blank"
+                    href='https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks'
+                    target='_blank'
                   >
                     Learn more
                   </Link>
@@ -753,32 +768,32 @@ export const KlerosRealityModuleModal = ({
                   onChange={(e) => {
                     setDiscordKey(e.target.value)
                   }}
-                  placeholder="https://discord.com/api/webhooks/.../"
+                  placeholder='https://discord.com/api/webhooks/.../'
                 />
               </Grid>
 
               <Grid item xs={12}>
-                <Grid item style={{ display: "flex" }}>
+                <Grid item style={{ display: 'flex' }}>
                   <Typography>Telegram Integration</Typography>
-                  <Typography style={{ fontStyle: "italic", opacity: "0.7" }}>
+                  <Typography style={{ fontStyle: 'italic', opacity: '0.7' }}>
                     &nbsp;(optional)
                   </Typography>
                 </Grid>
                 <Grid
                   container
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <Typography variant="body2">
+                  <Typography variant='body2'>
                     Include the Telegram bot token and Chat ID
                   </Typography>
                   <Link
                     className={classes.linkStyle}
-                    href="https://core.telegram.org/bots#6-botfather"
-                    target={"_blank"}
+                    href='https://core.telegram.org/bots#6-botfather'
+                    target={'_blank'}
                   >
                     Learn more
                   </Link>
@@ -787,13 +802,13 @@ export const KlerosRealityModuleModal = ({
                   <Grid
                     container
                     spacing={2}
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
+                    direction='row'
+                    alignItems='center'
+                    justifyContent='space-between'
                   >
                     <Grid item>
                       <ZodiacTextField
-                        placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+                        placeholder='123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11'
                         value={telegramBotToken}
                         onChange={(e) => {
                           setTelegramBotToken(e.target.value)
@@ -802,7 +817,7 @@ export const KlerosRealityModuleModal = ({
                     </Grid>
                     <Grid item>
                       <ZodiacTextField
-                        placeholder="1234567890"
+                        placeholder='1234567890'
                         value={telegramChatId}
                         onChange={(e) => {
                           setTelegramChatId(e.target.value)
@@ -819,19 +834,19 @@ export const KlerosRealityModuleModal = ({
             fullWidth
             startIcon={<ArrowUpIcon />}
             onClick={() => {
-              setStep("confirm")
+              setStep('confirm')
             }}
             disabled={!canConfirm}
-            style={{ marginTop: "16px" }}
+            style={{ marginTop: '16px' }}
           >
             {/* Button Messages */}
             {canConfirm || !openMonitoring
-              ? "Add Module"
+              ? 'Add Module'
               : loadingCredentials
-              ? "Validating OpenZeppelin Credentials..."
-              : !validatedCredentials || invalidCredentials
-              ? "Missing OpenZeppelin API"
-              : "Missing Email"}
+                ? 'Validating OpenZeppelin Credentials...'
+                : !validatedCredentials || invalidCredentials
+                  ? 'Missing OpenZeppelin API'
+                  : 'Missing Email'}
           </ActionButton>
         </>
       ) : (
@@ -841,44 +856,42 @@ export const KlerosRealityModuleModal = ({
             (validSnapshot ? (
               isController && safe.chainId === 1 ? (
                 isSafesnapInstalled ? (
-                  <div>
-                    SafeSnap plugin is already installed, and will be overwritten.
-                  </div>
+                  <div>SafeSnap plugin is already installed, and will be overwritten.</div>
                 ) : (
                   <div>The SafeSnap plugin will be automatically installed.</div>
                 )
               ) : (
                 // A way to paste the safesnap plugin info is here.
-                <div style={{ marginTop: "4px" }}>
+                <div style={{ marginTop: '4px' }}>
                   <PropStatus
-                    message="Install SafeSnap after creating the module."
-                    link="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#safesnap"
-                    status="warning"
+                    message='Install SafeSnap after creating the module.'
+                    link='https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#safesnap'
+                    status='warning'
                   />
                 </div>
               )
             ) : (
-              <PropStatus message="This Snapshot space does not exist." status="error" />
+              <PropStatus message='This Snapshot space does not exist.' status='error' />
             ))}
-          {loadedEns && daorequirements === "" && (
+          {loadedEns && daorequirements === '' && (
             // Notice on how to setup DAO requirements, which appear on template.
             <PropStatus
-              message="Missing DAO requirements ENS record."
-              link="https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#missing-daorequirements"
-              status="warning"
+              message='Missing DAO requirements ENS record.'
+              link='https://kleros.gitbook.io/docs/integrations/types-of-integrations/1.-dispute-resolution-integration-plan/channel-partners/kleros-reality-module#missing-daorequirements'
+              status='warning'
             />
           )}
           <Grid
             container
             spacing={2}
-            style={{ display: "flex", flexDirection: "row", marginTop: "16px" }}
+            style={{ display: 'flex', flexDirection: 'row', marginTop: '16px' }}
           >
             <Grid item xs={6}>
               <ActionButton
                 fullWidth
                 disabled={deploying}
-                startIcon={<ArrowUpIcon style={{ rotate: "270deg" }} />}
-                onClick={() => setStep("form")}
+                startIcon={<ArrowUpIcon style={{ rotate: '270deg' }} />}
+                onClick={() => setStep('form')}
               >
                 Return
               </ActionButton>
@@ -888,11 +901,7 @@ export const KlerosRealityModuleModal = ({
                 fullWidth
                 disabled={deploying}
                 startIcon={
-                  deploying ? (
-                    <Loader size="xs" className={classes.addSpinner} />
-                  ) : (
-                    <ArrowUpIcon />
-                  )
+                  deploying ? <Loader size='xs' className={classes.addSpinner} /> : <ArrowUpIcon />
                 }
                 onClick={() => {
                   handleAddRealityModule()
@@ -902,7 +911,7 @@ export const KlerosRealityModuleModal = ({
               </ActionButton>
             </Grid>
             {deploying && openMonitoring && (
-              <Grid xs={12} style={{ marginLeft: "8px" }}>
+              <Grid xs={12} style={{ marginLeft: '8px' }}>
                 <div>This can take around a minute, please wait...</div>
               </Grid>
             )}

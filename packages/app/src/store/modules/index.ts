@@ -1,22 +1,18 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import SafeAppsSDK from "@gnosis.pm/safe-apps-sdk"
-import { Module, ModulesState, Operation, PendingModule } from "./models"
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
+import { Module, ModulesState, Operation, PendingModule } from './models'
 import {
   fetchSafeStatusFromAPI,
   fetchSafeModulesAddress,
   fetchSafeTransactions,
-} from "../../services"
-import {
-  getModulesToBeRemoved,
-  getPendingModulesToEnable,
-  sanitizeModule,
-} from "./helpers"
-import { getModulesList } from "./selectors"
-import { RootState } from "../index"
-import { ethers } from "ethers"
+} from '../../services'
+import { getModulesToBeRemoved, getPendingModulesToEnable, sanitizeModule } from './helpers'
+import { getModulesList } from './selectors'
+import { RootState } from '../index'
+import { BrowserProvider } from 'ethers'
 
 const initialModulesState: ModulesState = {
-  operation: "read",
+  operation: 'read',
   reloadCount: 0,
   safeThreshold: 1,
   loadingModules: true,
@@ -29,10 +25,10 @@ const initialModulesState: ModulesState = {
 }
 
 export const fetchModulesList = createAsyncThunk(
-  "modules/fetchModulesList",
+  'modules/fetchModulesList',
   async (
     params: {
-      provider: ethers.providers.JsonRpcProvider
+      provider: BrowserProvider
       safeSDK: SafeAppsSDK
       chainId: number
       safeAddress: string
@@ -41,19 +37,13 @@ export const fetchModulesList = createAsyncThunk(
   ): Promise<Module[]> => {
     const { provider, safeSDK, safeAddress, chainId } = params
     await provider.ready
-    const moduleAddresses = await fetchSafeModulesAddress(provider, safeAddress, chainId)
-
+    const moduleAddresses = await fetchSafeModulesAddress(provider, safeAddress)
     const requests = moduleAddresses.map(async (moduleAddress) => {
       try {
-        return await sanitizeModule(
-          provider,
-          moduleAddress,
-          safeSDK,
-          chainId,
-          safeAddress,
-        )
+        return await sanitizeModule(provider, moduleAddress, safeSDK, chainId, safeAddress)
       } catch (error) {
-        throw new Error(`Error sanitizing module ${moduleAddress}: ${error}`)
+        console.error('Error:', `Error sanitizing module ${moduleAddress}: ${error}`)
+        // throw new Error(`Error sanitizing module ${moduleAddress}: ${error}`)
       }
     })
     requests.reverse()
@@ -61,14 +51,14 @@ export const fetchModulesList = createAsyncThunk(
       const responses = await Promise.all(requests)
       return responses.filter((module): module is Module => module !== undefined)
     } catch (error) {
-      console.error("Cant fetch modules", error)
+      console.error('Cant fetch modules', error)
       throw error
     }
   },
 )
 
 export const fetchPendingModules = createAsyncThunk(
-  "modules/fetchPendingModules",
+  'modules/fetchPendingModules',
   async (
     {
       safeAddress,
@@ -93,10 +83,7 @@ export const fetchPendingModules = createAsyncThunk(
 
     const pendingRemoveModules = getModulesToBeRemoved(modules, transactions)
 
-    const pendingModules: PendingModule[] = [
-      ...pendingEnableModules,
-      ...pendingRemoveModules,
-    ]
+    const pendingModules: PendingModule[] = [...pendingEnableModules, ...pendingRemoveModules]
 
     if (retry) {
       setTimeout(() => {
@@ -108,8 +95,22 @@ export const fetchPendingModules = createAsyncThunk(
   },
 )
 
+const isModulePresent = (modules: Module[], moduleAddress: string) => {
+  for (const module of modules) {
+    if (module.address === moduleAddress) {
+      return true
+    }
+    if (module.subModules && module.subModules.length > 0) {
+      if (isModulePresent(module.subModules, moduleAddress)) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 export const modulesSlice = createSlice({
-  name: "modules",
+  name: 'modules',
   initialState: initialModulesState,
   reducers: {
     increaseReloadCount: (state) => {
@@ -117,7 +118,7 @@ export const modulesSlice = createSlice({
     },
     setCurrentModule(state, action: PayloadAction<Module>) {
       state.current = action.payload
-      state.operation = "read"
+      state.operation = 'read'
       state.currentPendingModule = undefined
     },
     unsetCurrentModule(state) {
@@ -150,10 +151,7 @@ export const modulesSlice = createSlice({
       state.list = action.payload
       const current = state.current
       if (current) {
-        // Check if current module got removed
-        const isPresent = action.payload.some(
-          (module) => module.address === current.address,
-        )
+        const isPresent = isModulePresent(action.payload, current.address)
         if (!isPresent) {
           state.current = undefined
         }

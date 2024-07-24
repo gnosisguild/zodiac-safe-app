@@ -1,17 +1,17 @@
-import { Button, Divider, Grid, makeStyles, Typography } from "@material-ui/core"
-import { MultiSelect, MultiSelectValues } from "components/MultiSelect"
-import { Link } from "components/text/Link"
-import usePrevious from "hooks/usePrevious"
-import React, { ChangeEvent, useEffect, useState } from "react"
-import { SectionProps } from "views/AddModule/wizards/RealityModule"
-import { colors, ZodiacPaper, ZodiacTextField } from "zodiac-ui-components"
-import { useMonitoringValidation } from "../../hooks/useMonitoringValidation"
-import { MonitoringStatus } from "./components/MonitoringStatus"
+import { Button, Divider, Grid, makeStyles, Typography } from '@material-ui/core'
+import { MultiSelect, MultiSelectValues } from 'components/MultiSelect'
+import { Link } from 'components/text/Link'
+import usePrevious from 'hooks/usePrevious'
+import React, { ChangeEvent, useEffect, useState } from 'react'
+import { SectionProps } from 'views/AddModule/wizards/RealityModule'
+import { colors, ZodiacPaper, ZodiacTextField } from 'zodiac-ui-components'
+import { useMonitoringValidation } from '../../hooks/useMonitoringValidation'
+import { MonitoringStatus } from './components/MonitoringStatus'
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   paperContainer: {
@@ -19,41 +19,41 @@ const useStyles = makeStyles((theme) => ({
   },
 
   textSubdued: {
-    color: "rgba(255 255 255 / 70%)",
+    color: 'rgba(255 255 255 / 70%)',
   },
   inputContainer: {
-    width: "50%",
+    width: '50%',
   },
   input: {
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
       borderColor: colors.tan[300],
-      "&::before": {
+      '&::before': {
         borderColor: colors.tan[300],
       },
     },
   },
   inputError: {
-    "& .MuiInputBase-root": {
-      borderColor: "rgba(244, 67, 54, 0.3)",
-      background: "rgba(244, 67, 54, 0.1)",
-      "&::before": {
-        borderColor: "rgba(244, 67, 54, 0.3)",
+    '& .MuiInputBase-root': {
+      borderColor: 'rgba(244, 67, 54, 0.3)',
+      background: 'rgba(244, 67, 54, 0.1)',
+      '&::before': {
+        borderColor: 'rgba(244, 67, 54, 0.3)',
       },
     },
   },
   textarea: {
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
       padding: theme.spacing(2),
-      background: "rgba(0, 0, 0, 0.2)",
+      background: 'rgba(0, 0, 0, 0.2)',
       borderColor: colors.tan[300],
-      "&::before": {
+      '&::before': {
         borderColor: colors.tan[300],
       },
     },
   },
   spinner: {
-    width: "8px !important",
-    height: "8px !important",
+    width: '8px !important',
+    height: '8px !important',
     color: `${colors.tan[300]} !important`,
   },
 }))
@@ -68,15 +68,15 @@ export interface MonitoringSectionData {
 }
 
 const INITIAL_DATA: MonitoringSectionData = {
-  apiKey: "",
-  secretKey: "",
+  apiKey: '',
+  secretKey: '',
   email: [],
-  discordKey: "",
+  discordKey: '',
   telegram: {
-    botToken: "",
-    chatId: "",
+    botToken: '',
+    chatId: '',
   },
-  slackKey: "",
+  slackKey: '',
 }
 
 export const MonitoringSection: React.FC<SectionProps> = ({
@@ -105,15 +105,13 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   useEffect(() => {
     if (monitoring && monitoring.email.length) {
       const emails: MultiSelectValues[] = []
-      monitoring.email.forEach((item: string) =>
-        emails.push({ label: item, value: item }),
-      )
+      monitoring.email.forEach((item: string) => emails.push({ label: item, value: item }))
       setEmailValues(emails)
     }
   }, [monitoring])
 
   useEffect(() => {
-    if (!loading && ![apiKey, secretKey].includes("") && !loadValidations) {
+    if (!loading && ![apiKey, secretKey].includes('') && !loadValidations) {
       setLoadValidations(true)
       const executeValidations = async () => {
         await validateCredentials(apiKey, secretKey)
@@ -123,10 +121,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   }, [apiKey, secretKey, loading, loadValidations, validateCredentials])
 
   useEffect(() => {
-    if (
-      (previousApiKey !== apiKey || previousSecretKey !== secretKey) &&
-      loadValidations
-    ) {
+    if ((previousApiKey !== apiKey || previousSecretKey !== secretKey) && loadValidations) {
       setLoadValidations(false)
     }
   }, [apiKey, secretKey, previousApiKey, previousSecretKey, loadValidations])
@@ -136,7 +131,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     fieldName: string,
   ) => {
     event.preventDefault()
-    if (["chatId", "botToken"].includes(fieldName)) {
+    if (['chatId', 'botToken'].includes(fieldName)) {
       const telegram = { ...monitoringData.telegram }
       const newValues = { ...telegram, [fieldName]: event.target.value }
       setMonitoringData({
@@ -165,18 +160,18 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   }
 
   const handleStatusMessage = (): string | null => {
-    if (loading) return "Validating API credentials..."
+    if (loading) return 'Validating API credentials...'
     if (invalidCredentials)
-      return "The API credentials that you have provided are not valid. Please verify that you have the correct information."
-    if (!invalidCredentials && typeof invalidCredentials === "boolean")
-      return "API credentials are valid."
+      return 'The API credentials that you have provided are not valid. Please verify that you have the correct information.'
+    if (!invalidCredentials && typeof invalidCredentials === 'boolean')
+      return 'API credentials are valid.'
     return null
   }
 
-  const handleStatus = (): "loading" | "error" | "success" | null => {
-    if (loading) return "loading"
-    if (invalidCredentials) return "error"
-    if (!invalidCredentials && typeof invalidCredentials === "boolean") return "success"
+  const handleStatus = (): 'loading' | 'error' | 'success' | null => {
+    if (loading) return 'loading'
+    if (invalidCredentials) return 'error'
+    if (!invalidCredentials && typeof invalidCredentials === 'boolean') return 'success'
     return null
   }
 
@@ -185,14 +180,14 @@ export const MonitoringSection: React.FC<SectionProps> = ({
     if (loading || invalidCredentials) {
       return true
     }
-    if ((botToken === "" && chatId !== "") || (botToken !== "" && chatId === "")) {
+    if ((botToken === '' && chatId !== '') || (botToken !== '' && chatId === '')) {
       return true
     }
     if (
-      botToken === "" &&
-      chatId === "" &&
-      discordKey === "" &&
-      slackKey === "" &&
+      botToken === '' &&
+      chatId === '' &&
+      discordKey === '' &&
+      slackKey === '' &&
       email.length === 0
     ) {
       return true
@@ -201,23 +196,28 @@ export const MonitoringSection: React.FC<SectionProps> = ({
   }
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper
+      borderStyle='single'
+      className={classes.paperContainer}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       <Grid container spacing={4} className={classes.container}>
         <Grid item>
           <Grid container spacing={1} className={classes.container}>
             <Grid item>
-              <Typography variant="h3">Configure Monitoring</Typography>
+              <Typography variant='h3'>Configure Monitoring</Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Setting up an effective monitoring strategy is critical for the security
-                of your safe. In order to set up the monitoring for this module,
-                you&apos;ll need to first{" "}
+                Setting up an effective monitoring strategy is critical for the security of your
+                safe. In order to set up the monitoring for this module, you&apos;ll need to first{' '}
                 <Link
-                  underline="always"
-                  href="https://defender.openzeppelin.com/#/auth/sign-in"
-                  target={"_blank"}
-                  color="inherit"
+                  underline='always'
+                  href='https://defender.openzeppelin.com/#/auth/sign-in'
+                  target={'_blank'}
+                  color='inherit'
                 >
                   create an Open Zeppelin account.
                 </Link>
@@ -233,19 +233,19 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 API Configuration
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
-                Include the API Key and Secret Key from your Open Zeppelin account below.
-                Follow the Open Zeppelin guide {""}
+                Include the API Key and Secret Key from your Open Zeppelin account below. Follow the
+                Open Zeppelin guide {''}
                 <Link
-                  underline="always"
-                  href="https://docs.openzeppelin.com/defender/guide-factory#generate-api-key"
-                  target={"_blank"}
-                  color="inherit"
+                  underline='always'
+                  href='https://docs.openzeppelin.com/defender/v2/manage.html#relayer-api-keys'
+                  target={'_blank'}
+                  color='inherit'
                 >
                   here.
                 </Link>
@@ -253,21 +253,21 @@ export const MonitoringSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <ZodiacTextField
-                label="API Key"
-                placeholder="0f9u8yuiahkjdh8qhiflahfjajdhafa"
-                borderStyle="double"
+                label='API Key'
+                placeholder='0f9u8yuiahkjdh8qhiflahfjajdhafa'
+                borderStyle='double'
                 value={monitoringData.apiKey}
-                onChange={(e) => updateForm(e, "apiKey")}
+                onChange={(e) => updateForm(e, 'apiKey')}
                 className={invalidCredentials ? classes.inputError : classes.input}
               />
             </Grid>
             <Grid item>
               <ZodiacTextField
-                label="API Secret"
-                placeholder="hkjdh8qhiflahfjajdhafa0f9u8yuiahkjdh8qhiflahfjajdhafa"
+                label='API Secret'
+                placeholder='hkjdh8qhiflahfjajdhafa0f9u8yuiahkjdh8qhiflahfjajdhafa'
                 value={monitoringData.secretKey}
-                onChange={(e) => updateForm(e, "secretKey")}
-                borderStyle="double"
+                onChange={(e) => updateForm(e, 'secretKey')}
+                borderStyle='double'
                 className={invalidCredentials ? classes.inputError : classes.input}
               />
             </Grid>
@@ -280,7 +280,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Email
               </Typography>
             </Grid>
@@ -289,7 +289,7 @@ export const MonitoringSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <MultiSelect
-                invalidText={invalidEmail ? "Please provide a valid email" : undefined}
+                invalidText={invalidEmail ? 'Please provide a valid email' : undefined}
                 onChange={(values) => handleNewEmail(values as MultiSelectValues[])}
                 value={emailValues}
               />
@@ -300,19 +300,19 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Discord
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
-                To add a Discord integration, include the Discord channel&apos;s url
-                including key below. Find out more{" "}
+                To add a Discord integration, include the Discord channel&apos;s url including key
+                below. Find out more{' '}
                 <Link
-                  underline="always"
-                  href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks"
-                  target={"_blank"}
-                  color="inherit"
+                  underline='always'
+                  href='https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks'
+                  target={'_blank'}
+                  color='inherit'
                 >
                   here.
                 </Link>
@@ -320,12 +320,12 @@ export const MonitoringSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <ZodiacTextField
-                label="Discord Key"
-                placeholder="key"
-                borderStyle="double"
+                label='Discord Key'
+                placeholder='key'
+                borderStyle='double'
                 className={classes.input}
                 value={monitoringData.discordKey}
-                onChange={(e) => updateForm(e, "discordKey")}
+                onChange={(e) => updateForm(e, 'discordKey')}
               />
             </Grid>
           </Grid>
@@ -334,19 +334,19 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Telegram
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
-                To add a Telegram integration, include the telegram bot token and chat ID
-                below. Find out more{" "}
+                To add a Telegram integration, include the telegram bot token and chat ID below.
+                Find out more{' '}
                 <Link
-                  underline="always"
-                  href="https://core.telegram.org/bots#6-botfather"
-                  target={"_blank"}
-                  color="inherit"
+                  underline='always'
+                  href='https://core.telegram.org/bots#6-botfather'
+                  target={'_blank'}
+                  color='inherit'
                 >
                   here.
                 </Link>
@@ -356,28 +356,28 @@ export const MonitoringSection: React.FC<SectionProps> = ({
               <Grid
                 container
                 spacing={2}
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
+                direction='row'
+                alignItems='center'
+                justifyContent='space-between'
               >
                 <Grid item className={classes.inputContainer}>
                   <ZodiacTextField
-                    label="Bot token"
-                    placeholder="abc"
-                    borderStyle="double"
+                    label='Bot token'
+                    placeholder='abc'
+                    borderStyle='double'
                     className={classes.input}
                     value={monitoringData.telegram.botToken}
-                    onChange={(e) => updateForm(e, "botToken")}
+                    onChange={(e) => updateForm(e, 'botToken')}
                   />
                 </Grid>
                 <Grid item className={classes.inputContainer}>
                   <ZodiacTextField
-                    label="Chat ID"
-                    placeholder="123"
-                    borderStyle="double"
+                    label='Chat ID'
+                    placeholder='123'
+                    borderStyle='double'
                     className={classes.input}
                     value={monitoringData.telegram.chatId}
-                    onChange={(e) => updateForm(e, "chatId")}
+                    onChange={(e) => updateForm(e, 'chatId')}
                   />
                 </Grid>
               </Grid>
@@ -388,19 +388,19 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         <Grid item>
           <Grid container spacing={2} className={classes.container}>
             <Grid item>
-              <Typography variant="h4" color="textSecondary">
+              <Typography variant='h4' color='textSecondary'>
                 Slack
               </Typography>
             </Grid>
             <Grid item>
               <Typography>
-                To add a Slack integration, include the Slack channel&apos;s url including
-                key below. Find out more{" "}
+                To add a Slack integration, include the Slack channel&apos;s url including key
+                below. Find out more{' '}
                 <Link
-                  underline="always"
-                  href="https://docs.openzeppelin.com/defender/sentinel#notifications"
-                  target={"_blank"}
-                  color="inherit"
+                  underline='always'
+                  href='https://docs.openzeppelin.com/defender/sentinel#notifications'
+                  target={'_blank'}
+                  color='inherit'
                 >
                   here.
                 </Link>
@@ -408,12 +408,12 @@ export const MonitoringSection: React.FC<SectionProps> = ({
             </Grid>
             <Grid item>
               <ZodiacTextField
-                label="Slack Channel URL"
-                placeholder="https://slack.com/url/key"
-                borderStyle="double"
+                label='Slack Channel URL'
+                placeholder='https://slack.com/url/key'
+                borderStyle='double'
                 className={classes.input}
                 value={monitoringData.slackKey}
-                onChange={(e) => updateForm(e, "slackKey")}
+                onChange={(e) => updateForm(e, 'slackKey')}
               />
             </Grid>
           </Grid>
@@ -424,22 +424,18 @@ export const MonitoringSection: React.FC<SectionProps> = ({
         </Grid>
 
         <Grid item>
-          <Grid container spacing={3} justifyContent="center" alignItems="center">
+          <Grid container spacing={3} justifyContent='center' alignItems='center'>
             <Grid item>
-              <Button
-                size="medium"
-                variant="text"
-                onClick={() => handleBack(monitoringData)}
-              >
+              <Button size='medium' variant='text' onClick={() => handleBack(monitoringData)}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
-                type="submit"
+                color='secondary'
+                size='medium'
+                variant='contained'
+                type='submit'
                 disabled={isInvalidForm()}
                 onClick={() => handleNext(monitoringData)}
               >

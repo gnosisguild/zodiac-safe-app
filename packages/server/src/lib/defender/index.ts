@@ -1,35 +1,36 @@
-import {
-  CreateSentinelRequest,
-  NotificationType,
-  SentinelClient,
-} from "defender-sentinel-client"
-import { AutotaskClient } from "defender-autotask-client"
-import { CreateAutotaskRequest } from "defender-autotask-client"
-import { Network } from "defender-base-client"
+
 import { packageCode, replaceInString } from "../util"
 import autotaskJsCode from "./autotasks/on_new_question_from_module"
+import { Query } from "../types"
+import { Defender } from "@openzeppelin/defender-sdk"
 
-export { NotificationType } from "defender-sentinel-client"
+export type NotificationType =
+  | "slack"
+  | "email"
+  | "discord"
+  | "telegram"
+  | "datadog"
+  | "webhook"
+  | "opsgenie"
+  | "pager-duty"
 
-export const setupSentinelClient = ({ apiKey, apiSecret }) =>
-  new SentinelClient({ apiKey, apiSecret })
-
-export const setupAutotaskClient = ({ apiKey, apiSecret }) =>
-  new AutotaskClient({ apiKey, apiSecret })
+export const setupDefenderClient = ({ apiKey, apiSecret }: Query) =>
+  new Defender({ apiKey, apiSecret })
 
 export const setupNewNotificationChannel = async (
-  client: SentinelClient,
+  client: Defender,
   channel: NotificationType,
   config: any,
   realityModuleAddress: string,
-  network: Network,
+  network: string,
 ) => {
-  const notificationChannel = await client.createNotificationChannel({
+  const notificationChannel = await client.monitor.createNotificationChannel({
     type: channel,
     name: `ZodiacRealityModuleNotification-${network}:${realityModuleAddress}-${channel}`,
     config,
     paused: false,
   })
+
   console.log(
     "Created Notification Channel with ID: ",
     notificationChannel.notificationId,
@@ -39,12 +40,12 @@ export const setupNewNotificationChannel = async (
 }
 
 export const createSentinel = async (
-  client: SentinelClient,
-  network: Network,
+  client: Defender,
+  network: string,
   realityModuleAddress: string,
   autotaskId: string,
 ) => {
-  const requestParameters: CreateSentinelRequest = {
+  const requestParameters: any = {
     type: "BLOCK",
     network,
     name: `Proposal added to the Reality Module (${realityModuleAddress} on ${network})`,
@@ -78,14 +79,14 @@ export const createSentinel = async (
     notificationChannels: [],
   }
 
-  const sentinel = await client.create(requestParameters)
-  console.log("Created Sentinel with subscriber ID: ", sentinel.subscriberId)
+  const sentinel = await client.monitor.create(requestParameters)
+  console.log("Created Sentinel with monitor ID: ", sentinel.monitorId)
 
-  return sentinel.subscriberId
+  return sentinel.monitorId
 }
 
-export const createAutotask = async (
-  client: AutotaskClient,
+export const createAction = async (
+  client: Defender,
   oracleAddress: string,
   notificationChannels: string[],
   network: string,
@@ -100,7 +101,7 @@ export const createAutotask = async (
     "{{apiSecret}}": apiSecret,
   })
 
-  const params: CreateAutotaskRequest = {
+  const params: any = {
     name: "Setup Sentinel for new Reality.eth question",
     encodedZippedCode: await packageCode(code),
     trigger: {
@@ -109,8 +110,8 @@ export const createAutotask = async (
     paused: false,
   }
 
-  const createdAutotask = await client.create(params)
-  console.log("Created Autotask with ID: ", createdAutotask.autotaskId)
+  const createdAutotask = await client.action.create(params)
+  console.log("Created Autotask with ID: ", createdAutotask.actionId)
 
-  return createdAutotask.autotaskId
+  return createdAutotask.actionId
 }

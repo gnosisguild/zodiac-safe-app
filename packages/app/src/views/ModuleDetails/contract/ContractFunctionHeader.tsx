@@ -1,13 +1,13 @@
-import React from "react"
-import { Address } from "../../../components/ethereum/Address"
-import { makeStyles, Typography } from "@material-ui/core"
-import TimeAgo from "timeago-react"
-import { Skeleton } from "@material-ui/lab"
-import { FunctionFragment } from "@ethersproject/abi"
-import { FunctionOutputs } from "../../../hooks/useContractQuery"
-import { CopyToClipboardBtn } from "@gnosis.pm/safe-react-components"
-import { formatValue } from "../../../utils/contracts"
-import classNames from "classnames"
+import React from 'react'
+import { Address } from '../../../components/ethereum/Address'
+import { makeStyles, Typography } from '@material-ui/core'
+import TimeAgo from 'timeago-react'
+import { Skeleton } from '@material-ui/lab'
+import { FunctionOutputs } from '../../../hooks/useContractQuery'
+import { CopyToClipboardBtn } from '@gnosis.pm/safe-react-components'
+import { formatValue } from '../../../utils/contracts'
+import classNames from 'classnames'
+import { FunctionFragment } from 'ethers'
 
 interface ContractFunctionHeaderProps {
   date?: Date
@@ -22,39 +22,38 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   type: {
-    fontFamily: "Roboto Mono",
-    fontSize: ".75rem",
+    fontFamily: 'Roboto Mono',
+    fontSize: '.75rem',
   },
   queryType: {
-    fontSize: ".75rem",
+    fontSize: '.75rem',
   },
 }))
 
-export const ContractFunctionHeader = ({
+export const ContractFunctionHeader: React.FC<ContractFunctionHeaderProps> = ({
   date,
   func,
   result,
   showResult,
   loading = false,
-}: ContractFunctionHeaderProps) => {
+}) => {
   const classes = useStyles()
 
   if (loading) {
-    return <Skeleton variant="text" width={300} />
+    return <Skeleton variant='text' width={300} />
   }
 
-  if (showResult && result && result.length && func.outputs) {
+  if (showResult && result?.toString() && func.outputs) {
     const { baseType, type } = func.outputs[0]
-    const value = formatValue(baseType, result[0])
 
-    if (baseType === "address") {
-      return (
-        <Address address={value} TypographyProps={{ classes: { root: classes.type } }} />
-      )
+    const value = formatValue(baseType, result)
+
+    if (baseType === 'address') {
+      return <Address address={value} TypographyProps={{ classes: { root: classes.type } }} />
     }
     return (
       <>
-        <Typography variant="subtitle1" className={classes.type}>
+        <Typography variant='subtitle1' className={classes.type}>
           ({type})
         </Typography>
         <Typography noWrap className={classNames(classes.spaceLeft, classes.type)}>

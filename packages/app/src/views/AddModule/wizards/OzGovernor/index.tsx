@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { BadgeIcon, colors, ZodiacPaper } from "zodiac-ui-components"
+import React, { useState } from 'react'
+import { BadgeIcon, colors, ZodiacPaper } from 'zodiac-ui-components'
 import {
   Button,
   Divider,
@@ -10,29 +10,16 @@ import {
   StepLabel,
   Stepper,
   Typography,
-} from "@material-ui/core"
-import { Link } from "components/text/Link"
-import classnames from "classnames"
-import { useRootDispatch } from "store"
-import {
-  fetchPendingModules,
-  setModuleAdded,
-  setOzGovernorModuleScreen,
-} from "store/modules"
-import TokenSection, {
-  TokenSectionData,
-  TOKEN_INITIAL_VALUES,
-} from "../OzGovernor/sections/Token"
-import OZReviewSection from "./sections/Review"
-import {
-  CreateTokenArgs,
-  deployAndEnableOzGovernorModule,
-} from "./service/moduleDeployment"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
-import GovernorSection, {
-  GovernorSectionData,
-  GOVERNOR_INITIAL_VALUES,
-} from "./sections/Governor"
+} from '@material-ui/core'
+import { Link } from 'components/text/Link'
+import classnames from 'classnames'
+import { useRootDispatch } from 'store'
+import { fetchPendingModules, setModuleAdded, setOzGovernorModuleScreen } from 'store/modules'
+import TokenSection, { TokenSectionData, TOKEN_INITIAL_VALUES } from '../OzGovernor/sections/Token'
+import OZReviewSection from './sections/Review'
+import { CreateTokenArgs, deployAndEnableOzGovernorModule } from './service/moduleDeployment'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import GovernorSection, { GovernorSectionData, GOVERNOR_INITIAL_VALUES } from './sections/Governor'
 
 export interface GovernorWizardProps {
   handleNext: (stepData: TokenSectionData | GovernorSectionData | any) => void
@@ -46,23 +33,19 @@ export type SetupData = {
   review: any
 }
 
-export const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = [
-  "token",
-  "governor",
-  "review",
-]
+export const OZ_GOVERNOR_MODULE_STEPS: (keyof SetupData)[] = ['token', 'governor', 'review']
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
     padding: theme.spacing(1.5),
-    overflowY: "auto",
+    overflowY: 'auto',
   },
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   paperContainer: {
@@ -72,40 +55,40 @@ const useStyles = makeStyles((theme) => ({
     margin: 0,
   },
   step: {
-    "& text": {
-      fontFamily: "Roboto Mono",
+    '& text': {
+      fontFamily: 'Roboto Mono',
     },
-    "& .step-label": {
-      textTransform: "capitalize",
-      display: "inline",
-      fontFamily: "Roboto Mono",
-      "&.clickable": {
-        cursor: "pointer",
-        "&:hover": {
-          textDecoration: "underline",
+    '& .step-label': {
+      textTransform: 'capitalize',
+      display: 'inline',
+      fontFamily: 'Roboto Mono',
+      '&.clickable': {
+        cursor: 'pointer',
+        '&:hover': {
+          textDecoration: 'underline',
         },
       },
     },
   },
   stepperRoot: {
-    backgroundColor: "transparent",
-    border: "none",
+    backgroundColor: 'transparent',
+    border: 'none',
     padding: theme.spacing(0),
-    "& .MuiStepIcon-active": {
+    '& .MuiStepIcon-active': {
       color: theme.palette.secondary.main,
       border: `1px solid ${colors.tan[300]}`,
-      borderRadius: "100%",
+      borderRadius: '100%',
     },
-    "& .MuiStepIcon-completed": {
+    '& .MuiStepIcon-completed': {
       background: theme.palette.text.primary,
       border: `1px solid ${colors.tan[300]}`,
-      borderRadius: "100%",
+      borderRadius: '100%',
       color: theme.palette.secondary.main,
     },
-    "& .Mui-disabled .MuiStepIcon-root": {
+    '& .Mui-disabled .MuiStepIcon-root': {
       color: theme.palette.primary.main,
       border: `1px solid ${colors.tan[300]}`,
-      borderRadius: "100%",
+      borderRadius: '100%',
     },
   },
 }))
@@ -146,24 +129,19 @@ export const OzGovernorModule: React.FC = () => {
     setLoading(true)
     if (setupData == null) {
       setLoading(false)
-      throw new Error("No setup data")
+      throw new Error('No setup data')
     }
     const { tokenAddress, tokenSymbol, tokenConfiguration, tokenName } = setupData.token
-    const {
-      daoName,
-      votingDelayInBlocks,
-      votingPeriodInBlocks,
-      proposalThreshold,
-      quorumPercent,
-    } = setupData.governor
+    const { daoName, votingDelayInBlocks, votingPeriodInBlocks, proposalThreshold, quorumPercent } =
+      setupData.governor
     try {
       let createTokenArgs: CreateTokenArgs | undefined = undefined
 
-      if (tokenConfiguration === "ERC20" || tokenConfiguration === "ERC721") {
+      if (tokenConfiguration === 'ERC20' || tokenConfiguration === 'ERC721') {
         createTokenArgs = {
           name: tokenName,
           symbol: tokenSymbol,
-          kind: tokenConfiguration as "ERC20" | "ERC721",
+          kind: tokenConfiguration as 'ERC20' | 'ERC721',
         }
       }
 
@@ -195,21 +173,21 @@ export const OzGovernorModule: React.FC = () => {
         <Grid item>
           <Grid container spacing={2}>
             <Grid item>
-              <BadgeIcon icon="ozGov" size={60} />
+              <BadgeIcon icon='ozGov' size={60} />
             </Grid>
-            <Grid item style={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="h5">Governor Module</Typography>
+            <Grid item style={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant='h5'>Governor Module</Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item>
           <Typography gutterBottom>
-            Enables an Open Zeppelin Governor contract as a module.{" "}
+            Enables an Open Zeppelin Governor contract as a module.{' '}
             <Link
-              underline="always"
-              href="https://blog.openzeppelin.com/governor-smart-contract/"
-              target={"_blank"}
-              color="inherit"
+              underline='always'
+              href='https://blog.openzeppelin.com/governor-smart-contract/'
+              target={'_blank'}
+              color='inherit'
             >
               Read more here.
             </Link>
@@ -219,65 +197,62 @@ export const OzGovernorModule: React.FC = () => {
           <Divider />
         </Grid>
         <Grid item>
-          <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+          <ZodiacPaper
+            borderStyle='single'
+            className={classes.paperContainer}
+            placeholder={undefined}
+            onPointerEnterCapture={undefined}
+            onPointerLeaveCapture={undefined}
+          >
             <Grid
               container
-              justifyContent="space-between"
-              alignItems="center"
+              justifyContent='space-between'
+              alignItems='center'
               style={{ marginBottom: 15 }}
             >
               <Grid item>
-                <Typography variant="h4" gutterBottom className={classes.paperTitle}>
+                <Typography variant='h4' gutterBottom className={classes.paperTitle}>
                   Add Governor Module
                 </Typography>
               </Grid>
               <Grid item>
                 <Button
-                  color="secondary"
-                  size="medium"
-                  variant="outlined"
+                  color='secondary'
+                  size='medium'
+                  variant='outlined'
                   onClick={() => dispatch(setOzGovernorModuleScreen(false))}
                 >
                   Cancel
                 </Button>
               </Grid>
             </Grid>
-            <Stepper
-              activeStep={activeStep}
-              className={classes.stepperRoot}
-              orientation="vertical"
-            >
+            <Stepper activeStep={activeStep} className={classes.stepperRoot} orientation='vertical'>
               {OZ_GOVERNOR_MODULE_STEPS.map((label, index) => (
                 <Step key={label} className={classes.step}>
-                  <StepLabel
-                    onClick={() => handleOpenSection(index, label as keyof SetupData)}
-                  >
+                  <StepLabel onClick={() => handleOpenSection(index, label as keyof SetupData)}>
                     <Typography
-                      variant="h6"
-                      className={classnames(
-                        index <= activeStep && "clickable",
-                        "step-label",
-                      )}
+                      variant='h6'
+                      className={classnames(index <= activeStep && 'clickable', 'step-label')}
                     >
                       {label}
-                    </Typography>{" "}
+                    </Typography>{' '}
                   </StepLabel>
                   <StepContent>
-                    {label === "token" && (
+                    {label === 'token' && (
                       <TokenSection
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={() => dispatch(setOzGovernorModuleScreen(false))}
                         setupData={setupData}
                       />
                     )}
-                    {label === "governor" && (
+                    {label === 'governor' && (
                       <GovernorSection
                         handleNext={navigate(index + 1, label, true)}
                         handleBack={navigate(activeStep - 1, label, false)}
                         setupData={setupData}
                       />
                     )}
-                    {label === "review" && (
+                    {label === 'review' && (
                       <OZReviewSection
                         handleNext={handleDone} // this is where we would execute the transactions!!
                         handleBack={navigate(index - 1, label, true)}

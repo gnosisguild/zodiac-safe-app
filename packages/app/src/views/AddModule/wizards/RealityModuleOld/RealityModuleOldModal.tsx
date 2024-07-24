@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Grid, Link, makeStyles, Typography } from "@material-ui/core"
 import { Grow } from "../../../../components/layout/Grow"
-import { ethers } from "ethers"
+import { isAddress, ParamType, parseUnits } from "ethers"
 import { useRootSelector } from "store"
 import { getDelayModules } from "store/modules/selectors"
 import { NETWORK, NETWORKS } from "utils/networks"
@@ -9,7 +9,7 @@ import { ARBITRATOR_OPTIONS, getArbitrator, getDefaultOracle } from "services"
 import { getArbitratorBondToken } from "services/reality-eth"
 import { AddModuleModal } from "../components/AddModuleModal"
 import { ParamInput } from "components/ethereum/ParamInput"
-import { ParamType } from "ethers/lib/utils"
+// import { ParamType } from "ethers/lib/utils"
 import { Row } from "components/layout/Row"
 import { TimeSelect } from "components/input/TimeSelect"
 import { ZodiacTextField } from "zodiac-ui-components"
@@ -82,7 +82,7 @@ export const RealityModuleOldModal = ({
   const isValid = Object.values(validFields).every((field) => field)
 
   useEffect(() => {
-    if (params.oracle && ethers.utils.isAddress(params.oracle)) {
+    if (params.oracle && isAddress(params.oracle)) {
       getArbitratorBondToken(provider, params.oracle, safe.chainId)
         .then((response) => {
           setBondToken(response.coin)
@@ -113,7 +113,7 @@ export const RealityModuleOldModal = ({
 
   const handleAddRealityModule = async () => {
     try {
-      const minimumBond = ethers.utils.parseUnits(params.bond, bondToken.decimals)
+      const minimumBond = parseUnits(params.bond, bondToken.decimals)
       const args = {
         ...params,
         executor: delayModule || safe.safeAddress,
@@ -142,7 +142,7 @@ export const RealityModuleOldModal = ({
     bond = bond.startsWith(".") ? "0" + bond : bond
 
     try {
-      ethers.utils.parseUnits(bond, bondToken.decimals)
+      parseUnits(bond, bondToken.decimals)
       onParamChange("bond", bond)
     } catch (error) {
       console.warn("invalid bond", value, error)
@@ -167,7 +167,7 @@ export const RealityModuleOldModal = ({
       icon="reality"
       tags={["Stackable", "From Gnosis Guild"]}
       onAdd={handleAddRealityModule}
-      readMoreLink="https://zodiac.wiki/index.php/Category:Reality_Module"
+      readMoreLink="https://www.zodiac.wiki/documentation/reality-module"
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>

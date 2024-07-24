@@ -1,17 +1,17 @@
-import React, { useState } from "react"
-import { ParamInput } from "../../../../components/ethereum/ParamInput"
-import { Interface, ParamType } from "@ethersproject/abi"
-import { enableModule } from "services"
-import { AddModuleModal } from "../components/AddModuleModal"
-import { ActionButton } from "../../../../components/ActionButton"
-import { ReactComponent as AddIcon } from "../../../../assets/icons/add-icon.svg"
-import { makeStyles } from "@material-ui/core"
-import { useRootDispatch } from "../../../../store"
-import { addTransaction } from "../../../../store/transactionBuilder"
-import { SafeAbi } from "../../../../services/helpers"
-import { serializeTransaction } from "../../../../store/transactionBuilder/helpers"
-import { ReactComponent as ArrowUpIcon } from "../../../../assets/icons/arrow-up-icon.svg"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
+import React, { useState } from 'react'
+import { ParamInput } from '../../../../components/ethereum/ParamInput'
+import { enableModule } from 'services'
+import { AddModuleModal } from '../components/AddModuleModal'
+import { ActionButton } from '../../../../components/ActionButton'
+import { ReactComponent as AddIcon } from '../../../../assets/icons/add-icon.svg'
+import { makeStyles } from '@material-ui/core'
+import { useRootDispatch } from '../../../../store'
+import { addTransaction } from '../../../../store/transactionBuilder'
+import { SafeAbi } from '../../../../services/helpers'
+import { serializeTransaction } from '../../../../store/transactionBuilder/helpers'
+import { ReactComponent as ArrowUpIcon } from '../../../../assets/icons/arrow-up-icon.svg'
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
+import { Interface, ParamType } from 'ethers'
 
 interface AddCustomModuleProps {
   open: boolean
@@ -40,7 +40,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
   const dispatch = useRootDispatch()
   const classes = useStyles()
 
-  const [moduleAddress, setModuleAddress] = useState("")
+  const [moduleAddress, setModuleAddress] = useState('')
   const [isAddressValid, setAddressValid] = useState(false)
 
   const handleAddressChange = (address: string, isValid: boolean) => {
@@ -50,7 +50,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
 
   const resetState = () => {
     if (onClose) onClose()
-    setModuleAddress("")
+    setModuleAddress('')
     setAddressValid(false)
   }
 
@@ -63,18 +63,19 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
       if (onSubmit) onSubmit()
       if (onClose) onClose()
     } catch (error) {
-      console.warn("error adding custom module", error)
+      console.warn('error adding custom module', error)
     }
   }
 
   const addTransactionModule = () => {
     const inter = new Interface(SafeAbi)
-    const func = inter.getFunction("enableModule")
+    const func = inter.getFunction('enableModule')
+    if (!func) return
     const tx = {
       func,
       to: safe.safeAddress,
       params: [moduleAddress],
-      id: "add_module_" + new Date().getTime(),
+      id: 'add_module_' + new Date().getTime(),
     }
 
     dispatch(addTransaction(serializeTransaction(tx)))
@@ -87,15 +88,15 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
       hideButton
       open={open}
       onClose={onClose}
-      title="Custom Module"
-      icon="custom"
-      readMoreLink="https://zodiac.wiki/index.php/Category:Custom_Module"
-      warning="Modules do not require multisig approval for transactions. Only add modules that you trust!"
+      title='Custom Module'
+      icon='custom'
+      readMoreLink='https://www.zodiac.wiki/documentation/custom-module'
+      warning='Modules do not require multisig approval for transactions. Only add modules that you trust!'
     >
       <ParamInput
-        placeholder="0xCcBFc37093009fd31f85F1Bf90c34F1e03FB351E"
-        label="Module Address"
-        param={ParamType.fromString("address")}
+        placeholder='0xCcBFc37093009fd31f85F1Bf90c34F1e03FB351E'
+        label='Module Address'
+        param={ParamType.from('address')}
         onChange={handleAddressChange}
       />
 
@@ -103,7 +104,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
         fullWidth
         disableElevation
         className={classes.addButton}
-        variant="contained"
+        variant='contained'
         disabled={!isAddressValid}
         startIcon={<ArrowUpIcon />}
         onClick={addModule}
@@ -117,7 +118,7 @@ export const CustomModuleModal = ({ onSubmit, open, onClose }: AddCustomModulePr
         disabled={!isAddressValid}
         startIcon={<AddIcon />}
         onClick={addTransactionModule}
-        variant="outlined"
+        variant='outlined'
       >
         Add to Transaction Bundle
       </ActionButton>

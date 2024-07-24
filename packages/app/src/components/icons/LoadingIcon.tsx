@@ -6,7 +6,7 @@ interface LoadingIconProps {
   icon?: React.ReactNode;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     position: "relative",
     width: 34,

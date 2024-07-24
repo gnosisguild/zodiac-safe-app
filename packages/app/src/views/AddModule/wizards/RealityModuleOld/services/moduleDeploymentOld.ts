@@ -1,12 +1,8 @@
-import {
-  deployAndSetUpModule,
-  getModuleInstance,
-  KnownContracts,
-} from "@gnosis.pm/zodiac"
-import { enableModule, getDefaultOracle } from "services"
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk"
-import { buildTransaction } from "services/helpers"
-import { ethers } from "ethers"
+import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis.pm/zodiac'
+import { enableModule, getDefaultOracle } from 'services'
+import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
+import { buildTransaction } from 'services/helpers'
+import { BrowserProvider } from 'ethers'
 
 interface RealityModuleParams {
   executor: string
@@ -19,62 +15,49 @@ interface RealityModuleParams {
   arbitrator: string
 }
 
-export function deployRealityModule(
-  provider: ethers.providers.JsonRpcProvider,
+export async function deployRealityModule(
+  provider: BrowserProvider,
   safeAddress: string,
   chainId: number,
   args: RealityModuleParams,
   isERC20?: boolean,
 ) {
-  const type: KnownContracts = isERC20
-    ? KnownContracts.REALITY_ERC20
-    : KnownContracts.REALITY_ETH
-  const {
-    timeout,
-    cooldown,
-    expiration,
-    bond,
-    templateId,
-    oracle,
-    executor,
-    arbitrator,
-  } = args
+  const type: KnownContracts = isERC20 ? KnownContracts.REALITY_ERC20 : KnownContracts.REALITY_ETH
+  const { timeout, cooldown, expiration, bond, templateId, oracle, executor, arbitrator } = args
   const oracleAddress = oracle || getDefaultOracle(chainId)
-  const {
-    transaction: daoModuleDeploymentTx,
-    expectedModuleAddress: daoModuleExpectedAddress,
-  } = deployAndSetUpModule(
-    type,
-    {
-      types: [
-        "address",
-        "address",
-        "address",
-        "address",
-        "uint32",
-        "uint32",
-        "uint32",
-        "uint256",
-        "uint256",
-        "address",
-      ],
-      values: [
-        safeAddress,
-        safeAddress,
-        executor,
-        oracleAddress,
-        timeout,
-        cooldown,
-        expiration,
-        bond,
-        templateId,
-        arbitrator,
-      ],
-    },
-    provider,
-    chainId,
-    Date.now().toString(),
-  )
+  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } =
+    await deployAndSetUpModule(
+      type,
+      {
+        types: [
+          'address',
+          'address',
+          'address',
+          'address',
+          'uint32',
+          'uint32',
+          'uint32',
+          'uint256',
+          'uint256',
+          'address',
+        ],
+        values: [
+          safeAddress,
+          safeAddress,
+          executor,
+          oracleAddress,
+          timeout,
+          cooldown,
+          expiration,
+          bond,
+          templateId,
+          arbitrator,
+        ],
+      },
+      provider,
+      chainId,
+      Date.now().toString(),
+    )
 
   const daoModuleTransactions: BaseTransaction[] = [
     {
@@ -85,10 +68,11 @@ export function deployRealityModule(
 
   if (executor !== safeAddress) {
     const delayModule = getModuleInstance(KnownContracts.DELAY, executor, provider)
+    const delayModuleAddress = await delayModule.getAddress()
     const addModuleTransaction = buildTransaction(
       delayModule.interface,
-      delayModule.address,
-      "enableModule",
+      delayModuleAddress,
+      'enableModule',
       [daoModuleExpectedAddress],
     )
 

@@ -1,23 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Divider, Grid, Link, makeStyles, Typography } from "@material-ui/core"
-import { CircleStep } from "components/CircleStep"
-import React, { useEffect, useState } from "react"
-import { colors, ZodiacPaper } from "zodiac-ui-components"
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward"
-import AddIcon from "@material-ui/icons/Add"
-import RemoveIcon from "@material-ui/icons/Remove"
-import { SectionProps, SetupData } from "views/AddModule/wizards/RealityModule"
-import { DelayModule, ModuleType } from "store/modules/models"
-import { AttachModuleForm } from "views/AddModule/wizards/components/AttachModuleForm"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { OracleSectionData } from "../Oracle"
-import { Loader } from "@gnosis.pm/safe-react-components"
-import { BigNumber } from "ethers"
-import { unitConversion } from "components/input/TimeSelect"
-import { EXPLORERS_CONFIG } from "utils/explorers"
-import { NETWORK } from "utils/networks"
-import { getSnapshotSpaceUrl } from "services/snapshot"
-import { StatusLog, SubmittingStatus } from "./components/SubmittingStatus"
+import { Button, Divider, Grid, Link, makeStyles, Typography } from '@material-ui/core'
+import { CircleStep } from 'components/CircleStep'
+import React, { useEffect, useState } from 'react'
+import { colors, ZodiacPaper } from 'zodiac-ui-components'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove'
+import { SectionProps, SetupData } from 'views/AddModule/wizards/RealityModule'
+import { DelayModule, ModuleType } from 'store/modules/models'
+import { AttachModuleForm } from 'views/AddModule/wizards/components/AttachModuleForm'
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
+import { OracleSectionData } from '../Oracle'
+import { Loader } from '@gnosis.pm/safe-react-components'
+import { unitConversion } from 'components/input/TimeSelect'
+import { EXPLORERS_CONFIG } from 'utils/explorers'
+import { NETWORK } from 'utils/networks'
+import { getSnapshotSpaceUrl } from 'services/snapshot'
+import { StatusLog, SubmittingStatus } from './components/SubmittingStatus'
 
 interface ReviewSectionProps extends SectionProps {
   goToStep: (step: number) => void
@@ -29,8 +28,8 @@ interface ReviewSectionProps extends SectionProps {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   paperContainer: {
@@ -40,67 +39,67 @@ const useStyles = makeStyles((theme) => ({
   paperTemplateContainer: {
     marginTop: 4,
     padding: theme.spacing(2),
-    background: "rgba(0, 0, 0, 0.2)",
+    background: 'rgba(0, 0, 0, 0.2)',
   },
   textSubdued: {
-    color: "rgba(255 255 255 / 70%)",
+    color: 'rgba(255 255 255 / 70%)',
   },
   icon: {
-    fill: "white",
-    cursor: "pointer",
+    fill: 'white',
+    cursor: 'pointer',
   },
   collapse: {
-    textDecoration: "underline",
-    cursor: "pointer",
+    textDecoration: 'underline',
+    cursor: 'pointer',
   },
   input: {
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
       borderColor: colors.tan[300],
-      "&::before": {
+      '&::before': {
         borderColor: colors.tan[300],
       },
     },
   },
   textarea: {
-    "& .MuiInputBase-root": {
+    '& .MuiInputBase-root': {
       padding: theme.spacing(2),
-      background: "rgba(0, 0, 0, 0.2)",
+      background: 'rgba(0, 0, 0, 0.2)',
       borderColor: colors.tan[300],
-      "&::before": {
+      '&::before': {
         borderColor: colors.tan[300],
       },
     },
   },
   link: {
-    fontFamily: "Roboto Mono",
+    fontFamily: 'Roboto Mono',
     fontSize: 12,
-    textDecoration: "underline",
-    fontWeight: "bold",
+    textDecoration: 'underline',
+    fontWeight: 'bold',
   },
   label: {
-    fontFamily: "Roboto Mono",
+    fontFamily: 'Roboto Mono',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   loading: {
-    width: "15px !important",
-    height: "15px !important",
+    width: '15px !important',
+    height: '15px !important',
   },
 }))
 
 const SECTIONS = [
   {
-    label: "Proposal",
+    label: 'Proposal',
     number: 1,
     section: 0,
   },
   {
-    label: "Oracle",
+    label: 'Oracle',
     number: 2,
     section: 1,
   },
   {
-    label: "Monitoring",
+    label: 'Monitoring',
     number: 3,
     section: 2,
   },
@@ -121,7 +120,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [collapseSection, setCollapseSection] = useState<boolean>(false)
   const [oracleData, setOracleData] = useState<OracleSectionData | undefined>(undefined)
   const [delayModule, setDelayModule] = useState<string>(
-    delayModules.length === 1 ? delayModules[0].address : "",
+    delayModules.length === 1 ? delayModules[0].address : '',
   )
   const monitoring = setupData && setupData.monitoring
 
@@ -135,22 +134,28 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
   }, [setupData])
 
   return (
-    <ZodiacPaper borderStyle="single" className={classes.paperContainer}>
+    <ZodiacPaper
+      borderStyle='single'
+      className={classes.paperContainer}
+      placeholder={undefined}
+      onPointerEnterCapture={undefined}
+      onPointerLeaveCapture={undefined}
+    >
       <Grid container spacing={4} className={classes.container}>
         {!collapseSection && (
           <>
             <Grid item>
               <Grid container spacing={1} className={classes.container}>
                 <Grid item>
-                  <Typography variant="h3">Review</Typography>
+                  <Typography variant='h3'>Review</Typography>
                 </Grid>
                 <Grid item>
                   <Typography>
-                    Here is an overview of your reality module configuration. Please
-                    review carefully. Once you&apos;ve confirmed that the details are
-                    correct, you can submit the transaction which will add the reality
-                    module to this safe, and automatically integrate the SafeSnap plugin
-                    with the snapshot space you&apos;ve include.
+                    Here is an overview of your reality module configuration. Please review
+                    carefully. Once you&apos;ve confirmed that the details are correct, you can
+                    submit the transaction which will add the reality module to this safe, and
+                    automatically integrate the SafeSnap plugin with the snapshot space you&apos;ve
+                    include.
                   </Typography>
                 </Grid>
               </Grid>
@@ -171,13 +176,13 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                   />
                 </Grid>
 
-                {item.label === "Proposal" && (
+                {item.label === 'Proposal' && (
                   <Grid item>
                     <Typography>Snapshot Space:</Typography>
                     <Link
-                      color="inherit"
+                      color='inherit'
                       href={snapshotSpace}
-                      target="_blank"
+                      target='_blank'
                       className={classes.link}
                     >
                       {snapshotSpace}
@@ -185,25 +190,28 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                   </Grid>
                 )}
 
-                {item.label === "Oracle" && oracleData && setupData && (
+                {item.label === 'Oracle' && oracleData && setupData && (
                   <Grid item>
-                    <Grid container spacing={2} direction="column">
+                    <Grid container spacing={2} direction='column'>
                       <Grid item>
                         <Typography>Template question preview:</Typography>
-                        <ZodiacPaper className={classes.paperTemplateContainer}>
-                          <Typography>
-                            {setupData.oracle.templateData.templateQuestion}
-                          </Typography>
+                        <ZodiacPaper
+                          className={classes.paperTemplateContainer}
+                          placeholder={undefined}
+                          onPointerEnterCapture={undefined}
+                          onPointerLeaveCapture={undefined}
+                        >
+                          <Typography>{setupData.oracle.templateData.templateQuestion}</Typography>
                         </ZodiacPaper>
                       </Grid>
                       <Grid item>
                         <Typography>Oracle Address:</Typography>
                         <Link
-                          color="inherit"
+                          color='inherit'
                           href={`${
                             EXPLORERS_CONFIG[safe.chainId as NETWORK]
                           }/search?f=0&q=${oracleData.instanceData.instanceAddress}`}
-                          target="_blank"
+                          target='_blank'
                           className={classes.link}
                         >
                           {oracleData.instanceData.instanceAddress}
@@ -213,33 +221,36 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                         <Grid
                           container
                           spacing={1}
-                          justifyContent={"space-between"}
-                          alignItems={"center"}
+                          justifyContent={'space-between'}
+                          alignItems={'center'}
                         >
                           <Grid item>
                             <Typography>Timeout:</Typography>
                             <Typography className={classes.label}>
-                              {BigNumber.from(oracleData.delayData.timeout)
-                                .div(unitConversion[oracleData.delayData.timeoutUnit])
-                                .toString()}{" "}
+                              {(
+                                BigInt(oracleData.delayData.timeout) /
+                                BigInt(unitConversion[oracleData.delayData.timeoutUnit])
+                              ).toString()}{' '}
                               {oracleData.delayData.timeoutUnit}
                             </Typography>
                           </Grid>
                           <Grid item>
                             <Typography>Cooldown:</Typography>
                             <Typography className={classes.label}>
-                              {BigNumber.from(oracleData.delayData.cooldown)
-                                .div(unitConversion[oracleData.delayData.cooldownUnit])
-                                .toString()}{" "}
+                              {(
+                                BigInt(oracleData.delayData.cooldown) /
+                                BigInt(unitConversion[oracleData.delayData.cooldownUnit])
+                              ).toString()}{' '}
                               {oracleData.delayData.cooldownUnit}
                             </Typography>
                           </Grid>
                           <Grid item>
                             <Typography>Expiration:</Typography>
                             <Typography className={classes.label}>
-                              {BigNumber.from(oracleData.delayData.expiration)
-                                .div(unitConversion[oracleData.delayData.expirationUnit])
-                                .toString()}{" "}
+                              {(
+                                BigInt(oracleData.delayData.expiration) /
+                                BigInt(unitConversion[oracleData.delayData.expirationUnit])
+                              ).toString()}{' '}
                               {oracleData.delayData.expirationUnit}
                             </Typography>
                           </Grid>
@@ -255,27 +266,17 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                         <Typography>Arbitrator:</Typography>
                         <Typography className={classes.label}>
                           {oracleData.arbitratorData.arbitratorOption === 0 &&
-                            "No arbitration (highest bond wins)"}
-                          {oracleData.arbitratorData.arbitratorOption === 1 && "Kleros"}
+                            'No arbitration (highest bond wins)'}
+                          {oracleData.arbitratorData.arbitratorOption === 1 && 'Kleros'}
                         </Typography>
                       </Grid>
-                      {/* <Grid item>
-                    <Typography>Oracle Address:</Typography>
-                    <Link
-                      color='inherit'
-                      href='https://reality.eth/proposal/343293804ji32khfgahfa '
-                      target='_blank'
-                      className={classes.link}>
-                      https://reality.eth/proposal/343293804ji32khfgahfa
-                    </Link>
-                  </Grid> */}
                     </Grid>
                   </Grid>
                 )}
 
-                {item.label === "Monitoring" && monitoring && (
+                {item.label === 'Monitoring' && monitoring && (
                   <Grid item>
-                    <Grid container spacing={2} direction="column">
+                    <Grid container spacing={2} direction='column'>
                       <Grid item>
                         <Typography>API key/secret:</Typography>
                         <Typography className={classes.label}>Valid</Typography>
@@ -290,15 +291,13 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                           ))}
                         </Grid>
                       )}
-                      {monitoring.discordKey !== "" && (
+                      {monitoring.discordKey !== '' && (
                         <Grid item>
                           <Typography>Discord:</Typography>
-                          <Typography className={classes.label}>
-                            {monitoring.discordKey}
-                          </Typography>
+                          <Typography className={classes.label}>{monitoring.discordKey}</Typography>
                         </Grid>
                       )}
-                      {monitoring.telegram.botToken !== "" && (
+                      {monitoring.telegram.botToken !== '' && (
                         <Grid item>
                           <Typography>Telegram:</Typography>
                           <Typography className={classes.label}>
@@ -309,12 +308,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                           </Typography>
                         </Grid>
                       )}
-                      {monitoring.slackKey !== "" && (
+                      {monitoring.slackKey !== '' && (
                         <Grid item>
                           <Typography>Slack:</Typography>
-                          <Typography className={classes.label}>
-                            {monitoring.slackKey}
-                          </Typography>
+                          <Typography className={classes.label}>{monitoring.slackKey}</Typography>
                         </Grid>
                       )}
                     </Grid>
@@ -329,9 +326,9 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 
             {delayModules.length >= 1 && (
               <Grid item>
-                <Grid container spacing={3} justifyContent="center" alignItems="center">
+                <Grid container spacing={3} justifyContent='center' alignItems='center'>
                   <Grid item>
-                    <Typography variant="h6" gutterBottom>
+                    <Typography variant='h6' gutterBottom>
                       Deploy Options
                     </Typography>
                     <AttachModuleForm
@@ -359,7 +356,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
                 )}
               </Grid>
               <Grid item className={classes.collapse}>
-                <Typography>{!collapseSection ? "Show Less" : "Show More"}</Typography>
+                <Typography>{!collapseSection ? 'Show Less' : 'Show More'}</Typography>
               </Grid>
             </Grid>
           </Grid>
@@ -369,7 +366,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
           <Grid item>
             <Grid container spacing={2} className={classes.container}>
               <Grid item>
-                <Typography variant="h4" color="textSecondary">
+                <Typography variant='h4' color='textSecondary'>
                   Setting up Module
                 </Typography>
               </Grid>
@@ -381,25 +378,20 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         )}
 
         <Grid item>
-          <Grid container spacing={3} justifyContent="center" alignItems="center">
+          <Grid container spacing={3} justifyContent='center' alignItems='center'>
             <Grid item>
-              <Button
-                size="medium"
-                variant="text"
-                onClick={handleBack}
-                disabled={loading}
-              >
+              <Button size='medium' variant='text' onClick={handleBack} disabled={loading}>
                 Back
               </Button>
             </Grid>
             <Grid item>
               <Button
-                color="secondary"
-                size="medium"
-                variant="contained"
+                color='secondary'
+                size='medium'
+                variant='contained'
                 startIcon={
                   loading ? (
-                    <Loader className={classes.loading} size="sm" color="background" />
+                    <Loader className={classes.loading} size='sm' color='background' />
                   ) : (
                     <ArrowUpwardIcon />
                   )
@@ -421,11 +413,10 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 }
 
 const executionModuleDescription = (
-  <Typography variant="body2">
-    This will add a time delay to any transactions created by this module.{" "}
-    <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both
-    are set to 24 hours, the cumulative delay before the transaction can be executed will
-    be 48 hours).
+  <Typography variant='body2'>
+    This will add a time delay to any transactions created by this module.{' '}
+    <b>Note that this delay is cumulative with the cooldown set above</b> (e.g. if both are set to
+    24 hours, the cumulative delay before the transaction can be executed will be 48 hours).
   </Typography>
 )
 

@@ -1,10 +1,10 @@
-import React, { useState } from "react"
-import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { AddModuleModal } from "../components/AddModuleModal"
-import { AMBModuleParams, deployBridgeModule } from "../../../../services"
-import { ParamInput } from "../../../../components/ethereum/ParamInput"
-import { ParamType } from "@ethersproject/abi"
-import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
+import React, { useState } from 'react'
+import { Grid, makeStyles, Typography } from '@material-ui/core'
+import { AddModuleModal } from '../components/AddModuleModal'
+import { AMBModuleParams, deployBridgeModule } from '../../../../services'
+import { ParamInput } from '../../../../components/ethereum/ParamInput'
+import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
+import { ParamType } from 'ethers'
 
 interface AMBModuleModalProps {
   open: boolean
@@ -14,18 +14,18 @@ interface AMBModuleModalProps {
   onSubmit?(): void
 }
 
-type AMBModuleParamsInput = Omit<AMBModuleParams, "executor">
+type AMBModuleParamsInput = Omit<AMBModuleParams, 'executor'>
 
 const useStyles = makeStyles((theme) => ({
   fields: {
     marginBottom: theme.spacing(1),
   },
   loadMessage: {
-    textAlign: "center",
+    textAlign: 'center',
   },
 }))
 
-export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps) => {
+export const AMBModuleModal: React.FC<AMBModuleModalProps> = ({ open, onClose, onSubmit }) => {
   const classes = useStyles()
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
 
@@ -35,9 +35,9 @@ export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps)
     chainId: false,
   })
   const [params, setParams] = useState<AMBModuleParamsInput>({
-    amb: "",
-    chainId: "",
-    controller: "",
+    amb: '',
+    chainId: '',
+    controller: '',
   })
   const isValid = Object.values(errors).every((x) => x)
 
@@ -55,16 +55,15 @@ export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps)
 
   const handleAddAMBModule = async () => {
     try {
-      const txs = deployBridgeModule(provider, safe.safeAddress, safe.chainId, {
+      const txs = await deployBridgeModule(provider, safe.safeAddress, safe.chainId, {
         ...params,
         executor: safe.safeAddress,
       })
-
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()
       if (onClose) onClose()
     } catch (error) {
-      console.log("Error deploying module: ", error)
+      console.log('Error deploying module: ', error)
     }
   }
 
@@ -72,12 +71,12 @@ export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps)
     <AddModuleModal
       open={open}
       onClose={onClose}
-      title="Bridge Module"
-      description="This module allows for execution of transactions initiated by a designated address on the other side of a designated arbitrary message bridge (AMB)."
-      icon="bridge"
-      tags={["From Gnosis Guild"]}
+      title='Bridge Module'
+      description='This module allows for execution of transactions initiated by a designated address on the other side of a designated arbitrary message bridge (AMB).'
+      icon='bridge'
+      tags={['From Gnosis Guild']}
       onAdd={handleAddAMBModule}
-      readMoreLink="https://zodiac.wiki/index.php/Category:Bridge_Module"
+      readMoreLink='https://www.zodiac.wiki/documentation/bridge-module'
       ButtonProps={{ disabled: !isValid }}
     >
       <Typography gutterBottom>Parameters</Typography>
@@ -85,28 +84,28 @@ export const AMBModuleModal = ({ open, onClose, onSubmit }: AMBModuleModalProps)
       <Grid container spacing={2} className={classes.fields}>
         <Grid item xs={12}>
           <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
+            param={ParamType.from('address')}
+            color='secondary'
             value={params.amb}
-            label="AMB Contract Address"
-            onChange={(value, valid) => onParamChange("amb", value, valid)}
+            label='AMB Contract Address'
+            onChange={(value, valid) => onParamChange('amb', value, valid)}
           />
         </Grid>
         <Grid item xs={12}>
           <ParamInput
-            param={ParamType.from("address")}
-            color="secondary"
+            param={ParamType.from('address')}
+            color='secondary'
             value={params.controller}
-            label="Controller Contract Address"
-            onChange={(value, valid) => onParamChange("controller", value, valid)}
+            label='Controller Contract Address'
+            onChange={(value, valid) => onParamChange('controller', value, valid)}
           />
         </Grid>
         <Grid item xs={12}>
           <ParamInput
-            param={ParamType.from("uint256")}
-            label="Chain Id"
+            param={ParamType.from('uint256')}
+            label='Chain Id'
             value={params.chainId}
-            onChange={(value, valid) => onParamChange("chainId", value, valid)}
+            onChange={(value, valid) => onParamChange('chainId', value, valid)}
           />
         </Grid>
       </Grid>

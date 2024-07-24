@@ -1,4 +1,4 @@
-const BACKEND_API_URL = process.env.REACT_APP_BACKEND_API_URL
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_API_URL
 
 if (BACKEND_API_URL == null) {
   throw new Error("BACKEND_API_URL not set")
