@@ -39,6 +39,7 @@ import { ReactComponent as CheckmarkIcon } from '../../../../assets/icons/checkm
 import { useMonitoringValidation } from '../RealityModule/hooks/useMonitoringValidation'
 import useEns from 'hooks/useEns'
 import { getAddressRecord } from '@ensdomains/ensjs/public'
+import DoneIcon from '@material-ui/icons/Done'
 
 const SECONDS_IN_DAY = 86400
 
@@ -58,6 +59,11 @@ interface RealityModuleParams {
   bond: string
 }
 const useStyles = makeStyles((theme) => ({
+  doneIcon: {
+    marginRight: 4,
+    fill: '#A8E07E',
+    width: '16px',
+  },
   errorIcon: {
     fill: 'rgba(244, 67, 54, 1)',
     width: '20px',
@@ -86,9 +92,12 @@ const useStyles = makeStyles((theme) => ({
   spinner: {
     width: '8px !important',
     height: '8px !important',
-    color: `yellow !important`,
-    fill: `yellow !important`,
-    opacity: '100% !important',
+    color: `${colors.tan[300]} !important`,
+  },
+  loading: {
+    width: '15px !important',
+    height: '15px !important',
+    marginRight: 8,
   },
   addSpinner: {
     color: `white !important`,
@@ -114,6 +123,9 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     color: 'rgba(230, 230, 54, 1)',
   },
+  textSubdued: {
+    color: 'rgba(255 255 255 / 70%)',
+  },
   errorMessage: {
     fontSize: 12,
     color: 'rgba(244, 67, 54, 1)',
@@ -124,12 +136,35 @@ const useStyles = makeStyles((theme) => ({
     color: 'rgba(230, 230, 54, 1)',
   },
   linkStyle: {
-    color: 'rgba(190, 190, 120, 1)',
+    color: 'white',
   },
   flexRow: {
     display: 'flex',
     flexDirection: 'row',
   },
+  textFieldSmall: {
+    '& .MuiFormLabel-root': {
+      fontSize: 12,
+    },
+  },
+  input: {
+    '& .MuiInputBase-root': {
+      borderColor: colors.tan[300],
+      '&::before': {
+        borderColor: colors.tan[300],
+      },
+    },
+  },
+  inputError: {
+    '& .MuiInputBase-root': {
+      borderColor: 'rgba(244, 67, 54, 0.3)',
+      background: 'rgba(244, 67, 54, 0.1)',
+      '&::before': {
+        borderColor: 'rgba(244, 67, 54, 0.3)',
+      },
+    },
+  },
+  errorContainer: { margin: 8, display: 'flex', alignItems: 'center' },
 }))
 
 const CustomSwitch = withStyles({
@@ -138,7 +173,7 @@ const CustomSwitch = withStyles({
   },
   colorSecondary: {
     '&.Mui-checked + .MuiSwitch-track': {
-      backgroundColor: 'yellow',
+      backgroundColor:  colors.tan[500],
     },
   },
   track: {
@@ -460,6 +495,12 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
     }
   }
 
+  const handleEnsStyleValidation = (): string => {
+    if (loadingEns) return ''
+    if (params.snapshotEns.includes('.eth') && !loadingEns && !validEns) return classes.inputError
+    if (params.snapshotEns.includes('.eth') && !loadingEns && validEns) return classes.input
+    return ''
+  }
   return (
     <AddModuleModal
       open={open}
@@ -480,19 +521,22 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
               <ZodiacTextField
                 value={params.snapshotEns}
                 onChange={(e) => onParamChange('snapshotEns', e.target.value, true)}
-                label='Snapshot Name'
-                placeholder='gnosis.eth'
+                label='Enter the Snapshot ENS name.'
+                placeholder='ex: gnosis.eth'
+                className={`${classes.textFieldSmall} ${handleEnsStyleValidation()}`}
                 rightIcon={
                   <>
-                    {loadingEns ? (
+                    {loadingEns && (
                       <Box className={classes.loadingContainer}>
                         <Loader size='sm' className={classes.spinner} />
                       </Box>
-                    ) : loadedEns && validEns ? (
-                      <Box className={classes.loadingContainer}>
-                        <CheckmarkIcon className={classes.spinner} />
-                      </Box>
-                    ) : null}
+                    )}
+                    {params.snapshotEns.includes('.eth') && !loadingEns && !validEns && (
+                      <ErrorOutlineIcon className={classes.errorIcon} />
+                    )}
+                    {params.snapshotEns.includes('.eth') && !loadingEns && validEns && (
+                      <DoneIcon className={classes.doneIcon} />
+                    )}
                   </>
                 }
               />

@@ -263,10 +263,6 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
             </Grid>
             <Grid item>
               <Typography variant='body2' className={classes.textSubdued}>
-                {/* Enter your snapshot space ENS domain below to get started. If
-                you&apos;d prefer to provide a custom proposal integration,
-                select Custom and provide the appropriate URL where the
-                proposals can be viewed publicly. */}
                 Enter your snapshot space ENS domain below to get started. The Safe must be the
                 controller of this ENS domain.
               </Typography>
