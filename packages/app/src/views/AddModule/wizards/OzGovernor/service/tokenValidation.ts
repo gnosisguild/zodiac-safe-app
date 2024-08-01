@@ -20,10 +20,9 @@ export const isVotesCompilable = (provider: BrowserProvider) => async (tokenAddr
       tokenContract.getVotes(RANDOM_VALID_ADDRESS),
       tokenContract.getPastVotes(RANDOM_VALID_ADDRESS, RANDOM_BLOCK_NUMBER),
       tokenContract.getPastTotalSupply(RANDOM_BLOCK_NUMBER),
-      tokenContract.delegates(RANDOM_VALID_ADDRESS),
+      tokenContract.delegates.staticCall(RANDOM_VALID_ADDRESS),
     ])
-    // @ts-ignore
-    tokenContract.functions['delegateBySig'].name
+    tokenContract.delegateBySig.name
   } catch (e) {
     console.log(e)
     return false
