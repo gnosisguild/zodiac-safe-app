@@ -4,6 +4,7 @@ export enum NETWORK {
   BSC = 56,
   GNOSIS_CHAIN = 100,
   POLYGON = 137,
+  ZKEVM = 1101,
   ARBITRUM = 42161,
   AVALANCHE = 43114,
   SEPOLIA = 11155111,
@@ -61,6 +62,12 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: 'matic',
     nativeAsset: NATIVE_ASSET.MATIC,
   },
+  [NETWORK.ZKEVM]: {
+    chainId: NETWORK.ZKEVM,
+    name: 'zkevm',
+    shortName: 'zkevm',
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
   [NETWORK.ARBITRUM]: {
     chainId: NETWORK.ARBITRUM,
     name: 'arbitrum',
@@ -92,6 +99,7 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.OPTIMISM]: NATIVE_ASSET.ETH,
   [NETWORK.GNOSIS_CHAIN]: NATIVE_ASSET.XDAI,
   [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
+  [NETWORK.ZKEVM]: NATIVE_ASSET.ETH,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
   [NETWORK.ARBITRUM]: NATIVE_ASSET.ETH,
   [NETWORK.AVALANCHE]: NATIVE_ASSET.AVAX,
