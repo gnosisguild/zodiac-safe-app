@@ -62,7 +62,7 @@ export const ContractFunctionQueryBlock = ({ address, func }: ContractFunctionBl
   const execQuery = useCallback(
     (params?: any[]) => {
       setLastQueryDate(undefined)
-      fetch(provider, safe.chainId, address, [func], func.name, params)
+      fetch(provider, safe.chainId, address, [func], func.format(), params)
     },
     [address, fetch, func, safe.chainId, provider],
   )
