@@ -18,10 +18,10 @@ export const ContractReadFunctionsList = ({ abi, address, preview }: ModuleListF
     <>
       {readFunctions.map((func) => {
         if (preview) {
-          return <ContractFunctionPreviewBlock key={func.name} func={func} />
+          return <ContractFunctionPreviewBlock key={func.selector} func={func} />
         }
 
-        return <ContractFunctionQueryBlock key={func.name} address={address} func={func} />
+        return <ContractFunctionQueryBlock key={func.selector} address={address} func={func} />
       })}
     </>
   )
