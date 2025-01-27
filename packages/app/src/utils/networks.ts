@@ -4,6 +4,7 @@ export enum NETWORK {
   BSC = 56,
   GNOSIS_CHAIN = 100,
   POLYGON = 137,
+  ZKEVM = 1101,
   ARBITRUM = 42161,
   AVALANCHE = 43114,
   SEPOLIA = 11155111,
@@ -25,7 +26,7 @@ interface Network {
 export const NATIVE_ASSET: Record<string, Coin> = {
   ETH: { symbol: 'ETH', decimals: 18 },
   XDAI: { symbol: 'xDai', decimals: 18 },
-  MATIC: { symbol: 'MATIC', decimals: 18 },
+  POL: { symbol: 'POL', decimals: 18 },
   BNB: { symbol: 'BNB', decimals: 18 },
   AVAX: { symbol: 'AVAX', decimals: 18 },
 }
@@ -59,7 +60,13 @@ export const NETWORKS: Record<NETWORK, Network> = {
     chainId: NETWORK.POLYGON,
     name: 'polygon',
     shortName: 'matic',
-    nativeAsset: NATIVE_ASSET.MATIC,
+    nativeAsset: NATIVE_ASSET.POL,
+  },
+  [NETWORK.ZKEVM]: {
+    chainId: NETWORK.ZKEVM,
+    name: 'zkevm',
+    shortName: 'zkevm',
+    nativeAsset: NATIVE_ASSET.ETH,
   },
   [NETWORK.ARBITRUM]: {
     chainId: NETWORK.ARBITRUM,
@@ -91,7 +98,8 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.MAINNET]: NATIVE_ASSET.ETH,
   [NETWORK.OPTIMISM]: NATIVE_ASSET.ETH,
   [NETWORK.GNOSIS_CHAIN]: NATIVE_ASSET.XDAI,
-  [NETWORK.POLYGON]: NATIVE_ASSET.MATIC,
+  [NETWORK.POLYGON]: NATIVE_ASSET.POL,
+  [NETWORK.ZKEVM]: NATIVE_ASSET.ETH,
   [NETWORK.BSC]: NATIVE_ASSET.BNB,
   [NETWORK.ARBITRUM]: NATIVE_ASSET.ETH,
   [NETWORK.AVALANCHE]: NATIVE_ASSET.AVAX,
