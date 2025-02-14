@@ -520,7 +520,10 @@ export async function fetchSafeTransactions(
   const network = getNetworkExplorerInfo(chainId)
   if (!network) return []
 
-  const url = new URL(`api/v1/safes/${safeAddress}/transactions`, network.safeTransactionApi)
+  const url = new URL(
+    `api/v1/safes/${safeAddress}/multisig-transactions`,
+    network.safeTransactionApi,
+  )
 
   Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value))
 
