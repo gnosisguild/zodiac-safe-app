@@ -119,7 +119,7 @@ export function getDefaultOracle(chainId: number): string {
     case NETWORK.SEPOLIA:
       return '0xaf33DcB6E8c5c4D9dDF579f53031b514d19449CA'
     case NETWORK.BASE:
-      return '' // TODO
+      return '0x2F39f464d16402Ca3D8527dA89617b73DE2F60e8'
   }
   return ''
 }
@@ -201,6 +201,8 @@ export function getKlerosAddress(chainId: number): string {
       return '0x29f39de98d750eb77b5fafb31b2837f079fce222'
     case NETWORK.POLYGON:
       return '0x5AFa42b30955f137e10f89dfb5EF1542a186F90e'
+    case NETWORK.BASE:
+      return '0x05295972F75cFeE7fE66E6BDDC0435c9Fd083D18'
     case NETWORK.SEPOLIA:
       return '0x05b942faecfb3924970e3a28e0f230910cedff45'
   }
