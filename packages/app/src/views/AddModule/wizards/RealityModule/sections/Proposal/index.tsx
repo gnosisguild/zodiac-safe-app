@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core'
 
 import { Link } from 'components/text/Link'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 // import useSpace from "services/snapshot/hooks/useSpace"
 import { checkIfIsController, checkIfIsOwner } from 'services/ens'
 import { SectionProps } from 'views/AddModule/wizards/RealityModule'
@@ -25,9 +25,11 @@ import DoneIcon from '@material-ui/icons/Done'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { safeAppUrl } from 'utils/url'
+import { NETWORK } from 'utils/networks'
 import useEns from 'hooks/useEns'
 import useDebouncedState from 'hooks/useDebouncedState'
 import { getAddressRecord } from '@ensdomains/ensjs/public'
+import { InfuraProvider } from 'ethers'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -128,6 +130,10 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   const [validSnapshot, setValidSnapshot] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [ensIsValid, setEnsIsValid] = useState<boolean>(false)
+  
+  // hack to resolve mainnet ENS
+  const mainnetProvider = useMemo(() => new InfuraProvider(NETWORK.MAINNET, import.meta.env.VITE_INFURA_ID), [])
+  const sepoliaProvider = useMemo(() => new InfuraProvider(NETWORK.SEPOLIA, import.meta.env.VITE_INFURA_ID), [])
 
   useEffect(() => {
     if (provider && setupData && setupData.proposal) {
@@ -154,7 +160,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
       }
     }
     checkEns()
-  }, [debouncedEnsName, ensClient])
+  }, [debouncedEnsName, ensClient, mainnetProvider, sepoliaProvider])
 
   const validEns = async () => {
     if (!ensClient) return
@@ -165,7 +171,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
       console.log(snapshotSpace)
       // const snapshotSpaceValidation = snapshot.validateSchema(snapshotSpace)
       const isOwner = await checkIfIsOwner(ensClient, ensName, safe.safeAddress)
-      const isController = await checkIfIsController(provider, ensClient, ensName, safe.safeAddress)
+      const isController = await checkIfIsController(mainnetProvider, sepoliaProvider, ensClient, ensName, safe.safeAddress)
       const plugins = snapshotSpace?.plugins
       if (plugins) {
         setIsSafesnapInstalled(plugins.safeSnap ? true : false) // comment out for easy testing

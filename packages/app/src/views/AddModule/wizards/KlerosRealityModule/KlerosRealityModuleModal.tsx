@@ -231,8 +231,8 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
   const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
   const { ensClient } = useEns()
   // hack to resolve mainnet ENS
-  const mainnetProvider = useMemo(() => new InfuraProvider(1, import.meta.env.VITE_INFURA_ID), [])
-  const goerliProvider = useMemo(() => new InfuraProvider(5, import.meta.env.VITE_INFURA_ID), [])
+  const mainnetProvider = useMemo(() => new InfuraProvider(NETWORK.MAINNET, import.meta.env.VITE_INFURA_ID), [])
+  const sepoliaProvider = useMemo(() => new InfuraProvider(NETWORK.SEPOLIA, import.meta.env.VITE_INFURA_ID), [])
 
   const bondToken = NETWORKS[safe.chainId as NETWORK].nativeAsset
   const [params, setParams] = useState<RealityModuleParams>({
@@ -303,14 +303,16 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
       const daorequirements = await getEnsTextRecord(
         params.snapshotEns,
         'daorequirements',
-        provider,
+        mainnetProvider,
+        sepoliaProvider,
       )
       setDaorequirements(daorequirements[0])
       setValidEns(snapshotSpace !== undefined)
       if (snapshotSpace !== undefined) {
         setIsSafesnapInstalled(!!snapshotSpace.plugins?.safeSnap)
         const isController = await checkIfIsController(
-          provider,
+          mainnetProvider,
+          sepoliaProvider,
           ensClient,
           params.snapshotEns,
           safe.safeAddress,
@@ -324,7 +326,7 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
       }
     } else {
     }
-  }, [params.snapshotEns, safe.chainId, safe.safeAddress, mainnetProvider, goerliProvider])
+  }, [params.snapshotEns, safe.chainId, safe.safeAddress, mainnetProvider, sepoliaProvider])
 
   const debouncedSnapshotEnsValidation = debounce(() => {
     setValidEns(false)
