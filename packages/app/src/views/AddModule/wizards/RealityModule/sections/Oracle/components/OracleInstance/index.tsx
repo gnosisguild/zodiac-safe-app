@@ -3,7 +3,7 @@ import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { Dropdown } from "components/Dropdown"
 import React, { useEffect, useState } from "react"
 import { colors, ZodiacTextField } from "zodiac-ui-components"
-import { InputPartProps, ORACLE_MAINNET_OPTIONS, ORACLE_GOERLI_OPTIONS } from "../.."
+import { InputPartProps, ORACLE_MAINNET_OPTIONS, ORACLE_SEPOLIA_OPTIONS } from "../.."
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -32,7 +32,7 @@ export type Data = {
 export const OracleInstance: React.FC<InputPartProps> = ({ data, setData }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
-  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_GOERLI_OPTIONS
+  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_SEPOLIA_OPTIONS
   const [selectedOracle, setSelectedOracle] = useState<string>("")
 
   useEffect(() => {

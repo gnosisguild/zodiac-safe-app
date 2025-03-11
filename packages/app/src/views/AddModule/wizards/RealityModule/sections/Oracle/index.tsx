@@ -71,10 +71,10 @@ export const ORACLE_MAINNET_OPTIONS = [
   // { label: "Add Custom Instance", value: "custom" },
 ]
 
-export const ORACLE_GOERLI_OPTIONS = [
+export const ORACLE_SEPOLIA_OPTIONS = [
   {
-    label: 'ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f',
-    value: 'ETH-0x6F80C5cBCF9FbC2dA2F0675E56A5900BB70Df72f',
+    label: 'ETH-0xaf33DcB6E8c5c4D9dDF579f53031b514d19449CA',
+    value: 'ETH-0xaf33DcB6E8c5c4D9dDF579f53031b514d19449CA',
   },
   // { label: "Add Custom Instance", value: "custom" },
 ]
@@ -95,7 +95,7 @@ export type OracleSectionData = {
 export const OracleSection: React.FC<SectionProps> = ({ handleBack, handleNext, setupData }) => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
-  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_GOERLI_OPTIONS
+  const options = safe.chainId === 1 ? ORACLE_MAINNET_OPTIONS : ORACLE_SEPOLIA_OPTIONS
   const [showModal, setShowModal] = useState<boolean>(false)
   if (setupData?.proposal.ensName == null) {
     throw new Error('ENS name is not set')
