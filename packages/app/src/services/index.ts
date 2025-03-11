@@ -202,7 +202,7 @@ export function getKlerosAddress(chainId: number): string {
     case NETWORK.POLYGON:
       return '0x5AFa42b30955f137e10f89dfb5EF1542a186F90e'
     case NETWORK.BASE:
-      return '0x05295972F75cFeE7fE66E6BDDC0435c9Fd083D18'
+      return '0xBeeB211CfE6632E75992488A66F65b0477FBe96B'
     case NETWORK.SEPOLIA:
       return '0x05b942faecfb3924970e3a28e0f230910cedff45'
   }
