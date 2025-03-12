@@ -2,6 +2,9 @@ import { BrowserProvider, Provider, ethers, getAddress } from 'ethers'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { EnsPublicClient } from '@ensdomains/ensjs'
 import { namehash, normalize } from 'viem/ens'
+
+const isDev = import.meta.env.MODE === 'development'
+
 //Some apps may show the contract address as the owner. This doesn't affect your ownership.
 enum EnsWrappedContract {
   MAINNET = '0xD4416b13d2b3a9aBae7AcD5D6C2BbDBE25686401',
@@ -80,22 +83,27 @@ export const checkIfIsOwner = async (
   }
 }
 
-export const getEnsTextRecord = async (ensName: string, recordId: string, provider: Provider) => {
+export const getEnsTextRecord = async (
+  ensName: string, 
+  recordId: string, 
+  mainnetProvider: Provider, 
+  sepoliaProvider: Provider) => {
   const nameHash = namehash(ensName)
-  const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, provider)
+  const ensRegistryContract = new ethers.Contract(ensRegistry, abiRegistry, getProvider(mainnetProvider, sepoliaProvider))
   const ensResolverAddress = await ensRegistryContract.resolver(nameHash)
-  const ensResolverContract = new ethers.Contract(ensResolverAddress, abiPublicResolver, provider)
+  const ensResolverContract = new ethers.Contract(ensResolverAddress, abiPublicResolver, getProvider(mainnetProvider, sepoliaProvider))
   const record = ensResolverContract.text(nameHash, recordId)
-  return record
+  return record 
 }
 
 export const checkIfIsController = async (
-  provider: BrowserProvider,
+  mainnetProvider: Provider, 
+  sepoliaProvider: Provider,
   ensClient: EnsPublicClient<any, any>,
   ensName: string,
   safeAddress: string,
 ) => {
-  if (!provider || !ensClient || !ensName || !safeAddress) {
+  if (!mainnetProvider || !sepoliaProvider || !ensClient || !ensName || !safeAddress) {
     throw new Error('all parameter are required')
   }
 
@@ -106,7 +114,7 @@ export const checkIfIsController = async (
       return false
     }
     const node = namehash(ensName)
-    const resolverContract = new ethers.Contract(resolverAddress, resolverAbi, provider)
+    const resolverContract = new ethers.Contract(resolverAddress, resolverAbi, getProvider(mainnetProvider, sepoliaProvider))
     const controller = await resolverContract.addr(node)
     return getAddress(controller) === getAddress(safeAddress)
   } catch (error) {
@@ -114,3 +122,5 @@ export const checkIfIsController = async (
     return false
   }
 }
+
+const getProvider = (mainnetProvider: Provider, sepoliaProvider: Provider) => isDev ? sepoliaProvider : mainnetProvider;

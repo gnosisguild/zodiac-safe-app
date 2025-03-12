@@ -17,6 +17,7 @@ export const klerosAvailability: number[] = [
   NETWORK.MAINNET,
   NETWORK.GNOSIS_CHAIN,
   NETWORK.POLYGON,
+  NETWORK.BASE,
   NETWORK.SEPOLIA,
 ]
 
