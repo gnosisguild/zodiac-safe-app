@@ -1,4 +1,4 @@
-import { deployAndSetUpModule, KnownContracts } from '@gnosis.pm/zodiac'
+import { deployAndSetUpModule, KnownContracts } from '@gnosis-guild/zodiac'
 import { BrowserProvider, ethers } from 'ethers'
 import { enableModule, TxWitMeta } from 'services'
 import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'

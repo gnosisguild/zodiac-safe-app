@@ -1872,6 +1872,17 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.5.tgz#105c37d9d9620ce69b7f692a20c821bf1ad2cbf9"
   integrity sha512-sTcG+QZ6fdEUObICavU+aB3Mp8HY4n14wYHdxK4fXjPmv3PXZZeY5RaguJmGyeH/CJQhX3fqKUtS4qc1LoHwhQ==
 
+"@gnosis-guild/zodiac@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@gnosis-guild/zodiac/-/zodiac-4.1.0.tgz#4deebefe152649d5e9708cd0683f9740accab3e7"
+  integrity sha512-d5mCtwS5RkRSqgF7q+6YLVnam1abBC4KubU6hCW0ShTIpqFpXk6KpUCr7LIPMzAYKKL+6OOqAw0PtkjI9d7Hww==
+  dependencies:
+    "@gnosis.pm/mock-contract" "^4.0.0"
+    "@gnosis.pm/safe-contracts" "1.3.0"
+    "@openzeppelin/contracts" "^5.0.0"
+    "@openzeppelin/contracts-upgradeable" "^5.0.0"
+    ethers "^6.9.2"
+
 "@gnosis.pm/mock-contract@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/mock-contract/-/mock-contract-4.0.0.tgz#eaf500fddcab81b5f6c22280a7b22ff891dd6f87"
@@ -1926,17 +1937,6 @@
   integrity sha512-6P2uJMnhHcJeErd/t13ChH6sda+vUIOqcrcUDKyWCNXpcmMniPcZzkQxZ8cYz186gQFbslsHSjQ6twnh4yhXUw==
   dependencies:
     cross-fetch "^3.1.5"
-
-"@gnosis.pm/zodiac@^4.0.3":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/zodiac/-/zodiac-4.0.3.tgz#3323f496cda279e2a68ca2bf726ad840388e8229"
-  integrity sha512-yliHytBRlb4wNkeiYsaaAvYZC5VwiUBVfJ+HLEmjnWPG2EHB5tvAOUboDU7XvSQ4GUJAz8h2YUrph0XkH+/xfA==
-  dependencies:
-    "@gnosis.pm/mock-contract" "^4.0.0"
-    "@gnosis.pm/safe-contracts" "1.3.0"
-    "@openzeppelin/contracts" "^5.0.0"
-    "@openzeppelin/contracts-upgradeable" "^5.0.0"
-    ethers "^6.9.2"
 
 "@graphql-typed-document-node/core@^3.2.0":
   version "3.2.0"

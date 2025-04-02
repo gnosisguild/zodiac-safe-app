@@ -1,6 +1,6 @@
 import { BrowserProvider, ethers, isAddress } from 'ethers'
 import { enableModule, getDefaultOracle, TxWitMeta } from '../../../../../services'
-import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis.pm/zodiac'
+import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis-guild/zodiac'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { buildTransaction } from 'services/helpers'
 import { Data as OracleTemplateData } from '../sections/Oracle/components/OracleTemplate'
@@ -24,7 +24,7 @@ export async function deployRealityModule(
   args: RealityModuleParams,
   template: OracleTemplateData,
   isERC20?: boolean,
-): Promise<TxWitMeta>{
+): Promise<TxWitMeta> {
   const type: KnownContracts = isERC20 ? KnownContracts.REALITY_ERC20 : KnownContracts.REALITY_ETH
   const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
   const oracleAddress = oracle != null && isAddress(oracle) ? oracle : getDefaultOracle(chainId)
@@ -97,7 +97,8 @@ export async function deployRealityModule(
   )
   console.log('deterministicSetupHelper', deterministicSetupHelper)
 
-  const populatedTemplateConfigurationTx = await deterministicSetupHelper.createTemplateAndChangeOwner.populateTransaction(
+  const populatedTemplateConfigurationTx =
+    await deterministicSetupHelper.createTemplateAndChangeOwner.populateTransaction(
       daoModuleExpectedAddress,
       oracleAddress,
       JSON.stringify({
