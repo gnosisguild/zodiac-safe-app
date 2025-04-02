@@ -6,7 +6,7 @@ import {
   getModuleInstance,
   KnownContracts,
   SupportedNetworks,
-} from '@gnosis.pm/zodiac'
+} from '@gnosis-guild/zodiac'
 import { getModuleData } from '../../utils/contracts'
 import {
   DataDecoded,

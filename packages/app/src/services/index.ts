@@ -6,7 +6,7 @@ import {
   getModuleFactoryAndMasterCopy,
   getModuleInstance,
   KnownContracts,
-} from '@gnosis.pm/zodiac'
+} from '@gnosis-guild/zodiac'
 import { AddressOne, buildTransaction, SafeAbi } from './helpers'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { getNetworkExplorerInfo } from '../utils/explorers'

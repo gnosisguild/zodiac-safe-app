@@ -1,4 +1,4 @@
-import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis.pm/zodiac'
+import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis-guild/zodiac'
 import { enableModule, getDefaultOracle } from 'services'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { buildTransaction } from 'services/helpers'

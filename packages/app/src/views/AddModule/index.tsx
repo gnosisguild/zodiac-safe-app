@@ -19,7 +19,7 @@ import {
   ContractAddresses as AllContractAddresses,
   KnownContracts,
   SupportedNetworks,
-} from '@gnosis.pm/zodiac'
+} from '@gnosis-guild/zodiac'
 
 const useStyles = makeStyles((theme) => ({
   root: {

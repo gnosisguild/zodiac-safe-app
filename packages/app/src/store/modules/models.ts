@@ -1,4 +1,4 @@
-import { ContractAbis, KnownContracts } from '@gnosis.pm/zodiac'
+import { ContractAbis, KnownContracts } from '@gnosis-guild/zodiac'
 import { Interface, InterfaceAbi } from 'ethers'
 
 export enum ModuleType {
