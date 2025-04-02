@@ -131,12 +131,6 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: 'celo',
     nativeAsset: NATIVE_ASSET.CELO,
   },
-  [NETWORK.ZKEVM]: {
-    chainId: NETWORK.ZKEVM,
-    name: 'zkevm',
-    shortName: 'zkevm',
-    nativeAsset: NATIVE_ASSET.ETH,
-  },
 }
 
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
@@ -154,6 +148,5 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   // [NETWORK.MANTLE]: NATIVE_ASSET.MNT,
   [NETWORK.SONIC]: NATIVE_ASSET.S,
   [NETWORK.CELO]: NATIVE_ASSET.CELO,
-  [NETWORK.ZKEVM]: NATIVE_ASSET.ETH,
   [NETWORK.BERACHAIN]: NATIVE_ASSET.BERA,
 }
