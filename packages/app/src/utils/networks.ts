@@ -4,10 +4,16 @@ export enum NETWORK {
   BSC = 56,
   GNOSIS_CHAIN = 100,
   POLYGON = 137,
+  ZKEVM = 1101,
   ARBITRUM = 42161,
   AVALANCHE = 43114,
   SEPOLIA = 11155111,
   BASE = 8453,
+  BASE_SEPOLIA = 84532,
+  // MANTLE = 5000,
+  BERACHAIN = 80094,
+  SONIC = 146,
+  CELO = 42220,
 }
 
 export interface Coin {
@@ -28,6 +34,10 @@ export const NATIVE_ASSET: Record<string, Coin> = {
   MATIC: { symbol: 'MATIC', decimals: 18 },
   BNB: { symbol: 'BNB', decimals: 18 },
   AVAX: { symbol: 'AVAX', decimals: 18 },
+  MNT: { symbol: 'MNT', decimals: 18 },
+  S: { symbol: 'S', decimals: 18 },
+  BERA: { symbol: 'BERA', decimals: 18 },
+  CELO: { symbol: 'CELO', decimals: 18 },
 }
 
 export const NETWORKS: Record<NETWORK, Network> = {
@@ -85,6 +95,42 @@ export const NETWORKS: Record<NETWORK, Network> = {
     shortName: 'base',
     nativeAsset: NATIVE_ASSET.ETH,
   },
+  [NETWORK.BASE_SEPOLIA]: {
+    chainId: NETWORK.BASE_SEPOLIA,
+    name: 'base_sepolia',
+    shortName: 'basesep',
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
+  // [NETWORK.MANTLE]: {
+  //   chainId: NETWORK.MANTLE,
+  //   name: 'mantle',
+  //   shortName: 'mantle',
+  //   nativeAsset: NATIVE_ASSET.MNT,
+  // },
+  [NETWORK.BERACHAIN]: {
+    chainId: NETWORK.BERACHAIN,
+    name: 'berachain',
+    shortName: 'berachain',
+    nativeAsset: NATIVE_ASSET.BERA,
+  },
+  [NETWORK.SONIC]: {
+    chainId: NETWORK.SONIC,
+    name: 'sonic',
+    shortName: 'sonic',
+    nativeAsset: NATIVE_ASSET.S,
+  },
+  [NETWORK.CELO]: {
+    chainId: NETWORK.CELO,
+    name: 'celo',
+    shortName: 'celo',
+    nativeAsset: NATIVE_ASSET.CELO,
+  },
+  [NETWORK.ZKEVM]: {
+    chainId: NETWORK.ZKEVM,
+    name: 'zkevm',
+    shortName: 'zkevm',
+    nativeAsset: NATIVE_ASSET.ETH,
+  },
 }
 
 export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
@@ -97,4 +143,10 @@ export const NETWORK_NATIVE_ASSET: Record<NETWORK, Coin> = {
   [NETWORK.AVALANCHE]: NATIVE_ASSET.AVAX,
   [NETWORK.SEPOLIA]: NATIVE_ASSET.ETH,
   [NETWORK.BASE]: NATIVE_ASSET.ETH,
+  [NETWORK.BASE_SEPOLIA]: NATIVE_ASSET.ETH,
+  // [NETWORK.MANTLE]: NATIVE_ASSET.MNT,
+  [NETWORK.SONIC]: NATIVE_ASSET.S,
+  [NETWORK.CELO]: NATIVE_ASSET.CELO,
+  [NETWORK.ZKEVM]: NATIVE_ASSET.ETH,
+  [NETWORK.BERACHAIN]: NATIVE_ASSET.BERA,
 }

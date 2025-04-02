@@ -41,6 +41,26 @@ if (!isDev && !VITE_BASESCAN_KEY) {
   throw new Error('VITE_BASESCAN_KEY is not set')
 }
 
+const VITE_MANTLESCAN_KEY = import.meta.env.VITE_MANTLESCAN_KEY
+if (!isDev && !VITE_MANTLESCAN_KEY) {
+  throw new Error('VITE_MANTLESCAN_KEY is not set')
+}
+
+const VITE_BERASCAN_KEY = import.meta.env.VITE_BERASCAN_KEY
+if (!isDev && !VITE_BERASCAN_KEY) {
+  throw new Error('VITE_BERASCAN_KEY is not set')
+}
+
+const VITE_SONICSCAN_KEY = import.meta.env.VITE_SONICSCAN_KEY
+if (!isDev && !VITE_SONICSCAN_KEY) {
+  throw new Error('VITE_SONICSCAN_KEY is not set')
+}
+
+const VITE_CELOSCAN_KEY = import.meta.env.VITE_CELOSCAN_KEY
+if (!isDev && !VITE_CELOSCAN_KEY) {
+  throw new Error('VITE_CELOSCAN_KEY is not set')
+}
+
 interface ExplorerData {
   networkExplorerName: string
   networkExplorerUrl: string
@@ -79,8 +99,17 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     verifyContractUrl: 'https://polygonscan.com/verifyContract',
     explorerApiKey: VITE_POLYGONSCAN_KEY,
   },
+  [NETWORK.ZKEVM]: {
+    networkExplorerName: 'Polygonscan',
+    networkExplorerUrl: 'https://zkevm.polygonscan.com',
+    networkExplorerApiUrl: 'https://api-zkevm.polygonscan.com/api',
+    safeTransactionApi: 'https://safe-transaction-zkevm.safe.global/',
+    safeUrl: 'https://app.safe.global/zkevm:',
+    verifyContractUrl: 'https://zkevm.polygonscan.com/verifyContract',
+    explorerApiKey: VITE_POLYGONSCAN_KEY,
+  },
   [NETWORK.BSC]: {
-    networkExplorerName: 'Bscscan',
+    networkExplorerName: 'BscScan',
     networkExplorerUrl: 'https://bscscan.com/',
     networkExplorerApiUrl: 'https://api.bscscan.com/api',
     safeUrl: 'https://app.safe.global/bsc:',
@@ -124,6 +153,15 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     verifyContractUrl: 'https://sepolia.etherscan.io/verifyContract',
     explorerApiKey: VITE_ETHERSCAN_KEY,
   },
+  [NETWORK.BASE_SEPOLIA]: {
+    networkExplorerName: 'BaseScan',
+    networkExplorerUrl: 'https://sepolia.basescan.org',
+    networkExplorerApiUrl: 'https://api-sepolia.basescan.org/api',
+    safeTransactionApi: 'https://safe-transaction-base-sepolia.safe.global/',
+    safeUrl: 'https://app.safe.global/basesep:',
+    verifyContractUrl: 'https://sepolia.basescan.org/verifyContract',
+    explorerApiKey: VITE_ETHERSCAN_KEY,
+  },
   [NETWORK.BASE]: {
     networkExplorerName: 'Basescan',
     networkExplorerUrl: 'https://basescan.org',
@@ -132,6 +170,42 @@ export const EXPLORERS_CONFIG: Record<NETWORK, ExplorerData> = {
     safeUrl: 'https://app.safe.global/base:',
     verifyContractUrl: 'https://basescan.org/verifyContract',
     explorerApiKey: VITE_BASESCAN_KEY,
+  },
+  // [NETWORK.MANTLE]: {
+  //   networkExplorerName: 'Mantlescan',
+  //   networkExplorerUrl: 'https://mantlescan.xyz',
+  //   networkExplorerApiUrl: 'https://api.mantlescan.xyz/api',
+  //   safeTransactionApi: 'https://safe-transaction-mantle.safe.global/',
+  //   safeUrl: 'https://app.safe.global/mantle:',
+  //   verifyContractUrl: 'https://mantlescan.xyz/verifyContract',
+  //   explorerApiKey: VITE_MANTLESCAN_KEY,
+  // },
+  [NETWORK.BERACHAIN]: {
+    networkExplorerName: 'Berascan',
+    networkExplorerUrl: 'https://berascan.com',
+    networkExplorerApiUrl: 'https://api.berascan.com/api',
+    safeTransactionApi: 'https://safe-transaction-berachain.safe.global/',
+    safeUrl: 'https://app.safe.global/berachain:',
+    verifyContractUrl: 'https://berascan.com/verifyContract',
+    explorerApiKey: VITE_BERASCAN_KEY,
+  },
+  [NETWORK.SONIC]: {
+    networkExplorerName: 'Sonicscan',
+    networkExplorerUrl: 'https://sonicscan.org',
+    networkExplorerApiUrl: 'https://api.sonicscan.org/api',
+    safeTransactionApi: 'https://safe-transaction-sonic.safe.global/',
+    safeUrl: 'https://app.safe.global/sonic:',
+    verifyContractUrl: 'https://sonicscan.org/verifyContract',
+    explorerApiKey: VITE_SONICSCAN_KEY,
+  },
+  [NETWORK.CELO]: {
+    networkExplorerName: 'Celoscan',
+    networkExplorerUrl: 'https://celoscan.io',
+    networkExplorerApiUrl: 'https://api.celoscan.io/api',
+    safeTransactionApi: 'https://safe-transaction-celo.safe.global/',
+    safeUrl: 'https://app.safe.global/celo:',
+    verifyContractUrl: 'https://celoscan.io/verifyContract',
+    explorerApiKey: VITE_CELOSCAN_KEY,
   },
 }
 
