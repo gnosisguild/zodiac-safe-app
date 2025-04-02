@@ -173,7 +173,7 @@ const CustomSwitch = withStyles({
   },
   colorSecondary: {
     '&.Mui-checked + .MuiSwitch-track': {
-      backgroundColor:  colors.tan[500],
+      backgroundColor: colors.tan[500],
     },
   },
   track: {
@@ -370,17 +370,17 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
   }, [apiKey, apiSecret])
 
   // add appropriate default amounts, chain dependant.
-  // 1 ETH, 1500 xDAI, 1000 MATIC. Defaults to 1 unit otherwise.
+  // 1 ETH, 1500 xDAI, 1000 POL. Defaults to 1 unit otherwise.
   useEffect(() => {
     if (safe.chainId) {
       const defaultAmount =
         safe.chainId === 1
           ? '1'
           : safe.chainId === 100
-            ? '1500'
-            : safe.chainId === 137
-              ? '1000'
-              : '1'
+          ? '1500'
+          : safe.chainId === 137
+          ? '1000'
+          : '1'
       setParams((prevParams) => {
         return { ...prevParams, bond: defaultAmount }
       })
@@ -843,10 +843,10 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
             {canConfirm || !openMonitoring
               ? 'Add Module'
               : loadingCredentials
-                ? 'Validating OpenZeppelin Credentials...'
-                : !validatedCredentials || invalidCredentials
-                  ? 'Missing OpenZeppelin API'
-                  : 'Missing Email'}
+              ? 'Validating OpenZeppelin Credentials...'
+              : !validatedCredentials || invalidCredentials
+              ? 'Missing OpenZeppelin API'
+              : 'Missing Email'}
           </ActionButton>
         </>
       ) : (
