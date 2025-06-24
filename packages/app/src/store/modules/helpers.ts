@@ -45,7 +45,14 @@ export const sanitizeModule = async (
 ): Promise<Module> => {
   const module = await getModuleData(provider, sdk, chainId, moduleAddress)
   if (module.type === ModuleType.DELAY) {
-    return await fetchDelayModule(provider, moduleAddress, sdk, chainId, parentModule)
+    return await fetchDelayModule(
+      provider,
+      moduleAddress,
+      sdk,
+      chainId,
+      parentModule,
+      parentModulesList,
+    )
   }
 
   const subModules = await fetchSubModules(
@@ -76,6 +83,7 @@ export async function fetchDelayModule(
   sdk: SafeAppsSDK,
   chainId: NETWORK,
   parentModule: string,
+  parentModulesList: string[] = [address],
 ): Promise<DelayModule | Module> {
   const delayModule = getModuleInstance(KnownContracts.DELAY, address, provider)
   const abi = delayModule.interface.fragments.map((frag) => frag)
@@ -88,7 +96,6 @@ export async function fetchDelayModule(
     const txCooldown = moduleContract.txCooldown()
     const txExpiration = moduleContract.txExpiration()
     const modules = moduleContract.getModulesPaginated(AddressOne, 50)
-
     let [cooldown, expiration, [subModules]] = (await ethCallProvider.all([
       txCooldown,
       txExpiration,
@@ -96,8 +103,9 @@ export async function fetchDelayModule(
     ])) as any
 
     if (subModules) {
-      const requests = (subModules as string[]).map(
-        async (moduleAddress, index): Promise<Module> => {
+      const requests = (subModules as string[])
+        .filter((moduleAddress) => !parentModulesList.includes(moduleAddress))
+        .map(async (moduleAddress, index): Promise<Module> => {
           const subModule = await sanitizeModule(
             provider,
             moduleAddress,
@@ -110,8 +118,7 @@ export async function fetchDelayModule(
             id: `${address}_${moduleAddress}_${index}`,
             parentModule: address,
           }
-        },
-      )
+        })
       requests.reverse()
       subModules = await Promise.all(requests)
     }
