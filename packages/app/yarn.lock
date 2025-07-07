@@ -1872,10 +1872,10 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.5.tgz#105c37d9d9620ce69b7f692a20c821bf1ad2cbf9"
   integrity sha512-sTcG+QZ6fdEUObICavU+aB3Mp8HY4n14wYHdxK4fXjPmv3PXZZeY5RaguJmGyeH/CJQhX3fqKUtS4qc1LoHwhQ==
 
-"@gnosis-guild/zodiac@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@gnosis-guild/zodiac/-/zodiac-4.1.0.tgz#4deebefe152649d5e9708cd0683f9740accab3e7"
-  integrity sha512-d5mCtwS5RkRSqgF7q+6YLVnam1abBC4KubU6hCW0ShTIpqFpXk6KpUCr7LIPMzAYKKL+6OOqAw0PtkjI9d7Hww==
+"@gnosis-guild/zodiac@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@gnosis-guild/zodiac/-/zodiac-4.2.0.tgz#662335b0b476e71bcd4c9ea964bb1e039b39769d"
+  integrity sha512-QLSpTv0IOZiVNe1Ges02Wosb70ce7TrWpvq+z2cBPrBULq5MwBjPbaYmeC0NP3C3LkIPgRr7oK93OECMserzoA==
   dependencies:
     "@gnosis.pm/mock-contract" "^4.0.0"
     "@gnosis.pm/safe-contracts" "1.3.0"
