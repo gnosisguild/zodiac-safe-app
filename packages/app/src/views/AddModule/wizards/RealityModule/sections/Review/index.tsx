@@ -126,7 +126,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
 
   useEffect(() => {
     if (setupData && setupData.proposal) {
-      setSnapshotSpace(getSnapshotSpaceUrl(safe.chainId, setupData.proposal.ensName))
+      setSnapshotSpace(getSnapshotSpaceUrl(setupData.proposal.ensName))
     }
     if (setupData && setupData.oracle) {
       setOracleData(setupData.oracle)

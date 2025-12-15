@@ -14,12 +14,26 @@ const useEns = () => {
   useEffect(() => {
     const initializeClient = async () => {
       try {
+        const chain = mode === 'development' ? sepolia : mainnet
+        
+        // Add ENS registry contract (required by ENS client but missing in viem chain definitions)
+        const chainWithEns = {
+          ...chain,
+          contracts: {
+            ...chain.contracts,
+            ensRegistry: {
+              // https://docs.ens.domains/resolution/#reverse-resolution
+              address: '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e' as const,
+            },
+          },
+        } as const
+
         const client = createEnsPublicClient({
-          chain: mode === 'development' ? sepolia : mainnet,
+          chain: chainWithEns,
           transport: http(),
         })
         const walletClient = createEnsWalletClient({
-          chain: mode === 'development' ? sepolia : mainnet,
+          chain: chainWithEns,
           transport: http(),
         })
         setEnsClient(client as EnsPublicClient<any, any>)

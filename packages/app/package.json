@@ -33,7 +33,7 @@
     "react-select": "^5.4.0",
     "styled-components": "^6.1.11",
     "timeago-react": "^3.0.2",
-    "viem": "^2.17.4",
+    "viem": "^2.41.2",
     "vite": "^5.3.3",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-top-level-await": "^1.4.1",
