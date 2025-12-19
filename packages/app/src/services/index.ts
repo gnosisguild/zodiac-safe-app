@@ -119,7 +119,7 @@ export function getDefaultOracle(chainId: number): string {
     case NETWORK.SEPOLIA:
       return '0xaf33DcB6E8c5c4D9dDF579f53031b514d19449CA'
     case NETWORK.BASE:
-      return '' // TODO
+      return '0x2F39f464d16402Ca3D8527dA89617b73DE2F60e8'
   }
   return ''
 }
