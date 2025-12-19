@@ -143,7 +143,7 @@ export const AddModulesView = () => {
           description='Use a wizard to enable on-chain execution based on the outcome of events reported by the Reality.eth oracle'
           icon='reality'
           onClick={() => dispatch(setRealityModuleScreen(true))}
-          available={[NETWORK.MAINNET, NETWORK.SEPOLIA].includes(safe.chainId)}
+          available={[NETWORK.MAINNET, NETWORK.SEPOLIA, NETWORK.BASE].includes(safe.chainId)}
         />
 
         <ModuleButton
@@ -151,7 +151,7 @@ export const AddModulesView = () => {
           description='Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle'
           icon='reality'
           onClick={() => setModule(ModuleType.REALITY_ETH)}
-          available={[NETWORK.MAINNET, NETWORK.SEPOLIA].includes(safe.chainId)}
+          available={[NETWORK.MAINNET, NETWORK.SEPOLIA, NETWORK.BASE].includes(safe.chainId)}
         />
 
         <ModuleButton
