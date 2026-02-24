@@ -608,7 +608,7 @@ export async function deployRolesV2Modifier(
   const rolesContract = getModuleInstance(KnownContracts.ROLES_V2, expectedRolesAddress, provider)
 
   const MULTISEND_SELECTOR = '0x8d80ff0a'
-  const MULTISEND_UNWRAPPER = '0x93B7fCbc63ED8a3a24B59e1C3e6649D50B7427c0'
+  const MULTISEND_UNWRAPPER = '0xB4Cd4bb764C089f20DA18700CE8bc5e49F369efD'
   const rolesContractAddress = await rolesContract.getAddress()
   const setUnwrapperTxs = multisend.map((address) => ({
     to: rolesContractAddress,
