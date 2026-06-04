@@ -10,6 +10,9 @@ interface ModuleButtonProps extends BadgeIconProps {
   description: string
   available: boolean
   deprecated?: boolean
+  // Temporarily blocks adding this module (shown greyed-out and non-clickable),
+  // e.g. while a security issue affecting it is being addressed.
+  disabled?: boolean
   className?: string
   onClick(): void
 }
@@ -27,6 +30,13 @@ const useStyles = makeStyles((theme) => ({
       background: 'rgba(217, 212, 173, 0.15)',
     },
   },
+  disabled: {
+    opacity: 0.45,
+    cursor: 'not-allowed',
+    '&:hover': {
+      background: 'transparent',
+    },
+  },
   badgeIcon: {
     background: colors.sepia[100],
     marginBottom: theme.spacing(1),
@@ -42,6 +52,7 @@ export const ModuleButton = ({
   icon,
   available,
   deprecated,
+  disabled,
   className,
   onClick,
 }: ModuleButtonProps) => {
@@ -52,8 +63,8 @@ export const ModuleButton = ({
   return (
     <ZodiacPaper
       borderStyle='double'
-      className={classNames(classes.root, className)}
-      onClick={onClick}
+      className={classNames(classes.root, disabled && classes.disabled, className)}
+      onClick={disabled ? undefined : onClick}
       placeholder={undefined}
       onPointerEnterCapture={undefined}
       onPointerLeaveCapture={undefined}
@@ -62,7 +73,11 @@ export const ModuleButton = ({
       <Typography variant='h6' className={classes.title}>
         {title}
       </Typography>
-      {deprecated && <Tag>Deprecated</Tag>}
+      {disabled ? (
+        <Tag>Temporarily disabled</Tag>
+      ) : (
+        deprecated && <Tag>Deprecated</Tag>
+      )}
       <Typography variant='body2' align='center'>
         {description}
       </Typography>
