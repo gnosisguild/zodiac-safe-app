@@ -120,6 +120,8 @@ export const AddModulesView = () => {
           icon='delay'
           onClick={() => setModule(ModuleType.DELAY)}
           available={!!ContractAddresses[KnownContracts.DELAY]}
+          // Temporarily disabled while the Delay v1.1.0 security issue is addressed.
+          disabled
         />
 
         <ModuleButton
@@ -136,6 +138,9 @@ export const AddModulesView = () => {
           icon='roles'
           onClick={() => setModule(ModuleType.ROLES_V2)}
           available={!!ContractAddresses[KnownContracts.ROLES_V2]}
+          // Temporarily disabled while the Roles v2 security issue is addressed.
+          // Roles Modifier v1 (below) is unaffected and stays enabled.
+          disabled
         />
 
         <ModuleButton

@@ -6,6 +6,7 @@ import Header from "./views/Header"
 import { makeStyles } from "@material-ui/core"
 import TransactionBuilder from "./views/TransactionBuilder"
 import zodiacBackground from "./assets/images/zodiac-bg.svg"
+import SecurityBanner from "./components/SecurityBanner"
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +27,7 @@ const App: React.FC = () => {
   return (
     <div className={classes.root}>
       <div className={classes.background}>
+        <SecurityBanner />
         <Header />
         <AppLayout left={<Panel />}>
           <Views />
