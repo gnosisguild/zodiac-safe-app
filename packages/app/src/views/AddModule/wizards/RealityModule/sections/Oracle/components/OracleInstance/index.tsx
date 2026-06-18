@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react"
 import { colors, ZodiacTextField } from "zodiac-ui-components"
 import { InputPartProps, ORACLE_MAINNET_OPTIONS, ORACLE_SEPOLIA_OPTIONS } from "../.."
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

@@ -1,18 +1,18 @@
-import { HashInfo } from "../../../components/ethereum/HashInfo"
-import { makeStyles, Typography } from "@material-ui/core"
-import { PANEL_ITEM_CONTENT_HEIGHT, PanelItem, PanelItemProps } from "./PanelItem"
-import React from "react"
-import { Module, ModuleType } from "../../../store/modules/models"
-import { DelayModuleItem } from "./DelayModuleItem"
-import { isDelayModule } from "../../../store/modules/helpers"
-import { ModuleList } from "../ModuleList"
-import { Address } from "../../../components/ethereum/Address"
-import { ModulePendingRemoval } from "./ModulePendingRemovalItem"
-import { Badge } from "../../../components/text/Badge"
-import { shortAddress } from "../../../utils/string"
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk"
-import { RolesV1ModuleItem } from "./RolesV1ModuleItem"
-import { RolesV2ModuleItem } from "./RolesV2ModuleItem"
+import { HashInfo } from '../../../components/ethereum/HashInfo'
+import { makeStyles, Typography } from '@material-ui/core'
+import { PANEL_ITEM_CONTENT_HEIGHT, PanelItem, PanelItemProps } from './PanelItem'
+import React from 'react'
+import { Module, ModuleType } from '../../../store/modules/models'
+import { DelayModuleItem } from './DelayModuleItem'
+import { isDelayModule } from '../../../store/modules/helpers'
+import { ModuleList } from '../ModuleList'
+import { Address } from '../../../components/ethereum/Address'
+import { ModulePendingRemoval } from './ModulePendingRemovalItem'
+import { Badge } from '../../../components/text/Badge'
+import { shortAddress } from '../../../utils/string'
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
+import { RolesV1ModuleItem } from './RolesV1ModuleItem'
+import { RolesV2ModuleItem } from './RolesV2ModuleItem'
 
 interface ModuleItemProps extends PanelItemProps {
   remove?: boolean
@@ -23,21 +23,21 @@ interface ModuleItemProps extends PanelItemProps {
 const useStyles = makeStyles((theme) => ({
   text: {
     lineHeight: 1,
-    letterSpacing: "1px",
+    letterSpacing: '1px',
   },
   name: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   address: {
-    fontFamily: "Roboto Mono",
+    fontFamily: 'Roboto Mono',
   },
   badge: {
     marginTop: theme.spacing(1),
   },
   content: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
     height: PANEL_ITEM_CONTENT_HEIGHT,
   },
 }))
@@ -54,14 +54,10 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
   }
 
   if (module.type === ModuleType.ROLES_V1) {
-    return (
-      <RolesV1ModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
-    )
+    return <RolesV1ModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
   }
   if (module.type === ModuleType.ROLES_V2) {
-    return (
-      <RolesV2ModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
-    )
+    return <RolesV2ModuleItem module={module} chainId={safe.chainId} {...panelItemProps} />
   }
 
   const ownerBadge =
@@ -74,7 +70,7 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
   return (
     <>
       {module.name ? (
-        <Typography variant="body2" className={classes.name}>
+        <Typography variant='body2' className={classes.name}>
           {module.name}
         </Typography>
       ) : null}
@@ -83,7 +79,7 @@ export const ModuleItemContent = (props: ModuleItemContentProps) => {
         showOnHover
         address={module.address}
         TypographyProps={{
-          variant: "body2",
+          variant: 'body2',
           className: classes.address,
         }}
       />
@@ -110,9 +106,7 @@ export const ModuleItem = (props: ModuleItemProps) => {
 
   return (
     <PanelItem
-      image={
-        <HashInfo showAvatar avatarSize="lg" showHash={false} hash={module.address} />
-      }
+      image={<HashInfo showAvatar avatarSize='lg' showHash={false} hash={module.address} />}
       {...panelItemProps}
     >
       <div onClick={onClick} className={classes.content}>

@@ -7,7 +7,10 @@ import { setTextRecordTx } from 'services/ens'
 import { SetupData } from '..'
 import SafeAppsSDK, { SafeInfo } from '@gnosis.pm/safe-apps-sdk'
 import * as snapshot from '../../../../../services/snapshot'
-import { deployRealityModule, RealityModuleParams } from './moduleDeployment'
+import {
+  createRealityDeploymentTx as createRealityModuleDeploymentTx,
+  RealityModuleParams,
+} from './moduleDeployment'
 import { pinSnapshotSpace } from './snapshot-space-pinning'
 import { setUpMonitoring } from './monitoring'
 const MULTI_SEND_CONTRACT = import.meta.env.VITE_MULTI_SEND_CONTRACT
@@ -73,25 +76,25 @@ export const setup = async (
   setupData: SetupData,
   statusCallback: (currentStatus: string, error?: Error) => void,
 ) => {
-  statusCallback('Setting up Reality Module deployment transactions')
+  statusCallback('Setting up Reality Module creation transactions')
   const signer = await provider.getSigner()
 
-  const deploymentRealityModuleTxsMm = await deployRealityModuleTxs(
+  const createRealityDeployment = await createRealitySetupDeploymentTx(
     provider,
     safeInfo.chainId,
     safeInfo.safeAddress,
     executorAddress,
     setupData,
   ).catch((e) => {
-    statusCallback('Error while setting up Reality Module deployment transactions', e)
+    statusCallback('Error while setting up Reality Module creation transactions', e)
   })
 
-  if (deploymentRealityModuleTxsMm == null) {
+  if (createRealityDeployment == null) {
     throw new Error(
       "The creation of transactions failed. IT SHOULD NOT BE POSSIBLE TO REACH THIS STATE. Should be handled in the 'statusCallback' function.",
     )
   }
-  const realityModuleAddress = deploymentRealityModuleTxsMm.meta?.daoModuleExpectedAddress
+  const realityModuleAddress = createRealityDeployment.meta?.daoModuleExpectedAddress
 
   if (realityModuleAddress == null) {
     const error = new Error('Unable to calculate the Reality Module future address.')
@@ -112,13 +115,13 @@ export const setup = async (
       safeInfo.chainId,
     )
 
-    if (deploymentRealityModuleTxsMm == null || safeSnapTxs == null) {
+    if (createRealityDeployment == null || safeSnapTxs == null) {
       throw new Error(
         'The creation of transactions failed. IT SHOULD NOT BE POSSIBLE TO REACH THIS STATE.',
       )
     }
 
-    const txs = [...deploymentRealityModuleTxsMm.txs, ...safeSnapTxs]
+    const txs = [...createRealityDeployment.txs, ...safeSnapTxs]
 
     statusCallback('Setting up monitoring with OZ Defender')
     await setUpMonitoring(
@@ -150,7 +153,7 @@ export const setup = async (
  * @param params Reality Module parameters
  * @returns transaction array
  */
-const deployRealityModuleTxs = async (
+const createRealitySetupDeploymentTx = async (
   provider: BrowserProvider,
   chainId: number,
   safeAddress: string,
@@ -167,7 +170,7 @@ const deployRealityModuleTxs = async (
     arbitrator: getArbitrator(chainId, setupData.oracle.arbitratorData.arbitratorOption),
     oracle: setupData.oracle.instanceData.instanceAddress,
   }
-  return await deployRealityModule(
+  return await createRealityModuleDeploymentTx(
     provider,
     safeAddress,
     DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,

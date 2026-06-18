@@ -6,7 +6,7 @@ import WarningOutlinedIcon from "@material-ui/icons/WarningOutlined"
 import { ZodiacModal } from "zodiac-ui-components"
 import ProposalDetailsModal from "./ProposalDetailsModal"
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   message: {
     fontSize: 12,
     color: "rgba(244, 67, 54, 1)",

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid, InputLabel, makeStyles, Typography } from '@material-ui/core'
 import { AddModuleModal } from '../components/AddModuleModal'
-import { deployRolesV2Modifier, RolesV2ModifierParams } from 'services'
+import { createRolesV2DeploymentTx, RolesV2ModifierParams } from 'services'
 import { ParamInput } from '../../../../components/ethereum/ParamInput'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { MultiSelectBlock, MultiSelectValues } from '../../../../components/MultiSelectBlock'
@@ -65,7 +65,7 @@ export const RolesV2ModifierModal: React.FC<RolesModifierModalProps> = ({
 
   const handleAddRolesModifier = async () => {
     try {
-      const txs = await deployRolesV2Modifier(provider, safe.safeAddress, safe.chainId, params)
+      const txs = await createRolesV2DeploymentTx(provider, safe.safeAddress, params)
 
       await sdk.txs.send({ txs })
 

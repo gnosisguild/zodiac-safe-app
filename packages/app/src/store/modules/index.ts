@@ -33,7 +33,6 @@ export const fetchModulesList = createAsyncThunk(
       chainId: number
       safeAddress: string
     },
-    store,
   ): Promise<Module[]> => {
     const { provider, safeSDK, safeAddress, chainId } = params
     await provider.ready
@@ -79,7 +78,7 @@ export const fetchPendingModules = createAsyncThunk(
     const state = store.getState() as RootState
     const modules = getModulesList(state)
 
-    const pendingEnableModules = getPendingModulesToEnable(transactions, chainId)
+    const pendingEnableModules = getPendingModulesToEnable(transactions)
 
     const pendingRemoveModules = getModulesToBeRemoved(modules, transactions)
 

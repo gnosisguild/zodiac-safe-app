@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 export const ModuleDetailHeader: React.FC<ModuleDetailHeaderProps> = ({ module }) => {
   const classes = useStyles()
   const dispatch = useRootDispatch()
-  const { safe, provider } = useSafeAppsSDKWithProvider()
+  const { provider } = useSafeAppsSDKWithProvider()
   const pendingRemoveModuleTransactions = useRootSelector(getPendingRemoveModuleTransactions)
   const txBuildersTransaction = useRootSelector(getTransactions)
 

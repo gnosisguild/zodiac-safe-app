@@ -1,7 +1,7 @@
-import { BrowserProvider, Provider, ethers, getAddress } from 'ethers'
+import { Provider, ethers, getAddress } from 'ethers'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { EnsPublicClient } from '@ensdomains/ensjs'
-import { namehash, normalize } from 'viem/ens'
+import { namehash } from 'viem/ens'
 
 const isDev = import.meta.env.MODE === 'development'
 
@@ -16,7 +16,6 @@ enum EnsWrappedContract {
  */
 
 const ensRegistry = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e' // ENS: Registry with Fallback (singleton same address on different chains)
-const ensImplementation = '0x57f1887a8BF19b14fC0dF6Fd9B2acc9Af147eA85' // ENS: Base Registrar Implementation (singleton same address on different chains)
 
 const abiPublicResolver = [
   'function setText(bytes32 node, string calldata key, string calldata value) external',
@@ -29,8 +28,6 @@ const abiRegistry = [
 ]
 
 const resolverAbi = ['function addr(bytes32 node) external view returns (address)']
-
-const abiImplementation = ['function ownerOf(uint256 tokenId) public view returns (address owner)']
 
 export const setTextRecordTx = async (
   signer: ethers.JsonRpcSigner,

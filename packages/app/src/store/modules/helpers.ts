@@ -1,12 +1,7 @@
 import { Contract as MultiCallContract, Provider as MultiCallProvider } from 'ethcall'
 import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk'
-import {
-  ContractAddresses,
-  ContractVersions,
-  getModuleInstance,
-  KnownContracts,
-  SupportedNetworks,
-} from '@gnosis-guild/zodiac'
+import { KnownContracts } from '@gnosis-guild/zodiac'
+import { getMastercopyAddress, getZodiacContractAddress, getModuleInstance } from 'utils/zodiac'
 import { getModuleData } from '../../utils/contracts'
 import {
   DataDecoded,
@@ -17,10 +12,12 @@ import {
   ModuleContract,
   ModuleOperation,
   ModuleType,
+  ModuleVersion,
   MultiSendDataDecoded,
   PendingModule,
   RealityModule,
   SafeTransaction,
+  ZodiacHelperContractVersion,
 } from './models'
 import { Contract, Interface, InterfaceAbi, JsonFragment, BrowserProvider } from 'ethers'
 import { NETWORK } from '../../utils/networks'
@@ -64,7 +61,7 @@ export const sanitizeModule = async (
     parentModulesList,
   )
 
-  const owner = await fetchModuleOwner(provider, moduleAddress, module.abi as Interface, chainId)
+  const owner = await fetchModuleOwner(provider, moduleAddress, module.abi as Interface)
 
   return {
     owner,
@@ -123,7 +120,7 @@ export async function fetchDelayModule(
       subModules = await Promise.all(requests)
     }
 
-    const owner = await fetchModuleOwner(provider, address, abi, chainId)
+    const owner = await fetchModuleOwner(provider, address, abi)
 
     return {
       owner,
@@ -191,7 +188,6 @@ export async function fetchModuleOwner(
   provider: BrowserProvider,
   moduleAddress: string,
   abi: Interface | InterfaceAbi,
-  chainId: NETWORK,
 ): Promise<string | undefined> {
   try {
     if (!abi) return undefined
@@ -218,31 +214,44 @@ export function getTransactionsFromSafeTransaction(
   return [safeTransaction]
 }
 
-const ZODIAC_CONTRACTS_TO_MODULE_TYPE: { [key: string]: ModuleType } = {
-  [KnownContracts.TELLOR]: ModuleType.TELLOR,
-  [KnownContracts.OPTIMISTIC_GOVERNOR]: ModuleType.OPTIMISTIC_GOVERNOR,
-  [KnownContracts.REALITY_ETH]: ModuleType.REALITY_ETH,
-  [KnownContracts.REALITY_ERC20]: ModuleType.REALITY_ERC20,
-  [KnownContracts.DELAY]: ModuleType.DELAY,
-  [KnownContracts.BRIDGE]: ModuleType.BRIDGE,
-  [KnownContracts.EXIT_ERC20]: ModuleType.EXIT,
-  [KnownContracts.ROLES]: ModuleType.ROLES_V1,
-  [KnownContracts.ROLES_V1]: ModuleType.ROLES_V1,
-  [KnownContracts.ROLES_V2]: ModuleType.ROLES_V2,
-  [KnownContracts.OZ_GOVERNOR]: ModuleType.OZ_GOVERNOR,
+function getKnownContractEntry(masterCopyAddress: string) {
+  if (!masterCopyAddress) return
+
+  const normalizedMastercopy = masterCopyAddress.toLowerCase()
+  const moduleType = (Object.keys(ModuleVersion) as ModuleType[]).find((moduleType) => {
+    return getMastercopyAddress(moduleType).toLowerCase() === normalizedMastercopy
+  })
+
+  if (!moduleType) return
+
+  return {
+    moduleType,
+    version: ModuleVersion[moduleType as keyof typeof ModuleVersion],
+  }
 }
 
-export function getContractsModuleType(chainId: number, masterCopyAddress: string): ModuleType {
-  const contractVersions = ContractVersions[chainId as SupportedNetworks]
-  if (!contractVersions) return ModuleType.UNKNOWN
-
-  const entry = Object.entries(contractVersions).find(([, addresses]) => {
-    return Object.values(addresses).some(
-      (address) => address.toLowerCase() === masterCopyAddress.toLowerCase(),
-    )
-  })
+export function getContractsModuleType(masterCopyAddress: string): ModuleType {
+  const entry = getKnownContractEntry(masterCopyAddress)
   if (!entry) return ModuleType.UNKNOWN
-  return ZODIAC_CONTRACTS_TO_MODULE_TYPE[entry[0]] || ModuleType.UNKNOWN
+
+  return entry.moduleType
+}
+
+export function getContractsModuleAbiVersion(masterCopyAddress: string) {
+  const entry = getKnownContractEntry(masterCopyAddress)
+  return entry?.version
+}
+
+export function getContractsModuleMetadata(masterCopyAddress: string) {
+  const entry = getKnownContractEntry(masterCopyAddress)
+  if (!entry) {
+    return { type: ModuleType.UNKNOWN }
+  }
+
+  return {
+    type: entry.moduleType,
+    abiVersion: entry.version,
+  }
 }
 
 /**
@@ -253,9 +262,11 @@ export function getContractsModuleType(chainId: number, masterCopyAddress: strin
  */
 export function getAddModuleTransactionModuleType(
   safeTransaction: SafeTransaction,
-  chainId: number,
 ): ModuleType | undefined {
-  const factoryAddress = ContractAddresses[chainId as SupportedNetworks]?.factory || ''
+  const factoryAddress = getZodiacContractAddress(
+    KnownContracts.FACTORY,
+    ZodiacHelperContractVersion.FACTORY,
+  )
   const transactions = getTransactionsFromSafeTransaction(safeTransaction)
 
   const masterCopyAddress = transactions
@@ -283,7 +294,8 @@ export function getAddModuleTransactionModuleType(
     })
     .find((x) => x)
 
-  return getContractsModuleType(chainId, masterCopyAddress || '')
+  const metadata = getContractsModuleMetadata(masterCopyAddress || '')
+  return metadata.type === ModuleType.UNKNOWN ? undefined : metadata.type
 }
 
 const MODULE_PROXY_FACTORY_ABI = [
@@ -329,7 +341,6 @@ export function getModulesToBeRemoved(
 
 function getModuleTypeForAddTransactions(
   transactions: SafeTransaction[],
-  chainId: number,
 ): Record<string, ModuleType | undefined> {
   return transactions
     .map((safeTransaction) => {
@@ -339,7 +350,7 @@ function getModuleTypeForAddTransactions(
 
       if (!enableModuleTx) return undefined
 
-      const type = getAddModuleTransactionModuleType(safeTransaction, chainId)
+      const type = getAddModuleTransactionModuleType(safeTransaction)
       const param = enableModuleTx.dataDecoded.parameters?.find((param) => param.name === 'module')
       const moduleExpectedAddress = param?.value
       if (!type || !moduleExpectedAddress) return undefined
@@ -355,11 +366,8 @@ function getModuleTypeForAddTransactions(
     }, {})
 }
 
-export function getPendingModulesToEnable(
-  transactions: SafeTransaction[],
-  chainId: number,
-): PendingModule[] {
-  const modulesTypesByContractAddress = getModuleTypeForAddTransactions(transactions, chainId)
+export function getPendingModulesToEnable(transactions: SafeTransaction[]): PendingModule[] {
+  const modulesTypesByContractAddress = getModuleTypeForAddTransactions(transactions)
 
   return transactions
     .flatMap(getTransactionsFromSafeTransaction)

@@ -15,11 +15,7 @@ import {
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
 import { NETWORK } from 'utils/networks'
 import { klerosAvailability } from 'components/input/ArbitratorSelect'
-import {
-  ContractAddresses as AllContractAddresses,
-  KnownContracts,
-  SupportedNetworks,
-} from '@gnosis-guild/zodiac'
+import { getMastercopyAddress } from 'utils/zodiac'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,7 +58,13 @@ export const AddModulesView = () => {
     dispatch(setModuleAdded(true))
   }
 
-  const ContractAddresses = AllContractAddresses[safe.chainId as SupportedNetworks]
+  const selectModule = (module: ModuleType) => {
+    setModule(module)
+  }
+
+  const closeModule = () => {
+    setModule(undefined)
+  }
 
   const title = hasModules ? 'Add another mod' : 'Start by adding a mod'
 
@@ -109,17 +111,17 @@ export const AddModulesView = () => {
           title='Bridge Module'
           description='Enables an address on one chain to control an avatar on another chain using an Arbitrary Message Bridge (AMB)'
           icon='bridge'
-          onClick={() => setModule(ModuleType.BRIDGE)}
+          onClick={() => selectModule(ModuleType.BRIDGE)}
           className={classes.firstModule}
-          available={!!ContractAddresses[KnownContracts.BRIDGE]}
+          available={!!getMastercopyAddress(ModuleType.BRIDGE)}
         />
 
         <ModuleButton
           title='Delay Modifier'
           description='Enables a time delay between when a module initiates a transaction and when it can be executed'
           icon='delay'
-          onClick={() => setModule(ModuleType.DELAY)}
-          available={!!ContractAddresses[KnownContracts.DELAY]}
+          onClick={() => selectModule(ModuleType.DELAY)}
+          available={!!getMastercopyAddress(ModuleType.DELAY)}
           // Temporarily disabled while the Delay v1.1.0 security issue is addressed.
           disabled
         />
@@ -128,16 +130,16 @@ export const AddModulesView = () => {
           title='Exit Module'
           description='Enables participants to redeem a designated token for a proportional share of this account’digital assets'
           icon='exit'
-          onClick={() => setModule(ModuleType.EXIT)}
-          available={!!ContractAddresses[KnownContracts.EXIT_ERC20]}
+          onClick={() => selectModule(ModuleType.EXIT)}
+          available={!!getMastercopyAddress(ModuleType.EXIT)}
         />
 
         <ModuleButton
           title='Roles Modifier'
           description='Allows avatars to enforce granular, role-based, permissions for attached modules'
           icon='roles'
-          onClick={() => setModule(ModuleType.ROLES_V2)}
-          available={!!ContractAddresses[KnownContracts.ROLES_V2]}
+          onClick={() => selectModule(ModuleType.ROLES_V2)}
+          available={!!getMastercopyAddress(ModuleType.ROLES_V2)}
           // Temporarily disabled while the Roles v2 security issue is addressed.
           // Roles Modifier v1 (below) is unaffected and stays enabled.
           disabled
@@ -155,7 +157,7 @@ export const AddModulesView = () => {
           title='Reality Module'
           description='Enables on-chain execution based on the outcome of events reported by the Reality.eth oracle'
           icon='reality'
-          onClick={() => setModule(ModuleType.REALITY_ETH)}
+          onClick={() => selectModule(ModuleType.REALITY_ETH)}
           available={[NETWORK.MAINNET, NETWORK.SEPOLIA, NETWORK.BASE].includes(safe.chainId)}
         />
 
@@ -163,7 +165,7 @@ export const AddModulesView = () => {
           title='Kleros Snapshot Module'
           description='Execute transactions for successful Snapshot proposals using Reality.eth, secured by Kleros.'
           icon='reality'
-          onClick={() => setModule(ModuleType.KLEROS_REALITY)}
+          onClick={() => selectModule(ModuleType.KLEROS_REALITY)}
           available={klerosAvailability.includes(safe.chainId)}
         />
 
@@ -171,15 +173,15 @@ export const AddModulesView = () => {
           title='Tellor Module'
           description='Enables on-chain execution of successful Snapshot proposals reported by the Tellor oracle'
           icon='tellor'
-          onClick={() => setModule(ModuleType.TELLOR)}
-          available={!!ContractAddresses[KnownContracts.TELLOR]}
+          onClick={() => selectModule(ModuleType.TELLOR)}
+          available={!!getMastercopyAddress(ModuleType.TELLOR)}
         />
 
         <ModuleButton
           title='UMA oSnap Module'
           description="Enables on-chain execution of successful Snapshot proposals utilizing UMA's optimistic oracle."
           icon='optimisticGov'
-          onClick={() => setModule(ModuleType.OPTIMISTIC_GOVERNOR)}
+          onClick={() => selectModule(ModuleType.OPTIMISTIC_GOVERNOR)}
           available // TODO
         />
 
@@ -188,15 +190,15 @@ export const AddModulesView = () => {
           description='Enables an Open Zeppelin Governor contract as a module.'
           icon='ozGov'
           onClick={() => dispatch(setOzGovernorModuleScreen(true))}
-          available={!!ContractAddresses[KnownContracts.OZ_GOVERNOR]}
+          available={!!getMastercopyAddress(ModuleType.OZ_GOVERNOR)}
         />
 
         <ModuleButton
           title='Connext Module'
           description='Enables an address on one chain to control an avatar on another chain using Connext as the messaging layer.'
           icon='connext'
-          onClick={() => setModule(ModuleType.CONNEXT)}
-          available={!!ContractAddresses[KnownContracts.CONNEXT]}
+          onClick={() => selectModule(ModuleType.CONNEXT)}
+          available={!!getMastercopyAddress(ModuleType.CONNEXT)}
         />
 
         <ModuleButton
@@ -204,24 +206,20 @@ export const AddModulesView = () => {
           description='Legacy version of the Roles Modifier'
           icon='roles'
           deprecated
-          onClick={() => setModule(ModuleType.ROLES_V1)}
-          available={!!ContractAddresses[KnownContracts.ROLES_V1]}
+          onClick={() => selectModule(ModuleType.ROLES_V1)}
+          available={!!getMastercopyAddress(ModuleType.ROLES_V1)}
         />
 
         <ModuleButton
           title='Custom Module'
           description='Enable a custom contract as a module'
           icon='custom'
-          onClick={() => setModule(ModuleType.UNKNOWN)}
+          onClick={() => selectModule(ModuleType.UNKNOWN)}
           available
         />
       </div>
 
-      <ModuleModals
-        selected={module}
-        onClose={() => setModule(undefined)}
-        onSubmit={handleSubmit}
-      />
+      <ModuleModals selected={module} onClose={closeModule} onSubmit={handleSubmit} />
     </div>
   )
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Grid, makeStyles, Typography } from '@material-ui/core'
 import { AddModuleModal } from '../components/AddModuleModal'
 import { TimeSelect } from '../../../../components/input/TimeSelect'
-import { deployDelayModule } from 'services'
+import { createDelayDeploymentTx } from 'services'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 
 interface DelayModuleModalProps {
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 export const DelayModuleModal = ({ open, onClose, onSubmit }: DelayModuleModalProps) => {
   const classes = useStyles()
 
-  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
+  const { sdk, safe } = useSafeAppsSDKWithProvider()
 
   const [params, setParams] = useState<DelayModuleParams>({
     expiration: '86400',
@@ -49,7 +49,7 @@ export const DelayModuleModal = ({ open, onClose, onSubmit }: DelayModuleModalPr
 
   const handleAddDelayModule = async () => {
     try {
-      const txs = await deployDelayModule(provider, safe.safeAddress, safe.chainId, {
+      const txs = await createDelayDeploymentTx(safe.safeAddress, {
         executor: safe.safeAddress,
         cooldown: params.cooldown,
         expiration: params.expiration,
