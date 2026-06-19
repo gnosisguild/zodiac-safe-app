@@ -1,5 +1,6 @@
-import { ContractAbis, KnownContracts } from '@gnosis-guild/zodiac'
+import { KnownContracts } from '@gnosis-guild/zodiac'
 import { Interface, InterfaceAbi } from 'ethers'
+import { getModuleAbi } from 'abis'
 
 export enum ModuleType {
   TELLOR = 'tellor',
@@ -15,6 +16,27 @@ export enum ModuleType {
   KLEROS_REALITY = 'klerosReality',
   CONNEXT = 'connext',
   UNKNOWN = 'unknown',
+}
+
+export enum ModuleVersion {
+  tellor = '2.1.0',
+  optimisticGovernor = '1.2.0',
+  realityETH = '2.0.0',
+  realityERC20 = '2.0.0',
+  delay = '1.1.1',
+  bridge = '1.0.0',
+  exit = '1.2.0',
+  roles_v1 = '1.1.0',
+  roles_v2 = '2.1.1',
+  ozGovernor = '1.0.0',
+  klerosReality = '2.0.0',
+  connext = '1.0.0',
+}
+
+export enum ZodiacHelperContractVersion {
+  FACTORY = '1.2.0',
+  CIRCULATING_SUPPLY = '1.2.0',
+  VOTES_TOKEN = '1.0.0',
 }
 
 export const MODULE_NAMES: Record<ModuleType, string> = {
@@ -34,19 +56,55 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
 }
 
 export const MODULE_ABIS: Record<ModuleType, Interface | InterfaceAbi> = {
-  [ModuleType.TELLOR]: ContractAbis[KnownContracts.TELLOR],
-  [ModuleType.OPTIMISTIC_GOVERNOR]: ContractAbis[KnownContracts.OPTIMISTIC_GOVERNOR],
-  [ModuleType.REALITY_ERC20]: ContractAbis[KnownContracts.REALITY_ERC20],
-  [ModuleType.REALITY_ETH]: ContractAbis[KnownContracts.REALITY_ETH],
-  [ModuleType.KLEROS_REALITY]: ContractAbis[KnownContracts.REALITY_ETH],
+  [ModuleType.TELLOR]: getModuleAbi(
+    KnownContracts.TELLOR,
+    ModuleVersion[ModuleType.TELLOR],
+  ) as InterfaceAbi,
+  [ModuleType.OPTIMISTIC_GOVERNOR]: getModuleAbi(
+    KnownContracts.OPTIMISTIC_GOVERNOR,
+    ModuleVersion[ModuleType.OPTIMISTIC_GOVERNOR],
+  ) as InterfaceAbi,
+  [ModuleType.REALITY_ERC20]: getModuleAbi(
+    KnownContracts.REALITY_ERC20,
+    ModuleVersion[ModuleType.REALITY_ERC20],
+  ) as InterfaceAbi,
+  [ModuleType.REALITY_ETH]: getModuleAbi(
+    KnownContracts.REALITY_ETH,
+    ModuleVersion[ModuleType.REALITY_ETH],
+  ) as InterfaceAbi,
+  [ModuleType.KLEROS_REALITY]: getModuleAbi(
+    KnownContracts.REALITY_ETH,
+    ModuleVersion[ModuleType.KLEROS_REALITY],
+  ) as InterfaceAbi,
   [ModuleType.UNKNOWN]: [],
-  [ModuleType.BRIDGE]: ContractAbis[KnownContracts.BRIDGE],
-  [ModuleType.DELAY]: ContractAbis[KnownContracts.DELAY],
-  [ModuleType.ROLES_V1]: ContractAbis[KnownContracts.ROLES_V1],
-  [ModuleType.ROLES_V2]: ContractAbis[KnownContracts.ROLES_V2],
-  [ModuleType.EXIT]: ContractAbis[KnownContracts.EXIT_ERC20],
-  [ModuleType.OZ_GOVERNOR]: ContractAbis[KnownContracts.OZ_GOVERNOR],
-  [ModuleType.CONNEXT]: ContractAbis[KnownContracts.CONNEXT],
+  [ModuleType.BRIDGE]: getModuleAbi(
+    KnownContracts.BRIDGE,
+    ModuleVersion[ModuleType.BRIDGE],
+  ) as InterfaceAbi,
+  [ModuleType.DELAY]: getModuleAbi(
+    KnownContracts.DELAY,
+    ModuleVersion[ModuleType.DELAY],
+  ) as InterfaceAbi,
+  [ModuleType.ROLES_V1]: getModuleAbi(
+    KnownContracts.ROLES,
+    ModuleVersion[ModuleType.ROLES_V1],
+  ) as InterfaceAbi,
+  [ModuleType.ROLES_V2]: getModuleAbi(
+    KnownContracts.ROLES,
+    ModuleVersion[ModuleType.ROLES_V2],
+  ) as InterfaceAbi,
+  [ModuleType.EXIT]: getModuleAbi(
+    KnownContracts.EXIT_ERC20,
+    ModuleVersion[ModuleType.EXIT],
+  ) as InterfaceAbi,
+  [ModuleType.OZ_GOVERNOR]: getModuleAbi(
+    KnownContracts.OZ_GOVERNOR,
+    ModuleVersion[ModuleType.OZ_GOVERNOR],
+  ) as InterfaceAbi,
+  [ModuleType.CONNEXT]: getModuleAbi(
+    KnownContracts.CONNEXT,
+    ModuleVersion[ModuleType.CONNEXT],
+  ) as InterfaceAbi,
 }
 
 export enum ModuleOperation {

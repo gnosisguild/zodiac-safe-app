@@ -1,10 +1,22 @@
 import { BrowserProvider, ethers, isAddress } from 'ethers'
 import { enableModule, getDefaultOracle, TxWitMeta } from '../../../../../services'
-import { deployAndSetUpModule, getModuleInstance, KnownContracts } from '@gnosis-guild/zodiac'
+import {
+  encodeDeployProxy,
+  KnownContracts,
+  predictProxyAddress,
+} from '@gnosis-guild/zodiac'
+import { ModuleType, ZodiacHelperContractVersion } from 'store/modules/models'
+import { getMastercopyAddress, getModuleInstance, getZodiacContractAddress } from 'utils/zodiac'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { buildTransaction } from 'services/helpers'
 import { Data as OracleTemplateData } from '../sections/Oracle/components/OracleTemplate'
 import DETERMINISTIC_DEPLOYMENT_HELPER_META from '../../../../../contracts/DeterministicDeploymentHelper.json'
+
+const MODULE_PROXY_FACTORY = getZodiacContractAddress(
+  KnownContracts.FACTORY,
+  ZodiacHelperContractVersion.FACTORY,
+)
+
 export interface RealityModuleParams {
   executor: string
   oracle?: string
@@ -16,7 +28,7 @@ export interface RealityModuleParams {
 }
 
 // TODO: Add support for Reality.ETH oracles that is not known (for instance deployed by the caller)
-export async function deployRealityModule(
+export async function createRealityDeploymentTx(
   provider: BrowserProvider,
   safeAddress: string,
   deterministicDeploymentHelperAddress: string,
@@ -25,7 +37,6 @@ export async function deployRealityModule(
   template: OracleTemplateData,
   isERC20?: boolean,
 ): Promise<TxWitMeta> {
-  const type: KnownContracts = isERC20 ? KnownContracts.REALITY_ERC20 : KnownContracts.REALITY_ETH
   const { timeout, cooldown, expiration, bond, oracle, executor, arbitrator } = args
   const oracleAddress = oracle != null && isAddress(oracle) ? oracle : getDefaultOracle(chainId)
   if (oracleAddress == null) {
@@ -33,44 +44,54 @@ export async function deployRealityModule(
       `No oracle address provided and no default oracle available for this chain (chainID: ${chainId})`,
     )
   }
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } =
-    await deployAndSetUpModule(
-      type,
-      {
-        types: [
-          'address',
-          'address',
-          'address',
-          'address',
-          'uint32',
-          'uint32',
-          'uint32',
-          'uint256',
-          'uint256',
-          'address',
-        ],
-        values: [
-          deterministicDeploymentHelperAddress,
-          safeAddress,
-          executor,
-          oracleAddress,
-          timeout,
-          cooldown,
-          expiration,
-          bond,
-          0, // templateId - must use 0 here, will be set up later
-          arbitrator,
-        ],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
+  const setupArgs = {
+    types: [
+      'address',
+      'address',
+      'address',
+      'address',
+      'uint32',
+      'uint32',
+      'uint32',
+      'uint256',
+      'uint256',
+      'address',
+    ],
+    values: [
+      deterministicDeploymentHelperAddress,
+      safeAddress,
+      executor,
+      oracleAddress,
+      timeout,
+      cooldown,
+      expiration,
+      bond,
+      0, // templateId - must use 0 here, will be set up later
+      arbitrator,
+    ],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(
+    isERC20 ? ModuleType.REALITY_ERC20 : ModuleType.REALITY_ETH,
+  )
+  const daoModuleDeploymentTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const daoModuleExpectedAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
 
   const daoModuleTransactions: BaseTransaction[] = [
     {
-      ...daoModuleDeploymentTx,
-      value: daoModuleDeploymentTx.value.toString(),
+      to: String(daoModuleDeploymentTx.to),
+      data: String(daoModuleDeploymentTx.data),
+      value: '0',
     },
   ]
 

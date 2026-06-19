@@ -47,7 +47,7 @@ export const ContractInteractions = ({ address, abi }: ContractInteractionsProps
     <>
       <ContractOperationToggleButtons
         value={operation}
-        onChange={(evt, value) => handleOperationChange(value)}
+        onChange={(_event, value) => handleOperationChange(value)}
       />
 
       <ZodiacPaper

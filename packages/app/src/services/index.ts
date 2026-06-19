@@ -1,20 +1,26 @@
-import { AbiCoder, Contract, Interface, BrowserProvider, FunctionFragment, ethers } from 'ethers'
+import { Contract, Interface, BrowserProvider, FunctionFragment, ethers } from 'ethers'
 
-import {
-  calculateProxyAddress,
-  deployAndSetUpModule,
-  getModuleFactoryAndMasterCopy,
-  getModuleInstance,
-  KnownContracts,
-} from '@gnosis-guild/zodiac'
+import { encodeDeployProxy, KnownContracts, predictProxyAddress } from '@gnosis-guild/zodiac'
+import { getMastercopyAddress, getModuleInstance, getZodiacContractAddress } from 'utils/zodiac'
 import { AddressOne, buildTransaction, SafeAbi } from './helpers'
 import { BaseTransaction } from '@gnosis.pm/safe-apps-sdk'
 import { getNetworkExplorerInfo } from '../utils/explorers'
-import { SafeTransaction, SafeStatusResponse } from '../store/modules/models'
+import {
+  ModuleType,
+  ModuleVersion,
+  SafeTransaction,
+  SafeStatusResponse,
+  ZodiacHelperContractVersion,
+} from '../store/modules/models'
 import { NETWORK } from '../utils/networks'
 import { ERC721_CONTRACT_ABI } from './reality-eth'
 import { scaleBondDecimals } from 'components/input/CollateralSelect'
 import { FunctionOutputs } from 'hooks/useContractQuery'
+
+const MODULE_PROXY_FACTORY = getZodiacContractAddress(
+  KnownContracts.FACTORY,
+  ZodiacHelperContractVersion.FACTORY,
+)
 
 export enum ARBITRATOR_OPTIONS {
   NO_ARBITRATOR,
@@ -240,32 +246,38 @@ export function getConnextAddress(chainId: number): string {
   return ''
 }
 
-export async function deployTellorModule(
+export async function createTellorDeploymentTx(
   provider: BrowserProvider,
   safeAddress: string,
   chainId: number,
   args: TellorModuleParams,
 ) {
-  const type = KnownContracts.TELLOR
   const { owner, oracle, cooldown, expiration, executor } = args
   const oracleAddress = oracle || getTellorOracle(chainId)
-
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } =
-    await deployAndSetUpModule(
-      type,
-      {
-        types: ['address', 'address', 'address', 'address', 'uint32', 'uint32'],
-        values: [owner, safeAddress, executor, oracleAddress, cooldown, expiration],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
+  const setupArgs = {
+    types: ['address', 'address', 'address', 'address', 'uint32', 'uint32'],
+    values: [owner, safeAddress, executor, oracleAddress, cooldown, expiration],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.TELLOR)
+  const daoModuleDeploymentTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const daoModuleExpectedAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
 
   const daoModuleTransactions: BaseTransaction[] = [
     {
-      ...daoModuleDeploymentTx,
-      value: daoModuleDeploymentTx.value.toString(),
+      to: String(daoModuleDeploymentTx.to),
+      data: String(daoModuleDeploymentTx.data),
+      value: '0',
     },
   ]
 
@@ -285,77 +297,79 @@ export async function deployTellorModule(
   return daoModuleTransactions
 }
 
-export async function deployDelayModule(
-  provider: BrowserProvider,
-  safeAddress: string,
-  chainId: number,
-  args: DelayModuleParams,
-) {
-  const { cooldown, expiration, executor } = args as unknown as DelayModuleParams
-  const {
-    transaction: delayModuleDeploymentTx,
-    expectedModuleAddress: delayModuleExpectedAddress,
-  } = await deployAndSetUpModule(
-    KnownContracts.DELAY,
-    {
-      types: ['address', 'address', 'address', 'uint256', 'uint256'],
-      values: [safeAddress, safeAddress, executor, cooldown, expiration],
-    },
-    provider,
-    chainId,
-    Date.now().toString(),
-  )
+export async function createDelayDeploymentTx(safeAddress: string, args: DelayModuleParams) {
+  const { cooldown, expiration, executor } = args
+  const setupArgs = {
+    types: ['address', 'address', 'address', 'uint256', 'uint256'],
+    values: [safeAddress, safeAddress, executor, cooldown, expiration],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.DELAY)
+  const delayModuleDeploymentTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const delayModuleExpectedAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
   const enableDelayModuleTransaction = enableModule(safeAddress, delayModuleExpectedAddress)
 
   return [
     {
-      ...delayModuleDeploymentTx,
-      value: delayModuleDeploymentTx.value.toString(),
+      to: String(delayModuleDeploymentTx.to),
+      data: String(delayModuleDeploymentTx.data),
+      value: '0',
     },
     enableDelayModuleTransaction,
   ]
 }
 
-export async function deployBridgeModule(
-  provider: BrowserProvider,
-  safeAddress: string,
-  chainId: number,
-  args: AMBModuleParams,
-) {
+export async function createBridgeDeploymentTx(safeAddress: string, args: AMBModuleParams) {
   const { executor, controller, amb, chainId: ambChainId } = args
-
-  const { transaction, expectedModuleAddress } = await deployAndSetUpModule(
-    KnownContracts.BRIDGE,
-    {
-      types: ['address', 'address', 'address', 'address', 'address', 'bytes32'],
-      values: [
-        safeAddress,
-        safeAddress,
-        executor,
-        amb,
-        controller,
-        ethers.zeroPadValue(ethers.toBeHex(ambChainId), 32),
-      ],
-    },
-    provider,
-    chainId,
-    Date.now().toString(),
-  )
+  const setupArgs = {
+    types: ['address', 'address', 'address', 'address', 'address', 'bytes32'],
+    values: [
+      safeAddress,
+      safeAddress,
+      executor,
+      amb,
+      controller,
+      ethers.zeroPadValue(ethers.toBeHex(ambChainId), 32),
+    ],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.BRIDGE)
+  const transaction = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const expectedModuleAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
   const enableModuleTransaction = enableModule(safeAddress, expectedModuleAddress)
 
   return [
     {
-      ...transaction,
-      value: transaction.value.toString(),
+      to: String(transaction.to),
+      data: String(transaction.data),
+      value: '0',
     },
     enableModuleTransaction,
   ]
 }
 
-export async function deployCirculatingSupplyContract(
-  provider: BrowserProvider,
+export async function createCirculatingSupplyDeploymentTx(
   safeAddress: string,
-  chainId: number,
   token: string,
   saltNonce: string,
   isERC721?: boolean,
@@ -364,46 +378,36 @@ export async function deployCirculatingSupplyContract(
     ? KnownContracts.CIRCULATING_SUPPLY_ERC721
     : KnownContracts.CIRCULATING_SUPPLY_ERC20
 
-  const { moduleFactory, moduleMastercopy: circulatingSupplyContract } =
-    getModuleFactoryAndMasterCopy(type, provider, chainId)
-
-  const encodedInitParams = new AbiCoder().encode(
-    ['address', 'address', 'address[]'],
-    [safeAddress, token, [safeAddress]],
-  )
-  const moduleSetupData = circulatingSupplyContract.interface.encodeFunctionData('setUp', [
-    encodedInitParams,
-  ])
-
-  const circulatingSupplyContractAddress = await circulatingSupplyContract.getAddress()
-  const expectedAddress = await calculateProxyAddress(
-    moduleFactory as unknown as Contract,
-    circulatingSupplyContractAddress,
-    moduleSetupData,
-    saltNonce,
-  )
-
-  const deployData = moduleFactory.interface.encodeFunctionData('deployModule', [
-    circulatingSupplyContractAddress,
-    moduleSetupData,
-    saltNonce,
-  ])
-
-  const transaction = {
-    data: deployData,
-    to: await moduleFactory.getAddress(),
-    value: '0',
+  const setupArgs = {
+    types: ['address', 'address', 'address[]'],
+    values: [safeAddress, token, [safeAddress]],
   }
+  const mastercopy = getZodiacContractAddress(type, ZodiacHelperContractVersion.CIRCULATING_SUPPLY)
+  const transaction = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const expectedAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
   return {
-    transaction,
+    transaction: {
+      to: String(transaction.to),
+      data: String(transaction.data),
+      value: '0',
+    },
     expectedAddress,
   }
 }
 
-export async function deployExitModule(
+export async function createExitDeploymentTx(
   provider: BrowserProvider,
   safeAddress: string,
-  chainId: number,
   args: ExitModuleParams,
 ) {
   const txs: BaseTransaction[] = []
@@ -414,36 +418,43 @@ export async function deployExitModule(
     const ERC721Contract = new Contract(tokenContract, ERC721_CONTRACT_ABI, provider)
     isERC721 = await ERC721Contract.supportsInterface('0x80ac58cd')
   } catch (err) {
-    console.warn('deployExitModule: error determining token type')
+    console.warn('createExitDeploymentTx: error determining token type')
   }
 
-  const { transaction: deployCirculationSupplyTx, expectedAddress: circulatingSupplyAddress } =
-    await deployCirculatingSupplyContract(
-      provider,
+  const { transaction: createCirculationSupplyTx, expectedAddress: circulatingSupplyAddress } =
+    await createCirculatingSupplyDeploymentTx(
       safeAddress,
-      chainId,
       tokenContract,
       Date.now().toString(),
       isERC721,
     )
 
-  txs.push(deployCirculationSupplyTx)
+  txs.push(createCirculationSupplyTx)
 
-  const type = isERC721 ? KnownContracts.EXIT_ERC721 : KnownContracts.EXIT_ERC20
-
-  const { transaction, expectedModuleAddress } = await deployAndSetUpModule(
-    type,
-    {
-      types: ['address', 'address', 'address', 'address', 'address'],
-      values: [safeAddress, safeAddress, executor, tokenContract, circulatingSupplyAddress],
-    },
-    provider,
-    chainId,
-    Date.now().toString(),
-  )
+  const setupArgs = {
+    types: ['address', 'address', 'address', 'address', 'address'],
+    values: [safeAddress, safeAddress, executor, tokenContract, circulatingSupplyAddress],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = isERC721
+    ? getZodiacContractAddress(KnownContracts.EXIT_ERC721, ModuleVersion[ModuleType.EXIT])
+    : getMastercopyAddress(ModuleType.EXIT)
+  const transaction = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const expectedModuleAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
   txs.push({
-    ...transaction,
-    value: transaction.value.toString(),
+    to: String(transaction.to),
+    data: String(transaction.data),
+    value: '0',
   })
 
   const enableModuleTransaction = enableModule(safeAddress, expectedModuleAddress)
@@ -483,7 +494,6 @@ export async function disableModule(
 
 export const callContract = async (
   provider: BrowserProvider,
-  chainId: number,
   address: string,
   abi: FunctionFragment[],
   method: string,
@@ -546,27 +556,38 @@ export async function fetchSafeStatusFromAPI(chainId: number, safeAddress: strin
   return response as SafeStatusResponse
 }
 
-export async function deployRolesV1Modifier(
+export async function createRolesV1DeploymentTx(
   provider: BrowserProvider,
   safeAddress: string,
-  chainId: number,
   args: RolesModifierParams,
 ) {
   const { target, multisend } = args
-  const { transaction: deployAndSetupTx, expectedModuleAddress: expectedRolesAddress } =
-    await deployAndSetUpModule(
-      KnownContracts.ROLES_V1,
-      {
-        types: ['address', 'address', 'address'],
-        values: [safeAddress, safeAddress, target],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
+  const setupArgs = {
+    types: ['address', 'address', 'address'],
+    values: [safeAddress, safeAddress, target],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.ROLES_V1)
+  const createAndSetupTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const expectedRolesAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
   const enableModuleTx = enableModule(safeAddress, expectedRolesAddress)
 
-  const rolesContract = getModuleInstance(KnownContracts.ROLES_V1, expectedRolesAddress, provider)
+  const rolesContract = getModuleInstance(
+    KnownContracts.ROLES,
+    expectedRolesAddress,
+    provider,
+    ModuleVersion[ModuleType.ROLES_V1],
+  )
   const rolesContractAddress = await rolesContract.getAddress()
   const setMultisendTx = buildTransaction(
     rolesContract.interface,
@@ -577,35 +598,47 @@ export async function deployRolesV1Modifier(
 
   return [
     {
-      ...deployAndSetupTx,
-      value: '0x' + deployAndSetupTx.value.toString(16),
+      to: String(createAndSetupTx.to),
+      data: String(createAndSetupTx.data),
+      value: '0',
     },
     enableModuleTx,
     setMultisendTx,
   ]
 }
 
-export async function deployRolesV2Modifier(
+export async function createRolesV2DeploymentTx(
   provider: BrowserProvider,
   safeAddress: string,
-  chainId: number,
   args: RolesV2ModifierParams,
 ) {
   const { target, multisend } = args
-  const { transaction: deployAndSetupTx, expectedModuleAddress: expectedRolesAddress } =
-    await deployAndSetUpModule(
-      KnownContracts.ROLES_V2,
-      {
-        types: ['address', 'address', 'address'],
-        values: [safeAddress, safeAddress, target],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
+  const setupArgs = {
+    types: ['address', 'address', 'address'],
+    values: [safeAddress, safeAddress, target],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.ROLES_V2)
+  const createAndSetupTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const expectedRolesAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
   const enableModuleTx = enableModule(safeAddress, expectedRolesAddress)
 
-  const rolesContract = getModuleInstance(KnownContracts.ROLES_V2, expectedRolesAddress, provider)
+  const rolesContract = getModuleInstance(
+    KnownContracts.ROLES,
+    expectedRolesAddress,
+    provider,
+    ModuleVersion[ModuleType.ROLES_V2],
+  )
 
   const MULTISEND_SELECTOR = '0x8d80ff0a'
   const MULTISEND_UNWRAPPER = '0xB4Cd4bb764C089f20DA18700CE8bc5e49F369efD'
@@ -622,43 +655,48 @@ export async function deployRolesV2Modifier(
 
   return [
     {
-      ...deployAndSetupTx,
-      value: '0x' + deployAndSetupTx.value.toString(16),
+      to: String(createAndSetupTx.to),
+      data: String(createAndSetupTx.data),
+      value: '0',
     },
     enableModuleTx,
     ...setUnwrapperTxs,
   ]
 }
 
-export async function deployOptimisticGovernorModule(
+export async function createOptimisticGovernorDeploymentTx(
   provider: BrowserProvider,
   safeAddress: string,
-  chainId: number,
   args: OptimisticGovernorModuleParams,
   isWeth: boolean,
 ) {
-  const type = KnownContracts.OPTIMISTIC_GOVERNOR
-
   const { executor, collateral, bond, rules, identifier, liveness } = args
 
   const scaledBond = scaleBondDecimals(bond, isWeth).toString()
-
-  const { transaction: daoModuleDeploymentTx, expectedModuleAddress: daoModuleExpectedAddress } =
-    await deployAndSetUpModule(
-      type,
-      {
-        types: ['address', 'address', 'uint256', 'string', 'bytes32', 'uint64'],
-        values: [executor, collateral, scaledBond, rules, identifier, liveness],
-      },
-      provider,
-      chainId,
-      Date.now().toString(),
-    )
+  const setupArgs = {
+    types: ['address', 'address', 'uint256', 'string', 'bytes32', 'uint64'],
+    values: [executor, collateral, scaledBond, rules, identifier, liveness],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.OPTIMISTIC_GOVERNOR)
+  const daoModuleDeploymentTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const daoModuleExpectedAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
 
   const daoModuleTransactions: BaseTransaction[] = [
     {
-      ...daoModuleDeploymentTx,
-      value: daoModuleDeploymentTx.value.toString(),
+      to: String(daoModuleDeploymentTx.to),
+      data: String(daoModuleDeploymentTx.data),
+      value: '0',
     },
   ]
 
@@ -680,33 +718,37 @@ export async function deployOptimisticGovernorModule(
   return daoModuleTransactions
 }
 
-export async function deployConnextModule(
-  provider: BrowserProvider,
+export async function createConnextDeploymentTx(
   safeAddress: string,
   chainId: number,
   args: ConnextModuleParams,
 ) {
-  const type = KnownContracts.CONNEXT
   const { domainId, sender, owner, avatar, target } = args
   const connextAddress = getConnextAddress(chainId)
-  const {
-    transaction: connextModuleDeploymentTx,
-    expectedModuleAddress: connextModuleExpectedAddress,
-  } = await deployAndSetUpModule(
-    type,
-    {
-      types: ['address', 'address', 'address', 'address', 'uint32', 'address'],
-      values: [owner, avatar, target, sender, domainId, connextAddress],
-    },
-    provider,
-    chainId,
-    Date.now().toString(),
-  )
+  const setupArgs = {
+    types: ['address', 'address', 'address', 'address', 'uint32', 'address'],
+    values: [owner, avatar, target, sender, domainId, connextAddress],
+  }
+  const saltNonce = Date.now().toString()
+  const mastercopy = getMastercopyAddress(ModuleType.CONNEXT)
+  const connextModuleDeploymentTx = encodeDeployProxy({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
+  const connextModuleExpectedAddress = predictProxyAddress({
+    factory: MODULE_PROXY_FACTORY,
+    mastercopy,
+    setupArgs,
+    saltNonce,
+  })
 
   const connextModuleTransactions: BaseTransaction[] = [
     {
-      ...connextModuleDeploymentTx,
-      value: connextModuleDeploymentTx.value.toString(),
+      to: String(connextModuleDeploymentTx.to),
+      data: String(connextModuleDeploymentTx.data),
+      value: '0',
     },
   ]
 

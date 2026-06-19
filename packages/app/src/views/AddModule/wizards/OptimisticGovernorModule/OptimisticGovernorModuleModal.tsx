@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Grid, makeStyles, Typography } from "@material-ui/core"
 import { AddModuleModal } from "../components/AddModuleModal"
 import {
-  deployOptimisticGovernorModule,
+  createOptimisticGovernorDeploymentTx,
   getFinder,
   getCollateral,
 } from "../../../../services"
@@ -110,10 +110,9 @@ export const OptimisticGovernorModuleModal = ({
         owner: safe.safeAddress,
         executor: delayModule || safe.safeAddress,
       }
-      const txs = await deployOptimisticGovernorModule(
+      const txs = await createOptimisticGovernorDeploymentTx(
         provider,
         safe.safeAddress,
-        safe.chainId,
         args,
         isWeth,
       )

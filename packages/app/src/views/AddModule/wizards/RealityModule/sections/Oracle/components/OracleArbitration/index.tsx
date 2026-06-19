@@ -4,7 +4,7 @@ import React from "react"
 import { ARBITRATOR_OPTIONS } from "services"
 import { InputPartProps } from "../.."
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

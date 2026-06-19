@@ -17,7 +17,7 @@ import { useRootDispatch } from 'store'
 import { fetchPendingModules, setModuleAdded, setOzGovernorModuleScreen } from 'store/modules'
 import TokenSection, { TokenSectionData, TOKEN_INITIAL_VALUES } from '../OzGovernor/sections/Token'
 import OZReviewSection from './sections/Review'
-import { CreateTokenArgs, deployAndEnableOzGovernorModule } from './service/moduleDeployment'
+import { CreateTokenArgs, createAndEnableOzGovernorDeploymentTx } from './service/moduleDeployment'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import GovernorSection, { GovernorSectionData, GOVERNOR_INITIAL_VALUES } from './sections/Governor'
 
@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const OzGovernorModule: React.FC = () => {
   const classes = useStyles()
-  const { sdk: safeSdk, safe: safeInfo, provider } = useSafeAppsSDKWithProvider()
+  const { sdk: safeSdk, safe: safeInfo } = useSafeAppsSDKWithProvider()
   const dispatch = useRootDispatch()
   const [activeStep, setActiveStep] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
@@ -145,8 +145,7 @@ export const OzGovernorModule: React.FC = () => {
         }
       }
 
-      const setup = await deployAndEnableOzGovernorModule(
-        provider,
+      const setup = await createAndEnableOzGovernorDeploymentTx(
         safeSdk,
         safeInfo.safeAddress,
         daoName,

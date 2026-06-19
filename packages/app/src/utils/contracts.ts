@@ -13,7 +13,7 @@ import { ModuleContract, ModuleType } from '../store/modules/models'
 import retry from 'async-retry'
 import { BrowserProvider } from 'ethers'
 
-import { getContractsModuleType, getModuleName } from '../store/modules/helpers'
+import { getContractsModuleMetadata, getModuleName } from '../store/modules/helpers'
 
 const defaultAbiCoder = new AbiCoder()
 
@@ -163,12 +163,13 @@ export const getModuleData = memoize(
     }
 
     if (isGnosisGenericProxy(bytecode)) {
-      const masterAddress = await getProxyMaster(provider, address, chainId)
+      const masterAddress = await getProxyMaster(provider, address)
       const module: ModuleContract = await getModuleData(provider, safeSDK, chainId, masterAddress)
       return { ...module, address }
     }
 
-    const type = getContractsModuleType(chainId, address)
+    const metadata = getContractsModuleMetadata(address)
+    const type = metadata.type
 
     if (type !== ModuleType.UNKNOWN) {
       return {

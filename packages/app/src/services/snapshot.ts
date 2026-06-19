@@ -1,6 +1,5 @@
 import snapshot from '@snapshot-labs/snapshot.js'
 import * as R from 'ramda'
-import { NETWORK } from 'utils/networks'
 
 const isDev = import.meta.env.MODE === 'development'
 
@@ -10,8 +9,8 @@ const SNAPSHOT_SPACE = 'https://snapshot.org'
 const SNAPSHOT_SPACE_TEST = 'https://testnet.snapshot.org'
 
 // Returns snapshot space settings, or undefined if no space was found for the ENS name.
-export const getSnapshotSpaceSettings = async (ensName: string, chainId: number) => {
-  await updateSnapshotCache(ensName, chainId) // make sure that the returned snapshot space settings is the newest version
+export const getSnapshotSpaceSettings = async (ensName: string, _chainId: number) => {
+  await updateSnapshotCache(ensName) // make sure that the returned snapshot space settings is the newest version
   const res = await fetch(`${getHubUrl()}/api/spaces/${ensName}`)
   if (res.ok) {
     try {
@@ -31,7 +30,7 @@ export const getSnapshotSpaceSettings = async (ensName: string, chainId: number)
 export const validateSchema = (spaceSettings: any) =>
   snapshot.utils.validateSchema(snapshot.schemas.space, spaceSettings)
 
-export const updateSnapshotCache = (ensName: string, chainId: number) =>
+export const updateSnapshotCache = (ensName: string) =>
   fetch(`${getHubUrl()}/api/spaces/${ensName}/poke`)
 
 export const verifyNewSnapshotSettings = (originalSettings: any, newSettings: any) =>

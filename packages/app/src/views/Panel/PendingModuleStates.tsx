@@ -63,7 +63,7 @@ export const PendingModuleStates = () => {
           active: currentPending?.address === pendingModule.address,
         }
         const metadata = getModuleContractMetadata(pendingModule.module)
-        const name = getModuleName(metadata?.type)
+        const name = metadata?.name || getModuleName(pendingModule.module)
         return (
           <ModulePendingItem
             children={null}

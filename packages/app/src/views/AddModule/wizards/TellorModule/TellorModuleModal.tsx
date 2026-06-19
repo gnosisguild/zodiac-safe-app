@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid, makeStyles, Typography } from '@material-ui/core'
 import { AddModuleModal } from '../components/AddModuleModal'
-import { deployTellorModule, getTellorOracle } from '../../../../services'
+import { createTellorDeploymentTx, getTellorOracle } from '../../../../services'
 import { useRootSelector } from '../../../../store'
 import { AttachModuleForm } from '../components/AttachModuleForm'
 import { getDelayModules } from '../../../../store/modules/selectors'
@@ -76,7 +76,7 @@ export const TellorModuleModal = ({ open, onClose, onSubmit }: TellorModuleModal
         ...params,
         executor: delayModule || safe.safeAddress,
       }
-      const txs = await deployTellorModule(provider, safe.safeAddress, safe.chainId, args)
+      const txs = await createTellorDeploymentTx(provider, safe.safeAddress, safe.chainId, args)
 
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()

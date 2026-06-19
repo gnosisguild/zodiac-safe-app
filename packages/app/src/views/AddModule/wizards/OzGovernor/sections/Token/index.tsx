@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core'
 
 import { colors, ZodiacPaper, ZodiacTextField } from 'zodiac-ui-components'
-import { ethers, isAddress } from 'ethers'
+import { isAddress } from 'ethers'
 import { GovernorWizardProps } from '../..'
 import { isVotesCompilable } from '../../service/tokenValidation'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'

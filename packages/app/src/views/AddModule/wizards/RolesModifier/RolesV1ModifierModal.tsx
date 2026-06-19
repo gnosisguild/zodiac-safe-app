@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid, makeStyles, Typography } from '@material-ui/core'
 import { AddModuleModal } from '../components/AddModuleModal'
-import { deployRolesV1Modifier, RolesModifierParams } from 'services'
+import { createRolesV1DeploymentTx, RolesModifierParams } from 'services'
 import { ParamInput } from '../../../../components/ethereum/ParamInput'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { SafeInfo } from '@gnosis.pm/safe-apps-sdk'
@@ -58,7 +58,7 @@ export const RolesV1ModifierModal = ({ open, onClose, onSubmit }: RolesModifierM
 
   const handleAddRolesModifier = async () => {
     try {
-      const txs = await deployRolesV1Modifier(provider, safe.safeAddress, safe.chainId, params)
+      const txs = await createRolesV1DeploymentTx(provider, safe.safeAddress, params)
 
       await sdk.txs.send({ txs })
 

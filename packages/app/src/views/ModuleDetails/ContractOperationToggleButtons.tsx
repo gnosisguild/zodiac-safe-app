@@ -1,28 +1,24 @@
-import React from "react";
-import {
-  ToggleButton,
-  ToggleButtonGroup,
-  ToggleButtonGroupProps,
-} from "@material-ui/lab";
-import { withStyles } from "@material-ui/core";
+import React from 'react'
+import { ToggleButton, ToggleButtonGroup, ToggleButtonGroupProps } from '@material-ui/lab'
+import { withStyles } from '@material-ui/core'
 
 const StyledToggleButton = withStyles((theme) => ({
   root: {
-    width: "50%",
+    width: '50%',
     padding: theme.spacing(1, 2.5),
-    "& span": {
+    '& span': {
       fontSize: 16,
-      textTransform: "none",
-      color: theme.palette.text.primary + " !important",
+      textTransform: 'none',
+      color: theme.palette.text.primary + ' !important',
     },
   },
   selected: {
-    backgroundColor: theme.palette.secondary.main + " !important",
+    backgroundColor: theme.palette.secondary.main + ' !important',
   },
-}))(ToggleButton);
+}))(ToggleButton)
 
 interface ContractOperationToggleButtonsProps extends ToggleButtonGroupProps {
-  disabled?: boolean;
+  disabled?: boolean
 }
 
 export const ContractOperationToggleButtons = ({
@@ -30,13 +26,13 @@ export const ContractOperationToggleButtons = ({
   ...props
 }: ContractOperationToggleButtonsProps) => {
   return (
-    <ToggleButtonGroup exclusive size="small" {...props}>
-      <StyledToggleButton disabled={disabled} value="read" disableRipple>
+    <ToggleButtonGroup exclusive size='small' {...props}>
+      <StyledToggleButton disabled={disabled} value='read' disableRipple>
         Read Contract
       </StyledToggleButton>
-      <StyledToggleButton disabled={disabled} value="write" disableRipple>
+      <StyledToggleButton disabled={disabled} value='write' disableRipple>
         Write Contract
       </StyledToggleButton>
     </ToggleButtonGroup>
-  );
-};
+  )
+}

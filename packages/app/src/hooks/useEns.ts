@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { EnsPublicClient, createEnsPublicClient, createEnsWalletClient } from '@ensdomains/ensjs'
+import { EnsPublicClient, createEnsPublicClient } from '@ensdomains/ensjs'
 import { mainnet, sepolia } from 'viem/chains'
 import { http } from 'viem'
 
@@ -29,10 +29,6 @@ const useEns = () => {
         } as const
 
         const client = createEnsPublicClient({
-          chain: chainWithEns,
-          transport: http(),
-        })
-        const walletClient = createEnsWalletClient({
           chain: chainWithEns,
           transport: http(),
         })

@@ -5,7 +5,7 @@ import DoneIcon from "@material-ui/icons/Done"
 import ClearIcon from "@material-ui/icons/Clear"
 import { Loader } from "@gnosis.pm/safe-react-components"
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   message: {
     fontSize: "0.9rem",
   },

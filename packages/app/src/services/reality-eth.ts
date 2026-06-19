@@ -1,4 +1,4 @@
-import { Contract, BrowserProvider, ethers } from 'ethers'
+import { Contract, BrowserProvider } from 'ethers'
 import { Coin, NETWORK, NETWORKS } from '../utils/networks'
 
 const REALITY_ETH_ERC20_CONTRACT_ABI = ['function token() view returns (address)']

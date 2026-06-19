@@ -4,7 +4,7 @@ import { ZodiacTextField, colors } from "zodiac-ui-components"
 import { InputPartProps } from "../.."
 import { OracleAlert } from "../OracleAlert"
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",

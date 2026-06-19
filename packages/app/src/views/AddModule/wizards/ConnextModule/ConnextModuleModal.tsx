@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Typography, makeStyles } from '@material-ui/core'
-import { ConnextModuleParams, deployConnextModule, getConnextAddress } from 'services'
+import { ConnextModuleParams, createConnextDeploymentTx, getConnextAddress } from 'services'
 import { ReactComponent as ArrowUpIcon } from '../../../../assets/icons/arrow-up-icon.svg'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { ParamInput } from '../../../../components/ethereum/ParamInput'
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const ConnextModuleModal = ({ onSubmit, open, onClose }: ConnextModuleProps) => {
-  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
+  const { sdk, safe } = useSafeAppsSDKWithProvider()
   const classes = useStyles()
 
   const [errors, setErrors] = useState<Record<keyof ConnextModuleParams, boolean>>({
@@ -72,7 +72,7 @@ export const ConnextModuleModal = ({ onSubmit, open, onClose }: ConnextModulePro
       const args = {
         ...params,
       }
-      const txs = await deployConnextModule(provider, safe.safeAddress, safe.chainId, args)
+      const txs = await createConnextDeploymentTx(safe.safeAddress, safe.chainId, args)
 
       await sdk.txs.send({ txs })
       if (onSubmit) onSubmit()

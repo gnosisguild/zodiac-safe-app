@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid, makeStyles, Typography } from '@material-ui/core'
 import { AddModuleModal } from '../components/AddModuleModal'
-import { AMBModuleParams, deployBridgeModule } from '../../../../services'
+import { AMBModuleParams, createBridgeDeploymentTx } from '../../../../services'
 import { ParamInput } from '../../../../components/ethereum/ParamInput'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { ParamType } from 'ethers'
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const AMBModuleModal: React.FC<AMBModuleModalProps> = ({ open, onClose, onSubmit }) => {
   const classes = useStyles()
-  const { sdk, safe, provider } = useSafeAppsSDKWithProvider()
+  const { sdk, safe } = useSafeAppsSDKWithProvider()
 
   const [errors, setErrors] = useState<Record<keyof AMBModuleParamsInput, boolean>>({
     amb: false,
@@ -55,7 +55,7 @@ export const AMBModuleModal: React.FC<AMBModuleModalProps> = ({ open, onClose, o
 
   const handleAddAMBModule = async () => {
     try {
-      const txs = await deployBridgeModule(provider, safe.safeAddress, safe.chainId, {
+      const txs = await createBridgeDeploymentTx(safe.safeAddress, {
         ...params,
         executor: safe.safeAddress,
       })

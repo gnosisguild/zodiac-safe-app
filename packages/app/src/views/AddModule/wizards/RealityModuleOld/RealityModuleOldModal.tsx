@@ -16,7 +16,7 @@ import { ZodiacTextField } from "zodiac-ui-components"
 import { arbitratorOptions, ArbitratorSelect } from "components/input/ArbitratorSelect"
 import { AttachModuleForm } from "../components/AttachModuleForm"
 import { ModuleType } from "store/modules/models"
-import { deployRealityModule } from "./services/moduleDeploymentOld"
+import { createRealityDeploymentTx } from "./services/moduleDeploymentOld"
 import useSafeAppsSDKWithProvider from "hooks/useSafeAppsSDKWithProvider"
 
 const SECONDS_IN_DAY = 86400
@@ -119,7 +119,7 @@ export const RealityModuleOldModal = ({
         executor: delayModule || safe.safeAddress,
         bond: minimumBond.toString(),
       }
-      const txs = await deployRealityModule(
+      const txs = await createRealityDeploymentTx(
         provider,
         safe.safeAddress,
         safe.chainId,

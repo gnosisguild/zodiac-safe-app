@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
 export const ContractFunctionQueryBlock = ({ address, func }: ContractFunctionBlockProps) => {
   const classes = useStyles()
   const reloadCount = useRootSelector(getReloadCount)
-  const { safe, provider } = useSafeAppsSDKWithProvider()
+  const { provider } = useSafeAppsSDKWithProvider()
 
   const [open, setOpen] = useState(false)
   const [lastQueryDate, setLastQueryDate] = useState<Date>()
@@ -62,9 +62,9 @@ export const ContractFunctionQueryBlock = ({ address, func }: ContractFunctionBl
   const execQuery = useCallback(
     (params?: any[]) => {
       setLastQueryDate(undefined)
-      fetch(provider, safe.chainId, address, [func], func.format(), params)
+      fetch(provider, address, [func], func.format(), params)
     },
-    [address, fetch, func, safe.chainId, provider],
+    [address, fetch, func, provider],
   )
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid, makeStyles, Typography } from '@material-ui/core'
 import { AddModuleModal } from '../components/AddModuleModal'
-import { deployExitModule, ExitModuleParams } from '../../../../services'
+import { createExitDeploymentTx, ExitModuleParams } from '../../../../services'
 import { ParamInput } from '../../../../components/ethereum/ParamInput'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { ParamType } from 'ethers'
@@ -55,7 +55,7 @@ export const ExitModuleModal = ({ open, onClose, onSubmit }: ExitModuleModalProp
 
   const handleAddExitModule = async () => {
     try {
-      const txs = await deployExitModule(provider, safe.safeAddress, safe.chainId, {
+      const txs = await createExitDeploymentTx(provider, safe.safeAddress, {
         ...params,
         executor: safe.safeAddress,
       })

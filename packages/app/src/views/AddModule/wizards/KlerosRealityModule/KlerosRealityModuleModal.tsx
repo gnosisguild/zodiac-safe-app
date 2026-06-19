@@ -17,7 +17,7 @@ import { AddModuleModal } from '../components/AddModuleModal'
 import { TimeSelect } from 'components/input/TimeSelect'
 import { colors, ZodiacTextField } from 'zodiac-ui-components'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
-import { deployRealityModule } from '../RealityModule/service/moduleDeployment'
+import { createRealityDeploymentTx } from '../RealityModule/service/moduleDeployment'
 import {
   addSafeSnapToSnapshotSpaceTxs,
   DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
@@ -400,7 +400,6 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
   const onParamChange = <Field extends keyof RealityModuleParams>(
     field: Field,
     value: RealityModuleParams[Field],
-    valid?: boolean,
   ) => {
     setParams({
       ...params,
@@ -427,7 +426,7 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
         category: 'DAO proposal',
         templateQuestion: templateQuestion,
       }
-      const deploymentRealityModuleTxsMm = await deployRealityModule(
+      const createRealityDeployment = await createRealityDeploymentTx(
         provider,
         safe.safeAddress,
         DETERMINISTIC_DEPLOYMENT_HELPER_ADDRESS,
@@ -436,9 +435,8 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
         templateData,
       )
 
-      let txs = [...deploymentRealityModuleTxsMm.txs]
-      const realityModuleAddress = deploymentRealityModuleTxsMm.meta
-        ?.daoModuleExpectedAddress as string
+      let txs = [...createRealityDeployment.txs]
+      const realityModuleAddress = createRealityDeployment.meta?.daoModuleExpectedAddress as string
       // We can only batch the SafeSnap creation when Safe is controller + mainnet
       // Otherwise, just create the module, hope the user got the hint and opened Details
       // to figure out how to set up SafeSnap in the space themselves.
@@ -522,7 +520,7 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
             <Grid item xs={12}>
               <ZodiacTextField
                 value={params.snapshotEns}
-                onChange={(e) => onParamChange('snapshotEns', e.target.value, true)}
+                onChange={(e) => onParamChange('snapshotEns', e.target.value)}
                 label='Enter the Snapshot ENS name.'
                 placeholder='ex: gnosis.eth'
                 className={`${classes.textFieldSmall} ${handleEnsStyleValidation()}`}
