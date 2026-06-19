@@ -122,8 +122,6 @@ export const AddModulesView = () => {
           icon='delay'
           onClick={() => selectModule(ModuleType.DELAY)}
           available={!!getMastercopyAddress(ModuleType.DELAY)}
-          // Temporarily disabled while the Delay v1.1.0 security issue is addressed.
-          disabled
         />
 
         <ModuleButton
@@ -140,9 +138,6 @@ export const AddModulesView = () => {
           icon='roles'
           onClick={() => selectModule(ModuleType.ROLES_V2)}
           available={!!getMastercopyAddress(ModuleType.ROLES_V2)}
-          // Temporarily disabled while the Roles v2 security issue is addressed.
-          // Roles Modifier v1 (below) is unaffected and stays enabled.
-          disabled
         />
 
         <ModuleButton
