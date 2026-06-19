@@ -1,5 +1,6 @@
-import { getZodiacModuleAbi, KnownContracts } from '@gnosis-guild/zodiac'
+import { KnownContracts } from '@gnosis-guild/zodiac'
 import { Interface, InterfaceAbi } from 'ethers'
+import { getModuleAbi } from 'abis'
 
 export enum ModuleType {
   TELLOR = 'tellor',
@@ -55,52 +56,52 @@ export const MODULE_NAMES: Record<ModuleType, string> = {
 }
 
 export const MODULE_ABIS: Record<ModuleType, Interface | InterfaceAbi> = {
-  [ModuleType.TELLOR]: getZodiacModuleAbi(
+  [ModuleType.TELLOR]: getModuleAbi(
     KnownContracts.TELLOR,
     ModuleVersion[ModuleType.TELLOR],
   ) as InterfaceAbi,
-  [ModuleType.OPTIMISTIC_GOVERNOR]: getZodiacModuleAbi(
+  [ModuleType.OPTIMISTIC_GOVERNOR]: getModuleAbi(
     KnownContracts.OPTIMISTIC_GOVERNOR,
     ModuleVersion[ModuleType.OPTIMISTIC_GOVERNOR],
   ) as InterfaceAbi,
-  [ModuleType.REALITY_ERC20]: getZodiacModuleAbi(
+  [ModuleType.REALITY_ERC20]: getModuleAbi(
     KnownContracts.REALITY_ERC20,
     ModuleVersion[ModuleType.REALITY_ERC20],
   ) as InterfaceAbi,
-  [ModuleType.REALITY_ETH]: getZodiacModuleAbi(
+  [ModuleType.REALITY_ETH]: getModuleAbi(
     KnownContracts.REALITY_ETH,
     ModuleVersion[ModuleType.REALITY_ETH],
   ) as InterfaceAbi,
-  [ModuleType.KLEROS_REALITY]: getZodiacModuleAbi(
+  [ModuleType.KLEROS_REALITY]: getModuleAbi(
     KnownContracts.REALITY_ETH,
     ModuleVersion[ModuleType.KLEROS_REALITY],
   ) as InterfaceAbi,
   [ModuleType.UNKNOWN]: [],
-  [ModuleType.BRIDGE]: getZodiacModuleAbi(
+  [ModuleType.BRIDGE]: getModuleAbi(
     KnownContracts.BRIDGE,
     ModuleVersion[ModuleType.BRIDGE],
   ) as InterfaceAbi,
-  [ModuleType.DELAY]: getZodiacModuleAbi(
+  [ModuleType.DELAY]: getModuleAbi(
     KnownContracts.DELAY,
     ModuleVersion[ModuleType.DELAY],
   ) as InterfaceAbi,
-  [ModuleType.ROLES_V1]: getZodiacModuleAbi(
+  [ModuleType.ROLES_V1]: getModuleAbi(
     KnownContracts.ROLES,
     ModuleVersion[ModuleType.ROLES_V1],
   ) as InterfaceAbi,
-  [ModuleType.ROLES_V2]: getZodiacModuleAbi(
+  [ModuleType.ROLES_V2]: getModuleAbi(
     KnownContracts.ROLES,
     ModuleVersion[ModuleType.ROLES_V2],
   ) as InterfaceAbi,
-  [ModuleType.EXIT]: getZodiacModuleAbi(
+  [ModuleType.EXIT]: getModuleAbi(
     KnownContracts.EXIT_ERC20,
     ModuleVersion[ModuleType.EXIT],
   ) as InterfaceAbi,
-  [ModuleType.OZ_GOVERNOR]: getZodiacModuleAbi(
+  [ModuleType.OZ_GOVERNOR]: getModuleAbi(
     KnownContracts.OZ_GOVERNOR,
     ModuleVersion[ModuleType.OZ_GOVERNOR],
   ) as InterfaceAbi,
-  [ModuleType.CONNEXT]: getZodiacModuleAbi(
+  [ModuleType.CONNEXT]: getModuleAbi(
     KnownContracts.CONNEXT,
     ModuleVersion[ModuleType.CONNEXT],
   ) as InterfaceAbi,
