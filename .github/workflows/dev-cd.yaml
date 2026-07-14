@@ -22,9 +22,9 @@ jobs:
     name: Deploy to Dev
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
       - run: npm install -g yarn
       - name: Install deps and build
         working-directory: ./packages/app
