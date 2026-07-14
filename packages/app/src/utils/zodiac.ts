@@ -1,7 +1,6 @@
 import { BrowserProvider, Contract, InterfaceAbi } from 'ethers'
-import { getZodiacModuleAddress, KnownContracts } from '@gnosis-guild/zodiac'
+import { getZodiacModuleAbi, getZodiacModuleAddress, KnownContracts } from '@gnosis-guild/zodiac'
 import { ModuleType, ModuleVersion } from 'store/modules/models'
-import { getModuleAbi } from 'abis'
 
 const MODULE_CONTRACTS: Partial<Record<ModuleType, KnownContracts>> = {
   [ModuleType.TELLOR]: KnownContracts.TELLOR,
@@ -43,5 +42,5 @@ export function getModuleInstance(
   provider: BrowserProvider,
   version?: string,
 ) {
-  return new Contract(address, getModuleAbi(name, version) as InterfaceAbi, provider)
+  return new Contract(address, getZodiacModuleAbi(name, version) as InterfaceAbi, provider)
 }
