@@ -1,19 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { makeStyles, Typography } from '@material-ui/core'
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk'
-import { useRootSelector } from '../store'
-import { getModulesList } from '../store/modules/selectors'
-import { Module, ModuleType } from '../store/modules/models'
 
 const NOTICE_URL = 'https://x.com/zodiaceco/status/2061862711206502902'
 const ZODIAC_APP_ORIGIN = 'https://app.zodiac.eco'
-
-// Module types affected by the fallback-handler vulnerability. Roles Modifier v1
-// is not affected.
-const AFFECTED_TYPES = [ModuleType.ROLES_V2, ModuleType.DELAY]
-
-const flatten = (modules: Module[]): Module[] =>
-  modules.flatMap((module) => [module, ...flatten(module.subModules ?? [])])
 
 const useStyles = makeStyles((theme) => ({
   banner: {
@@ -47,21 +37,36 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 /**
- * Warns when the connected Safe has a Zodiac module affected by the Roles v2 /
+ * Warns when the connected Safe has a Zodiac setup affected by the Roles v2 /
  * Delay v1.1.0 fallback-handler vulnerability, with a link to the remediation
- * tool. Detected from the modules already loaded into the store — including
- * nested sub-modules — so no external call is needed. Roles Modifier v1 is
- * unaffected and never triggers the banner.
+ * tool. The banner only shows once the Zodiac app's security-check API
+ * confirms the Safe is vulnerable; on errors or inconclusive results it stays
+ * hidden.
  */
 export const SecurityBanner: React.FC = () => {
   const classes = useStyles()
   const { safe } = useSafeAppsSDK()
-  const modules = useRootSelector(getModulesList)
   const [dismissed, setDismissed] = useState(false)
+  const [affected, setAffected] = useState(false)
 
-  const affected = flatten(modules).some((module) =>
-    AFFECTED_TYPES.includes(module.type),
-  )
+  useEffect(() => {
+    if (!safe.safeAddress || !safe.chainId) return
+
+    setAffected(false)
+    const abortController = new AbortController()
+    const checkUrl = `${ZODIAC_APP_ORIGIN}/public/api/security-check?safes=${encodeURIComponent(
+      `${safe.chainId}:${safe.safeAddress}`,
+    )}`
+    fetch(checkUrl, { signal: abortController.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((result) => setAffected(result?.status === 'affected'))
+      .catch(() => {
+        // inconclusive check — keep the banner hidden
+      })
+
+    return () => abortController.abort()
+  }, [safe.chainId, safe.safeAddress])
+
   if (!affected || dismissed) return null
 
   const checkerUrl = `${ZODIAC_APP_ORIGIN}/public/fallback-handler?address=${safe.safeAddress}&chainId=${safe.chainId}`
