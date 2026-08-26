@@ -308,10 +308,6 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
         mainnetProvider,
         sepoliaProvider,
       )
-      // `getEnsTextRecord` resolves to the record's string value. Indexing it with
-      // [0] kept only the first character, so the "missing DAO requirements" notice
-      // below could never fire: an unset record yielded `undefined`, which does not
-      // equal '' and therefore silently suppressed the warning.
       setDaorequirements(daorequirements ?? '')
       setValidEns(snapshotSpace !== undefined)
       if (snapshotSpace !== undefined) {
@@ -343,18 +339,12 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
     setEnsError('')
     if (params.snapshotEns && params.snapshotEns.includes('.eth')) {
       setLoadingEns(true)
-      setEnsError('')
       const validateInfo = async () => {
         try {
           await validateEns()
         } catch (error) {
-          // Surface the failure instead of spinning forever. Without this, any
-          // rejected RPC/Snapshot call leaves loadingEns stuck at true and the
-          // wizard becomes unusable with no indication of why.
           console.error('ENS validation failed:', error)
-          setEnsError(
-            error instanceof Error ? error.message : 'Could not validate this ENS name.',
-          )
+          setEnsError(error instanceof Error ? error.message : 'Could not validate this ENS name.')
         } finally {
           setLoadingEns(false)
           setLoadedEns(true)
@@ -560,9 +550,6 @@ export const KlerosRealityModuleModal = ({ open, onClose, onSubmit }: RealityMod
                 }
               />
               {!loadingEns && loadedEns && !validSnapshot && (
-                // Distinguish "we looked and it isn't there" from "we could not look".
-                // Reporting a lookup failure as a missing space sends people hunting
-                // for a problem with their Snapshot space that does not exist.
                 <PropStatus
                   message={
                     ensError

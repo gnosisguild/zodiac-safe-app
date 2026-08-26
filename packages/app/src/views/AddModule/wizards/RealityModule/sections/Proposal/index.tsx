@@ -25,7 +25,6 @@ import DoneIcon from '@material-ui/icons/Done'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { safeAppUrl } from 'utils/url'
-import { NETWORK } from 'utils/networks'
 import useEns from 'hooks/useEns'
 import useDebouncedState from 'hooks/useDebouncedState'
 import { getAddressRecord } from '@ensdomains/ensjs/public'
@@ -150,7 +149,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
           setLoading(true)
           const validateInfo = async () => {
             try {
-              await validEns()
+              await validateEns()
             } catch (error) {
               console.error('ENS validation failed:', error)
               setEnsIsValid(false)
@@ -173,7 +172,7 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
     })
   }, [debouncedEnsName, ensClient, mainnetProvider, sepoliaProvider])
 
-  const validEns = async () => {
+  const validateEns = async () => {
     if (!ensClient) return
     const record = await getAddressRecord(ensClient, { name: debouncedEnsName })
     const address = record?.value
