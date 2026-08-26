@@ -151,9 +151,10 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
           const validateInfo = async () => {
             try {
               await validEns()
+            } catch (error) {
+              console.error('ENS validation failed:', error)
+              setEnsIsValid(false)
             } finally {
-              // Without this, a rejected RPC/Snapshot call leaves `loading` true
-              // forever and the section hangs with a spinner and no explanation.
               setLoading(false)
             }
           }
