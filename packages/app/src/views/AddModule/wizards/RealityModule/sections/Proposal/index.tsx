@@ -25,11 +25,10 @@ import DoneIcon from '@material-ui/icons/Done'
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline'
 import useSafeAppsSDKWithProvider from 'hooks/useSafeAppsSDKWithProvider'
 import { safeAppUrl } from 'utils/url'
-import { NETWORK } from 'utils/networks'
 import useEns from 'hooks/useEns'
 import useDebouncedState from 'hooks/useDebouncedState'
 import { getAddressRecord } from '@ensdomains/ensjs/public'
-import { InfuraProvider } from 'ethers'
+import { getMainnetProvider, getSepoliaProvider } from 'services/rpc'
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -131,9 +130,9 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
   const [loading, setLoading] = useState<boolean>(false)
   const [ensIsValid, setEnsIsValid] = useState<boolean>(false)
   
-  // hack to resolve mainnet ENS
-  const mainnetProvider = useMemo(() => new InfuraProvider(NETWORK.MAINNET, import.meta.env.VITE_INFURA_ID), [])
-  const sepoliaProvider = useMemo(() => new InfuraProvider(NETWORK.SEPOLIA, import.meta.env.VITE_INFURA_ID), [])
+  // the Safe may be on any chain, but ENS lookups always target mainnet (sepolia in dev)
+  const mainnetProvider = useMemo(() => getMainnetProvider(), [])
+  const sepoliaProvider = useMemo(() => getSepoliaProvider(), [])
 
   useEffect(() => {
     if (provider && setupData && setupData.proposal) {
@@ -149,9 +148,16 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
           setEnsIsValid(true)
           setLoading(true)
           const validateInfo = async () => {
-            await validEns()
+            try {
+              await validateEns()
+            } catch (error) {
+              console.error('ENS validation failed:', error)
+              setEnsIsValid(false)
+            } finally {
+              setLoading(false)
+            }
           }
-          validateInfo()
+          void validateInfo()
         } else {
           setEnsIsValid(false)
           setIsController(false)
@@ -159,10 +165,14 @@ export const ProposalSection: React.FC<SectionProps> = ({ handleNext, handleBack
         }
       }
     }
-    checkEns()
+    checkEns().catch((error) => {
+      console.error('ENS lookup failed:', error)
+      setEnsIsValid(false)
+      setLoading(false)
+    })
   }, [debouncedEnsName, ensClient, mainnetProvider, sepoliaProvider])
 
-  const validEns = async () => {
+  const validateEns = async () => {
     if (!ensClient) return
     const record = await getAddressRecord(ensClient, { name: debouncedEnsName })
     const address = record?.value

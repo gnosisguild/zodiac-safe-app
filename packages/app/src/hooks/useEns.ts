@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { EnsPublicClient, createEnsPublicClient } from '@ensdomains/ensjs'
 import { mainnet, sepolia } from 'viem/chains'
-import { http } from 'viem'
+import { fallback, http } from 'viem'
+import { getEnsRpcUrls } from 'services/rpc'
 
 const mode = import.meta.env.MODE
 
@@ -30,7 +31,7 @@ const useEns = () => {
 
         const client = createEnsPublicClient({
           chain: chainWithEns,
-          transport: http(),
+          transport: fallback(getEnsRpcUrls(chain.id).map((url) => http(url))),
         })
         setEnsClient(client as EnsPublicClient<any, any>)
       } catch (e) {
